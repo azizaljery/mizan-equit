@@ -50,7 +50,7 @@ export async function POST(req:Request){
     }
     if(action==='resolve'){
       const result=await runResolutionCycle(runtime.DB,{limit:2,triggeredBy:'manual'});
-      return Response.json({action,status:result.status,stateSaved:result.stateSaved,symbolsScanned:result.symbolsScanned,symbolsResolved:result.symbolsResolved,symbolsSkipped:result.symbolsSkipped,symbolsFailed:result.symbolsFailed,evaluationsSaved:result.evaluationsSaved,errors:result.errors,integrity:result.integrity},{headers});
+      return Response.json({action,status:result.status,stateSaved:result.stateSaved,symbolsScanned:result.symbolsScanned,symbolsResolved:result.symbolsResolved,evaluationsSaved:result.evaluationsSaved,integrity:result.integrity},{headers});
     }
     if(action==='council'){
       const task=typeof body?.task==='string'&&body.task.trim()?body.task:'راجع جاهزية منظومة ميزان بعد النشر الأخير، وجودة بيانات السوق السعودي والأمريكي، وسلامة مسار التوقع والقياس، ثم أعد تقريرًا للمالك دون أي إجراء تلقائي.';

@@ -60,10 +60,8 @@ export function claimedJournal(db,key,metadata,now){
 }
 export async function runDailyArchive(db,deps,controller){
  const start=deps.now(),at=new Date(start).toISOString();
- const listingEvidence=deps.listingEvidence?.()??{eligibilityPolicy:null,excludedKnownInactive:[]};
  const result={version:DAILY_ARCHIVE_VERSION,runId:crypto.randomUUID(),startedAt:at,finishedAt:null,cron:controller.cron,
   scheduledTime:controller.scheduledTime,triggeredBy:controller.cron===DAILY_ARCHIVE_CRON?'cron':'manual',status:'completed',stateSaved:false,
-  eligibilityPolicy:listingEvidence.eligibilityPolicy,excludedKnownInactive:listingEvidence.excludedKnownInactive,
   symbolsAttempted:0,analysesRecorded:0,forecastRowsSaved:0,availableForecastRows:0,skippedAlreadyRecorded:0,markets:{},errors:[]};
  const token=await deps.acquire();if(!token)return {...result,status:'locked'};
  try{

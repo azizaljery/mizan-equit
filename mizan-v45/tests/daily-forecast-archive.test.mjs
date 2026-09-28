@@ -9,7 +9,6 @@ function fixture(){
  let now=Date.parse('2026-09-28T20:45:00Z');
  const settings={enabledMarkets:['sa','us'],periods:Object.fromEntries([1,5,21,63,126,252].map(h=>[h,{enabled:false}]))};
  const deps={now:()=>now,acquire:async()=> 'lease',release:async()=>{},owns:async()=>true,settings:async()=>settings,
- listingEvidence:()=>({eligibilityPolicy:'mizan-known-listing-events-1',excludedKnownInactive:['1090.SR']}),
  universe:m=>Array.from({length:45},(_,i)=>({symbol:m+i,name:m+i})),
  fetch:async symbol=>{const market=symbol.startsWith('sa')?'sa':'us',date=marketClock(market,now).date;return {company:{symbol},retrievedAt:new Date(now).toISOString(),prices:[{date,close:100}],context:{market:{symbol:market==='sa'?'^TASI.SR':'SPY',prices:[{date,close:100}]}},priceSource:'test-fixture'}},
  record:async(journal,report,archiveSettings)=>{assert.equal(archiveSettings.periods[252].enabled,true);const id=crypto.randomUUID();await journal.batch([journal.prepare('INSERT INTO analysis_snapshots VALUES(?,?,?)').bind(id,JSON.stringify(report),new Date(now).toISOString()),...[1,5,21,63,126,252].map(h=>journal.prepare('INSERT INTO forecast_records VALUES(?,?,?,?)').bind(crypto.randomUUID(),id,h,1))]);return {recorded:true,createdAt:new Date(now).toISOString()}}};
@@ -38,9 +37,6 @@ test('30 each market are archived once; six original horizons and previous data 
  assert.equal(f.sql.prepare('SELECT count(*) AS n FROM forecast_records').get().n,360);
  assert.equal(f.settings.periods[252].enabled,false);
  assert.ok(status.recent.some(r=>r.id==='job:daily-forecast:last-cron'));
- const seed=JSON.parse(f.sql.prepare("SELECT data FROM research_state WHERE id='job:forecast-seed:last'").get().data);
- assert.equal(seed.eligibilityPolicy,'mizan-known-listing-events-1');
- assert.deepEqual(seed.excludedKnownInactive,['1090.SR']);
 });
 test('atomic claim aborts all competing inserts',async()=>{
  const f=fixture();const statement=id=>f.db.prepare('INSERT INTO analysis_snapshots VALUES(?,?,?)').bind(id,'{}','now');
