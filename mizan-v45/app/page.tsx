@@ -88,7 +88,7 @@ export default function Home(){
  async function importFile(file:File){setUploadError('');setUploadBusy('قراءة الملف…');setAttachment(null);try{setAttachment(await readAttachment(file,setUploadBusy))}catch(e){setUploadError(e instanceof Error?e.message:'تعذرت قراءة الملف.')}finally{setUploadBusy('');if(upload.current)upload.current.value=''}}
 
  const a=analysis,r=report;
- return <><header className="topbar"><a className="brand" href="/" aria-label="ميزان الرئيسية"><span className="brand-icon"><Scale size={28}/></span><span><span className="brand-name">ميزان</span><span className="brand-caption">وضوح يسبق القرار</span></span></a><a className="source-link" href="/gold">ميزان الذهب</a><a className="source-link" href="/screener">فرز الأسهم</a><a className="source-link" href="/aziz">خوارزمية عزيز</a><a className="source-link" href="/accuracy">دقة ميزان</a><span className="top-meta"><Globe2 size={16}/> السعودية · أمريكا · الأسواق العالمية</span></header>
+ return <><header className="topbar"><a className="brand" href="/" aria-label="ميزان الرئيسية"><span className="brand-icon"><Scale size={28}/></span><span><span className="brand-name">ميزان</span><span className="brand-caption">وضوح يسبق القرار</span></span></a><a className="source-link" href="/gold">ميزان الذهب</a><a className="source-link" href="/screener">فرز الأسهم</a><a className="source-link" href="/accuracy">دقة ميزان</a><span className="top-meta"><Globe2 size={16}/> السعودية · أمريكا · الأسواق العالمية</span></header>
  <main className={`auto-workspace ${r?'has-result':''}`}>
  <CustomerMarketWatch company={selected ? {symbol:selected.symbol,name:selected.name,exchange:selected.exchange} : null}/>
  {error&&<p role="alert" className="notice error">{error}</p>}

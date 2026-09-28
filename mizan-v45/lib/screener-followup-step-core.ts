@@ -54,21 +54,25 @@ export async function executeFollowupStep(config:FollowupConfig,previous:unknown
   let market:'sa'|'us'|null=null;
   for(const candidate of [preferred,other] as const){
    const m=progress.markets[candidate];
-   if(m.state==='scanning'&&!hadError.has(candidate)&&m.runId&&m.nextBatch<Math.ceil(m.planned/m.batchSize)){market=candidate;break;}
+   if(m.state==='scanning'&&!hadError.has(candidate)&&m.runId&&m.nextBatch<=Math.ceil(m.planned/m.batchSize)){market=candidate;break;}
   }
   if(!market)break;
   const m=progress.markets[market],expected=Math.ceil(m.planned/m.batchSize);
   try{
-   const b=await deps.batch(m.runId!,m.nextBatch);
-   const expectedScanned=Math.min(m.batchSize,m.planned-m.scanned);
-   if(!['scanned','analyzed','failed','eligible'].every(k=>Number.isInteger(b?.[k])&&b[k]>=0)||b.scanned!==expectedScanned||b.analyzed+b.failed!==b.scanned||b.eligible>b.analyzed)throw Error('invalid-batch-counters');
-   m.scanned+=b.scanned;m.analyzed+=b.analyzed;m.failed+=b.failed;m.eligible+=b.eligible;m.nextBatch++;m.lastError=undefined;
+   // A completed last batch may be durable even if the seal/status read failed.
+   // Resume only the seal in that case; do not issue or count the batch again.
+   if(m.nextBatch<expected){
+    const b=await deps.batch(m.runId!,m.nextBatch);
+    const expectedScanned=Math.min(m.batchSize,m.planned-m.scanned);
+    if(!['scanned','analyzed','failed','eligible'].every(k=>Number.isInteger(b?.[k])&&b[k]>=0)||b.scanned!==expectedScanned||b.analyzed+b.failed!==b.scanned||b.eligible>b.analyzed)throw Error('invalid-batch-counters');
+    m.scanned+=b.scanned;m.analyzed+=b.analyzed;m.failed+=b.failed;m.eligible+=b.eligible;m.nextBatch++;
+   }
    if(m.nextBatch===expected){
     const end=await deps.finish(m.runId!);
     if(end?.status!=='complete'||end?.integrity!==true)throw Error('unsealed-server-archive');
     m.state='complete';m.selected=Array.isArray(end.picks)?end.picks.length:0;m.fingerprint=end.fingerprint;
    }
-   progress.nextMarket=market==='sa'?'us':'sa';processed++;
+   m.lastError=undefined;progress.nextMarket=market==='sa'?'us':'sa';processed++;
   }catch{m.state='retryable';m.lastError='batch-or-seal-failed';hadError.add(market);progress.nextMarket=market==='sa'?'us':'sa';}
   await save();
  }
