@@ -7,12 +7,12 @@ Status: IN_PROGRESS
 
 | Requirement | Question / Scope | Evidence state |
 |---|---|---|
-| FIN-P1-REQ-SOURCE-DEPLOYMENT-PARITY | هل النسخة المنشورة مرتبطة بالمصدر المحدد ومطابقة له ضمن فروق بناء مفسرة؟ | PARTIAL — [مقارنة المصدر](evidence/FIN-P1-SOURCE-DEPLOYMENT-PARITY.json)، تحقق الحزمة وهوية التشغيل والمراجعة البشرية لم يكتمل |
+| FIN-P1-REQ-SOURCE-DEPLOYMENT-PARITY | هل النسخة المنشورة مرتبطة بالمصدر المحدد ومطابقة له ضمن فروق بناء مفسرة؟ | PARTIAL — [مقارنة المصدر](evidence/FIN-P1-SOURCE-DEPLOYMENT-PARITY.json)، [بصمة الحزمة تحققت](evidence/FIN-P1-INDEPENDENT-ARCHIVE-VERIFICATION.json)؛ هوية التشغيل والمراجعة البشرية لم تكتمل |
 | FIN-P1-REQ-ROLLBACK-RUNBOOK | هل إجراء الرجوع محدد ومختبر أو محاكى، مع فصل رجوع الكود عن البيانات؟ | PARTIAL — [إجراء الرجوع](PHASE-1-ROLLBACK-RUNBOOK.md)، وجهة سليمة ومحاكاة التطبيق لم تثبتا |
-| FIN-P1-REQ-LEGACY-SETTINGS | هل الإعدادات القديمة تقرأ مع الحفاظ على الأصل؟ | PARTIAL — [اختبارات محلية](evidence/LOCAL-COMPATIBILITY.md)، قبول الإنتاج والمراجعة معلقان |
-| FIN-P1-REQ-LEGACY-PORTFOLIOS | هل المحافظ السابقة تستمر وتقرأ دون تغيير غير مقصود؟ | PARTIAL — [اختبارات محلية](evidence/LOCAL-COMPATIBILITY.md)، قبول الإنتاج والمراجعة معلقان |
-| FIN-P1-REQ-LEGACY-TRADES | هل الصفقات القديمة محفوظة وقابلة للقراءة؟ | PARTIAL — [اختبارات محلية](evidence/LOCAL-COMPATIBILITY.md)، قبول الإنتاج والمراجعة معلقان |
-| FIN-P1-REQ-LEGACY-FORECASTS | هل تاريخ التوقعات وأصولها محفوظ دون إعادة كتابة؟ | PARTIAL — [اختبارات محلية](evidence/LOCAL-COMPATIBILITY.md)، قبول الإنتاج والمراجعة معلقان |
+| FIN-P1-REQ-LEGACY-SETTINGS | هل الإعدادات القديمة تقرأ مع الحفاظ على الأصل؟ | PASS — [قبول المستخدم](evidence/FIN-P1-OWNER-COMPATIBILITY-ACCEPTANCE.json) للبيانات التي فحصها بعد إعادة الدخول، مع الاختبارات المحلية؛ ليس تدقيق قاعدة شاملًا |
+| FIN-P1-REQ-LEGACY-PORTFOLIOS | هل المحافظ السابقة تستمر وتقرأ دون تغيير غير مقصود؟ | PASS — [قبول المستخدم](evidence/FIN-P1-OWNER-COMPATIBILITY-ACCEPTANCE.json) للبيانات التي فحصها بعد إعادة الدخول، مع الاختبارات المحلية؛ ليس تدقيق قاعدة شاملًا |
+| FIN-P1-REQ-LEGACY-TRADES | هل الصفقات القديمة محفوظة وقابلة للقراءة؟ | PASS — [قبول المستخدم](evidence/FIN-P1-OWNER-COMPATIBILITY-ACCEPTANCE.json) للبيانات التي فحصها بعد إعادة الدخول، مع الاختبارات المحلية؛ ليس تدقيق قاعدة شاملًا |
+| FIN-P1-REQ-LEGACY-FORECASTS | هل تاريخ التوقعات وأصولها محفوظ دون إعادة كتابة؟ | PASS — [قبول المستخدم](evidence/FIN-P1-OWNER-COMPATIBILITY-ACCEPTANCE.json) للبيانات التي فحصها بعد إعادة الدخول، مع الاختبارات المحلية؛ ليس تدقيق قاعدة شاملًا |
 
 لكل دليل: المصدر، البيئة، إجراء التحقق، النتيجة، الحدود، ثم المراجع البشري وتاريخ قراره.
 الدليل الجزئي لا يغلق الشرط. تعذر الوصول لا يحسب نجاحًا.

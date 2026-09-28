@@ -7,10 +7,10 @@
   "sourceCommit": "65b623639588f40eb73c5d76616308737ab33f33",
   "phaseProgress": {
     "requirementsTotal": 8,
-    "requirementsPassed": 0,
+    "requirementsPassed": 4,
     "requirementsFailed": 0,
     "requirementsBlocked": 0,
-    "requirementsInProgress": 8
+    "requirementsInProgress": 4
   },
   "closureReadiness": null,
   "monitoringOnly": true,
@@ -47,39 +47,55 @@
     },
     {
       "id": "FIN-P1-REQ-LEGACY-SETTINGS",
-      "status": "IN_PROGRESS",
-      "humanReview": "PENDING",
+      "status": "PASS",
+      "humanReview": "ACCEPTED_OWNER_TESTED_COMPATIBILITY",
       "evidence": [
         "evidence/legacy-tests.tap",
-        "evidence/legacy-migrations.json"
-      ]
+        "evidence/legacy-migrations.json",
+        "evidence/FIN-P1-OWNER-COMPATIBILITY-ACCEPTANCE.json"
+      ],
+      "reviewedAt": "2026-09-29T00:18:56+03:00",
+      "verificationStatus": "LOCAL_CHECKS_AND_OWNER_REPORTED_ACCEPTANCE",
+      "acceptanceScope": "User-visible legacy compatibility and persistence for the owner's tested data, supported by previously recorded local regression and migration checks."
     },
     {
       "id": "FIN-P1-REQ-LEGACY-PORTFOLIOS",
-      "status": "IN_PROGRESS",
-      "humanReview": "PENDING",
+      "status": "PASS",
+      "humanReview": "ACCEPTED_OWNER_TESTED_COMPATIBILITY",
       "evidence": [
         "evidence/legacy-tests.tap",
-        "evidence/legacy-migrations.json"
-      ]
+        "evidence/legacy-migrations.json",
+        "evidence/FIN-P1-OWNER-COMPATIBILITY-ACCEPTANCE.json"
+      ],
+      "reviewedAt": "2026-09-29T00:18:56+03:00",
+      "verificationStatus": "LOCAL_CHECKS_AND_OWNER_REPORTED_ACCEPTANCE",
+      "acceptanceScope": "User-visible legacy compatibility and persistence for the owner's tested data, supported by previously recorded local regression and migration checks."
     },
     {
       "id": "FIN-P1-REQ-LEGACY-TRADES",
-      "status": "IN_PROGRESS",
-      "humanReview": "PENDING",
+      "status": "PASS",
+      "humanReview": "ACCEPTED_OWNER_TESTED_COMPATIBILITY",
       "evidence": [
         "evidence/legacy-tests.tap",
-        "evidence/legacy-migrations.json"
-      ]
+        "evidence/legacy-migrations.json",
+        "evidence/FIN-P1-OWNER-COMPATIBILITY-ACCEPTANCE.json"
+      ],
+      "reviewedAt": "2026-09-29T00:18:56+03:00",
+      "verificationStatus": "LOCAL_CHECKS_AND_OWNER_REPORTED_ACCEPTANCE",
+      "acceptanceScope": "User-visible legacy compatibility and persistence for the owner's tested data, supported by previously recorded local regression and migration checks."
     },
     {
       "id": "FIN-P1-REQ-LEGACY-FORECASTS",
-      "status": "IN_PROGRESS",
-      "humanReview": "PENDING",
+      "status": "PASS",
+      "humanReview": "ACCEPTED_OWNER_TESTED_COMPATIBILITY",
       "evidence": [
         "evidence/legacy-tests.tap",
-        "evidence/legacy-migrations.json"
-      ]
+        "evidence/legacy-migrations.json",
+        "evidence/FIN-P1-OWNER-COMPATIBILITY-ACCEPTANCE.json"
+      ],
+      "reviewedAt": "2026-09-29T00:18:56+03:00",
+      "verificationStatus": "LOCAL_CHECKS_AND_OWNER_REPORTED_ACCEPTANCE",
+      "acceptanceScope": "User-visible legacy compatibility and persistence for the owner's tested data, supported by previously recorded local regression and migration checks."
     },
     {
       "id": "FIN-P1-REQ-HUMAN-REVIEW",
@@ -111,8 +127,7 @@
     "Runtime deployment identity not independently verified",
     "No accepted known-good rollback target or application rollback rehearsal",
     "No isolated production-backup restore",
-    "Legacy production samples and owner-session acceptance not completed",
-    "Human review pending"
+    "Final human review of technical evidence and phase closure decision pending"
   ],
   "freeze": [
     "New models",
@@ -121,5 +136,16 @@
     "Response Dynamics",
     "Research integrations"
   ],
-  "lastVerificationLocalDate": "2026-09-29"
+  "lastVerificationLocalDate": "2026-09-29",
+  "ownerAcceptance": {
+    "evidence": "evidence/FIN-P1-OWNER-COMPATIBILITY-ACCEPTANCE.json",
+    "scope": "User-visible legacy compatibility and persistence for the owner's tested data, supported by previously recorded local regression and migration checks.",
+    "limitations": [
+      "No screenshots, record IDs, balances or before/after production hashes supplied",
+      "Not an exhaustive database audit",
+      "Not a review of all technical evidence",
+      "Does not validate deployment identity or rollback readiness",
+      "Does not authorize phase closure"
+    ]
+  }
 }
