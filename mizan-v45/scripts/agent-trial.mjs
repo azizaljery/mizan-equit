@@ -43,17 +43,7 @@ async function main(){
   check('Data Center cycle persisted',!!collect?.stateSaved&&['completed','partial'].includes(collect?.status),collect?.status??'unavailable');
   for(const market of ['sa','us'])check(`Data Center ${market}`,Number(collect?.markets?.[market]?.saved)>0,collect?.markets?.[market]??null);
   const seed=await action('seed');
-  const existing=report.before.sections?.forecastRecords?.data??[];
-  const archiveStates=seed?.markets??{};
-  const completePlans=['sa','us'].every(m=>{
-    const p=archiveStates[m];
-    return p?.state==='weekend'||(p?.state==='finished'&&p.selected>0&&p.recorded===p.selected&&p.failed===0&&p.pending===0);
-  });
-  const existingBothMarkets=['sa','us'].every(m=>[5,21,63,126,252].every(h=>existing.some(r=>r.market===m&&r.horizon===h&&r.total_records>0)));
-  const idempotentComplete=seed?.symbolsAttempted===0&&Object.values(archiveStates).some(p=>p?.state==='finished')&&completePlans&&existingBothMarkets;
-  check('canonical forecasts persisted',!!seed?.stateSaved&&seed?.status==='completed'&&!(seed?.errors?.length)&&(
-    Number(seed?.analysesRecorded)+Number(seed?.skippedAlreadyRecorded)>0||idempotentComplete
-  ),{status:seed?.status??'unavailable',idempotentComplete,markets:archiveStates});
+  check('canonical forecasts persisted',!!seed?.stateSaved&&seed?.status==='completed'&&Number(seed?.analysesRecorded)+Number(seed?.skippedAlreadyRecorded)>0,seed?.status??'unavailable');
   const resolve=await action('resolve');
   check('mature-outcome resolver completed',!!resolve?.stateSaved&&resolve?.status==='completed',resolve?.evaluationsSaved===0?'No matured outcomes saved; not an accuracy claim.':resolve?.status??'unavailable');
   const councilRequest={requestKey:`trial:${run}:${attempt}`,includeReports:true,task:'نفذ مراجعة تشغيلية تجريبية لميزان الأسهم اعتمادًا على Data Center وQuant المرفقين. للسوق السعودي والأمريكي معًا: بيّن الفجوات الفعلية، وضع عملَي إصلاح محددين باختبارات قبول لكل منهما. ميّز الوقت والمصدر والتغطية والآفاق ونتائج المعايرة، ولا تدّع تنفيذ تعديل أو اختبار غير وارد في الأدلة. أعط ملخصًا مهنيًا لا سلسلة تفكير. تبقى موافقة المالك مطلوبة ولا أوامر تداول.'};

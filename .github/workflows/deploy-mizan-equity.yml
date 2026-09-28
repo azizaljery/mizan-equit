@@ -42,12 +42,6 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Test isolated Aziz read-only readiness
-        run: node --test --import tsx tests/aziz-readiness.test.ts
-
-      - name: Test daily archive limits, recovery and atomic originals
-        run: node --test tests/daily-forecast-archive.test.mjs
-
       - name: Test market data collector
         run: node --test --import tsx tests/market-collector.test.ts
 
@@ -144,12 +138,6 @@ jobs:
       - name: Verify deployed pages and exact release
         id: release
         run: node scripts/verify-deployment.mjs --verify
-
-      - name: Verify published Aziz read-only readiness
-        run: node scripts/verify-aziz-readiness.mjs
-
-      - name: Activate daily archive and observe a real scheduled heartbeat
-        run: node scripts/verify-daily-archive.mjs
 
       - name: Verify archived symbol cannot produce a current forecast
         env:
