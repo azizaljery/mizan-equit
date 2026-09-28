@@ -1,4 +1,3 @@
-/** Quality scoring for diagnostic source observations; it does not replace production analysis readiness. */
 import type {
   DataQuality,
   QualityGrade,

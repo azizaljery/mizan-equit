@@ -1,0 +1,85 @@
+services:
+  flowise-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: flowise
+      POSTGRES_USER: flowise
+      POSTGRES_PASSWORD: ${FLOWISE_DB_PASSWORD}
+    volumes:
+      - flowise_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flowise -d flowise"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [council_internal]
+
+  litellm-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: litellm
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: ${LITELLM_DB_PASSWORD}
+    volumes:
+      - litellm_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm -d litellm"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [council_internal]
+
+  litellm:
+    image: ${LITELLM_IMAGE:-docker.litellm.ai/berriai/litellm:main-latest}
+    restart: unless-stopped
+    env_file: .env
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    volumes:
+      - ./litellm_config.yaml:/app/config.yaml:ro
+    ports:
+      - "127.0.0.1:${LITELLM_PORT:-4000}:4000"
+    depends_on:
+      litellm-db:
+        condition: service_healthy
+    networks: [council_internal]
+
+  flowise:
+    image: ${FLOWISE_IMAGE:-flowiseai/flowise:latest}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: 3000
+      DATABASE_TYPE: postgres
+      DATABASE_HOST: flowise-db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: flowise
+      DATABASE_USER: flowise
+      DATABASE_PASSWORD: ${FLOWISE_DB_PASSWORD}
+      FLOWISE_SECRETKEY_OVERWRITE: ${FLOWISE_SECRETKEY}
+      SHOW_COMMUNITY_NODES: "false"
+      HTTP_SECURITY_CHECK: "true"
+      CUSTOM_MCP_SECURITY_CHECK: "true"
+      CUSTOM_MCP_PROTOCOL: sse
+      LOG_LEVEL: info
+    command: /bin/sh -c "sleep 3; flowise start"
+    ports:
+      - "127.0.0.1:${FLOWISE_PORT:-3000}:3000"
+    depends_on:
+      flowise-db:
+        condition: service_healthy
+      litellm:
+        condition: service_started
+    volumes:
+      - flowise_data:/root/.flowise
+    networks: [council_internal]
+
+networks:
+  council_internal:
+    driver: bridge
+
+volumes:
+  flowise_db:
+  litellm_db:
+  flowise_data:

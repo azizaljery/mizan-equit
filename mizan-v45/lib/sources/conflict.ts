@@ -1,4 +1,3 @@
-/** Generic diagnostic conflict helpers; live financial selection is resolved in source-resolution.ts. */
 import { TIER_SCORE } from './registry';
 import type { ConflictValue, ConflictResult, SourceCandidate } from './types';
 

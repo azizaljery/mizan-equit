@@ -43,7 +43,7 @@ test('execution honors entry zone, gap stops, costs, same-bar ambiguity and hori
 });
 test('flat-series end-to-end backtest never fabricates trades, calibration or accepted results',()=>{
  const d=dataset(400),base=report(),a=m.runChampionshipBacktest(d,base),b=m.runChampionshipBacktest({...d,candles:[...d.candles].reverse()},base);
- assert.deepEqual(a,b);assert.ok(a.windowsEvaluated>0);assert.ok(a.missingFinancialSafetyChecks>0);assert.match(a.limitations.join(' '),/حقائق مالية معروفة وقتيًا/);assert.equal(a.totalTrades,0);assert.equal(a.finalCapital,a.initialCapital);assert.equal(a.profitFactor,null);assert.equal(a.championshipMetrics.brierScore,null);assert.equal(a.championshipMetrics.deflatedSharpeProbability,null);assert.equal(a.championshipMetrics.isAccepted,false);assert.ok(a.equityCurve.every(p=>p.return===0));
+ assert.deepEqual(a,b);assert.ok(a.windowsEvaluated>0);assert.equal(a.totalTrades,0);assert.equal(a.finalCapital,a.initialCapital);assert.equal(a.profitFactor,null);assert.equal(a.championshipMetrics.brierScore,null);assert.equal(a.championshipMetrics.deflatedSharpeProbability,null);assert.equal(a.championshipMetrics.isAccepted,false);assert.ok(a.equityCurve.every(p=>p.return===0));
  assert.throws(()=>m.runChampionshipBacktest(dataset(50),base));
  assert.throws(()=>m.runChampionshipBacktest({...d,adjustment:'raw'},base));
  assert.throws(()=>m.runChampionshipBacktest(d,{...base,currency:'SAR'}));

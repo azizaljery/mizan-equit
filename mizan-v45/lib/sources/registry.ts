@@ -1,4 +1,3 @@
-/** Diagnostic source-pipeline registry. Production company analysis still enters through market-data.ts/configuredReader. */
 import type { SourceCandidate, Market, DataType } from './types';
 
 export const SOURCE_REGISTRY: readonly SourceCandidate[] = [

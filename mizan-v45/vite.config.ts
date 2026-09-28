@@ -1,51 +1,58 @@
 import vinext from "vinext";
 import { EVALUATE_DUE_CRON } from "./lib/jobs/schedule";
-import { ACCURACY_SAMPLE_CRON } from "./lib/jobs/accuracy-schedule";
-import { SCREENER_FOLLOWUP_CRON } from "./lib/jobs/screener-followup-schedule";
 import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
 import { sites } from "./build/sites-vite-plugin";
 
-const MIZAN_EQUITY_DATABASE_ID =
-  "e95b74e8-81d6-4beb-8ea2-ad59c863d21d";
+const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
+  "00000000-0000-4000-8000-000000000000";
 
 const { d1, r2 } = hostingConfig;
+
+// macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 
 const localBindingConfig = {
-  name: "mizan-equity",
   main: "./worker/index.ts",
-  triggers: { crons: [EVALUATE_DUE_CRON, ACCURACY_SAMPLE_CRON, SCREENER_FOLLOWUP_CRON] },
+  // Single build configuration; generated Wrangler output inherits this schedule.
+  triggers: { crons: [EVALUATE_DUE_CRON] },
   compatibility_flags: ["nodejs_compat"],
-  vars: {
-    MIZAN_BACKGROUND_CRON_ENABLED: "true",
-    MIZAN_OPENAI_MODEL: "gpt-5.6-sol",
-    MIZAN_ANTHROPIC_MODEL: "claude-sonnet-5",
-    MIZAN_DEEPSEEK_MODEL: "deepseek-v4-pro",
-  },
   d1_databases: d1
-    ? [{
-        binding: d1,
-        database_name: "mizan-equity-db",
-        database_id: MIZAN_EQUITY_DATABASE_ID,
-        migrations_dir: "drizzle",
-      }]
+    ? [
+        {
+          binding: d1,
+          database_name: "site-creator-d1",
+          database_id: SITE_CREATOR_PLACEHOLDER_DATABASE_ID,
+        },
+      ]
     : [],
   r2_buckets: r2
-    ? [{ binding: r2, bucket_name: "site-creator-r2" }]
+    ? [
+        {
+          binding: r2,
+          bucket_name: "site-creator-r2",
+        },
+      ]
     : [],
 };
 
 export default defineConfig(async () => {
+  // Keep Wrangler and Miniflare state project-local. These are non-secret tool
+  // settings; application environment belongs in ignored `.env*` files.
   process.env.WRANGLER_WRITE_LOGS ??= "false";
   process.env.WRANGLER_LOG_PATH ??= ".wrangler/logs";
   process.env.MINIFLARE_REGISTRY_PATH ??= ".wrangler/registry";
+
+  // Wrangler snapshots its log path while the Cloudflare plugin is imported.
   const { cloudflare } = await import("@cloudflare/vite-plugin");
+
   return {
     server: {
       host: "0.0.0.0",
       allowedHosts: ["terminal.local"],
-      ...(isCodexSeatbeltSandbox ? { watch: { useFsEvents: false, usePolling: true } } : {}),
+      ...(isCodexSeatbeltSandbox
+        ? { watch: { useFsEvents: false, usePolling: true } }
+        : {}),
     },
     plugins: [
       vinext(),

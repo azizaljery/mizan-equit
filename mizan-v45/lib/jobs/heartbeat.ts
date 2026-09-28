@@ -1,15 +1,11 @@
-/** Verifiable observations around scheduled background jobs. */
+/** Verifiable observations around the existing scheduled forecast-resolution job. */
 
 export const HEARTBEAT_ARRIVAL_ID = 'job:cron:heartbeat:last-arrival';
 export const HEARTBEAT_EVALUATION_ID = 'job:cron:heartbeat:last-evaluation';
 export const HEARTBEAT_SAVE_FAILURE_ID = 'job:cron:heartbeat:last-save-failure';
 
-export const ACCURACY_HEARTBEAT_ARRIVAL_ID = 'job:accuracy-cron:heartbeat:last-arrival';
-export const ACCURACY_HEARTBEAT_EVALUATION_ID = 'job:accuracy-cron:heartbeat:last-evaluation';
-export const ACCURACY_HEARTBEAT_SAVE_FAILURE_ID = 'job:accuracy-cron:heartbeat:last-save-failure';
-
 export type HeartbeatState = 'completed' | 'partial' | 'failed' | 'locked' | 'skipped';
-export type HeartbeatEvent = 'arrival' | 'evaluation' | 'accuracy-evaluation' | 'save-failed';
+export type HeartbeatEvent = 'arrival' | 'evaluation' | 'save-failed';
 
 export type HeartbeatEvaluation = {
   state: HeartbeatState;
@@ -22,15 +18,6 @@ export type HeartbeatEvaluation = {
   stateSaved: boolean;
 };
 
-export type AccuracyHeartbeatEvaluation = {
-  state: HeartbeatState;
-  runsCreated: number;
-  rowsAdvanced: number;
-  rowsFailed: number;
-  durationMs: number;
-  stateSaved: boolean;
-};
-
 export type HeartbeatRecord = {
   event: HeartbeatEvent;
   at: string;
@@ -38,7 +25,6 @@ export type HeartbeatRecord = {
   enabled: boolean;
   runId: string;
   evaluation?: HeartbeatEvaluation;
-  accuracyEvaluation?: AccuracyHeartbeatEvaluation;
   error?: string;
 };
 
@@ -113,46 +99,10 @@ export async function pingSaveFailure(
   });
 }
 
-export function pingAccuracyArrival(
-  db: any,
-  enabled: boolean,
-  runId: string,
-  version = '1.0.0',
-) {
-  return writeKey(db, ACCURACY_HEARTBEAT_ARRIVAL_ID, {
-    event: 'arrival', at: new Date().toISOString(), version, enabled, runId,
-  });
-}
-
-export function pingAccuracyEvaluation(
-  db: any,
-  runId: string,
-  enabled: boolean,
-  accuracyEvaluation: AccuracyHeartbeatEvaluation,
-  version = '1.0.0',
-) {
-  return writeKey(db, ACCURACY_HEARTBEAT_EVALUATION_ID, {
-    event: 'accuracy-evaluation', at: new Date().toISOString(), version, enabled, runId, accuracyEvaluation,
-  });
-}
-
-export async function pingAccuracySaveFailure(
-  db: any,
-  runId: string,
-  enabled: boolean,
-  error: string,
-  version = '1.0.0',
-): Promise<{ ok: boolean; error?: string }> {
-  return writeKey(db, ACCURACY_HEARTBEAT_SAVE_FAILURE_ID, {
-    event: 'save-failed', at: new Date().toISOString(), version, enabled, runId,
-    error: error.slice(0, 500),
-  });
-}
-
 function validRecord(value: unknown): value is HeartbeatRecord {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const r = value as Partial<HeartbeatRecord>;
-  const base = ['arrival', 'evaluation', 'accuracy-evaluation', 'save-failed'].includes(String(r.event))
+  const base = ['arrival', 'evaluation', 'save-failed'].includes(String(r.event))
     && typeof r.at === 'string' && Number.isFinite(Date.parse(r.at))
     && typeof r.version === 'string' && r.version.length > 0
     && typeof r.enabled === 'boolean'
@@ -165,14 +115,7 @@ function validRecord(value: unknown): value is HeartbeatRecord {
         .every(key => Number.isSafeInteger((e as unknown as Record<string, unknown>)[key]) && Number((e as unknown as Record<string, unknown>)[key]) >= 0)
       && typeof e.stateSaved === 'boolean';
   }
-  if (r.event === 'accuracy-evaluation') {
-    const e = r.accuracyEvaluation;
-    return !!e && ['completed', 'partial', 'failed', 'locked', 'skipped'].includes(String(e.state))
-      && ['runsCreated', 'rowsAdvanced', 'rowsFailed', 'durationMs']
-        .every(key => Number.isSafeInteger((e as unknown as Record<string, unknown>)[key]) && Number((e as unknown as Record<string, unknown>)[key]) >= 0)
-      && typeof e.stateSaved === 'boolean';
-  }
-  return r.evaluation === undefined && r.accuracyEvaluation === undefined;
+  return r.evaluation === undefined;
 }
 
 export async function readHeartbeat(db: any, key: string): Promise<HeartbeatRead> {
@@ -197,7 +140,3 @@ export async function readHeartbeat(db: any, key: string): Promise<HeartbeatRead
 export const readArrival = (db: any) => readHeartbeat(db, HEARTBEAT_ARRIVAL_ID);
 export const readEvaluation = (db: any) => readHeartbeat(db, HEARTBEAT_EVALUATION_ID);
 export const readSaveFailure = (db: any) => readHeartbeat(db, HEARTBEAT_SAVE_FAILURE_ID);
-
-export const readAccuracyArrival = (db: any) => readHeartbeat(db, ACCURACY_HEARTBEAT_ARRIVAL_ID);
-export const readAccuracyEvaluation = (db: any) => readHeartbeat(db, ACCURACY_HEARTBEAT_EVALUATION_ID);
-export const readAccuracySaveFailure = (db: any) => readHeartbeat(db, ACCURACY_HEARTBEAT_SAVE_FAILURE_ID);

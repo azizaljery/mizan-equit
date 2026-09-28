@@ -52,7 +52,7 @@ export async function withResolutionTimeout<T>(p: Promise<T>, ms: number): Promi
   } finally { if (timer !== undefined) clearTimeout(timer); }
 }
 
-export async function tryAcquireLock(db: any, id: string, ms: number): Promise<string | null> {
+async function tryAcquireLock(db: any, id: string, ms: number): Promise<string | null> {
   const token = crypto.randomUUID(), now = Date.now();
   // Storage errors are errors, not evidence that another run owns the lock.
   const row = await db.prepare('INSERT INTO research_locks(id,token,until_ms) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET token=excluded.token,until_ms=excluded.until_ms WHERE until_ms<? RETURNING token')
@@ -60,7 +60,7 @@ export async function tryAcquireLock(db: any, id: string, ms: number): Promise<s
   return row?.token === token ? token : null;
 }
 
-export async function releaseLock(db: any, id: string, token: string) {
+async function releaseLock(db: any, id: string, token: string) {
   try { await db.prepare('DELETE FROM research_locks WHERE id=? AND token=?').bind(id, token).run(); }
   catch { /* Lease expires; never delete a successor's lease. */ }
 }
