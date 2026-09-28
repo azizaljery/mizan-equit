@@ -71,7 +71,7 @@ type Costs = { feeBps: number; slippageBps: number };
 type EquityPoint = { date: string; value: number };
 const DAY_MS = 86_400_000;
 
-export function day(value: unknown): string | null {
+function day(value: unknown): string | null {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
   const ms = Date.parse(value + 'T00:00:00Z');
   return Number.isFinite(ms) && new Date(ms).toISOString().slice(0, 10) === value ? value : null;
@@ -91,7 +91,7 @@ function round(value: number, digits = 3): number {
   if (!Number.isFinite(value)) throw new Error('نتيجة حسابية غير صالحة.');
   return Math.round(value * 10 ** digits) / 10 ** digits;
 }
-export function checkedPrices(input: Price[], label: string): Price[] {
+function checkedPrices(input: Price[], label: string): Price[] {
   if (!Array.isArray(input)) throw new Error(`سلسلة ${label} غير صالحة.`);
   const out = [...input];
   for (const p of out) {
@@ -105,15 +105,15 @@ export function checkedPrices(input: Price[], label: string): Price[] {
   }
   return out;
 }
-export function costs(options: BacktestOptions): Costs {
+function costs(options: BacktestOptions): Costs {
   const result = { feeBps: options.feeBps ?? 0, slippageBps: options.slippageBps ?? 0 };
   for (const v of Object.values(result)) {
     if (!numeric(v) || v < 0 || v > 1000) throw new Error('الرسوم والانزلاق: من 0 إلى 1000 نقطة أساس لكل جانب.');
   }
   return result;
 }
-export function entryFactor(c: Costs): number { return (1 + c.feeBps / 10000) * (1 + c.slippageBps / 10000); }
-export function exitFactor(c: Costs): number { return (1 - c.feeBps / 10000) * (1 - c.slippageBps / 10000); }
+function entryFactor(c: Costs): number { return (1 + c.feeBps / 10000) * (1 + c.slippageBps / 10000); }
+function exitFactor(c: Costs): number { return (1 - c.feeBps / 10000) * (1 - c.slippageBps / 10000); }
 
 /** Strict PIT: no period-end fallback; publications dated asOf are also withheld. */
 export function factsKnownAsOf(facts: Fact[], asOf: string): PitResult {

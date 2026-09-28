@@ -135,6 +135,8 @@ export function analyze(f:Financials,p:Price[],m:Meta,c:Checks,ev:Events){
  if(finite(f.peerPE)&&f.peerPE>0&&!m.peerSource.trim())warnings.push('مصدر مقارنة النظراء غير موثق.');
  if(finN<8)warnings.push('عامل مالي واحد على الأقل غير متاح.');
 
+ const shariaValid=m.shariaStatus!=='unknown'&&m.shariaSource.trim()&&validDate(m.shariaDate)&&validDate(as)&&ageDays(as,m.shariaDate)>=0&&ageDays(as,m.shariaDate)<=180;
+ const sharia=shariaValid?(m.shariaStatus==='compliant'?'متوافق بحسب المرجع المدخل':'غير متوافق بحسب المرجع المدخل'):'لم يُحسم — يلزم مرجع حديث';
  const critical=ev.suspended||ev.goingConcern||ev.adverseAudit||finite(f.equity)&&f.equity<=0;
  const missingCritical=scores.valuation===null||finN<8||p.length<200||!!(finite(f.peerPE)&&!m.peerSource.trim())||warnings.some(w=>w.includes('240')||w.includes('40%'));
  function composite(mode:'trader'|'investor'){
@@ -147,7 +149,7 @@ export function analyze(f:Financials,p:Price[],m:Meta,c:Checks,ev:Events){
   return Math.round(Math.min(100,Math.max(0,total)));
  }
  const available=factors.filter(f=>f.score!==null).length;const coverage=Math.round(available/factors.length*100);
- return {factors,scores,technical:t,blockers:[...new Set(blockers)],warnings,coverage,trader:composite('trader'),investor:composite('investor'),critical,pe,fcf,dividendYield:finite(f.dividends)&&finite(f.marketCap)&&f.marketCap>0?f.dividends/f.marketCap*100:null,financialCount:finN,version:'1.0.0'};
+ return {factors,scores,technical:t,blockers:[...new Set(blockers)],warnings,coverage,trader:composite('trader'),investor:composite('investor'),sharia,critical,pe,fcf,dividendYield:finite(f.dividends)&&finite(f.marketCap)&&f.marketCap>0?f.dividends/f.marketCap*100:null,financialCount:finN,version:'1.0.0'};
 }
 export function makeDemo(){
  const m=blankMeta();Object.assign(m,{name:'شركة المثال الصناعية',symbol:'DEMO',financialSource:'قوائم مصطنعة للتجربة',priceSource:'سلسلة يومية مصطنعة للتجربة',peerSource:'نظير افتراضي للتجربة',publishedAt:'2026-08-10',periodEnd:'2026-06-30',period:'ttm',asOf:today()});

@@ -114,7 +114,6 @@ export async function runBacktest(db:any,input:BacktestConfig):Promise<BacktestR
           if (start&&finish) item.netAssetReturn=costReturn(start.close,finish.close,config.costs);
           const benchmark=report.context?.market;
           const b0=benchmark?.prices.find(p=>p.date===item.anchorDate),b1=benchmark?.prices.find(p=>p.date===item.actualDate);
-          // Apply the same commission/slippage model to the benchmark. This is conservative and may slightly understate reported alpha.
           if (b0&&b1) item.netBenchmarkReturn=costReturn(b0.close,b1.close,config.costs);
         }
       }

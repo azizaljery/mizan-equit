@@ -10,7 +10,6 @@ import {BacktestInputError,DEFAULT_COSTS,type CostModel,type BacktestDataset,typ
 export interface ChampionshipOptions extends WalkForwardOptions {initialCapital?:number;allocation?:number;costs?:CostModel;}
 export interface ChampionshipBacktestResult extends BacktestResult {
   championshipMetrics:OOSMetrics;windowsEvaluated:number;skippedIncompleteHorizons:number;
-  missingFinancialSafetyChecks:number;
   equityCurve:{date:string;equity:number;return:number}[];
   method:'mizan-technical-walk-forward-v1';retrained:false;limitations:string[];
 }
@@ -70,7 +69,7 @@ export function runChampionshipBacktest(input:BacktestDataset,baseReport:MarketR
   if(!windows.length)throw new BacktestInputError('لا توجد نافذة مكتملة بعد التطهير والحظر وأفق النتيجة؛ 50 شمعة لا تكفي للإعداد الافتراضي.');
   const candles=dataset.candles,index=new Map(candles.map((c,i)=>[c.date,i]));
   const start=index.get(windows[0].testStart)!,end=index.get(windows.at(-1)!.testEnd)!;
-  const closingEquity=new Map<number,number>();let capital=initialCapital,skippedIncompleteHorizons=0,missingFinancialSafetyChecks=0;
+  const closingEquity=new Map<number,number>();let capital=initialCapital,skippedIncompleteHorizons=0;
   const trades:BacktestTrade[]=[];
   for(const win of windows){
     const last=index.get(win.testEnd)!;
@@ -83,7 +82,6 @@ export function runChampionshipBacktest(input:BacktestDataset,baseReport:MarketR
       const income=latest('netIncome'),operating=latest('operatingCashFlow');
       const net=income?.value,cfo=income?.date===operating?.date?operating?.value:undefined;
       const negativeEquity=latest('equity')?.value;
-      if(income===undefined&&operating===undefined&&negativeEquity===undefined)missingFinancialSafetyChecks++;
       if(!scenario.levels||scenario.reasons.length||!finite(s50)||!finite(s200)||s50<=s200||!finite(rsi)||rsi<50||rsi>70||!finite(t.relativeVolume)||t.relativeVolume<1.5||bar.close<=scenario.levels.resistance||negativeEquity!==undefined&&negativeEquity<=0||finite(net)&&finite(cfo)&&net<0&&cfo<0){closingEquity.set(j,capital);continue;}
       if(j+horizon-1>last){skippedIncompleteHorizons++;closingEquity.set(j,capital);continue;}
       const fill=simulatePlannedTrade(candles,j,horizon,scenario.levels,costs);
@@ -100,5 +98,5 @@ export function runChampionshipBacktest(input:BacktestDataset,baseReport:MarketR
   const equityCurve=candles.slice(start,end+1).map((c,k)=>{const equity=closingEquity.get(start+k)??previous,ret=equity/previous-1;previous=equity;return {date:c.date,equity,return:ret};});
   const championshipMetrics=new PurgedWalkForwardValidator().evaluateChampionship(equityCurve.map(p=>p.return),[],[],1,252);
   const gains=trades.reduce((s,t)=>s+Math.max(0,t.netPnl),0),losses=trades.reduce((s,t)=>s+Math.max(0,-t.netPnl),0);
-  return {method:'mizan-technical-walk-forward-v1',retrained:false,symbol:dataset.symbol,totalTrades:trades.length,winRate:trades.length?trades.filter(t=>t.won).length/trades.length*100:null,profitFactor:losses>0?gains/losses:null,maxDrawdown:championshipMetrics.maxDrawdown===null?null:championshipMetrics.maxDrawdown*100,sharpeRatio:championshipMetrics.annualizedSharpe,initialCapital,finalCapital:capital,trades,championshipMetrics,windowsEvaluated:windows.length,skippedIncompleteHorizons,missingFinancialSafetyChecks,equityCurve,limitations:['محاكاة القاعدة الفنية فقط؛ لا تدريب أو ضبط أوزان ولا إعادة بناء كاملة للتوصية الخاصة.','مصدر الشموع وتعديلاتها مقدمان من المستدعي؛ اجتياز فحص البنية لا يثبت صحتهما تاريخيًا.','هوية الشركة والقطاع من التقرير المدخل؛ لم تختبر عينة خالية من تحيز البقاء.',...(missingFinancialSafetyChecks?[`لم تتوفر حقائق مالية معروفة وقتيًا لفحص حقوق الملكية والربح والتدفق التشغيلي في ${missingFinancialSafetyChecks} نقطة تقييم؛ لم يُفترض أنها سليمة.`]:[]),'لا احتمالات دخول معايرة: Brier وDSR غير متاحين ولا يعلن قبول البطولة.','تنفيذ عند افتتاح داخل المنطقة فقط، مركز واحد، أسهم كسرية، وقف أولًا عند لمس الوقف والهدف في الشمعة نفسها.','السنوية مبنية على عوائد المحفظة لكل جلسة بافتراض 252 جلسة سنويًا؛ الفجوات غير الموثقة في الشموع تحتاج فحص تقويم مستقل.']};
+  return {method:'mizan-technical-walk-forward-v1',retrained:false,symbol:dataset.symbol,totalTrades:trades.length,winRate:trades.length?trades.filter(t=>t.won).length/trades.length*100:null,profitFactor:losses>0?gains/losses:null,maxDrawdown:championshipMetrics.maxDrawdown===null?null:championshipMetrics.maxDrawdown*100,sharpeRatio:championshipMetrics.annualizedSharpe,initialCapital,finalCapital:capital,trades,championshipMetrics,windowsEvaluated:windows.length,skippedIncompleteHorizons,equityCurve,limitations:['محاكاة القاعدة الفنية فقط؛ لا تدريب أو ضبط أوزان ولا إعادة بناء كاملة للتوصية الخاصة.','مصدر الشموع وتعديلاتها مقدمان من المستدعي؛ اجتياز فحص البنية لا يثبت صحتهما تاريخيًا.','هوية الشركة والقطاع من التقرير المدخل؛ لم تختبر عينة خالية من تحيز البقاء.','لا احتمالات دخول معايرة: Brier وDSR غير متاحين ولا يعلن قبول البطولة.','تنفيذ عند افتتاح داخل المنطقة فقط، مركز واحد، أسهم كسرية، وقف أولًا عند لمس الوقف والهدف في الشمعة نفسها.','السنوية مبنية على عوائد المحفظة لكل جلسة بافتراض 252 جلسة سنويًا؛ الفجوات غير الموثقة في الشموع تحتاج فحص تقويم مستقل.']};
 }

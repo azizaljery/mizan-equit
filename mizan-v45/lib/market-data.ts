@@ -7,7 +7,6 @@ import {parseLiveQuote,type LiveQuote} from './live-quote';
 import {parseSECFacts,parseSECFilings} from './sec-data';
 import {discoverSECDocuments,discoverSECEventDocuments,readSECInlineDocument} from './sec-documents';
 import {validateMarketIdentity} from './market-identity';
-import {resolveCikDetailed} from './sources/cik';
 
 export type Company={symbol:string;name:string;nameEn?:string;exchange:string;sector:string;industry:string;isin?:string;marketType?:string;instrument?:string;source:string;directoryDate?:string;listedSymbol?:string;analysisAvailable?:boolean};
 export type Fact={key:string;value:number;date:string;period:'annual'|'quarterly'|'trailing';currency:string;source:string;publishedAt?:string;unit?:'base'|'thousand'|'million';lineage?:string;accession?:string;retrievedAt?:string};
@@ -252,9 +251,9 @@ async function getPeers(company:Company,asOf:string,read:typeof upstream=upstrea
 }
 export function latestFact(facts:Fact[],key:string,period:Fact['period']='annual',date?:string){return facts.filter(f=>f.key===key&&f.period===period&&(date===undefined||f.date===date)).sort((a,b)=>b.date.localeCompare(a.date))[0]}
 export async function getRegulatory(symbol:string,asOf:string,read:typeof upstream=upstream,observations?:SourceObservation[]){
- const resolved=await resolveCikDetailed(symbol,read);
- if(!resolved.ok)throw Error(resolved.reason);
- const {cik}=resolved;
+ const map=await read('https://www.sec.gov/files/company_tickers.json',true,86400000);
+ const row=(Object.values(map) as any[]).find(r=>String(r.ticker).replace(/\./g,'-')===symbol);
+ if(!row)return null;const cik=String(row.cik_str).padStart(10,'0');if(!/^\d{10}$/.test(cik))return null;
  const results=await Promise.allSettled([read(`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`,true,3600000),read(`https://data.sec.gov/submissions/CIK${cik}.json`,true,300000)]);
  if(observations){
   for(const [i,type] of ['financials','filings'].entries()){
@@ -328,12 +327,12 @@ export async function fetchCompany(symbol:string,read:typeof upstream & {sourceA
  const regulatory=isHistorical&&rawRegulatory?{...rawRegulatory,facts:factsPublishedBefore(rawRegulatory.facts,asOf),news:rawRegulatory.news.filter(n=>validHistoricalDate(n.date)&&n.date<asOf)}:rawRegulatory;
  if(regulatory?.documents)checks.push(...regulatory.documents);
  if(regulatory){for(const f of regulatory.facts)if(!facts.some(v=>v.key===f.key&&v.period===f.period&&v.date===f.date&&v.currency===f.currency&&v.source===f.source&&v.value===f.value&&v.publishedAt===f.publishedAt))facts.push(f);checks.push({name:'إفصاحات SEC',url:regulatory.source,state:regulatory.facts.length?'ok':'partial',detail:'بنود XBRL مؤرخة بتاريخ النشر؛ فترات 3 أشهر وسنوات كاملة فقط، دون تحويل التدفق التراكمي إلى ربع.'})}
- else if(!isSaudi){const reason=results[5].status==='rejected'&&results[5].reason instanceof Error?results[5].reason.message:'';checks.push({name:'إفصاحات SEC',url:'https://www.sec.gov/search-filings',state:'missing',detail:/[\u0600-\u06ff]/.test(reason)?reason.slice(0,300):'تعذر الوصول إلى المصدر الرسمي أو لا يوجد ملف مطابق.'});}
+ else if(!isSaudi)checks.push({name:'إفصاحات SEC',url:'https://www.sec.gov/search-filings',state:'missing',detail:'تعذر الوصول إلى المصدر الرسمي أو لا يوجد ملف مطابق.'});
  const n=results[4].status==='fulfilled'?results[4].value.news||[]:[];
  const relevantNews=n.filter((x:any)=>Array.isArray(x.relatedTickers)&&x.relatedTickers.some((ticker:unknown)=>typeof ticker==='string'&&ticker.toUpperCase()===symbol.toUpperCase()));
  const news:News[]=[...(regulatory?.news||[]),...(official?.news||[]),...relevantNews.filter((x:any)=>x.link?.startsWith('https://')&&finite(x.providerPublishTime)&&new Date(x.providerPublishTime*1000).toISOString().slice(0,10)<=publishedThrough).map((x:any)=>({title:String(x.title).slice(0,700),url:x.link,date:new Date(x.providerPublishTime*1000).toISOString().slice(0,10),kind:'news' as const}))].slice(0,12);
  checks.push({name:'الأخبار والإعلانات',url:chartSource,state:news.length?'ok':'missing',detail:news.length?`وصلت ${news.length} أخبار أو إفصاحات؛ تاريخ كل خبر ظاهر. استُبعدت الأخبار العامة التي لم يؤكد المزود ارتباطها بالرمز. لا يُستنتج أثره من العنوان وحده.`:'تعذر جلب هذا الجزء من المصدر المحدد؛ لم تصل أخبار قابلة للتحقق.'});
- checks.push({name:'الأحداث القادمة',url:official?.source||chartSource,state:'partial',detail:'تُعرض تواريخ الاستحقاق المنشورة إن وجدت. لم يكتمل التحقق من تقويم النتائج والجمعيات؛ غياب التاريخ لا يعني غياب حدث.'});
+ checks.push({name:'الأحداث القادمة',url:official?.source||chartSource,state:'partial',detail:'تُعرض تواريخ الاستحقاق المنشورة إن وجدت. لم يكتمل التحقق من تقويم النتائج والجمعيات؛ غياب التاريخ لا يعني غياب حدث.'},{name:'الفحص الشرعي والتطهير',url:'https://www.spglobal.com/spdji/en/index-family/equity/shariah/',state:'missing',detail:'لم يُربط مصدر تصنيف شرعي مؤرخ للشركة. التصنيف والتطهير غير متحققين؛ لا نعتبر المجهول مباحًا أو التطهير صفرًا.'});
  const [peers,context]=await Promise.all([getPeers(company,asOf,read,isHistorical),getContext(company,asOf,read,isHistorical)]);
  checks.push({name:'السوق والقطاع',url:context.market?.source||chartSource,state:context.market&&context.sector?'ok':'partial',detail:`مرجع السوق ${context.market?.symbol||'غير متاح'}؛ مرجع القطاع ${context.sector?.symbol||'غير متاح'}.`});
  if(isHistorical){

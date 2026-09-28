@@ -1,6 +1,5 @@
 import {type Price,type Meta,type Financials,type Checks,type Events,analyze,finite,fmt} from './analysis';
 import {type Requirements,type YearRow,requirementAnalysis} from './readiness';
-/** Legacy helper: no production route imports this module; app/manual owns its current scoring UI. */
 export function recommendation(score:number|null,mode:'trader'|'investor',base:ReturnType<typeof analyze>,extra:ReturnType<typeof requirementAnalysis>,req:Requirements){
  const strength=base.factors.filter(f=>f.score!==null&&f.score<=35).sort((a,b)=>a.score!-b.score!).map(f=>`${f.name}: ${f.display}. ${f.reason}`);
  const weakness=base.factors.filter(f=>f.score!==null&&f.score>=60).sort((a,b)=>b.score!-a.score!).map(f=>`${f.name}: ${f.display}. ${f.reason}`);
@@ -8,10 +7,10 @@ export function recommendation(score:number|null,mode:'trader'|'investor',base:R
  const priceInvalidated=(req.exitType==='price'||req.exitType==='both')&&finite(req.exitPrice)&&finite(close)&&close<=req.exitPrice;
  const eventInvalidated=req.invalidated&&!!req.invalidationEvidence.trim();
  let action='لا توصية — التحليل غير مكتمل',reason='تُستكمل البيانات والفحص الشرعي والخطة قبل توليد توصية.',kind='incomplete';
- if(eventInvalidated||priceInvalidated||base.critical){action='بيع / تخفيف مشروط';reason=eventInvalidated?'سجّل المستخدم تحقق شرط إبطال الفرضية مع دليله.':priceInvalidated?'الإغلاق المدخل بلغ أو كسر مستوى إبطال الفرضية الذي سجّلته.':'ظهر خطر جوهري مثبت ضمن البيانات؛ راجع حيازتك وفرضية الاستمرار.';kind='exit'}
- else if(score!==null){
+ if(score!==null){
   const problems=extra.items.filter(x=>(x.group==='shared'||x.group===mode)&&x.state!=='pass');
-  if(score<40&&!problems.length&&(!base.warnings.length)){action='شراء مشروط';reason='اجتازت البيانات والخطة الشروط المعلنة مع خطر منخفض نسبيًا. تظل التوصية مرتبطة بالمستويات والفرضية المسجلتين، وتُراجع عند تغير البيانات.';kind='entry'}
+  if(eventInvalidated||priceInvalidated||base.critical){action='بيع / تخفيف مشروط';reason=eventInvalidated?'سجّل المستخدم تحقق شرط إبطال الفرضية مع دليله.':priceInvalidated?'الإغلاق المدخل بلغ أو كسر مستوى إبطال الفرضية الذي سجّلته.':'ظهر خطر جوهري مثبت ضمن البيانات؛ راجع حيازتك وفرضية الاستمرار.';kind='exit'}
+  else if(score<40&&!problems.length&&(!base.warnings.length)){action='شراء مشروط';reason='اجتازت البيانات والخطة الشروط المعلنة مع خطر منخفض نسبيًا. تظل التوصية مرتبطة بالمستويات والفرضية المسجلتين، وتُراجع عند تغير البيانات.';kind='entry'}
   else{action='انتظار / مراقبة';reason=problems.length?`لم تستوفَ ${problems.length} من شروط الاختيار رغم اكتمال إدخالها؛ راجع نقاط الضعف.`:score>=60?'الخطر مرتفع وفق قواعد النموذج.':'القراءات لا تحقق شروط توصية الشراء المشروط.';kind='wait'}
  }
  return {action,reason,kind,strength,weakness,priceInvalidated,eventInvalidated};

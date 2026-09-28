@@ -2,23 +2,11 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 import { scheduledResolution } from './scheduled';
-import { scheduledAccuracySample } from './accuracy-scheduled';
-import { scheduledMarketWatch } from './watchlist-scheduled';
-import { scheduledMarketCollection, scheduledForecastSeed } from './market-collector';
-import { scheduledCouncil } from './council-scheduled';
-import { scheduledScreenerFollowup } from './screener-followup';
 
 interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
   MIZAN_BACKGROUND_CRON_ENABLED?: string;
-  OPENAI_API_KEY?: string;
-  ANTHROPIC_API_KEY?: string;
-  DEEPSEEK_API_KEY?: string;
-  MIZAN_INTERNAL_AUTOMATION_TOKEN?: string;
-  MIZAN_OPENAI_MODEL?: string;
-  MIZAN_ANTHROPIC_MODEL?: string;
-  MIZAN_DEEPSEEK_MODEL?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -33,18 +21,19 @@ interface ExecutionContext {
   passThroughOnException(): void;
 }
 
+// Image security config. SVG sources with .svg extension auto-skip the
+// optimization endpoint on the client side (served directly, no proxy).
+// To route SVGs through the optimizer (with security headers), set
+// dangerouslyAllowSVG: true in next.config.js and uncomment below:
+// const imageConfig: ImageConfig = { dangerouslyAllowSVG: true };
+
 const worker = {
   async scheduled(controller: {cron: string; scheduledTime: number}, env: Env, ctx: ExecutionContext) {
     ctx.waitUntil(scheduledResolution(controller, env));
-    ctx.waitUntil(scheduledAccuracySample(controller, env));
-    ctx.waitUntil(scheduledMarketWatch(controller, env));
-    ctx.waitUntil(scheduledMarketCollection(controller, env));
-    ctx.waitUntil(scheduledForecastSeed(controller, env));
-    ctx.waitUntil(scheduledCouncil(controller, env));
-    ctx.waitUntil(scheduledScreenerFollowup(controller, env));
   },
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
       return handleImageOptimization(request, {
@@ -55,7 +44,10 @@ const worker = {
         },
       }, allowedWidths);
     }
+
     const response = await handler.fetch(request, env, ctx);
+    // HTML/RSC must not outlive the hashed assets of its deployment.
+    // Also prevents personalized responses being reused by a shared cache.
     if (/text\/html|text\/x-component/.test(response.headers.get('content-type') || '')) {
       const headers = new Headers(response.headers);
       headers.set('Cache-Control', 'no-store');

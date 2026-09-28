@@ -1,4 +1,3 @@
-/** Diagnostic fallback executor. Production requests remain governed by configuredReader and market-data.ts. */
 import { resolveSource } from './resolver';
 import { readExternalSource } from '../source-probe';
 import { USER_AGENT } from '../market-data';
