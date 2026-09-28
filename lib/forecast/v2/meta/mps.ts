@@ -1,5 +1,4 @@
 import type { ModelOutput, Regime, MPSWeights } from '../types';
-import { applyMpsCalibration, type CalibrationCurve } from './mps-calibration';
 
 const FALLBACK_WEIGHTS: MPSWeights = {
   agreement: 0.32,
@@ -9,12 +8,6 @@ const FALLBACK_WEIGHTS: MPSWeights = {
   peerConfirmation: 0.13,
 };
 
-/**
- * تُستخدم فقط حين لا تتوفر معايرة PAVA كافية (mps-calibration.ts) —
- * افتراض بارامتري مؤقت، لا مصدر الحقيقة. أي مستدعٍ يملك سجل نتائج
- * تاريخي كافٍ (≥ DEFAULT_MIN_SAMPLE) يجب أن يمرر mpsCalibration إلى
- * computeMPS بدل الاعتماد على هذين الثابتين.
- */
 const SIGMOID_SHARPNESS = 8.5;
 const SIGMOID_MIDPOINT = 0.55;
 
@@ -113,10 +106,6 @@ export type MPSInput = {
 
 export type MPSResult = {
   mps: number;
-  /** المجموع الخطي الموزون قبل أي تحويل — هذا ما يُعايَر فعلياً، لا mps نفسه. */
-  raw: number;
-  /** isotonic = معايَر تجريبياً من نتائج فعلية؛ sigmoid = افتراض بارامتري احتياطي. */
-  calibrationSource: 'isotonic' | 'sigmoid';
   components: {
     agreement: number;
     confidence: number;
@@ -128,22 +117,9 @@ export type MPSResult = {
   dominantCount: number;
 };
 
-export type MpsCalibrationOption = {
-  curve: CalibrationCurve;
-  minSample?: number;
-};
-
-/**
- * mpsCalibration اختياري: منحنى PAVA مبني من fitMpsCalibration على سجل
- * نتائج تاريخي (mps-calibration.ts). عند توفره وكفاية عيّنته، هو مصدر
- * الحقيقة لـ mps — لا sigmoid. غيابه، أو عيّنة أصغر من الحد الأدنى،
- * يُسقِط صراحةً إلى sigmoid كافتراض آمن مؤقت (calibrationSource يوثّق
- * أيّهما استُخدم فعلياً — لا غموض بعد الحساب).
- */
 export function computeMPS(
   input: MPSInput,
   weights: MPSWeights = FALLBACK_WEIGHTS,
-  mpsCalibration?: MpsCalibrationOption,
 ): MPSResult {
   const agr = computeAgreement(input.outputs);
   const conf = computeConfidence(input.outputs, input.weights);
@@ -156,19 +132,9 @@ export function computeMPS(
     weights.regimeFit * regime +
     weights.timeConsistency * time +
     weights.peerConfirmation * peer;
-
-  const calibrated = mpsCalibration
-    ? applyMpsCalibration(mpsCalibration.curve, raw, mpsCalibration.minSample)
-    : null;
-
-  const mps =
-    calibrated ?? 1 / (1 + Math.exp(-SIGMOID_SHARPNESS * (raw - SIGMOID_MIDPOINT)));
-  const calibrationSource: 'isotonic' | 'sigmoid' = calibrated !== null ? 'isotonic' : 'sigmoid';
-
+  const mps = 1 / (1 + Math.exp(-SIGMOID_SHARPNESS * (raw - SIGMOID_MIDPOINT)));
   return {
     mps,
-    raw,
-    calibrationSource,
     components: {
       agreement: agr.score,
       confidence: conf,
@@ -184,7 +150,7 @@ export function computeMPS(
 export function describeMPS(r: MPSResult): string {
   const c = r.components;
   return [
-    `MPS=${r.mps.toFixed(4)} (${r.calibrationSource}, raw=${r.raw.toFixed(4)})`,
+    `MPS=${r.mps.toFixed(4)}`,
     `A=${c.agreement.toFixed(3)}`,
     `C=${c.confidence.toFixed(3)}`,
     `R=${c.regimeFit.toFixed(3)}`,

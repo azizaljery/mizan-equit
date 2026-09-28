@@ -9,15 +9,7 @@ import {
   type KalmanParams,
   DEFAULT_KALMAN_PARAMS,
 } from './meta/kalman-weights';
-import { computeMPS, loadMPSWeights, type MPSResult, type MpsCalibrationOption } from './meta/mps';
-import {
-  computePredictionInterval,
-  type ConformalCurve,
-} from './meta/conformal-interval';
-import {
-  applyCalibrationToOutputs,
-  type CalibrationBundle,
-} from './meta/isotonic-runtime';
+import { computeMPS, loadMPSWeights, type MPSResult } from './meta/mps';
 import type {
   Direction,
   EnsembleOutput,
@@ -66,26 +58,6 @@ export type RunEnsembleOptions = {
   config?: EnsembleConfig;
   otherHorizons?: Array<{ horizon: number; direction: Direction }>;
   peerDirections?: Direction[];
-  /** منحنى conformal مبني مسبقاً (fitConformalCurve) لملء EnsembleOutput.range. اختياري. */
-  conformalCurve?: ConformalCurve;
-  /** 1 - مستوى التغطية المستهدف لفاصل conformal. افتراضي 0.1 أي فاصل 90%. */
-  conformalAlpha?: number;
-  /**
-   * حزمة معايرة Isotonic (خريطة modelId → CalibrationCurve). إن مُرِّرت،
-   * تُطبَّق على ثقة كل ModelOutput قبل الدمج، فيكون MPS مبنياً على ثقات
-   * قابلة للمقارنة عرضياً بين النماذج (لا مقاييس داخلية مختلفة). غيابها
-   * = passthrough — سلوك المستودع قبل هذا التغيير محفوظ.
-   */
-  calibration?: CalibrationBundle;
-  /**
-   * منحنى PAVA على raw score للمجموعة (mps-calibration.ts::fitMpsCalibration).
-   * يستبدل sigmoid البارامتري في computeMPS بمعايرة تجريبية فعلية. مستوى
-   * مختلف عن `calibration` أعلاه (ذاك لكل نموذج منفرد، هذا للمجموع الموزون).
-   * غيابه أو عيّنته الأصغر من الحد الأدنى ⇒ سقوط صريح لـ sigmoid (موثَّق
-   * في EnsembleOutput عبر mps ولا يُكشَف حالياً — راجع MPSResult.calibrationSource
-   * لو استُهلك computeMPS مباشرة خارج runEnsemble).
-   */
-  mpsCalibration?: MpsCalibrationOption;
 };
 
 export function runEnsemble(
@@ -101,17 +73,11 @@ export function runEnsemble(
   const posterior: [number, number, number, number] =
     regimeResult?.posterior ?? [0.25, 0.25, 0.25, 0.25];
 
-  const rawOutputs = runAllModels(
+  const outputs = runAllModels(
     input,
     { names: features.names, values: allValues },
     config.coefficients,
   );
-
-  // معايرة Isotonic (اختيارية): تحوّل ثقة كل نموذج من مقياس داخلي إلى
-  // احتمال دقة تجريبي، فيصبح weighted average المتوسط للثقة في MPS
-  // قابلاً للمقارنة عرضياً. بدونها، مقارنة confidence بين نموذجين تخلط
-  // لغتين مختلفتين — راجع تعليق meta/isotonic-runtime.ts.
-  const outputs = applyCalibrationToOutputs(rawOutputs, options.calibration);
 
   // عدد النماذج المتاحة فعلياً — نفس الفحص الذي يعتمده availableModels() في models.ts.
   // الاعتماد على raw.untrained/raw.invalid وحدهما كان يفوّت 'threw' و'lengthMismatch'
@@ -162,20 +128,9 @@ export function runEnsemble(
       peers: (options.peerDirections ?? []).map((d) => ({ direction: d })),
     },
     mpsWeights,
-    options.mpsCalibration,
   );
 
   const adjustedMps = mpsResult.mps * trainingRatio;
-
-  const interval = options.conformalCurve
-    ? computePredictionInterval(
-        expectedReturn,
-        confidence,
-        regime,
-        options.conformalCurve,
-        options.conformalAlpha ?? 0.1,
-      )
-    : null;
 
   return {
     direction:
@@ -188,9 +143,6 @@ export function runEnsemble(
     regimeProb: posterior,
     modelOutputs: outputs,
     mps: adjustedMps,
-    ...(interval
-      ? { range: { low: interval.low, high: interval.high, coverage: interval.coverage } }
-      : {}),
   };
 }
 

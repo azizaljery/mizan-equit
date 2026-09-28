@@ -1,4 +1,0 @@
-export function csvText(rows:Record<string,unknown>[]){const keys=[...new Set(rows.flatMap(r=>Object.keys(r)))];const cell=(v:unknown)=>{let s=v===null||v===undefined?'':typeof v==='object'?JSON.stringify(v):String(v);if(/^[\t\r\n ]*[=+@-]/.test(s)&&typeof v!=='number')s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};return '\uFEFF'+[keys.map(cell).join(','),...rows.map(r=>keys.map(k=>cell(r[k])).join(','))].join('\r\n');}
-export function downloadCsv(name:string,rows:Record<string,unknown>[]){const blob=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-
-export function csvLine(values:unknown[]){return values.map(v=>{let s=v==null?'':typeof v==='object'?JSON.stringify(v):String(v);if(/^[\t\r\n ]*[=+@-]/.test(s)&&typeof v!=='number')s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}).join(',')+'\r\n';}

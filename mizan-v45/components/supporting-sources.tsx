@@ -1,5 +1,0 @@
-'use client';
-import {useMizanSettings} from './settings-context';
-import {SourceLink} from './source-link';
-import {useSectionTitle} from './managed-sections';
-export function SupportingSources(){const settings=useMizanSettings(),title=useSectionTitle('المراجع الإضافية وأولوية المصادر');return <details className="auto-details"><summary>{title}</summary><div className="detail-body"><p>المصدر الرسمي أولًا. تُراجع هوية الشركة والسوق والعملة ووقت البيانات، وتُبيّن الاختلافات. السعر المتأخر حتى 15 دقيقة مقبول مع إظهار تأخره، ولا يُستخدم سعر عقد فروقات بدل سعر السهم.</p>{settings.sourceConfig.filter(s=>s.enabled&&!s.deleted).sort((a,b)=>(a.authority==='official'?0:1)-(b.authority==='official'?0:1)||a.priority-b.priority).map(s=><article key={s.id}><SourceLink href={s.url.includes('{symbol}')?null:s.url}>{s.name}</SourceLink><p>{s.authority==='official'?'رسمي':'ثانوي'} · الأولوية {s.priority} · {s.adapter==='reference'?'مرجع للمراجعة؛ لا يستورد الأسعار آليًا':s.adapter==='builtin'?'اتصال قائم؛ حالة كل طلب تظهر داخل التحليل':'اتصال أسعار يومية مهيأ؛ يُفحص تطابق البيانات عند الطلب'}</p></article>)}</div></details>}
