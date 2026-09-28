@@ -4,8 +4,6 @@ import {buildBridgeInputs,predictCorrection,assessEligibility,assessRisk,selectE
 import {predictProbability} from './probability.mjs';
 import {applyInterval} from './interval.mjs';
 import {calendarHazard} from './calendar-regime.mjs';
-// Full 5/21-session research replay; separate from the existing remaining-16-session bridge.
-export {runAzizHybridReplay,HYBRID_VERSION} from './hybrid-replay.mjs';
 
 const time=x=>{const t=Date.parse(x);if(typeof x!=='string'||!/(?:Z|[+-]\d\d:\d\d)$/.test(x)||!Number.isFinite(t))throw Error('timestamp with timezone required');return t;};
 const scoped=(item,input,versionField='version')=>item?.market===input.market&&item?.horizon===21&&!!item?.[versionField];
