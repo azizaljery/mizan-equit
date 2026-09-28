@@ -1,0 +1,75 @@
+{
+  "project": "MIZAN_FINANCIAL",
+  "recordedDateLocal": "2026-09-29",
+  "timezone": "Asia/Riyadh",
+  "verification": "EXACT_SAVED_ARCHIVE_DIGEST_MATCH",
+  "humanReview": "PENDING",
+  "reviewers": [
+    "artifact_identity",
+    "source_comparison",
+    "evidence_review",
+    "root independent digest reproduction"
+  ],
+  "sourceComparison": {
+    "githubCommit": "dd2845528f73aee9204b86adcd04ec7bdd803e0e",
+    "siteCommit": "65b623639588f40eb73c5d76616308737ab33f33",
+    "githubFiles": 697,
+    "siteFiles": 698,
+    "identical": 696,
+    "explainedDifferences": [
+      "lib/deployment-identity.json",
+      "public/mizan-deployment.json"
+    ],
+    "buildCommit": "61ba1d1d325158e5b2b151bc79d273c0026f0372",
+    "buildIsDirectParent": true,
+    "onlyGeneratedIdentityChanges": true
+  },
+  "archive": {
+    "input": "equity-settings-fix.tar.gz",
+    "inputSha256": "9eae6a75ecf1f83f0b20402b39316f6f75141a9c9cdbd44a983c7df03ae7a2cf",
+    "transformation": "PAX tar; regular files sorted by full path; fresh TarInfo defaults (mode0644,mtime0,uid0,gid0,empty owner names); preserve file bytes and paths; omit directory entries",
+    "sha256": "f3ec527cc3651d039a938c9c43b17f9c33a4d6ad305badd18a33867535832cc4",
+    "bytes": 14376960,
+    "regularFiles": 329,
+    "contentMapPreserved": true,
+    "exactMatchToNativeMetadata": true,
+    "implementationClaim": "This is a reproduced digest match, not documentation of the service's internal algorithm."
+  },
+  "savedVersion": {
+    "id": "appgprj_6a9bd7353ed4819193fcd5363ed1d38f~appgver_92ee4c220a748191801077c74c5adad1",
+    "project_id": "appgprj_6a9bd7353ed4819193fcd5363ed1d38f",
+    "version_number": 51,
+    "source": {
+      "commit_sha": "65b623639588f40eb73c5d76616308737ab33f33"
+    },
+    "archive_storage": {
+      "archive_format": "tar",
+      "sediment_file_id": "file_00000000f20482089856f69941b91224",
+      "content_hash": "sha256:f3ec527cc3651d039a938c9c43b17f9c33a4d6ad305badd18a33867535832cc4",
+      "size_bytes": 14376960,
+      "file_count": 329
+    },
+    "deployment_id": "appgdep_6abac9f3b5b48191a3fb1defaa6b252d"
+  },
+  "deployment": {
+    "id": "appgdep_6abac9f3b5b48191a3fb1defaa6b252d",
+    "project_id": "appgprj_6a9bd7353ed4819193fcd5363ed1d38f",
+    "title": "ميزان | الأسهم",
+    "version_id": "appgprj_6a9bd7353ed4819193fcd5363ed1d38f~appgver_92ee4c220a748191801077c74c5adad1",
+    "type": "publish",
+    "status": "succeeded",
+    "url": "https://mizan-equity.aljeryabod.chatgpt.site",
+    "has_mcp": false,
+    "provider_deployment_id": "site---6a9bd7353ed4819193fcd5363ed1d38f",
+    "failure_message": null,
+    "env_set_revision": 5,
+    "updated_at": "2026-09-28T20:12:50.138053+00:00"
+  },
+  "result": "Archive-access blocker resolved by exact digest reproduction. Requirement remains IN_PROGRESS pending runtime verification and human review.",
+  "limitations": [
+    "No claim that raw gzip bytes match stored tar bytes",
+    "Permissions and timestamps are normalized; equivalence proved for regular-file paths and contents",
+    "Live runtime identity has not been independently checked in this verification",
+    "No production deployment, database, engineering code or application source changed"
+  ]
+}

@@ -9,8 +9,8 @@
     "requirementsTotal": 8,
     "requirementsPassed": 0,
     "requirementsFailed": 0,
-    "requirementsBlocked": 1,
-    "requirementsInProgress": 7
+    "requirementsBlocked": 0,
+    "requirementsInProgress": 8
   },
   "closureReadiness": null,
   "monitoringOnly": true,
@@ -19,11 +19,13 @@
   "requirements": [
     {
       "id": "FIN-P1-REQ-SOURCE-DEPLOYMENT-PARITY",
-      "status": "BLOCKED",
+      "status": "IN_PROGRESS",
       "humanReview": "PENDING",
       "evidence": [
-        "evidence/FIN-P1-SOURCE-DEPLOYMENT-PARITY.json"
-      ]
+        "evidence/FIN-P1-SOURCE-DEPLOYMENT-PARITY.json",
+        "evidence/FIN-P1-INDEPENDENT-ARCHIVE-VERIFICATION.json"
+      ],
+      "verificationStatus": "SAVED_ARCHIVE_DIGEST_VERIFIED_RUNTIME_PENDING"
     },
     {
       "id": "FIN-P1-REQ-ROLLBACK-RUNBOOK",
@@ -106,7 +108,6 @@
     "legacy-tests.tap": "a31ca2c0bff0e4ee002e5e687328cf2d50c1b6179df9651932f4523b8a85031e"
   },
   "remainingGaps": [
-    "Saved archive access unavailable through download tool; remote content_hash semantics unresolved",
     "Runtime deployment identity not independently verified",
     "No accepted known-good rollback target or application rollback rehearsal",
     "No isolated production-backup restore",
@@ -119,5 +120,6 @@
     "Mizan Score",
     "Response Dynamics",
     "Research integrations"
-  ]
+  ],
+  "lastVerificationLocalDate": "2026-09-29"
 }
