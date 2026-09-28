@@ -1,0 +1,123 @@
+{
+  "project": "MIZAN_FINANCIAL",
+  "wave": "STABILITY",
+  "phase": "PHASE-1",
+  "status": "IN_PROGRESS",
+  "recordedDate": "2026-09-28",
+  "sourceCommit": "65b623639588f40eb73c5d76616308737ab33f33",
+  "phaseProgress": {
+    "requirementsTotal": 8,
+    "requirementsPassed": 0,
+    "requirementsFailed": 0,
+    "requirementsBlocked": 1,
+    "requirementsInProgress": 7
+  },
+  "closureReadiness": null,
+  "monitoringOnly": true,
+  "closureRule": "Evidence → Human Review → Closure; no percentage can close the phase",
+  "countingPolicy": "Eight explicit closure requirements: six existing requirements plus separate database rollback safety and human review. Local test PASS does not mean requirement PASS.",
+  "requirements": [
+    {
+      "id": "FIN-P1-REQ-SOURCE-DEPLOYMENT-PARITY",
+      "status": "BLOCKED",
+      "humanReview": "PENDING",
+      "evidence": [
+        "evidence/FIN-P1-SOURCE-DEPLOYMENT-PARITY.json"
+      ]
+    },
+    {
+      "id": "FIN-P1-REQ-ROLLBACK-RUNBOOK",
+      "status": "IN_PROGRESS",
+      "humanReview": "PENDING",
+      "evidence": [
+        "PHASE-1-ROLLBACK-RUNBOOK.md",
+        "evidence/legacy-migrations.json"
+      ]
+    },
+    {
+      "id": "FIN-P1-REQ-DATABASE-ROLLBACK-SAFETY",
+      "status": "IN_PROGRESS",
+      "humanReview": "PENDING",
+      "evidence": [
+        "PHASE-1-ROLLBACK-RUNBOOK.md",
+        "evidence/legacy-migrations.json"
+      ]
+    },
+    {
+      "id": "FIN-P1-REQ-LEGACY-SETTINGS",
+      "status": "IN_PROGRESS",
+      "humanReview": "PENDING",
+      "evidence": [
+        "evidence/legacy-tests.tap",
+        "evidence/legacy-migrations.json"
+      ]
+    },
+    {
+      "id": "FIN-P1-REQ-LEGACY-PORTFOLIOS",
+      "status": "IN_PROGRESS",
+      "humanReview": "PENDING",
+      "evidence": [
+        "evidence/legacy-tests.tap",
+        "evidence/legacy-migrations.json"
+      ]
+    },
+    {
+      "id": "FIN-P1-REQ-LEGACY-TRADES",
+      "status": "IN_PROGRESS",
+      "humanReview": "PENDING",
+      "evidence": [
+        "evidence/legacy-tests.tap",
+        "evidence/legacy-migrations.json"
+      ]
+    },
+    {
+      "id": "FIN-P1-REQ-LEGACY-FORECASTS",
+      "status": "IN_PROGRESS",
+      "humanReview": "PENDING",
+      "evidence": [
+        "evidence/legacy-tests.tap",
+        "evidence/legacy-migrations.json"
+      ]
+    },
+    {
+      "id": "FIN-P1-REQ-HUMAN-REVIEW",
+      "status": "IN_PROGRESS",
+      "humanReview": "PENDING",
+      "evidence": []
+    }
+  ],
+  "localVerification": {
+    "tests": 7,
+    "passed": 7,
+    "failed": 0,
+    "skipped": 0,
+    "scope": "Focused local synthetic fixtures, not the full suite or production",
+    "node": "v24.19.0",
+    "sourceClean": true,
+    "testSourceSha256": "c3b11d1824a268ad414122a44aa739c5a0eae31f0dd4d55e9949f9dfa4d99c71",
+    "migrationResult": "PASS_LOCAL_ONLY",
+    "appliedMigrations": 4,
+    "preservedTables": 6,
+    "productionDataAccess": false
+  },
+  "evidenceSha256": {
+    "verify-legacy-migrations.py": "c837a1e13c83921296794491b1a567a74ab807cc6d4a64630075aadb4fa8849d",
+    "legacy-migrations.json": "73381d929160af68f15a867edf430b9a749a8dd1eefb055570ec029f20db70be",
+    "legacy-tests.tap": "a31ca2c0bff0e4ee002e5e687328cf2d50c1b6179df9651932f4523b8a85031e"
+  },
+  "remainingGaps": [
+    "Saved archive access unavailable through download tool; remote content_hash semantics unresolved",
+    "Runtime deployment identity not independently verified",
+    "No accepted known-good rollback target or application rollback rehearsal",
+    "No isolated production-backup restore",
+    "Legacy production samples and owner-session acceptance not completed",
+    "Human review pending"
+  ],
+  "freeze": [
+    "New models",
+    "AZIZ changes",
+    "Mizan Score",
+    "Response Dynamics",
+    "Research integrations"
+  ]
+}
