@@ -39,6 +39,8 @@ export * from '../lib/ask-intent';
 export * from '../lib/research-model';
 export * from '../lib/conformal-calibration';
 export * from '../lib/forecast-conditions';
+export * from '../lib/forecast-conformal';
+export {calibrateForecastRange} from '../lib/forecast-conformal';
 export * from '../lib/sec-data';
 export * from '../lib/ask-search';
 export * from '../lib/forecast-journal';
