@@ -1,0 +1,378 @@
+{
+  "result": "PASS_LOCAL_SYNTHETIC_ONLY",
+  "sourceCommit": "65b623639588f40eb73c5d76616308737ab33f33",
+  "sqliteVersion": "3.53.1",
+  "method": "SQLite online backup API to local file, then restore to separate local file and reopen",
+  "migrationCount": 16,
+  "before": {
+    "schemaSha256": "bd2ed7a6075b65cf27180c60321c0d6a301735db34d8cdee0c91dbcd0f08e451",
+    "objects": {
+      "table": 42,
+      "index": 32,
+      "trigger": 12,
+      "view": 0
+    },
+    "tables": {
+      "accuracy_rows": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "accuracy_runs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "admin_access": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "admin_audit": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "analysis_snapshots": {
+        "rows": 1,
+        "sha256": "43d962aba10c7e1e00f2f03ce2f5c8c3d5e40e51f9cc2833fd2134ff2f5d0df7"
+      },
+      "aziz_corporate_events": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "aziz_import_runs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "aziz_market_bars": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "aziz_market_datasets": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "aziz_monitor_records": {
+        "rows": 2,
+        "sha256": "9715c7ac8ac30ca451f43f94bbb1f3be3dac5cb7ea5e608cab36ad682ee7af6d"
+      },
+      "aziz_symbols": {
+        "rows": 12,
+        "sha256": "0231c0c878eb03fa3e94d26ab65c2b834d85131f0884f6668e4c1d607d8b8c0c"
+      },
+      "backtest_results": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "backtest_runs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "council_runs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "customer_market_watch": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "evaluation_revisions": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "forecast_outcomes": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "forecast_records": {
+        "rows": 1,
+        "sha256": "477b06a337c42a72b0d6542689116fa3c6499abe7846cba5b6975bddcd48c613"
+      },
+      "forecast_tests": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "gold_budgets": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "gold_locks": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "gold_state": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "market_observations": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "paper_cash_entries": {
+        "rows": 1,
+        "sha256": "f1bdbccd60419ec75740d3b87cd12d8071b31cf20d91c9fd20cad368bbbd2607"
+      },
+      "paper_portfolio_sessions": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "paper_portfolios": {
+        "rows": 1,
+        "sha256": "36c129bd65bfb686b667ef6cb94574efa90de12fe52c39d5a957df80b8850dee"
+      },
+      "paper_trades": {
+        "rows": 1,
+        "sha256": "05863b5e38102223d63a7c1f366d2470a076559372f6f7575fa6f6de6563261c"
+      },
+      "recommendation_lock": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "recovery_manifests": {
+        "rows": 1,
+        "sha256": "b74c4b5cf377844ea8848740674aabe353e4b8cd600f0bf37effb169d3666d56"
+      },
+      "recovery_rows": {
+        "rows": 1,
+        "sha256": "99c38f1f29d86ed8cabc08d0799d0ce44a4d27520658a6d54a846815f3a197b9"
+      },
+      "research_budgets": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "research_locks": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "research_runs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "research_state": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "screener_batches": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "screener_picks": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "screener_runs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "settings_history": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "site_settings": {
+        "rows": 1,
+        "sha256": "b85c4b5d922e1408f7e8bcee40e141d865c10a05d905a7e36d6f32157f1dee72"
+      },
+      "source_health": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "source_status": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "watchlist": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    }
+  },
+  "restored": {
+    "schemaSha256": "bd2ed7a6075b65cf27180c60321c0d6a301735db34d8cdee0c91dbcd0f08e451",
+    "objects": {
+      "table": 42,
+      "index": 32,
+      "trigger": 12,
+      "view": 0
+    },
+    "tables": {
+      "accuracy_rows": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "accuracy_runs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "admin_access": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "admin_audit": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "analysis_snapshots": {
+        "rows": 1,
+        "sha256": "43d962aba10c7e1e00f2f03ce2f5c8c3d5e40e51f9cc2833fd2134ff2f5d0df7"
+      },
+      "aziz_corporate_events": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "aziz_import_runs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "aziz_market_bars": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "aziz_market_datasets": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "aziz_monitor_records": {
+        "rows": 2,
+        "sha256": "9715c7ac8ac30ca451f43f94bbb1f3be3dac5cb7ea5e608cab36ad682ee7af6d"
+      },
+      "aziz_symbols": {
+        "rows": 12,
+        "sha256": "0231c0c878eb03fa3e94d26ab65c2b834d85131f0884f6668e4c1d607d8b8c0c"
+      },
+      "backtest_results": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "backtest_runs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "council_runs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "customer_market_watch": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "evaluation_revisions": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "forecast_outcomes": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "forecast_records": {
+        "rows": 1,
+        "sha256": "477b06a337c42a72b0d6542689116fa3c6499abe7846cba5b6975bddcd48c613"
+      },
+      "forecast_tests": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "gold_budgets": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "gold_locks": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "gold_state": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "market_observations": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "paper_cash_entries": {
+        "rows": 1,
+        "sha256": "f1bdbccd60419ec75740d3b87cd12d8071b31cf20d91c9fd20cad368bbbd2607"
+      },
+      "paper_portfolio_sessions": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "paper_portfolios": {
+        "rows": 1,
+        "sha256": "36c129bd65bfb686b667ef6cb94574efa90de12fe52c39d5a957df80b8850dee"
+      },
+      "paper_trades": {
+        "rows": 1,
+        "sha256": "05863b5e38102223d63a7c1f366d2470a076559372f6f7575fa6f6de6563261c"
+      },
+      "recommendation_lock": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "recovery_manifests": {
+        "rows": 1,
+        "sha256": "b74c4b5cf377844ea8848740674aabe353e4b8cd600f0bf37effb169d3666d56"
+      },
+      "recovery_rows": {
+        "rows": 1,
+        "sha256": "99c38f1f29d86ed8cabc08d0799d0ce44a4d27520658a6d54a846815f3a197b9"
+      },
+      "research_budgets": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "research_locks": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "research_runs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "research_state": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "screener_batches": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "screener_picks": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "screener_runs": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "settings_history": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "site_settings": {
+        "rows": 1,
+        "sha256": "b85c4b5d922e1408f7e8bcee40e141d865c10a05d905a7e36d6f32157f1dee72"
+      },
+      "source_health": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "source_status": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "watchlist": {
+        "rows": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    }
+  },
+  "integrityCheck": "ok",
+  "foreignKeyViolations": 0,
+  "immutableWriteAttemptsBlocked": 4,
+  "postRecoveryPointWriteAbsent": true,
+  "productionAccess": false,
+  "limitations": [
+    "No production data, D1 export or D1 recovery point used",
+    "No hosted database identity, retention, RPO or RTO proven",
+    "Application runtime was not executed against restored data",
+    "Most tables are empty; core synthetic fixtures check byte preservation, not all application validity",
+    "Later writes require explicit reconciliation; never overwrite production to test recovery"
+  ],
+  "humanReview": "PENDING"
+}

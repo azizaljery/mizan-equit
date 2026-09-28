@@ -9,8 +9,8 @@
     "requirementsTotal": 8,
     "requirementsPassed": 4,
     "requirementsFailed": 0,
-    "requirementsBlocked": 0,
-    "requirementsInProgress": 4
+    "requirementsBlocked": 2,
+    "requirementsInProgress": 2
   },
   "closureReadiness": null,
   "monitoringOnly": true,
@@ -19,22 +19,25 @@
   "requirements": [
     {
       "id": "FIN-P1-REQ-SOURCE-DEPLOYMENT-PARITY",
-      "status": "IN_PROGRESS",
+      "status": "BLOCKED",
       "humanReview": "PENDING",
       "evidence": [
         "evidence/FIN-P1-SOURCE-DEPLOYMENT-PARITY.json",
-        "evidence/FIN-P1-INDEPENDENT-ARCHIVE-VERIFICATION.json"
+        "evidence/FIN-P1-INDEPENDENT-ARCHIVE-VERIFICATION.json",
+        "evidence/runtime-verification-investigation.json"
       ],
-      "verificationStatus": "SAVED_ARCHIVE_DIGEST_VERIFIED_RUNTIME_PENDING"
+      "verificationStatus": "ARCHIVE_VERIFIED_LIVE_ACCESS_BLOCKED"
     },
     {
       "id": "FIN-P1-REQ-ROLLBACK-RUNBOOK",
-      "status": "IN_PROGRESS",
+      "status": "BLOCKED",
       "humanReview": "PENDING",
       "evidence": [
         "PHASE-1-ROLLBACK-RUNBOOK.md",
-        "evidence/legacy-migrations.json"
-      ]
+        "evidence/legacy-migrations.json",
+        "evidence/rollback-rehearsal-summary.json"
+      ],
+      "verificationStatus": "ARTIFACT_RESTORED_RUNTIME_REHEARSAL_BLOCKED"
     },
     {
       "id": "FIN-P1-REQ-DATABASE-ROLLBACK-SAFETY",
@@ -42,8 +45,10 @@
       "humanReview": "PENDING",
       "evidence": [
         "PHASE-1-ROLLBACK-RUNBOOK.md",
-        "evidence/legacy-migrations.json"
-      ]
+        "evidence/legacy-migrations.json",
+        "evidence/isolated-database-restore.json"
+      ],
+      "verificationStatus": "LOCAL_SYNTHETIC_RESTORE_PASS_PRODUCTION_UNVERIFIED"
     },
     {
       "id": "FIN-P1-REQ-LEGACY-SETTINGS",
@@ -147,5 +152,9 @@
       "Does not validate deployment identity or rollback readiness",
       "Does not authorize phase closure"
     ]
-  }
+  },
+  "executionBlockers": [
+    "Live identity access: shell proxy timeout and browser client block",
+    "Isolated Worker rehearsal: host uv_interface_addresses failure before listening"
+  ]
 }

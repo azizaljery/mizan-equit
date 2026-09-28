@@ -1,0 +1,55 @@
+{
+  "project": "MIZAN_FINANCIAL",
+  "dateLocal": "2026-09-29",
+  "status": "BLOCKED_EXECUTION_ACCESS",
+  "scope": "Runtime and served-asset identity; saved archive identity remains verified",
+  "attempts": [
+    {
+      "method": "curl GET /mizan-deployment.json",
+      "result": "Proxy CONNECT aborted due to timeout"
+    },
+    {
+      "method": "cloud browser GET /mizan-deployment.json",
+      "result": "net::ERR_BLOCKED_BY_CLIENT"
+    }
+  ],
+  "notProductionFailure": true,
+  "expectedIdentity": {
+    "worker": "mizan-equity",
+    "commit": "61ba1d1d325158e5b2b151bc79d273c0026f0372",
+    "generatedAt": "2026-09-28T20:10:27.875Z"
+  },
+  "staticStampLimitation": "The same stamp is in static assets and in a dynamic route; fetching it alone may not prove executed Worker identity.",
+  "strongerExistingProbe": {
+    "method": "POST",
+    "path": "/api/internal/automation",
+    "body": {
+      "action": "runtime-ready"
+    },
+    "requires": "Existing legitimate MIZAN_INTERNAL_AUTOMATION_TOKEN and enabled background flag; do not change either for this probe",
+    "readOnlyBranchVerifiedBy": "runtime_proof_plan source and archived server inspection",
+    "executed": false,
+    "expected": {
+      "status": "ready",
+      "backgroundCronEnabled": true,
+      "followupVersion": "screener-followup-step-v3",
+      "worker": "mizan-equity",
+      "commit": "61ba1d1d325158e5b2b151bc79d273c0026f0372"
+    }
+  },
+  "assetChecks": [
+    {
+      "path": "/assets/index-DukWSiDJ.js",
+      "bytes": 84563,
+      "sha256": "abf194765dbeb0d466465a7c633221dc8cb22e1a962484fd5aeef79a82639539"
+    },
+    {
+      "path": "/assets/index-DRZ28W67.css",
+      "bytes": 202316,
+      "sha256": "b038a6ebbd404dc798fa02fef6b27b2f4b88f12fe28a1c28761f5b6e6f1484d6"
+    }
+  ],
+  "nextEvidence": "Fresh homepage must reference expected bootstrap; verify actually served asset bytes, not merely old asset availability. No retries or bypass of access restrictions.",
+  "productionMutated": false,
+  "humanReview": "PENDING"
+}

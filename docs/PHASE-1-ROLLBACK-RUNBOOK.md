@@ -12,7 +12,7 @@ Scope: equity application only. No engineering resources.
 - Deployment: appgdep_6abac9f3b5b48191a3fb1defaa6b252d
 - URL: https://mizan-equity.aljeryabod.chatgpt.site
 
-Release 51 is a candidate future rollback baseline, not a fully accepted known-good release: build and tests passed, but archive identity and production legacy acceptance remain incomplete. Release 50 is unsuitable as an automatic fallback because it had the known legacy-settings regression. Release 49 has not been accepted as a safe runtime fallback.
+Release 51 is a candidate future rollback baseline, not a fully accepted known-good release: build/tests, saved archive digest, and owner-reported legacy compatibility are verified. Live runtime identity and runtime rollback rehearsal remain incomplete. Release 50 is unsuitable as an automatic fallback because it had the known legacy-settings regression. Release 49 has not been accepted as a safe runtime fallback.
 
 ## Application rollback procedure
 1. Record incident, current live deployment/version/source, timestamp and operator. Confirm project ID and preserve current audience and bindings.
@@ -42,8 +42,12 @@ This is NOT an application rollback rehearsal or a production backup restoration
 [Focused regression output](evidence/legacy-tests.tap): 7 local tests passed, 0 failed.
 
 ## Open closure gates
-- Accepted known-good target and saved archive identity.
+- Accepted runtime rollback target; saved archive digest is verified (see FIN-P1-INDEPENDENT-ARCHIVE-VERIFICATION.json).
 - Actual application rollback rehearsal.
 - Isolated production-backup restore and reconciliation.
 - Human review.
 No rollback readiness PASS is asserted.
+
+## Delegated investigation update — 2026-09-29
+
+[Technical investigation](evidence/TECHNICAL-INVESTIGATION-2026-09-29.md). Archive extraction is verified; local Worker rehearsal could not start due host network-interface failure. Local synthetic database backup/restore passed structural, row-hash and immutability checks, but no production recovery point was restored. Same-database historical checkpoints, CSV exports and settings restore do not constitute complete disaster recovery. Owner acceptance of legacy UI persistence is recorded separately; final phase sign-off remains pending.

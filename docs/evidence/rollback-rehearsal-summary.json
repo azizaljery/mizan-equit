@@ -1,0 +1,35 @@
+{
+  "project": "MIZAN_FINANCIAL",
+  "task": "isolated archived release restoration rehearsal",
+  "timestamp": "2026-09-28T21:32:33.174710+00:00",
+  "sourceCommit": "65b623639588f40eb73c5d76616308737ab33f33",
+  "archiveSha256": "9eae6a75ecf1f83f0b20402b39316f6f75141a9c9cdbd44a983c7df03ae7a2cf",
+  "archiveExtraction": {
+    "status": "PASS_LOCAL_ONLY",
+    "regularFiles": 329,
+    "byteEquality": true
+  },
+  "entrySyntax": {
+    "command": "node --check dist/server/index.js",
+    "exitCode": 0
+  },
+  "embeddedIdentity": {
+    "worker": "mizan-equity",
+    "commit": "61ba1d1d325158e5b2b151bc79d273c0026f0372",
+    "generatedAt": "2026-09-28T20:10:27.875Z"
+  },
+  "runtimeRehearsal": {
+    "status": "NOT_EXECUTED_ENVIRONMENT_LIMITATION",
+    "command": "wrangler dev --config dist/server/wrangler.local.json --local --ip 127.0.0.1 --port 8791 --persist-to isolated-state",
+    "wranglerVersion": "4.92.0",
+    "error": "uv_interface_addresses returned Unknown system error 1",
+    "beforeListening": true
+  },
+  "productionMutated": false,
+  "limitations": [
+    "No previous-release rollback executed",
+    "No Sites control-plane rollback executed",
+    "No production database recovery point restored",
+    "Archive restoration and JS syntax checks do not establish runtime acceptance"
+  ]
+}
