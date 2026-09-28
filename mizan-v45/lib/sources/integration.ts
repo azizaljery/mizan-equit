@@ -1,4 +1,3 @@
-/** Compatibility/diagnostic facade; preferLegacy intentionally keeps the production path authoritative. */
 import { fetchWithFallback, summarizeAttempts } from './fallback';
 import { getParser } from './parsers';
 import { gradeFromFetchResult } from './quality';

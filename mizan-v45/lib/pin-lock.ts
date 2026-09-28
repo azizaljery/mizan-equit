@@ -1,6 +1,6 @@
 export function validPin(pin:unknown):pin is string{return typeof pin==='string'&&/^\d{6,12}$/.test(pin)}
 export function ownerIdentity(headers:Headers,ownerEmail:string){
- const email=(headers.get('oai-authenticated-user-email')||headers.get('cf-access-authenticated-user-email'))?.trim().toLowerCase();
+ const email=headers.get('oai-authenticated-user-email')?.trim().toLowerCase();
  return ownerEmail&&email===ownerEmail.trim().toLowerCase()?'site-owner':null;
 }
 const hex=(bytes:Uint8Array)=>Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');

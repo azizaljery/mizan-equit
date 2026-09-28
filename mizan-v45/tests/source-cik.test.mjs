@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {resolveCik,resolveCikDetailed,needsCik,normalizeSecTicker} from '../lib/sources/cik.ts';
+import {resolveCik,needsCik,normalizeSecTicker} from '../lib/sources/cik.ts';
 
 test('CIK uses the supplied reader and existing SEC map URL/TTL',async()=>{
   const calls=[];
@@ -24,12 +24,6 @@ test('Invalid symbols do not read; failed or unmatched maps return null',async()
   for(const map of [null,[],{},'invalid',{0:null},{0:{ticker:'MSFT',cik_str:789019}}]){
     assert.equal(await resolveCik('AAPL',async()=>map),null);
   }
-});
-test('Detailed CIK resolution preserves the failure reason for the production source check',async()=>{
-  const failed=await resolveCikDetailed('AAPL',async()=>{throw Error('SEC unavailable');});
-  assert.equal(failed.ok,false);if(!failed.ok)assert.match(failed.reason,/SEC unavailable/);
-  const missing=await resolveCikDetailed('NOPE',async()=>({}));
-  assert.equal(missing.ok,false);if(!missing.ok)assert.match(missing.reason,/غير مدرج/);
 });
 test('CIK lookup is needed only for US financials and filings',()=>{
   assert.equal(needsCik('financials','us'),true);

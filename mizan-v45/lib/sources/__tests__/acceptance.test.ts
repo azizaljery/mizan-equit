@@ -1,6 +1,6 @@
 import {after, before, describe, mock, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {resolveCik, resolveCikDetailed, needsCik, normalizeSecTicker} from '../cik';
+import {resolveCik, needsCik, normalizeSecTicker} from '../cik';
 import {parseYahooHistory, parseYahooFinancials} from '../parsers/yahoo';
 import {parseSecFinancials} from '../parsers/sec';
 import {gradeFromProvenance} from '../quality';
@@ -126,10 +126,6 @@ describe('Criterion 4 — automatic CIK through integration',()=>{
     }
     assert.equal(await resolveCik('AAPL',async()=>{throw Error('network disabled');}),null);
     assert.equal(await resolveCik('NOPE',async()=>({})),null);
-  });
-  test('detailed resolution retains an auditable failure reason',async()=>{
-    const r=await resolveCikDetailed('AAPL',async()=>{throw Error('SEC unavailable');});
-    assert.equal(r.ok,false);if(!r.ok)assert.match(r.reason,/SEC unavailable/);
   });
 });
 

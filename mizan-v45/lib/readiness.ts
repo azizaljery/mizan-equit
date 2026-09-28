@@ -65,9 +65,9 @@ export function requirementAnalysis(r:Requirements,h:YearRow[],f:Financials,p:Pr
  add('سبب الدخول وما يبطله — للمساهم','investor',inv&&(r.exitType==='event'||r.exitType==='both'),true,inv?`${r.thesis} ← يبطل عند ${r.invalidator}.`:'اربط الفرضية بحدث مالي قابل للتحقق، ويمكن إضافة حد سعري منفصل.');
  const shared=items.filter(x=>x.group==='shared');
  const missing=(mode:'trader'|'investor')=>items.filter(x=>(x.group==='shared'||x.group===mode)&&x.state==='missing').map(x=>x.title);
- const gated=r.activityType==='prohibited'||r.capitalCurrency!==m.priceCurrency||plan.errors.length>0||(liquidAvail&&(ageDays(m.asOf,r.quoteDate)<0||quoteSessionGap(r.quoteDate,m.asOf,m.market)>1));
+ const gated=!shariaOk||r.activityType==='prohibited'||r.capitalCurrency!==m.priceCurrency||plan.errors.length>0||(liquidAvail&&(ageDays(m.asOf,r.quoteDate)<0||quoteSessionGap(r.quoteDate,m.asOf,m.market)>1));
  const planFloor=finite(plan.rr)&&plan.rr<2||spread!==null&&spread>1||nearEvent||ev.upcoming?65:0;
- return {items,shared,missingTrader:missing('trader'),missingInvestor:missing('investor'),spread,plan,cagrRevenue:cagr('revenue'),cagrCfo:cagr('cfo'),margins,dupont,valuation,mos,gated,planFloor,expectedQuarter:q};
+ return {items,shared,missingTrader:missing('trader'),missingInvestor:missing('investor'),spread,plan,cagrRevenue:cagr('revenue'),cagrCfo:cagr('cfo'),margins,dupont,valuation,mos,gated,planFloor,expectedQuarter:q,shariaOk};
 }
 export const THESIS_EXAMPLES=[
  ['sector','رخيص مقارنة بقطاعه','تبيّن أن الخصم مبرر بأرباح غير متكررة أو مشكلة حوكمة','event'],

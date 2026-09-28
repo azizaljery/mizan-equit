@@ -1,4 +1,3 @@
-/** Diagnostic resolver; it is not the live fetchCompany/source-resolution authority. */
 import { SOURCE_REGISTRY, TIER_SCORE, filterSources } from './registry';
 import { hasEndpoint, buildEndpoint, type BuildContext } from './endpoints';
 import type { SourceCandidate, DataType, Market, SourceRef } from './types';

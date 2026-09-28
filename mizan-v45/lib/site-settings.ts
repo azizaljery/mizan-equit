@@ -2,7 +2,7 @@ import {HOME_SECTIONS,COMPANY_SECTIONS,sectionDefaults,DEFAULT_SOURCE_CONFIG,nor
 export const PERIODS=[1,5,21,63,126,252] as const;
 export const SOURCE_NAMES={yahoo:'مزود أسعار وقوائم Yahoo Finance',tadawul:'تداول السعودية',sec:'هيئة الأوراق المالية الأمريكية SEC'};
 export const DEFAULT_SETTINGS={description:'يقوم النظام بفهم السؤال، ثم يبحث ويحلل الشركات المناسبة بدل مطالبتك بإدخال الشركات واحدة واحدة.',market:'sa',horizon:'medium',count:5,minTurnover:0,
- enabledMarkets:['sa','us','global'],askEnabled:true,questions:[] as string[],detail:'simple',tooltips:true,expandedHelp:true,
+ enabledMarkets:['sa','us','global'],askEnabled:true,questions:[] as string[],detail:'simple',showSharia:true,tooltips:true,expandedHelp:true,
  indicators:{financial:true,technical:true,liquidity:true},sources:{yahoo:true,tadawul:true,sec:true},
  periods:Object.fromEntries(PERIODS.map(n=>[String(n),{enabled:true,expanded:false}])) as Record<string,{enabled:boolean;expanded:boolean}>,
  weights:{fundamental:100,technical:100,liquidity:100,risk:100},maxSigma:3,minConfidence:'low',
@@ -15,7 +15,7 @@ export function validateSettings(input:any):SiteSettings{
  if(typeof v.description!=='string'||!v.description.trim()||v.description.length>600||!['sa','us'].includes(v.market)||!['short','medium','long'].includes(v.horizon)||!Number.isInteger(v.count)||v.count<1||v.count>20||!Number.isFinite(v.minTurnover)||v.minTurnover<0||v.minTurnover>1e12)throw Error('راجع النص والسوق والأفق وعدد النتائج (1–20) وحد السيولة.');
  if(!Array.isArray(v.enabledMarkets)||!v.enabledMarkets.length||v.enabledMarkets.some((m:string)=>!['sa','us','global'].includes(m))||!v.enabledMarkets.includes(v.market))throw Error('اختر سوقًا مسموحًا واجعل السوق الافتراضي ضمنها.');
  if(!Array.isArray(v.questions)||v.questions.length>20||v.questions.some((q:any)=>typeof q!=='string'||!q.trim()||q.length>500))throw Error('الحد 20 سؤالًا جاهزًا، كل سؤال حتى 500 حرف.');
- for(const key of ['askEnabled','tooltips','expandedHelp','paperEnabled'])if(typeof v[key]!=='boolean')throw Error('راجع مفاتيح تشغيل الوظائف.');
+ for(const key of ['askEnabled','showSharia','tooltips','expandedHelp','paperEnabled'])if(typeof v[key]!=='boolean')throw Error('راجع مفاتيح تشغيل الوظائف.');
  for(const obj of [v.sources,v.indicators])for(const value of Object.values(obj))if(typeof value!=='boolean')throw Error('إعداد ظهور أو مصدر غير صالح.');
  for(const n of PERIODS)if(typeof v.periods[n]?.enabled!=='boolean'||typeof v.periods[n]?.expanded!=='boolean')throw Error('راجع مدد التوقعات.');
  if(!['simple','detailed'].includes(v.detail)||!['low','medium','high'].includes(v.minConfidence))throw Error('اختر مستوى تفصيل وثقة صالحًا.');
