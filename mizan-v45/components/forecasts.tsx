@@ -8,6 +8,7 @@ import {HORIZONS} from '@/lib/forecast-horizons';
 import {fmt} from '@/lib/analysis';
 import {SourceLink} from './source-link';
 import {Explain} from './explain';
+import {ForecastRangeCalibration} from './forecast-range-calibration';
 export function completeForecastRows(result:any){return HORIZONS.map(h=>result?.rows?.find((r:any)=>r.sessions===h.sessions)||{period:h.name,sessions:h.sessions,available:false,direction:'غير متاح',price:result?.price??null,range:null,change:null,confidence:'منخفض',riskLevel:'غير متحقق',coverage:0,reasons:['لم تُحفظ هذه المدة في هذا التحليل؛ اطلب تحليلًا جديدًا.'],risks:[],basis:[],contributions:[]});}
 const range=(values:any)=>Array.isArray(values)?values.map((v:number)=>fmt(v)).join(' – '):'غير متاح';
 function forecastStatus(row:any){
@@ -60,6 +61,7 @@ export function Forecasts({report,quote=null,data}:{report?:MarketReport|null;qu
  <h4>المخاطر والنواقص</h4>{!row.risks?.length&&<p>لم تُحفظ تفاصيل المخاطر في هذا السجل؛ أعد التحليل لقراءة جديدة.</p>}<ul>{(row.risks||[]).map((s:string,i:number)=><li key={i}>{s}</li>)}</ul><h4>المحفزات</h4><ul>{(row.catalysts||[]).map((s:string,i:number)=><li key={i}>{s}</li>)}</ul>
  <p>احتمال السيناريو: {row.probability?Object.entries(row.probability).map(([k,v])=>k+' '+fmt(v as number)+'%').join(' · '):'غير معاير؛ لا نسبة افتراضية'}</p>
  <p>الدقة التاريخية: {row.calibration?.sample>=30&&row.historicalAccuracy!=null?fmt(row.historicalAccuracy)+'% · عينة '+row.calibration.sample:'لم تتكون عينة كافية بعد'}</p>
+ <ForecastRangeCalibration value={row.rangeCalibration} currency={result.currency}/>
  <h4>الأوزان الفعلية</h4><ul>{(row.contributions||[]).map((c:any)=><li key={c.name}>{c.name}: وزن {fmt(c.weight,1)}% · أثر {c.impact===null?'غير متحقق':fmt(c.impact)}</li>)}</ul><p>تغطية الأدلة {fmt(row.coverage,0)}% · {row.sessions} جلسات · {row.sample??0} عوائد تاريخية · {row.independent??0} فترات غير متداخلة</p>
  {row.rangeCheck&&<p>تذبذب المدة {fmt(row.rangeCheck.horizonVolatility)}% · فحص الشذوذ {row.rangeCheck.maxSigma} · مرجع السوق {row.rangeCheck.market||'غير متاح'} · القطاع {row.rangeCheck.sector||'غير متاح'}</p>}
  </div></details></article>)}</div>

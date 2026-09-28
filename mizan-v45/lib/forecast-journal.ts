@@ -4,10 +4,11 @@ import type {MarketReport} from './market-data';
 import {DECISION_VERSION,decisionBaseline,compareDecisionBaselines,publicBaselineEligible} from './decision-room';
 import {forecastMetrics,EVALUATION_POLICY} from './forecast-metrics';
 import {fingerprint} from './evidence-ledger';
+import {calibrateForecastRange,evaluateConformalRange,loadConformalHistory,type RangeComparison} from './forecast-conformal';
 // Candidate filter only. Actual maturity is decided from market sessions below.
 export const MATURITY_PREDICATE = 'julianday(?) - julianday(f.created_at) >= f.horizon * 7.0/5';
 export function researchMarket(report:MarketReport){return report.company.symbol.endsWith('.SR')?'sa':/nasdaq|nyse|amex|arca|bats|^NMS$|^NGM$|^NCM$|^NYQ$|^PCX$|^ASE$|^BTS$/i.test(report.company.exchange)?'us':'other';}
-export type Outcome={state:'complete'|'excluded';actualDate?:string;actualPrice?:number;actualDirection?:string|null;directionCorrect?:boolean|null;priceErrorPct?:number|null;rangeHit?:boolean|null;source:string;reason?:string;metrics?:ReturnType<typeof forecastMetrics>;evaluationPolicy?:string};
+export type Outcome={state:'complete'|'excluded';actualDate?:string;actualPrice?:number;actualDirection?:string|null;directionCorrect?:boolean|null;priceErrorPct?:number|null;rangeHit?:boolean|null;source:string;reason?:string;metrics?:ReturnType<typeof forecastMetrics>;evaluationPolicy?:string;rangeComparison?:RangeComparison|null};
 export function evaluateForecast(record:any,report:MarketReport):Outcome|null{
  if(!record.available)return null;let data:any;try{data=typeof record.data==='string'?JSON.parse(record.data):record.data;}catch{return null;}if(!data||typeof data!=='object')return null;
  // A truncated/invalid old record must not invalidate other records of the symbol.
@@ -24,13 +25,15 @@ export function evaluateForecast(record:any,report:MarketReport):Outcome|null{
  const actions=report.corporateActions||[];if(actions.some(a=>a.kind==='split'&&a.date>data.anchorDate&&a.date<=actual.date))return {state:'excluded',source:report.priceSource,reason:'حدثت تجزئة/تجميع أسهم خلال الفترة؛ تُستبعد من النسبة حتى تُراجع وحدات السعر، مع إبقاء السجل.'};
  if(!data.price||!Array.isArray(data.range)||!data.range.every(Number.isFinite))return null;
  const metrics=forecastMetrics({reference:data.price,predicted:data.predictedPrice,actual:actual.close,range:data.range,direction:data.direction,neutralThresholdPct:data.neutralThresholdPct??1});
- return {state:'complete',actualDate:actual.date,actualPrice:actual.close,actualDirection:metrics.actualDirection,directionCorrect:metrics.directionCorrect,priceErrorPct:metrics.relativeErrorPct,rangeHit:metrics.endRangeHit,source:report.priceSource,metrics,evaluationPolicy:EVALUATION_POLICY};
+ const rangeComparison=evaluateConformalRange(data,actual.close);
+ return {state:'complete',actualDate:actual.date,actualPrice:actual.close,actualDirection:metrics.actualDirection,directionCorrect:metrics.directionCorrect,priceErrorPct:metrics.relativeErrorPct,rangeHit:metrics.endRangeHit,source:report.priceSource,metrics,evaluationPolicy:EVALUATION_POLICY,...(rangeComparison?{rangeComparison}:{})};
 }
 export async function recordAnalysis(db:any,report:MarketReport,settings:SiteSettings=DEFAULT_SETTINGS,accountKey:string|null=null){
  const projection=forecasts(report,report.liveQuote||null,Date.now(),settings),createdAt=new Date().toISOString(),id=crypto.randomUUID();
  const market=researchMarket(report);
  const priorResult=await db.prepare("SELECT f.symbol,f.horizon,f.market,f.model,f.created_at,json_extract(f.data,'$.direction') AS forecast_direction,o.data FROM forecast_records f JOIN forecast_outcomes o ON o.id=f.id WHERE f.model=? AND f.market=? AND json_extract(f.data,'$.recordClass')='prospective-public' ORDER BY f.created_at DESC LIMIT 10000").bind(projection.version,market).all();
  const prior=(priorResult.results||[]).map((r:any)=>({...r,outcome:JSON.parse(r.data),forecastDirection:r.forecast_direction}));
+ const rangeHistory=publicBaselineEligible(report)?await loadConformalHistory(db,report.company.symbol,market,projection.version,createdAt):{records:[],truncatedHorizons:new Set<number>(),readError:false};
  const baseline=publicBaselineEligible(report)?decisionBaseline({...report,forecast:projection},createdAt):null;
  if(baseline){
   try{
@@ -41,10 +44,14 @@ export async function recordAnalysis(db:any,report:MarketReport,settings:SiteSet
  const snapshot={...report,accountKey:publicBaselineEligible(report)?null:accountKey,recordClass:publicBaselineEligible(report)?'prospective-public':report.mode==='historical'?'historical':'private-input',decisionBaseline:baseline};delete (snapshot as any).forecast;delete (snapshot as any).changes;
  const previous=await db.prepare("SELECT id FROM analysis_snapshots WHERE symbol=? AND (json_extract(data,'$.recordClass')='prospective-public' OR json_extract(data,'$.accountKey')=?) ORDER BY created_at DESC,rowid DESC LIMIT 1").bind(report.company.symbol,accountKey).first();
  const rows=projection.rows.map(row=>{const completedAnchor=report.prices.filter(p=>p.date<row.window.anchorDate).at(-1);const calibrated=calibration(prior,row.sessions,market,projection.version,createdAt,row.direction);return {id:crypto.randomUUID(),...row,anchorDate:row.window.anchorDate,createdAt,model:projection.version,currency:report.currency,unit:'share',assetType:report.company.instrument||'EQUITY',priceTime:projection.priceTime,source:report.priceSource,seriesBasis:{adjustment:report.priceAdjustment||null,anchorDate:completedAnchor?.date??null,anchorClose:completedAnchor?.close??null,definition:'آخر شمعة مكتملة قبل يوم الإصدار؛ شمعة الإصدار لا تستخدم للتحقق من إعادة ضبط السلسلة'},settingsUsed:projection.settingsUsed,evidenceId:report.research?.recorded?report.research.id:null,accountKey:publicBaselineEligible(report)?null:accountKey,previousSnapshotId:previous?.id||null,recordClass:publicBaselineEligible(report)?'prospective-public':report.mode==='historical'?'historical':'private-input',probability:calibrated.probabilities,historicalAccuracy:calibrated.accuracy,calibration:calibrated,confidence:row.confidence,evidenceQuality:row.confidence,calibrationStatus:calibrated.confidence};});
- await db.batch([db.prepare('INSERT INTO analysis_snapshots (id,symbol,created_at,data) VALUES (?,?,?,?)').bind(id,report.company.symbol,createdAt,JSON.stringify(snapshot)),...rows.map(row=>db.prepare('INSERT INTO forecast_records (id,snapshot_id,symbol,created_at,horizon,model,market,sector,confidence,available,data) VALUES (?,?,?,?,?,?,?,?,?,?,?)').bind(row.id,id,report.company.symbol,createdAt,row.sessions,projection.version,market,report.company.sector||'غير متحقق',row.confidence,row.available?1:0,JSON.stringify(row)))]);
+ const calibratedRows=rows.map(row=>({...row,rangeCalibration:calibrateForecastRange(row,rangeHistory.records,{
+  symbol:report.company.symbol,market,currency:report.currency,model:projection.version,horizon:row.sessions,
+  asOf:createdAt,recordClass:row.recordClass,adjustment:report.priceAdjustment||null
+ },{historyTruncated:rangeHistory.truncatedHorizons.has(row.sessions),readError:rangeHistory.readError})}));
+ await db.batch([db.prepare('INSERT INTO analysis_snapshots (id,symbol,created_at,data) VALUES (?,?,?,?)').bind(id,report.company.symbol,createdAt,JSON.stringify(snapshot)),...calibratedRows.map(row=>db.prepare('INSERT INTO forecast_records (id,snapshot_id,symbol,created_at,horizon,model,market,sector,confidence,available,data) VALUES (?,?,?,?,?,?,?,?,?,?,?)').bind(row.id,id,report.company.symbol,createdAt,row.sessions,projection.version,market,report.company.sector||'غير متحقق',row.confidence,row.available?1:0,JSON.stringify(row)))]);
  // Resolve only already-issued predictions, never regenerate old predictions with today's information.
  try{await resolveForecasts(db,report)}catch{report.warnings.push('حُفظ التوقع، لكن تعذرت مقارنة بعض النتائج المستحقة؛ ستُعاد المحاولة عند التحديث.');}
- return {...projection,createdAt,rows,snapshotId:id,recorded:true};
+ return {...projection,createdAt,rows:calibratedRows,snapshotId:id,recorded:true};
 }
 export function performanceStats(rows:any[],sinceDays:number|null=null,now=Date.now()){
  const all=rows.filter(r=>sinceDays===null||now-Date.parse(r.created_at)<=sinceDays*864e5);

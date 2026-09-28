@@ -83,7 +83,7 @@ export function runChampionshipBacktest(input:BacktestDataset,baseReport:MarketR
       const income=latest('netIncome'),operating=latest('operatingCashFlow');
       const net=income?.value,cfo=income?.date===operating?.date?operating?.value:undefined;
       const negativeEquity=latest('equity')?.value;
-      if(income===undefined&&operating===undefined&&negativeEquity===undefined)missingFinancialSafetyChecks++;
+      if(income===null&&operating===null&&negativeEquity===undefined)missingFinancialSafetyChecks++;
       if(!scenario.levels||scenario.reasons.length||!finite(s50)||!finite(s200)||s50<=s200||!finite(rsi)||rsi<50||rsi>70||!finite(t.relativeVolume)||t.relativeVolume<1.5||bar.close<=scenario.levels.resistance||negativeEquity!==undefined&&negativeEquity<=0||finite(net)&&finite(cfo)&&net<0&&cfo<0){closingEquity.set(j,capital);continue;}
       if(j+horizon-1>last){skippedIncompleteHorizons++;closingEquity.set(j,capital);continue;}
       const fill=simulatePlannedTrade(candles,j,horizon,scenario.levels,costs);

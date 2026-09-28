@@ -206,7 +206,7 @@ test('Cron stays disabled by default, exact schedule required, timeout does not 
   await m.scheduledResolution({cron: m.RESOLUTION_CRON}, {DB: noDb, MIZAN_BACKGROUND_CRON_ENABLED: 'false'});
   await m.scheduledResolution({cron: '* * * * *'}, {DB: noDb, MIZAN_BACKGROUND_CRON_ENABLED: 'true'});
   assert.equal(calls, 0); assert.equal(m.RESOLUTION_CRON, '0 */6 * * *');
-  assert.match(readFileSync('vite.config.ts', 'utf8'), /triggers:\s*\{\s*crons:\s*\[EVALUATE_DUE_CRON\]/);
+  assert.match(readFileSync('vite.config.ts', 'utf8'), /triggers:\s*\{\s*crons:\s*\[EVALUATE_DUE_CRON, ACCURACY_SAMPLE_CRON, SCREENER_FOLLOWUP_CRON\]/);
   assert.match(readFileSync('worker/index.ts', 'utf8'), /ctx\.waitUntil\(scheduledResolution/);
   let release; const pending = new Promise(resolve => { release = resolve; }); let consumed = false;
   await assert.rejects(m.withResolutionTimeout(pending, 5).then(() => { consumed = true; }), /fetch-timeout/);

@@ -1,0 +1,31 @@
+name: Equity deployment preflight
+
+on:
+  pull_request:
+    paths:
+      - 'mizan-v45/**'
+      - '.github/workflows/equity-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: mizan-v45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mizan-v45/package-lock.json
+      - run: npm run install:ci
+      - run: npm test
+      - run: npm run build
+        env:
+          GITHUB_SHA: ${{ github.sha }}
