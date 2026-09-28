@@ -71,12 +71,6 @@ export type EnsembleOutput = {
   regimeProb: [number, number, number, number];
   modelOutputs: ModelOutput[];
   mps: number;
-  /**
-   * فاصل تنبؤ معاير (conformal) — موجود فقط إذا مُرِّر conformalCurve إلى
-   * runEnsemble ووُجدت بيانات معايرة كافية. غيابه يعني عدم توفر معايرة،
-   * لا صفراً أو حياداً. راجع meta/conformal-interval.ts.
-   */
-  range?: { low: number; high: number; coverage: number };
 };
 
 export type GatedSignal = {
