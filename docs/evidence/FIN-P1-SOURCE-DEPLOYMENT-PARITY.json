@@ -1,0 +1,53 @@
+{
+  "requirement": "FIN-P1-REQ-SOURCE-DEPLOYMENT-PARITY",
+  "status": "PARTIAL_PENDING_HUMAN_REVIEW",
+  "checked_at": "2026-09-28",
+  "github_repository": "azizaljery/mizan-equit",
+  "github_head": "76c503f9974b47f946dd849b990f02e9477ae13b",
+  "github_app_prefix": "mizan-v45/",
+  "sites_source": "65b623639588f40eb73c5d76616308737ab33f33",
+  "build_identity": "61ba1d1d325158e5b2b151bc79d273c0026f0372",
+  "comparison": {
+    "method": "Compare Git blob SHA and file mode for all tracked application files, against the exact saved Sites source commit.",
+    "github": 697,
+    "site": 698,
+    "identical_files": 696,
+    "differences": [
+      {
+        "path": "lib/deployment-identity.json",
+        "github_blob": "eb2eb369324f159c1801d0919ea3a03d9ebfc147",
+        "sites_blob": "157bb706a7093a359f5a8b169d88d258de60fc47",
+        "explanation": "GitHub placeholder is populated by the deployment stamping script."
+      },
+      {
+        "path": "public/mizan-deployment.json",
+        "github_blob": null,
+        "sites_blob": "157bb706a7093a359f5a8b169d88d258de60fc47",
+        "explanation": "Generated public deployment identity is present in the saved Sites source, absent from GitHub."
+      }
+    ],
+    "unexplained_source_differences": 0,
+    "scope_exclusion": "Repository root docs and workflows are not application files; deployment configuration independence belongs to Phase 2."
+  },
+  "published_version": 51,
+  "deployment_id": "appgdep_6abac9f3b5b48191a3fb1defaa6b252d",
+  "deployment_status": "succeeded",
+  "archive": {
+    "service_content_hash": "sha256:f3ec527cc3651d039a938c9c43b17f9c33a4d6ad305badd18a33867535832cc4",
+    "local_gzip_sha256": "9eae6a75ecf1f83f0b20402b39316f6f75141a9c9cdbd44a983c7df03ae7a2cf",
+    "local_uncompressed_tar_sha256": "03a7bd68af0026246abd8a4055fe8ea9512a0e6c2fd457acbc514851d5dd3a75",
+    "local_embedded_identity_matches_build": true,
+    "byte_parity": "UNVERIFIED",
+    "reason": "Service content_hash semantics have not been established; neither local hash equals it. Attempt to retrieve the saved archive returned 'file could not be authorized or resolved'. This is not proof of different deployed application content and is not a PASS."
+  },
+  "human_review": {
+    "status": "PENDING",
+    "reviewer": "Abdulaziz"
+  },
+  "remaining": [
+    "Resolve saved archive digest semantics or compare authorized saved archive contents.",
+    "Complete runtime identity evidence for the published artifact.",
+    "Human review of evidence before requirement acceptance."
+  ],
+  "phase_closed": false
+}
