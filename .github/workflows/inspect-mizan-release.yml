@@ -1,0 +1,132 @@
+name: Inspect Mizan Release
+on:
+  push:
+    branches: [codex/mizan-source-security-review-20260919]
+    paths: ['.github/workflows/inspect-mizan-release.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Read build source for mizan-equity only
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module <<'NODE'
+          import {mkdir,writeFile} from 'node:fs/promises';
+          const account=process.env.CLOUDFLARE_ACCOUNT_ID,token=process.env.CLOUDFLARE_API_TOKEN;
+          const report={at:new Date().toISOString(),scope:'Read-only build metadata, selected equity Worker only; no secrets, environment values or other Workers retained.'};
+          async function api(path){
+            const r=await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}${path}`,{redirect:'manual',headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(20000)});
+            const text=await r.text();if(text.length>3000000)throw Error('oversized');return {status:r.status,...JSON.parse(text)};
+          }
+          try{
+            if(!/^[a-f0-9]{32}$/i.test(account||'')||!token)throw Error('config');
+            const scripts=await api('/workers/scripts');
+            const worker=scripts.result?.find(x=>x.id==='mizan-equity');
+            if(!worker||!/^[-a-zA-Z0-9]{16,64}$/.test(worker.tag||''))throw Error('worker-not-found');
+            report.worker={id:worker.id,tag:worker.tag};
+            for(const resource of ['triggers','builds']){
+              const r=await api(`/builds/workers/${worker.tag}/${resource}`);
+              report[resource]={status:r.status,success:r.success};
+              if(r.success&&Array.isArray(r.result))report[resource].items=r.result.slice(0,8).map(v=>resource==='triggers'?{
+                id:v.trigger_uuid,name:v.trigger_name,root:v.root_directory,branches:v.branch_includes,excludedBranches:v.branch_excludes,paths:v.path_includes,excludedPaths:v.path_excludes,
+                usesBuildScript:String(v.build_command||'').includes('npm run build'),usesWranglerDeploy:String(v.deploy_command||'').includes('wrangler'),repo:v.repo_connection?.repo_name,owner:v.repo_connection?.provider_account_name
+              }:{id:v.build_uuid,status:v.status,outcome:v.build_outcome,created:v.created_on,stopped:v.stopped_on,commit:v.build_trigger_metadata?.commit_hash,branch:v.build_trigger_metadata?.branch,trigger:v.trigger?.trigger_uuid,source:v.build_trigger_metadata?.build_trigger_source});
+            }
+          }catch{report.status='unavailable';}
+          await mkdir('inspect-out',{recursive:true});await writeFile('inspect-out/build-trigger-inspection.json',JSON.stringify(report,null,2)+'\n');
+          console.log('MIZAN_BUILD_TRIGGER_INSPECTION='+JSON.stringify(report));
+          NODE
+      - name: Read screener D1 state without mutations
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module <<'NODE'
+          import {mkdir,writeFile} from 'node:fs/promises';
+          const account=process.env.CLOUDFLARE_ACCOUNT_ID,token=process.env.CLOUDFLARE_API_TOKEN;
+          const db='e95b74e8-81d6-4beb-8ea2-ad59c863d21d';
+          const report={at:new Date().toISOString(),scope:'Read-only D1 screener diagnostics. Access tokens, hashes and secrets are excluded.'};
+          async function query(sql,params=[]){
+            const r=await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}/d1/database/${db}/query`,{
+              method:'POST',redirect:'manual',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+              body:JSON.stringify({sql,params}),signal:AbortSignal.timeout(20000)
+            });
+            const body=await r.json();if(!r.ok||!body.success)throw Error('d1-query-failed');
+            return body.result?.[0]?.results??[];
+          }
+          try{
+            report.locks=await query("SELECT id,until_ms FROM research_locks WHERE id LIKE 'screener:%' ORDER BY until_ms DESC LIMIT 20");
+            report.runs=await query("SELECT id,created_at,status,json_extract(plan_json,'$.market') market,json_array_length(json_extract(plan_json,'$.symbols')) planned FROM screener_runs ORDER BY created_at DESC LIMIT 12");
+            report.batches=await query("SELECT run_id,COUNT(*) batches,MAX(batch_index) max_batch,SUM(CAST(json_extract(result_json,'$.scanned') AS INTEGER)) scanned,SUM(CAST(json_extract(result_json,'$.analyzed') AS INTEGER)) analyzed,SUM(CAST(json_extract(result_json,'$.failed') AS INTEGER)) failed FROM screener_batches GROUP BY run_id ORDER BY MAX(created_at) DESC LIMIT 12");
+          report.serverRuns=await query("SELECT id,created_at,status,json_extract(plan_json,'$.market') market,json_extract(plan_json,'$.archiveOwner') owner,json_extract(plan_json,'$.symbols[0]') s0,json_extract(plan_json,'$.symbols[1]') s1,json_extract(plan_json,'$.symbols[2]') s2,json_extract(plan_json,'$.symbols[3]') s3,json_extract(plan_json,'$.symbols[4]') s4,json_extract(plan_json,'$.symbols[5]') s5 FROM screener_runs WHERE json_extract(plan_json,'$.archiveOwner')='server-followup-v2' ORDER BY created_at DESC LIMIT 6");
+            report.lastBatches=await query("SELECT run_id,batch_index,json_extract(result_json,'$.scanned') scanned,json_extract(result_json,'$.analyzed') analyzed,json_extract(result_json,'$.failed') failed,json_extract(result_json,'$.failures') failures FROM screener_batches ORDER BY created_at DESC LIMIT 12");
+            report.issuedForecasts=await query("SELECT json_extract(data,'$.screenerRunId') run_id,COUNT(*) n FROM forecast_records WHERE json_extract(data,'$.origin')='screener-candidate' GROUP BY json_extract(data,'$.screenerRunId') ORDER BY MAX(created_at) DESC LIMIT 12");
+            report.sources=await query("SELECT id,status,last_attempt,last_success FROM source_status ORDER BY id");
+          }catch{report.status='unavailable';}
+          await mkdir('inspect-out',{recursive:true});await writeFile('inspect-out/screener-d1-diagnostics.json',JSON.stringify(report,null,2)+'\n');
+          console.log('MIZAN_SCREENER_D1_DIAGNOSTICS='+JSON.stringify(report));
+          NODE
+      - name: Probe suspected Saudi screener resource boundary
+        run: |
+          node --input-type=module <<'NODE'
+          import {mkdir,writeFile} from 'node:fs/promises';
+          const site='https://mizan-equity.aljeryabod.workers.dev';
+          const cases=[['control',['1111.SR']],['1060-only',['1060.SR']],['1080-only',['1080.SR']],['1060-1080',['1060.SR','1080.SR']],['AACI-only',['AACI']],['AACO-only',['AACO']],['AACI-AACO',['AACI','AACO']]];
+          const report={at:new Date().toISOString(),scope:'Non-archived live screener probes; no forecast persistence. source_status may record normal source attempts.',cases:[]};
+          for(const [name,symbols] of cases){
+            const started=Date.now();let item={name,symbols,status:null,durationMs:null,contentType:null,error:null,analyzed:null,failed:null};
+            try{
+              const r=await fetch(site+'/api/screener',{method:'POST',redirect:'manual',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({market:symbols.every(s=>s.endsWith('.SR'))?'sa':'us',horizonSessions:5,resultCount:10,scanLimit:5,symbols}),signal:AbortSignal.timeout(70000)});
+              item.status=r.status;item.contentType=r.headers.get('content-type');const text=await r.text();let data=null;try{data=JSON.parse(text);}catch{}
+              item.error=typeof data?.error==='string'?data.error.slice(0,160):null;item.analyzed=Number.isInteger(data?.analyzed)?data.analyzed:null;item.failed=Number.isInteger(data?.failed)?data.failed:null;item.eligible=Number.isInteger(data?.eligible)?data.eligible:null;item.returned=Number.isInteger(data?.returned)?data.returned:null;item.candidates=Array.isArray(data?.candidates)?data.candidates.map(x=>x.symbol).slice(0,10):null;
+            }catch{item.error='transport-or-timeout';}
+            item.durationMs=Date.now()-started;report.cases.push(item);
+          }
+          await mkdir('inspect-out',{recursive:true});await writeFile('inspect-out/screener-resource-probes.json',JSON.stringify(report,null,2)+'\n');
+          console.log('MIZAN_SCREENER_RESOURCE_PROBES='+JSON.stringify(report));
+          NODE
+      - name: Probe archive overhead at one and two Saudi symbols
+        run: |
+          node --input-type=module <<'NODE'
+          import {mkdir,writeFile} from 'node:fs/promises';
+          const site='https://mizan-equity.aljeryabod.workers.dev';
+          async function call(body){
+            const r=await fetch(site+'/api/screener',{method:'POST',redirect:'manual',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(70000)});
+            const text=await r.text();let data=null;try{data=JSON.parse(text);}catch{}
+            return {status:r.status,data,contentType:r.headers.get('content-type')};
+          }
+          const report={at:new Date().toISOString(),scope:'Temporary immutable archive probes; tokens never logged.',cases:[]};
+          for(const [name,symbols] of [['single',['1140.SR']],['pair',['1140.SR','1150.SR']]]){
+            const started=Date.now(),item={name,symbols,planStatus:null,batchStatus:null,completeStatus:null,error:null,durationMs:null,analyzed:null,failed:null};
+            try{
+              const p=await call({action:'plan',archive:true,market:'sa',horizonSessions:5,resultCount:10,scanLimit:5,symbols});
+              item.planStatus=p.status;
+              if(p.status!==200||!p.data?.runId||!p.data?.runToken)throw Error(typeof p.data?.error==='string'?p.data.error:'plan-failed');
+              const b=await call({action:'archive-batch',runId:p.data.runId,runToken:p.data.runToken,batchIndex:0});
+              item.batchStatus=b.status;item.analyzed=Number.isInteger(b.data?.analyzed)?b.data.analyzed:null;item.failed=Number.isInteger(b.data?.failed)?b.data.failed:null;
+              if(b.status!==200){item.error=typeof b.data?.error==='string'?b.data.error.slice(0,160):'batch-nonjson';}
+              else{
+                const end=await call({action:'complete',runId:p.data.runId,runToken:p.data.runToken});
+                item.completeStatus=end.status;if(end.status!==200)item.error=typeof end.data?.error==='string'?end.data.error.slice(0,160):'complete-nonjson';
+              }
+            }catch(e){item.error=String(e?.message||'probe-failed').slice(0,160);}
+            item.durationMs=Date.now()-started;report.cases.push(item);
+          }
+          await mkdir('inspect-out',{recursive:true});await writeFile('inspect-out/screener-archive-probes.json',JSON.stringify(report,null,2)+'\n');
+          console.log('MIZAN_SCREENER_ARCHIVE_PROBES='+JSON.stringify(report));
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: mizan-release-inspection-${{ github.run_id }}
+          path: inspect-out/
+          retention-days: 3

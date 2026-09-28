@@ -1,0 +1,203 @@
+name: Deploy Mizan Equity
+
+on:
+  push:
+    branches:
+      - codex/mizan-source-security-review-20260919
+    paths:
+      - "mizan-v45/**"
+      - ".github/workflows/deploy-mizan-equity.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: mizan-equity-production
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: mizan-v45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Use Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: mizan-v45/package-lock.json
+
+      - name: Test deployment verification
+        run: node --test tests/deployment-verification.test.mjs
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Test isolated Aziz read-only readiness
+        run: node --test --import tsx tests/aziz-readiness.test.ts
+
+      - name: Test daily archive limits, recovery and atomic originals
+        run: node --test tests/daily-forecast-archive.test.mjs
+
+      - name: Test market data collector
+        run: node --test --import tsx tests/market-collector.test.ts
+
+      - name: Test council contracts and provider failures
+        run: node --test --import tsx tests/council-core.test.ts tests/council-routing.test.ts
+
+      - name: Test current listing eligibility and historical preservation
+        run: node --test --import tsx tests/listing-lifecycle.test.mjs tests/listing-wiring.test.mjs
+
+      - name: Test screener counts, filtering and canonical integration
+        run: node --test --import tsx tests/screener-policy.test.ts tests/screener-integration.test.mjs
+
+      - name: Test durable screener cohorts and canonical future evaluation
+        run: node --test --import tsx tests/screener-archive.test.mjs
+
+      - name: Test bounded followup and evidence-based agent work
+        run: node --test --import tsx tests/screener-followup.test.mjs tests/screener-followup-step.test.mjs tests/screener-operations.test.mjs tests/native-followup-wiring.test.mjs
+
+      - name: Test analysis deep links and release route
+        run: node --test --import tsx tests/company-deep-link.test.ts tests/deployment-identity.test.ts tests/deployment-stamp.test.mjs
+
+      - name: Test release identity for both build systems
+        run: node --test tests/build-revision.test.mjs
+
+      - name: Stamp release identity
+        run: |
+          node scripts/verify-deployment.mjs --mark
+          node scripts/stamp-deployment-route.mjs
+
+      - name: Build
+        run: npm run build
+
+      - name: Locate generated Wrangler config
+        id: wrangler
+        shell: bash
+        run: |
+          config="$(find dist -type f -name wrangler.json -print -quit)"
+          if [ -z "$config" ]; then
+            echo "No generated Wrangler config found under dist/" >&2
+            find dist -maxdepth 3 -type f | sort || true
+            exit 1
+          fi
+          echo "config=$config" >> "$GITHUB_OUTPUT"
+          echo "Using $config"
+
+      - name: Stage D1 migrations beside generated Wrangler config
+        shell: bash
+        run: |
+          config="${{ steps.wrangler.outputs.config }}"
+          config_dir="$(dirname "$config")"
+          rm -rf "$config_dir/drizzle"
+          cp -R drizzle "$config_dir/drizzle"
+          test -n "$(find "$config_dir/drizzle" -maxdepth 1 -type f -name '*.sql' -print -quit)"
+
+      - name: Apply D1 migrations
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler d1 migrations apply mizan-equity-db --remote --config "${{ steps.wrangler.outputs.config }}"
+
+      - name: Sync OpenAI secret and internal automation token
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          config="${{ steps.wrangler.outputs.config }}"
+          export MIZAN_INTERNAL_AUTOMATION_TOKEN="$(openssl rand -hex 32)"
+          echo "::add-mask::$MIZAN_INTERNAL_AUTOMATION_TOKEN"
+          export SECRET_FILE="$RUNNER_TEMP/mizan-secrets.json"
+          trap 'rm -f "$SECRET_FILE"' EXIT
+          node <<'NODE'
+          const fs=require('fs');
+          const names=['MIZAN_INTERNAL_AUTOMATION_TOKEN','OPENAI_API_KEY'];
+          const data={};
+          for(const name of names)if(process.env[name])data[name]=process.env[name];
+          fs.writeFileSync(process.env.SECRET_FILE,JSON.stringify(data),{mode:0o600});
+          NODE
+          npx wrangler secret bulk "$SECRET_FILE" --config "$config" >/dev/null
+          echo "MIZAN_INTERNAL_AUTOMATION_TOKEN=$MIZAN_INTERNAL_AUTOMATION_TOKEN" >> "$GITHUB_ENV"
+
+      - name: Deploy mizan-equity
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy --config "${{ steps.wrangler.outputs.config }}"
+
+      - name: Wait for deployed bindings
+        run: sleep 5
+
+      - name: Verify deployed pages and exact release
+        id: release
+        run: node scripts/verify-deployment.mjs --verify
+
+      - name: Verify published Aziz read-only readiness
+        run: node scripts/verify-aziz-readiness.mjs
+
+      - name: Activate daily archive and observe a real scheduled heartbeat
+        run: node scripts/verify-daily-archive.mjs
+
+      - name: Verify archived symbol cannot produce a current forecast
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify-listing-lifecycle.mjs
+
+      - name: Verify screener selectors and bounded live batch
+        run: node scripts/verify-screener.mjs
+
+      - name: Verify durable screener archive with live source data
+        run: node scripts/verify-screener-archive.mjs
+
+      - name: Bootstrap canonical Saudi and US forecast records
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/bootstrap-production.mjs
+
+      - name: Trial deployed Data Center, forecast jobs and all council roles
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/agent-trial.mjs
+
+      - name: Stage full-market screener acceptance for scheduled completion
+        if: ${{ always() && steps.deploy.outcome == 'success' && steps.release.outcome == 'success' }}
+        run: node scripts/verify-screener-followup.mjs
+
+      - name: Verify listing exclusion in persisted collection and seed cycles
+        if: ${{ always() && steps.deploy.outcome == 'success' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify-listing-lifecycle.mjs --post
+
+      - name: Read-only runtime and agent inventory
+        if: ${{ always() }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify-deployment.mjs --audit
+
+      - name: Preserve sanitized deployment and agent evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: mizan-agent-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: mizan-v45/verify-out/
+          retention-days: 7
+          if-no-files-found: warn

@@ -1,0 +1,1011 @@
+{
+  "testedAt": "2026-09-13T00:08:43.822Z",
+  "environment": "Built production Worker under local workerd/Miniflare + real local D1 binding; synthetic prices and isolated owner session, NOT production",
+  "cronEnabled": true,
+  "firstEvent": {
+    "outcome": "ok",
+    "noRetry": false
+  },
+  "secondEvent": {
+    "outcome": "ok",
+    "noRetry": false
+  },
+  "validation": {
+    "0": 400,
+    "500": 400,
+    "abc": 400
+  },
+  "before": {
+    "forecast_outcomes": 0,
+    "evaluation_revisions": 0
+  },
+  "first": {
+    "runId": "3143abf9-3d23-41d2-a742-f01244ddec7c",
+    "startedAt": "2026-09-13T00:08:43.627Z",
+    "finishedAt": "2026-09-13T00:08:43.728Z",
+    "durationMs": 101,
+    "limit": 20,
+    "symbolsScanned": 5,
+    "symbolsResolved": 5,
+    "symbolsSkipped": 0,
+    "symbolsFailed": 0,
+    "evaluationsSaved": 5,
+    "triggeredBy": "cron",
+    "cron": "0 */6 * * *",
+    "scheduledTime": 1789258123625,
+    "errors": [],
+    "lockAcquired": true,
+    "status": "completed",
+    "stateSaved": true,
+    "integrity": {
+      "outcomesDuplicates": 0,
+      "revisionsDuplicates": 0,
+      "consecutiveRevisionDuplicates": 0,
+      "revisionNumberDuplicates": 0
+    },
+    "sources": [
+      {
+        "symbol": "MZQA1",
+        "trace": {
+          "observations": [
+            {
+              "dataType": "history",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA1?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": "2026-08-31T12:00:00.000Z",
+                "retrievedAt": "2026-09-13T00:08:43.652Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر محفوظ."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "price",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA1?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": "2026-08-31T12:00:00.000Z",
+                "retrievedAt": "2026-09-13T00:08:43.653Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "weak",
+                "score": 55,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "السعر قديم بنحو 18009 دقيقة."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "dividends",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA1?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": null,
+                "retrievedAt": "2026-09-13T00:08:43.653Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر غير معروف لهذا النوع؛ لم يُحوّل وحده إلى عقوبة زمنية."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "corporateActions",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA1?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": null,
+                "retrievedAt": "2026-09-13T00:08:43.653Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر غير معروف لهذا النوع؛ لم يُحوّل وحده إلى عقوبة زمنية."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "financials",
+              "state": "failed",
+              "provenance": null,
+              "quality": {
+                "grade": "invalid",
+                "score": 0,
+                "reasons": [
+                  "Yahoo financials: لا يوجد timeseries.result."
+                ]
+              },
+              "reason": "Yahoo financials: لا يوجد timeseries.result.",
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "filings",
+              "state": "unavailable",
+              "provenance": null,
+              "quality": {
+                "grade": "invalid",
+                "score": 0,
+                "reasons": [
+                  "لم تتوفر قراءة صالحة لهذا النوع ضمن Source Layer."
+                ]
+              },
+              "fallbackUsed": false
+            }
+          ],
+          "attempts": [
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA1?interval=1d&range=5y&events=splits%2Cdiv",
+              "status": "ok",
+              "latencyMs": 17
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MZQA1?type=annualReceivables,annualInventory,annualNormalizedIncome,annualTaxProvision,annualPretaxIncome,annualTotalRevenue,annualNetIncome,annualOperatingIncome,annualGrossProfit,annualEBITDA,annualStockholdersEquity,annualTotalAssets,annualTotalLiabilitiesNetMinorityInterest,annualTotalDebt,annualCashAndCashEquivalents,annualCurrentAssets,annualCurrentLiabilities,annualInterestExpense,annualOperatingCashFlow,annualCapitalExpenditure,annualCashDividendsPaid,annualOrdinarySharesNumber,annualMinorityInterest,annualPreferredStockEquity,quarterlyReceivables,quarterlyInventory,quarterlyNormalizedIncome,quarterlyTaxProvision,quarterlyPretaxIncome,quarterlyTotalRevenue,quarterlyNetIncome,quarterlyOperatingIncome,quarterlyGrossProfit,quarterlyEBITDA,quarterlyStockholdersEquity,quarterlyTotalAssets,quarterlyTotalLiabilitiesNetMinorityInterest,quarterlyTotalDebt,quarterlyCashAndCashEquivalents,quarterlyCurrentAssets,quarterlyCurrentLiabilities,quarterlyInterestExpense,quarterlyOperatingCashFlow,quarterlyCapitalExpenditure,quarterlyCashDividendsPaid,quarterlyOrdinarySharesNumber,quarterlyMinorityInterest,quarterlyPreferredStockEquity,trailingReceivables,trailingInventory,trailingNormalizedIncome,trailingTaxProvision,trailingPretaxIncome,trailingTotalRevenue,trailingNetIncome,trailingOperatingIncome,trailingGrossProfit,trailingEBITDA,trailingStockholdersEquity,trailingTotalAssets,trailingTotalLiabilitiesNetMinorityInterest,trailingTotalDebt,trailingCashAndCashEquivalents,trailingCurrentAssets,trailingCurrentLiabilities,trailingInterestExpense,trailingOperatingCashFlow,trailingCapitalExpenditure,trailingCashDividendsPaid,trailingOrdinarySharesNumber,trailingMinorityInterest,trailingPreferredStockEquity&period1=1599523200&period2=1789344000",
+              "status": "ok",
+              "latencyMs": 21
+            },
+            {
+              "source": "tadawul",
+              "url": "https://www.saudiexchange.sa/tadawul.eportal.theme.helper/ThemeSearchUtilityServlet",
+              "status": "ok",
+              "latencyMs": 21
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v1/finance/search?q=MZQA1&quotesCount=8&newsCount=0",
+              "status": "ok",
+              "latencyMs": 21
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v1/finance/search?q=MZQA1&quotesCount=0&newsCount=6",
+              "status": "ok",
+              "latencyMs": 21
+            },
+            {
+              "source": "sec",
+              "url": "https://www.sec.gov/files/company_tickers.json",
+              "status": "ok",
+              "latencyMs": 21
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?interval=1d&range=2y",
+              "status": "ok",
+              "latencyMs": 2
+            }
+          ]
+        }
+      },
+      {
+        "symbol": "MZQA2",
+        "trace": {
+          "observations": [
+            {
+              "dataType": "history",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA2?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": "2026-08-31T12:00:00.000Z",
+                "retrievedAt": "2026-09-13T00:08:43.677Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر محفوظ."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "price",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA2?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": "2026-08-31T12:00:00.000Z",
+                "retrievedAt": "2026-09-13T00:08:43.677Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "weak",
+                "score": 55,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "السعر قديم بنحو 18009 دقيقة."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "dividends",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA2?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": null,
+                "retrievedAt": "2026-09-13T00:08:43.677Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر غير معروف لهذا النوع؛ لم يُحوّل وحده إلى عقوبة زمنية."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "corporateActions",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA2?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": null,
+                "retrievedAt": "2026-09-13T00:08:43.677Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر غير معروف لهذا النوع؛ لم يُحوّل وحده إلى عقوبة زمنية."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "financials",
+              "state": "failed",
+              "provenance": null,
+              "quality": {
+                "grade": "invalid",
+                "score": 0,
+                "reasons": [
+                  "Yahoo financials: لا يوجد timeseries.result."
+                ]
+              },
+              "reason": "Yahoo financials: لا يوجد timeseries.result.",
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "filings",
+              "state": "unavailable",
+              "provenance": null,
+              "quality": {
+                "grade": "invalid",
+                "score": 0,
+                "reasons": [
+                  "لم تتوفر قراءة صالحة لهذا النوع ضمن Source Layer."
+                ]
+              },
+              "fallbackUsed": false
+            }
+          ],
+          "attempts": [
+            {
+              "source": "tadawul",
+              "url": "https://www.saudiexchange.sa/tadawul.eportal.theme.helper/ThemeSearchUtilityServlet",
+              "status": "ok",
+              "latencyMs": 0
+            },
+            {
+              "source": "sec",
+              "url": "https://www.sec.gov/files/company_tickers.json",
+              "status": "ok",
+              "latencyMs": 0
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA2?interval=1d&range=5y&events=splits%2Cdiv",
+              "status": "ok",
+              "latencyMs": 5
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MZQA2?type=annualReceivables,annualInventory,annualNormalizedIncome,annualTaxProvision,annualPretaxIncome,annualTotalRevenue,annualNetIncome,annualOperatingIncome,annualGrossProfit,annualEBITDA,annualStockholdersEquity,annualTotalAssets,annualTotalLiabilitiesNetMinorityInterest,annualTotalDebt,annualCashAndCashEquivalents,annualCurrentAssets,annualCurrentLiabilities,annualInterestExpense,annualOperatingCashFlow,annualCapitalExpenditure,annualCashDividendsPaid,annualOrdinarySharesNumber,annualMinorityInterest,annualPreferredStockEquity,quarterlyReceivables,quarterlyInventory,quarterlyNormalizedIncome,quarterlyTaxProvision,quarterlyPretaxIncome,quarterlyTotalRevenue,quarterlyNetIncome,quarterlyOperatingIncome,quarterlyGrossProfit,quarterlyEBITDA,quarterlyStockholdersEquity,quarterlyTotalAssets,quarterlyTotalLiabilitiesNetMinorityInterest,quarterlyTotalDebt,quarterlyCashAndCashEquivalents,quarterlyCurrentAssets,quarterlyCurrentLiabilities,quarterlyInterestExpense,quarterlyOperatingCashFlow,quarterlyCapitalExpenditure,quarterlyCashDividendsPaid,quarterlyOrdinarySharesNumber,quarterlyMinorityInterest,quarterlyPreferredStockEquity,trailingReceivables,trailingInventory,trailingNormalizedIncome,trailingTaxProvision,trailingPretaxIncome,trailingTotalRevenue,trailingNetIncome,trailingOperatingIncome,trailingGrossProfit,trailingEBITDA,trailingStockholdersEquity,trailingTotalAssets,trailingTotalLiabilitiesNetMinorityInterest,trailingTotalDebt,trailingCashAndCashEquivalents,trailingCurrentAssets,trailingCurrentLiabilities,trailingInterestExpense,trailingOperatingCashFlow,trailingCapitalExpenditure,trailingCashDividendsPaid,trailingOrdinarySharesNumber,trailingMinorityInterest,trailingPreferredStockEquity&period1=1599523200&period2=1789344000",
+              "status": "ok",
+              "latencyMs": 5
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v1/finance/search?q=MZQA2&quotesCount=8&newsCount=0",
+              "status": "ok",
+              "latencyMs": 5
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v1/finance/search?q=MZQA2&quotesCount=0&newsCount=6",
+              "status": "ok",
+              "latencyMs": 8
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?interval=1d&range=2y",
+              "status": "ok",
+              "latencyMs": 1
+            }
+          ]
+        }
+      },
+      {
+        "symbol": "MZQA3",
+        "trace": {
+          "observations": [
+            {
+              "dataType": "history",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA3?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": "2026-08-31T12:00:00.000Z",
+                "retrievedAt": "2026-09-13T00:08:43.690Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر محفوظ."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "price",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA3?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": "2026-08-31T12:00:00.000Z",
+                "retrievedAt": "2026-09-13T00:08:43.690Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "weak",
+                "score": 55,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "السعر قديم بنحو 18009 دقيقة."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "dividends",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA3?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": null,
+                "retrievedAt": "2026-09-13T00:08:43.690Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر غير معروف لهذا النوع؛ لم يُحوّل وحده إلى عقوبة زمنية."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "corporateActions",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA3?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": null,
+                "retrievedAt": "2026-09-13T00:08:43.690Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر غير معروف لهذا النوع؛ لم يُحوّل وحده إلى عقوبة زمنية."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "financials",
+              "state": "failed",
+              "provenance": null,
+              "quality": {
+                "grade": "invalid",
+                "score": 0,
+                "reasons": [
+                  "Yahoo financials: لا يوجد timeseries.result."
+                ]
+              },
+              "reason": "Yahoo financials: لا يوجد timeseries.result.",
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "filings",
+              "state": "unavailable",
+              "provenance": null,
+              "quality": {
+                "grade": "invalid",
+                "score": 0,
+                "reasons": [
+                  "لم تتوفر قراءة صالحة لهذا النوع ضمن Source Layer."
+                ]
+              },
+              "fallbackUsed": false
+            }
+          ],
+          "attempts": [
+            {
+              "source": "tadawul",
+              "url": "https://www.saudiexchange.sa/tadawul.eportal.theme.helper/ThemeSearchUtilityServlet",
+              "status": "ok",
+              "latencyMs": 0
+            },
+            {
+              "source": "sec",
+              "url": "https://www.sec.gov/files/company_tickers.json",
+              "status": "ok",
+              "latencyMs": 0
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA3?interval=1d&range=5y&events=splits%2Cdiv",
+              "status": "ok",
+              "latencyMs": 3
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MZQA3?type=annualReceivables,annualInventory,annualNormalizedIncome,annualTaxProvision,annualPretaxIncome,annualTotalRevenue,annualNetIncome,annualOperatingIncome,annualGrossProfit,annualEBITDA,annualStockholdersEquity,annualTotalAssets,annualTotalLiabilitiesNetMinorityInterest,annualTotalDebt,annualCashAndCashEquivalents,annualCurrentAssets,annualCurrentLiabilities,annualInterestExpense,annualOperatingCashFlow,annualCapitalExpenditure,annualCashDividendsPaid,annualOrdinarySharesNumber,annualMinorityInterest,annualPreferredStockEquity,quarterlyReceivables,quarterlyInventory,quarterlyNormalizedIncome,quarterlyTaxProvision,quarterlyPretaxIncome,quarterlyTotalRevenue,quarterlyNetIncome,quarterlyOperatingIncome,quarterlyGrossProfit,quarterlyEBITDA,quarterlyStockholdersEquity,quarterlyTotalAssets,quarterlyTotalLiabilitiesNetMinorityInterest,quarterlyTotalDebt,quarterlyCashAndCashEquivalents,quarterlyCurrentAssets,quarterlyCurrentLiabilities,quarterlyInterestExpense,quarterlyOperatingCashFlow,quarterlyCapitalExpenditure,quarterlyCashDividendsPaid,quarterlyOrdinarySharesNumber,quarterlyMinorityInterest,quarterlyPreferredStockEquity,trailingReceivables,trailingInventory,trailingNormalizedIncome,trailingTaxProvision,trailingPretaxIncome,trailingTotalRevenue,trailingNetIncome,trailingOperatingIncome,trailingGrossProfit,trailingEBITDA,trailingStockholdersEquity,trailingTotalAssets,trailingTotalLiabilitiesNetMinorityInterest,trailingTotalDebt,trailingCashAndCashEquivalents,trailingCurrentAssets,trailingCurrentLiabilities,trailingInterestExpense,trailingOperatingCashFlow,trailingCapitalExpenditure,trailingCashDividendsPaid,trailingOrdinarySharesNumber,trailingMinorityInterest,trailingPreferredStockEquity&period1=1599523200&period2=1789344000",
+              "status": "ok",
+              "latencyMs": 3
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v1/finance/search?q=MZQA3&quotesCount=8&newsCount=0",
+              "status": "ok",
+              "latencyMs": 3
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v1/finance/search?q=MZQA3&quotesCount=0&newsCount=6",
+              "status": "ok",
+              "latencyMs": 6
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?interval=1d&range=2y",
+              "status": "ok",
+              "latencyMs": 1
+            }
+          ]
+        }
+      },
+      {
+        "symbol": "MZQA4",
+        "trace": {
+          "observations": [
+            {
+              "dataType": "history",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA4?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": "2026-08-31T12:00:00.000Z",
+                "retrievedAt": "2026-09-13T00:08:43.703Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر محفوظ."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "price",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA4?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": "2026-08-31T12:00:00.000Z",
+                "retrievedAt": "2026-09-13T00:08:43.703Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "weak",
+                "score": 55,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "السعر قديم بنحو 18009 دقيقة."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "dividends",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA4?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": null,
+                "retrievedAt": "2026-09-13T00:08:43.703Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر غير معروف لهذا النوع؛ لم يُحوّل وحده إلى عقوبة زمنية."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "corporateActions",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA4?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": null,
+                "retrievedAt": "2026-09-13T00:08:43.703Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر غير معروف لهذا النوع؛ لم يُحوّل وحده إلى عقوبة زمنية."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "financials",
+              "state": "failed",
+              "provenance": null,
+              "quality": {
+                "grade": "invalid",
+                "score": 0,
+                "reasons": [
+                  "Yahoo financials: لا يوجد timeseries.result."
+                ]
+              },
+              "reason": "Yahoo financials: لا يوجد timeseries.result.",
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "filings",
+              "state": "unavailable",
+              "provenance": null,
+              "quality": {
+                "grade": "invalid",
+                "score": 0,
+                "reasons": [
+                  "لم تتوفر قراءة صالحة لهذا النوع ضمن Source Layer."
+                ]
+              },
+              "fallbackUsed": false
+            }
+          ],
+          "attempts": [
+            {
+              "source": "tadawul",
+              "url": "https://www.saudiexchange.sa/tadawul.eportal.theme.helper/ThemeSearchUtilityServlet",
+              "status": "ok",
+              "latencyMs": 1
+            },
+            {
+              "source": "sec",
+              "url": "https://www.sec.gov/files/company_tickers.json",
+              "status": "ok",
+              "latencyMs": 1
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA4?interval=1d&range=5y&events=splits%2Cdiv",
+              "status": "ok",
+              "latencyMs": 4
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MZQA4?type=annualReceivables,annualInventory,annualNormalizedIncome,annualTaxProvision,annualPretaxIncome,annualTotalRevenue,annualNetIncome,annualOperatingIncome,annualGrossProfit,annualEBITDA,annualStockholdersEquity,annualTotalAssets,annualTotalLiabilitiesNetMinorityInterest,annualTotalDebt,annualCashAndCashEquivalents,annualCurrentAssets,annualCurrentLiabilities,annualInterestExpense,annualOperatingCashFlow,annualCapitalExpenditure,annualCashDividendsPaid,annualOrdinarySharesNumber,annualMinorityInterest,annualPreferredStockEquity,quarterlyReceivables,quarterlyInventory,quarterlyNormalizedIncome,quarterlyTaxProvision,quarterlyPretaxIncome,quarterlyTotalRevenue,quarterlyNetIncome,quarterlyOperatingIncome,quarterlyGrossProfit,quarterlyEBITDA,quarterlyStockholdersEquity,quarterlyTotalAssets,quarterlyTotalLiabilitiesNetMinorityInterest,quarterlyTotalDebt,quarterlyCashAndCashEquivalents,quarterlyCurrentAssets,quarterlyCurrentLiabilities,quarterlyInterestExpense,quarterlyOperatingCashFlow,quarterlyCapitalExpenditure,quarterlyCashDividendsPaid,quarterlyOrdinarySharesNumber,quarterlyMinorityInterest,quarterlyPreferredStockEquity,trailingReceivables,trailingInventory,trailingNormalizedIncome,trailingTaxProvision,trailingPretaxIncome,trailingTotalRevenue,trailingNetIncome,trailingOperatingIncome,trailingGrossProfit,trailingEBITDA,trailingStockholdersEquity,trailingTotalAssets,trailingTotalLiabilitiesNetMinorityInterest,trailingTotalDebt,trailingCashAndCashEquivalents,trailingCurrentAssets,trailingCurrentLiabilities,trailingInterestExpense,trailingOperatingCashFlow,trailingCapitalExpenditure,trailingCashDividendsPaid,trailingOrdinarySharesNumber,trailingMinorityInterest,trailingPreferredStockEquity&period1=1599523200&period2=1789344000",
+              "status": "ok",
+              "latencyMs": 4
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v1/finance/search?q=MZQA4&quotesCount=8&newsCount=0",
+              "status": "ok",
+              "latencyMs": 6
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v1/finance/search?q=MZQA4&quotesCount=0&newsCount=6",
+              "status": "ok",
+              "latencyMs": 6
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?interval=1d&range=2y",
+              "status": "ok",
+              "latencyMs": 3
+            }
+          ]
+        }
+      },
+      {
+        "symbol": "MZQA5",
+        "trace": {
+          "observations": [
+            {
+              "dataType": "history",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA5?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": "2026-08-31T12:00:00.000Z",
+                "retrievedAt": "2026-09-13T00:08:43.716Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر محفوظ."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "price",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA5?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": "2026-08-31T12:00:00.000Z",
+                "retrievedAt": "2026-09-13T00:08:43.716Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "weak",
+                "score": 55,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "السعر قديم بنحو 18009 دقيقة."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "dividends",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA5?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": null,
+                "retrievedAt": "2026-09-13T00:08:43.716Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر غير معروف لهذا النوع؛ لم يُحوّل وحده إلى عقوبة زمنية."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "corporateActions",
+              "state": "ok",
+              "provenance": {
+                "source": "yahoo",
+                "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA5?interval=1d&range=5y&events=splits%2Cdiv",
+                "sourceTime": null,
+                "retrievedAt": "2026-09-13T00:08:43.716Z",
+                "official": false,
+                "derived": false,
+                "delayMinutes": null
+              },
+              "quality": {
+                "grade": "good",
+                "score": 85,
+                "reasons": [
+                  "مصدر غير رسمي.",
+                  "وقت المصدر غير معروف لهذا النوع؛ لم يُحوّل وحده إلى عقوبة زمنية."
+                ]
+              },
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "financials",
+              "state": "failed",
+              "provenance": null,
+              "quality": {
+                "grade": "invalid",
+                "score": 0,
+                "reasons": [
+                  "Yahoo financials: لا يوجد timeseries.result."
+                ]
+              },
+              "reason": "Yahoo financials: لا يوجد timeseries.result.",
+              "fallbackUsed": false
+            },
+            {
+              "dataType": "filings",
+              "state": "unavailable",
+              "provenance": null,
+              "quality": {
+                "grade": "invalid",
+                "score": 0,
+                "reasons": [
+                  "لم تتوفر قراءة صالحة لهذا النوع ضمن Source Layer."
+                ]
+              },
+              "fallbackUsed": false
+            }
+          ],
+          "attempts": [
+            {
+              "source": "sec",
+              "url": "https://www.sec.gov/files/company_tickers.json",
+              "status": "ok",
+              "latencyMs": 0
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v8/finance/chart/MZQA5?interval=1d&range=5y&events=splits%2Cdiv",
+              "status": "ok",
+              "latencyMs": 2
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/MZQA5?type=annualReceivables,annualInventory,annualNormalizedIncome,annualTaxProvision,annualPretaxIncome,annualTotalRevenue,annualNetIncome,annualOperatingIncome,annualGrossProfit,annualEBITDA,annualStockholdersEquity,annualTotalAssets,annualTotalLiabilitiesNetMinorityInterest,annualTotalDebt,annualCashAndCashEquivalents,annualCurrentAssets,annualCurrentLiabilities,annualInterestExpense,annualOperatingCashFlow,annualCapitalExpenditure,annualCashDividendsPaid,annualOrdinarySharesNumber,annualMinorityInterest,annualPreferredStockEquity,quarterlyReceivables,quarterlyInventory,quarterlyNormalizedIncome,quarterlyTaxProvision,quarterlyPretaxIncome,quarterlyTotalRevenue,quarterlyNetIncome,quarterlyOperatingIncome,quarterlyGrossProfit,quarterlyEBITDA,quarterlyStockholdersEquity,quarterlyTotalAssets,quarterlyTotalLiabilitiesNetMinorityInterest,quarterlyTotalDebt,quarterlyCashAndCashEquivalents,quarterlyCurrentAssets,quarterlyCurrentLiabilities,quarterlyInterestExpense,quarterlyOperatingCashFlow,quarterlyCapitalExpenditure,quarterlyCashDividendsPaid,quarterlyOrdinarySharesNumber,quarterlyMinorityInterest,quarterlyPreferredStockEquity,trailingReceivables,trailingInventory,trailingNormalizedIncome,trailingTaxProvision,trailingPretaxIncome,trailingTotalRevenue,trailingNetIncome,trailingOperatingIncome,trailingGrossProfit,trailingEBITDA,trailingStockholdersEquity,trailingTotalAssets,trailingTotalLiabilitiesNetMinorityInterest,trailingTotalDebt,trailingCashAndCashEquivalents,trailingCurrentAssets,trailingCurrentLiabilities,trailingInterestExpense,trailingOperatingCashFlow,trailingCapitalExpenditure,trailingCashDividendsPaid,trailingOrdinarySharesNumber,trailingMinorityInterest,trailingPreferredStockEquity&period1=1599523200&period2=1789344000",
+              "status": "ok",
+              "latencyMs": 5
+            },
+            {
+              "source": "tadawul",
+              "url": "https://www.saudiexchange.sa/tadawul.eportal.theme.helper/ThemeSearchUtilityServlet",
+              "status": "ok",
+              "latencyMs": 5
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v1/finance/search?q=MZQA5&quotesCount=8&newsCount=0",
+              "status": "ok",
+              "latencyMs": 5
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v1/finance/search?q=MZQA5&quotesCount=0&newsCount=6",
+              "status": "ok",
+              "latencyMs": 5
+            },
+            {
+              "source": "yahoo",
+              "url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?interval=1d&range=2y",
+              "status": "ok",
+              "latencyMs": 2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "afterFirst": {
+    "forecast_outcomes": 5,
+    "evaluation_revisions": 5
+  },
+  "second": {
+    "runId": "b8a15b89-fcba-434c-beea-b48f871c8435",
+    "startedAt": "2026-09-13T00:08:43.748Z",
+    "finishedAt": "2026-09-13T00:08:43.752Z",
+    "durationMs": 4,
+    "limit": 20,
+    "symbolsScanned": 0,
+    "symbolsResolved": 0,
+    "symbolsSkipped": 0,
+    "symbolsFailed": 0,
+    "evaluationsSaved": 0,
+    "triggeredBy": "cron",
+    "cron": "0 */6 * * *",
+    "scheduledTime": 1789258123747,
+    "errors": [],
+    "lockAcquired": true,
+    "status": "completed",
+    "stateSaved": true,
+    "integrity": {
+      "outcomesDuplicates": 0,
+      "revisionsDuplicates": 0,
+      "consecutiveRevisionDuplicates": 0,
+      "revisionNumberDuplicates": 0
+    }
+  },
+  "afterSecond": {
+    "forecast_outcomes": 5,
+    "evaluation_revisions": 5
+  },
+  "integrity": {
+    "outcomesDuplicates": 0,
+    "revisionsDuplicates": 0
+  },
+  "research_state": {
+    "id": "job:evaluate-due:last",
+    "data": {
+      "runId": "b8a15b89-fcba-434c-beea-b48f871c8435",
+      "startedAt": "2026-09-13T00:08:43.748Z",
+      "finishedAt": "2026-09-13T00:08:43.752Z",
+      "durationMs": 4,
+      "limit": 20,
+      "symbolsScanned": 0,
+      "symbolsResolved": 0,
+      "symbolsSkipped": 0,
+      "symbolsFailed": 0,
+      "evaluationsSaved": 0,
+      "triggeredBy": "cron",
+      "cron": "0 */6 * * *",
+      "scheduledTime": 1789258123747,
+      "errors": [],
+      "lockAcquired": true,
+      "status": "completed",
+      "stateSaved": true,
+      "integrity": {
+        "outcomesDuplicates": 0,
+        "revisionsDuplicates": 0,
+        "consecutiveRevisionDuplicates": 0,
+        "revisionNumberDuplicates": 0
+      }
+    }
+  },
+  "regression": {
+    "/api/site-settings": 200
+  },
+  "networkRequests": 25,
+  "stateRoutes": {
+    "mode=list&limit=2": {
+      "rows": [
+        {
+          "id": "job:evaluate-due:last",
+          "updated_at": "2026-09-13T00:08:43.752Z",
+          "size": 517,
+          "sizeUnit": "utf8-bytes"
+        },
+        {
+          "id": "job:evaluate-due:last-cron",
+          "updated_at": "2026-09-13T00:08:43.752Z",
+          "size": 517,
+          "sizeUnit": "utf8-bytes"
+        }
+      ],
+      "total": 7,
+      "offset": 0,
+      "limit": 2,
+      "hasMore": true
+    },
+    "mode=keys&limit=2": {
+      "keys": [
+        "cron:resolution:attempt:MZQA1",
+        "cron:resolution:attempt:MZQA2"
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 2,
+      "hasMore": true
+    },
+    "mode=exists&id=job:evaluate-due:last-cron": {
+      "id": "job:evaluate-due:last-cron",
+      "exists": true,
+      "size": 517,
+      "updated_at": "2026-09-13T00:08:43.752Z",
+      "sizeUnit": "utf8-bytes"
+    },
+    "mode=fields&id=job:evaluate-due:last-cron&fields=evaluationsSaved,symbolsScanned,symbolsFailed,lockAcquired,stateSaved": {
+      "id": "job:evaluate-due:last-cron",
+      "fields": {
+        "evaluationsSaved": 0,
+        "symbolsScanned": 0,
+        "symbolsFailed": 0,
+        "lockAcquired": true,
+        "stateSaved": true,
+        "_updatedAt": "2026-09-13T00:08:43.752Z"
+      }
+    },
+    "mode=slices&id=job:evaluate-due:last-cron&length=100": {
+      "id": "job:evaluate-due:last-cron",
+      "updatedAt": "2026-09-13T00:08:43.752Z",
+      "totalLength": 517,
+      "size": 517,
+      "sizeUnit": "utf8-bytes",
+      "offset": 0,
+      "length": 100,
+      "offsetUnit": "unicode-code-points",
+      "slice": "{\"runId\":\"b8a15b89-fcba-434c-beea-b48f871c8435\",\"startedAt\":\"2026-09-13T00:08:43.748Z\",\"finishedAt\":",
+      "nextOffset": 100,
+      "hasMore": true
+    }
+  }
+}

@@ -1,0 +1,3 @@
+'use client';
+import {ResearchWorkspace} from '@/components/research-workspace';
+export default function AccuracyPage(){return <main className="workspace"><a className="source-link" href="/">العودة إلى تحليل الشركات</a><h1>دقة ميزان</h1><a className="source-link" href="/aziz">خوارزمية عزيز</a><a className="secondary-btn" href="/tests">ملفاتي — اختبارات ميزان</a><a className="secondary-btn" href="/accuracy-sample">اختبار عينة عشوائية من 20 شركة</a><p>نتائج التوقعات المحفوظة بعد اكتمال مددها. الوصول إلى السجل يتطلب حساب المالك؛ غياب العينة لا يتحول إلى نسبة افتراضية.</p><ResearchWorkspace company={null} onAnalyze={()=>{window.location.href='/'}} initialTab="performance"/></main>}

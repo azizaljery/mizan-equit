@@ -1,0 +1,88 @@
+{
+  "testedAt": "2026-09-13T00:03:27.612Z",
+  "environment": "Wrangler local built handler; synthetic journal; real provider transport (may fail); NOT production",
+  "command": "npx wrangler dev --test-scheduled --config <test-only-derived-config> --ip 127.0.0.1 --port 8791 --inspector-port 9241",
+  "runs": [
+    {
+      "httpStatus": 200,
+      "response": "ok",
+      "summary": {
+        "runId": "2a2a8a93-db3d-4701-b6ec-4fc12afd7caf",
+        "startedAt": "2026-09-13T00:03:29.229Z",
+        "finishedAt": "2026-09-13T00:03:29.274Z",
+        "durationMs": 45,
+        "limit": 20,
+        "symbolsScanned": 2,
+        "symbolsResolved": 0,
+        "symbolsSkipped": 0,
+        "symbolsFailed": 2,
+        "evaluationsSaved": 0,
+        "triggeredBy": "cron",
+        "cron": "0 */6 * * *",
+        "scheduledTime": 1789257809229,
+        "errors": [
+          {
+            "symbol": "MZWRA",
+            "error": "تعذر جلب بيانات الرمز أو حفظ تقييمه."
+          },
+          {
+            "symbol": "MZWRB",
+            "error": "تعذر جلب بيانات الرمز أو حفظ تقييمه."
+          }
+        ],
+        "lockAcquired": true,
+        "status": "partial",
+        "stateSaved": true,
+        "integrity": {
+          "outcomesDuplicates": 0,
+          "revisionsDuplicates": 0,
+          "consecutiveRevisionDuplicates": 0,
+          "revisionNumberDuplicates": 0
+        }
+      },
+      "outcomes": 0
+    },
+    {
+      "httpStatus": 200,
+      "response": "ok",
+      "summary": {
+        "runId": "c9625b48-5f4f-490e-a4a5-9db1d857c580",
+        "startedAt": "2026-09-13T00:03:29.310Z",
+        "finishedAt": "2026-09-13T00:03:29.335Z",
+        "durationMs": 25,
+        "limit": 20,
+        "symbolsScanned": 2,
+        "symbolsResolved": 0,
+        "symbolsSkipped": 0,
+        "symbolsFailed": 2,
+        "evaluationsSaved": 0,
+        "triggeredBy": "cron",
+        "cron": "0 */6 * * *",
+        "scheduledTime": 1789257809310,
+        "errors": [
+          {
+            "symbol": "MZWRA",
+            "error": "تعذر جلب بيانات الرمز أو حفظ تقييمه."
+          },
+          {
+            "symbol": "MZWRB",
+            "error": "تعذر جلب بيانات الرمز أو حفظ تقييمه."
+          }
+        ],
+        "lockAcquired": true,
+        "status": "partial",
+        "stateSaved": true,
+        "integrity": {
+          "outcomesDuplicates": 0,
+          "revisionsDuplicates": 0,
+          "consecutiveRevisionDuplicates": 0,
+          "revisionNumberDuplicates": 0
+        }
+      },
+      "outcomes": 0
+    }
+  ],
+  "before": 0,
+  "duplicates": 0,
+  "originalsUnchanged": true
+}

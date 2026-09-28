@@ -1,0 +1,30 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# env — لا ترفع مفاتيحك أبداً
+.env
+.env.local
+.env*.local
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# بيانات التدريب المجلوبة — تُولَّد بـ scripts/fetch-training-data.mjs
+/data/training/
+
+# tsc --incremental
+*.tsbuildinfo
+
+# misc
+.DS_Store
+*.pem
+next-env.d.ts

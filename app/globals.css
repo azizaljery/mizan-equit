@@ -1,0 +1,128 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0f1115;
+  --panel: #1a1d24;
+  --border: #2a2e37;
+  --text: #e6e8ec;
+  --muted: #9aa0aa;
+  --user: #2b5cff;
+  --assistant: #242833;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Tahoma, system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+.wrap {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.header {
+  font-size: 20px;
+  font-weight: 700;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.header span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+  margin-inline-start: 8px;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.msg {
+  padding: 12px 16px;
+  border-radius: 14px;
+  max-width: 85%;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.msg.user {
+  background: var(--user);
+  color: #fff;
+  align-self: flex-start;
+  border-bottom-right-radius: 4px;
+}
+
+.msg.assistant {
+  background: var(--assistant);
+  align-self: flex-end;
+  border-bottom-left-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  margin: auto;
+  font-size: 15px;
+}
+
+.composer {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+textarea {
+  flex: 1;
+  resize: none;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  padding: 12px 14px;
+  font-size: 15px;
+  font-family: inherit;
+  line-height: 1.6;
+  max-height: 160px;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--user);
+}
+
+button {
+  background: var(--user);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0 22px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

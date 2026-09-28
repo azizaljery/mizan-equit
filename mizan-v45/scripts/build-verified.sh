@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [[ "${SITES_ENV_READY:-}" != "1" ]]; then
+  exec "${script_dir}/sites-env.sh" -- "$0" "$@"
+fi
+
+command -v timeout || {
+  echo "build-verified.sh requires GNU timeout." >&2
+  exit 69
+}
+
+vinext="${SITES_PROJECT_ROOT}/node_modules/.bin/vinext"
+if [[ ! -x "${vinext}" ]]; then
+  echo "vinext is unavailable. Run npm run install:ci and wait for it to finish before building." >&2
+  exit 69
+fi
+
+# Both GitHub Actions and Workers Builds must stamp the source they compiled.
+# Reject conflicting revisions rather than serve a misleading release identity.
+GITHUB_SHA="$(node "${SITES_PROJECT_ROOT}/scripts/resolve-build-revision.mjs" "${SITES_PROJECT_ROOT}")"
+export GITHUB_SHA
+node "${SITES_PROJECT_ROOT}/scripts/verify-deployment.mjs" --mark
+
+if [[ -n "${GITHUB_SHA:-}" ]]; then
+  # Stamp explicitly in the same root immediately before compilation. The
+  # generated import must not be a checked-in null placeholder at build time.
+  node --input-type=module <<'NODE'
+import {stampDeploymentRoute} from './scripts/stamp-deployment-route.mjs';
+import {readFile} from 'node:fs/promises';
+await stampDeploymentRoute(process.cwd(),process.env.GITHUB_SHA);
+const identity=JSON.parse(await readFile('lib/deployment-identity.json','utf8'));
+if(identity.commit!==process.env.GITHUB_SHA)throw Error('Unstamped build input.');
+console.log('MIZAN_BUILD_IDENTITY='+JSON.stringify(identity));
+NODE
+fi
+
+echo "Running bounded vinext build..."
+if [[ -e "${SITES_PROJECT_ROOT}/public/__mizan-qa.html" || -e "${SITES_PROJECT_ROOT}/public/__mizan-qa.js" ]]; then
+  echo "Remove generated isolated browser QA files before a production build." >&2
+  exit 65
+fi
+timeout \
+  --signal=TERM \
+  --kill-after="${SITES_BUILD_KILL_AFTER:-10s}" \
+  "${SITES_BUILD_TIMEOUT:-3m}" \
+  "${vinext}" build
+
+node "${SITES_PROJECT_ROOT}/scripts/verify-client-assets.mjs"
+if [[ -n "${GITHUB_SHA:-}" ]]; then
+  node "${SITES_PROJECT_ROOT}/scripts/verify-release-bundle.mjs"
+fi

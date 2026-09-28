@@ -1,0 +1,10 @@
+import {forecastAccount,canReadForecast} from '@/lib/forecast-access';
+import {env} from 'cloudflare:workers';
+import {ownerIdentity} from '@/lib/pin-lock';
+import {csvLine} from '@/lib/export-data';
+export async function GET(req:Request){const r=env as unknown as {DB:any;RECOMMENDATION_OWNER_EMAIL:string};if(!ownerIdentity(req.headers,r.RECOMMENDATION_OWNER_EMAIL||''))return Response.json({error:'يلزم حساب مالك الموقع.'},{status:403});
+ const account=await forecastAccount(req.headers);const kind=new URL(req.url).searchParams.get('kind')||'forecasts';if(!['forecasts','trades','watchlist','backtests'].includes(kind))return Response.json({error:'نوع غير صالح.'},{status:400});
+ const table=kind==='forecasts'?'forecast_records':kind==='trades'?'paper_trades':kind==='watchlist'?'watchlist':'backtest_runs',key=kind==='watchlist'?'symbol':'id';let cancelled=false;
+ const stream=new ReadableStream({async start(controller){const encode=new TextEncoder();try{controller.enqueue(encode.encode('\uFEFF'+csvLine(['id','symbol','created_at','record','actual_outcome'])));let cursor='';while(!cancelled){const sql=kind==='forecasts'?'SELECT f.id,f.symbol,f.created_at,f.data,o.data AS outcome FROM forecast_records f LEFT JOIN forecast_outcomes o ON o.id=f.id WHERE f.id>? ORDER BY f.id LIMIT 200':`SELECT ${key} AS id,symbol,created_at,data FROM ${table} WHERE ${key}>? ORDER BY ${key} LIMIT 200`;const page=await r.DB.prepare(sql).bind(cursor).all();if(!page.results?.length)break;for(const row of page.results){if(cancelled)break;cursor=row.id;if(kind==='forecasts'&&!canReadForecast(row,account,true))continue;controller.enqueue(encode.encode(csvLine([row.id,row.symbol,row.created_at,row.data,row.outcome||''])));cursor=row.id;}if(page.results.length<200)break;}if(!cancelled)controller.close();}catch(e){if(!cancelled)controller.error(e);}},cancel(){cancelled=true;}});
+ return new Response(stream,{headers:{'Content-Type':'text/csv;charset=utf-8','Content-Disposition':`attachment; filename="mizan-${kind}.csv"`,'Cache-Control':'no-store, private'}});
+}

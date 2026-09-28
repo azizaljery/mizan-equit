@@ -1,0 +1,22 @@
+name: Aziz research contracts
+on:
+  pull_request:
+    paths: ['mizan-v45/research/aziz/**', '.github/workflows/aziz-research.yml']
+  push:
+    branches: [codex/mizan-source-security-review-20260919]
+    paths: ['mizan-v45/research/aziz/**', '.github/workflows/aziz-research.yml']
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test test/*.test.mjs
+        working-directory: mizan-v45/research/aziz
