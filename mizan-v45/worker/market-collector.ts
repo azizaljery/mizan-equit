@@ -127,7 +127,6 @@ export async function runForecastSeedCycle(db:any,controller:{cron:string;schedu
   release:(token:string)=>releaseLock(db,FORECAST_LOCK_ID,token),
   owns:async(token:string)=>!!await db.prepare('SELECT token FROM research_locks WHERE id=? AND token=? AND until_ms>?').bind(FORECAST_LOCK_ID,token,Date.now()).first(),
   settings:()=>readSettings(db),universe,
-  listingEvidence:()=>({eligibilityPolicy:LISTING_POLICY,excludedKnownInactive:excludedKnownInactive()}),
   fetch:async(symbol:string,settings:any)=>{
    assertCurrentInstrument(symbol);
    return withResolutionTimeout(fetchCompany(symbol,await configuredReader(db,settings),true),60000);
