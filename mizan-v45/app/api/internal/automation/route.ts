@@ -1,4 +1,3 @@
-import {readDailyArchiveStatus} from '@/lib/jobs/daily-forecast-archive.mjs';
 import {env} from 'cloudflare:workers';
 import deploymentIdentity from '@/lib/deployment-identity.json';
 import {FOLLOWUP_STEP_VERSION} from '@/lib/screener-followup-step-core';
@@ -30,7 +29,6 @@ export async function POST(req:Request){
   try{
     const raw=await req.text();if(raw.length>10000)throw new Error('request-too-large');
     const body=raw?JSON.parse(raw):{},runtime=env as any,action=String(body?.action||'');
-    if(action==='daily-archive-status')return Response.json(await readDailyArchiveStatus(runtime.DB),{headers});
     if(action==='status')return Response.json(await councilStatus(runtime.DB,runtime),{headers});
     if(action==='screener-operations')return Response.json(await readScreenerOperations(runtime.DB),{headers});
     if(runtime.MIZAN_BACKGROUND_CRON_ENABLED!=='true')return Response.json({error:'المهام متوقفة من الإعدادات.'},{status:503,headers});
@@ -50,7 +48,7 @@ export async function POST(req:Request){
     }
     if(action==='resolve'){
       const result=await runResolutionCycle(runtime.DB,{limit:2,triggeredBy:'manual'});
-      return Response.json({action,status:result.status,stateSaved:result.stateSaved,symbolsScanned:result.symbolsScanned,symbolsResolved:result.symbolsResolved,symbolsSkipped:result.symbolsSkipped,symbolsFailed:result.symbolsFailed,evaluationsSaved:result.evaluationsSaved,errors:result.errors,integrity:result.integrity},{headers});
+      return Response.json({action,status:result.status,stateSaved:result.stateSaved,symbolsScanned:result.symbolsScanned,symbolsResolved:result.symbolsResolved,evaluationsSaved:result.evaluationsSaved,integrity:result.integrity},{headers});
     }
     if(action==='council'){
       const task=typeof body?.task==='string'&&body.task.trim()?body.task:'راجع جاهزية منظومة ميزان بعد النشر الأخير، وجودة بيانات السوق السعودي والأمريكي، وسلامة مسار التوقع والقياس، ثم أعد تقريرًا للمالك دون أي إجراء تلقائي.';

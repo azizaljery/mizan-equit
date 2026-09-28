@@ -5,21 +5,22 @@ import { eligibleSaudiCompanies } from '../lib/saudi-directory';
 import { eligibleUSCompanies } from '../lib/us-directory';
 import { recordAnalysis } from '../lib/forecast-journal';
 import { EVALUATE_DUE_CRON } from '../lib/jobs/schedule';
-import {DAILY_ARCHIVE_CRON,runDailyArchive} from '../lib/jobs/daily-forecast-archive.mjs';
-import { tryAcquireLock, releaseLock, withResolutionTimeout } from './scheduled';
+import { tryAcquireLock, releaseLock } from './scheduled';
 import { pickRoundRobin } from '../lib/jobs/round-robin';
 import { assertCurrentInstrument, listingRestriction, LISTING_POLICY } from '../lib/listing-lifecycle';
 
 export const MARKET_COLLECTION_CRON = EVALUATE_DUE_CRON;
-export const FORECAST_SEED_CRON = DAILY_ARCHIVE_CRON;
+export const FORECAST_SEED_CRON = EVALUATE_DUE_CRON;
 export const MARKET_COLLECTION_STATE_ID = 'job:market-collector:last';
 export const FORECAST_SEED_STATE_ID = 'job:forecast-seed:last';
 const MARKET_ROTATION_ID = 'job:market-collector:rotation';
+const FORECAST_ROTATION_ID = 'job:forecast-seed:rotation';
 const MARKET_LOCK_ID = 'cron:market-collector:v1';
 const FORECAST_LOCK_ID = 'cron:forecast-seed:v1';
 const MARKET_LOCK_MS = 12 * 60 * 1000;
 const FORECAST_LOCK_MS = 20 * 60 * 1000;
 const QUOTES_PER_MARKET = 6;
+const FORECASTS_PER_MARKET = 1;
 
 type Market = 'sa' | 'us';
 type Rotation = { sa: number; us: number };
@@ -121,19 +122,63 @@ export async function runMarketCollectionCycle(db:any,controller:{cron:string;sc
   return summary;
 }
 export async function runForecastSeedCycle(db:any,controller:{cron:string;scheduledTime:number}){
- return runDailyArchive(db,{
-  now:()=>Date.now(),
-  acquire:()=>tryAcquireLock(db,FORECAST_LOCK_ID,FORECAST_LOCK_MS),
-  release:(token:string)=>releaseLock(db,FORECAST_LOCK_ID,token),
-  owns:async(token:string)=>!!await db.prepare('SELECT token FROM research_locks WHERE id=? AND token=? AND until_ms>?').bind(FORECAST_LOCK_ID,token,Date.now()).first(),
-  settings:()=>readSettings(db),universe,
-  listingEvidence:()=>({eligibilityPolicy:LISTING_POLICY,excludedKnownInactive:excludedKnownInactive()}),
-  fetch:async(symbol:string,settings:any)=>{
-   assertCurrentInstrument(symbol);
-   return withResolutionTimeout(fetchCompany(symbol,await configuredReader(db,settings),true),60000);
-  },
-  record:(journal:any,report:any,settings:any)=>recordAnalysis(journal,report,settings,null),
- },controller);
+  const start=Date.now(),startedAt=new Date(start).toISOString();
+  const summary:RunState & {symbolsAttempted:number; analysesRecorded:number; forecastRowsSaved:number; availableForecastRows:number; skippedAlreadyRecorded:number; markets:Record<Market,{attempted:number;recorded:number;nextCursor:number}>}={
+    startedAt,finishedAt:'',durationMs:0,cron:controller.cron,scheduledTime:controller.scheduledTime,
+    status:'completed',stateSaved:false,errors:[],symbolsAttempted:0,analysesRecorded:0,forecastRowsSaved:0,
+    availableForecastRows:0,skippedAlreadyRecorded:0,
+    eligibilityPolicy:LISTING_POLICY,excludedKnownInactive:excludedKnownInactive(),
+    markets:{sa:{attempted:0,recorded:0,nextCursor:0},us:{attempted:0,recorded:0,nextCursor:0}},
+  };
+  let token:string|null=null;
+  try{
+    token=await tryAcquireLock(db,FORECAST_LOCK_ID,FORECAST_LOCK_MS);
+    if(!token){summary.status='locked';return summary;}
+    const settings=await readSettings(db),read=await configuredReader(db,settings);
+    const rotation=await readRotation(db,FORECAST_ROTATION_ID),next:Rotation={...rotation};
+    const today=new Date().toISOString().slice(0,10);
+    for(const market of ['sa','us'] as const){
+      if(!settings.enabledMarkets.includes(market))continue;
+      const picked=pickRoundRobin(universe(market),rotation[market],FORECASTS_PER_MARKET);
+      next[market]=picked.next;summary.markets[market].nextCursor=picked.next;
+      for(const company of picked.items){
+        summary.symbolsAttempted++;summary.markets[market].attempted++;
+        let stage='eligibility';
+        try{
+          assertCurrentInstrument(company.symbol);
+          stage='duplicate-check';
+          const existing=await db.prepare("SELECT 1 AS found FROM analysis_snapshots WHERE symbol=? AND substr(created_at,1,10)=? AND json_extract(data,'$.recordClass')='prospective-public' LIMIT 1")
+            .bind(company.symbol,today).first();
+          if(existing?.found){summary.skippedAlreadyRecorded++;continue;}
+          stage='fetch-company';
+          const report=await fetchCompany(company.symbol,read,true);
+          stage='validate-history';
+          if(!report.prices.length)throw new Error('missing-prices');
+          stage='persist-forecast';
+          const projection=await recordAnalysis(db,report,settings,null);
+          summary.analysesRecorded++;summary.markets[market].recorded++;
+          summary.forecastRowsSaved+=projection.rows.length;
+          summary.availableForecastRows+=projection.rows.filter((row:any)=>row.available).length;
+        }catch{
+          if(summary.errors.length<20)summary.errors.push({symbol:company.symbol,stage,error:'تعذر إنشاء تحليل زمني صالح في هذه الدورة.'});
+        }
+      }
+    }
+    await writeState(db,FORECAST_ROTATION_ID,next,new Date().toISOString());
+    if(summary.errors.length)summary.status='partial';
+  }catch{
+    summary.status='failed';
+    summary.errors.push({symbol:'*',error:'تعذر تشغيل مولد التوقعات الدورية.'});
+  }finally{
+    summary.finishedAt=new Date().toISOString();
+    summary.durationMs=Date.parse(summary.finishedAt)-Date.parse(summary.startedAt);
+    if(token||summary.status==='failed'){
+      try{await writeState(db,FORECAST_SEED_STATE_ID,{...summary,stateSaved:true},summary.finishedAt);summary.stateSaved=true;}
+      catch{summary.stateSaved=false;if(summary.status!=='failed')summary.status='partial';}
+    }
+    if(token)await releaseLock(db,FORECAST_LOCK_ID,token);
+  }
+  return summary;
 }
 export async function scheduledMarketCollection(controller:{cron:string;scheduledTime:number},runtime:{DB:any;MIZAN_BACKGROUND_CRON_ENABLED?:string}){
   if(runtime.MIZAN_BACKGROUND_CRON_ENABLED!=='true'||controller.cron!==MARKET_COLLECTION_CRON)return;
