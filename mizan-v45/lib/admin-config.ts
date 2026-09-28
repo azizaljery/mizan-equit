@@ -49,8 +49,11 @@ export function normalizeSourceConfig(input:unknown,legacy:Record<string,boolean
  return rows;
 }
 export function normalizeSections(input:unknown,defaults:string[][]){
- if(!Array.isArray(input)||input.length>defaults.length)throw Error('أقسام الصفحة غير صالحة.');
- const seen=new Set<string>();const rows=input.map((s:any)=>{if(!s||!defaults.some(([id])=>id===s.id)||seen.has(s.id)||typeof s.title!=='string'||!s.title.trim()||s.title.length>100||typeof s.visible!=='boolean'||typeof s.deleted!=='boolean'||!['everyone','owner'].includes(s.audience))throw Error('راجع اسم القسم وظهوره وصلاحياته.');seen.add(s.id);return {id:s.id,title:s.id==='private'?'ميزان الخاص':s.title.trim(),visible:s.visible,deleted:s.deleted,audience:s.audience} as SectionConfig});return [...rows,...sectionDefaults(defaults).filter(s=>!seen.has(s.id))];
+ // Earlier saved company layouts include the retired sharia section. Validate
+ // it before omitting it from the runtime view; never rewrite saved settings here.
+ const retired=defaults===COMPANY_SECTIONS?['sharia']:[];
+ if(!Array.isArray(input)||input.length>defaults.length+retired.length)throw Error('أقسام الصفحة غير صالحة.');
+ const seen=new Set<string>();const rows=input.map((s:any)=>{if(!s||(!defaults.some(([id])=>id===s.id)&&!retired.includes(s.id))||seen.has(s.id)||typeof s.title!=='string'||!s.title.trim()||s.title.length>100||typeof s.visible!=='boolean'||typeof s.deleted!=='boolean'||!['everyone','owner'].includes(s.audience))throw Error('راجع اسم القسم وظهوره وصلاحياته.');seen.add(s.id);return {id:s.id,title:s.id==='private'?'ميزان الخاص':s.title.trim(),visible:s.visible,deleted:s.deleted,audience:s.audience} as SectionConfig}).filter(s=>!retired.includes(s.id));return [...rows,...sectionDefaults(defaults).filter(s=>!seen.has(s.id))];
 }
 export function settingChanges(before:any,after:any,path=''): {field:string;oldValue:any;newValue:any}[]{
  if(JSON.stringify(before)===JSON.stringify(after))return [];

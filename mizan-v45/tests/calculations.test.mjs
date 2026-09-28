@@ -1293,3 +1293,19 @@ test('Backtest strict financial filter withholds same-day, missing and invalid p
  const facts=[{...base,publishedAt:'2024-02-28'},{...base,publishedAt:'2024-02-29'},{...base},{...base,publishedAt:'2024-02-30'},{...base,publishedAt:'2024-02-28',value:NaN}];
  const result=backtestFactsKnownAsOf(facts,'2024-02-29');assert.equal(result.known.length,1);assert.equal(result.excludedCount,4);assert.equal(result.approximatedCount,0);
 });
+
+test('Previously saved company layouts remain readable after retiring a section without rewriting settings',async()=>{
+ const {db,sqlite}=await databaseFixture(),priorDB=gold.testRuntime.DB;
+ const saved=structuredClone(gold.DEFAULT_SETTINGS);
+ saved.count=7;saved.layout.company[0].title='عنوان المالك';saved.layout.company[0].audience='owner';saved.layout.company[1].visible=false;
+ saved.layout.company.splice(11,0,{id:'sharia',title:'الحالة الشرعية',visible:false,deleted:true,audience:'owner'});
+ const raw=JSON.stringify(saved);sqlite.prepare('INSERT INTO site_settings(id,value) VALUES(1,?)').run(raw);gold.testRuntime.DB=db;
+ try{
+  const response=await gold.siteSettingsGET(new Request('https://example.test/api/site-settings'));assert.equal(response.status,200);
+  const body=await response.json();assert.equal(body.count,7);assert.equal(body.layout.company.length,gold.DEFAULT_SETTINGS.layout.company.length);
+  assert.equal(body.layout.company[0].title,'عنوان المالك');assert.equal(body.layout.company[0].audience,'owner');assert.equal(body.layout.company[1].visible,false);
+  assert.ok(!body.layout.company.some(s=>s.id==='sharia'));assert.equal(sqlite.prepare('SELECT value FROM site_settings WHERE id=1').get().value,raw);
+  const invalid=structuredClone(saved);invalid.layout.company[11].id='unknown-section';assert.throws(()=>gold.validateSettings(invalid));
+  const duplicate=structuredClone(saved);duplicate.layout.company[11].id='decision';assert.throws(()=>gold.validateSettings(duplicate));
+ }finally{gold.testRuntime.DB=priorDB;sqlite.close();}
+});
