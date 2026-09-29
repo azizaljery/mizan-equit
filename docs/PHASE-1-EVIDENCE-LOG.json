@@ -24,9 +24,10 @@
       "evidence": [
         "evidence/FIN-P1-SOURCE-DEPLOYMENT-PARITY.json",
         "evidence/FIN-P1-INDEPENDENT-ARCHIVE-VERIFICATION.json",
-        "evidence/runtime-verification-investigation.json"
+        "evidence/runtime-verification-investigation.json",
+        "evidence/TECHNICAL-ROOT-CAUSE-AUDIT-2026-09-29.md"
       ],
-      "verificationStatus": "ARCHIVE_VERIFIED_LIVE_ACCESS_BLOCKED"
+      "verificationStatus": "HIGH_RISK_LIVE_SURFACES_DISAGREE_CDN_STATIC_IDENTITY"
     },
     {
       "id": "FIN-P1-REQ-ROLLBACK-RUNBOOK",
@@ -132,7 +133,11 @@
     "Runtime deployment identity not independently verified",
     "No accepted known-good rollback target or application rollback rehearsal",
     "No isolated production-backup restore",
-    "Final human review of technical evidence and phase closure decision pending"
+    "Final human review of technical evidence and phase closure decision pending",
+    "Two live origins return different identity commits",
+    "Identity path is ambiguous because static and dynamic routes share /mizan-deployment.json",
+    "Cloudflare/GitHub build trigger and root-directory authority not reconciled",
+    "Cron registration versus observed scheduled execution not reconciled"
   ],
   "freeze": [
     "New models",
@@ -156,5 +161,26 @@
   "executionBlockers": [
     "Live identity access: shell proxy timeout and browser client block",
     "Isolated Worker rehearsal: host uv_interface_addresses failure before listening"
-  ]
+  ],
+  "rootCauseAudit": {
+    "recordedDateLocal": "2026-09-29",
+    "status": "HIGH_RISK_PROVEN_IDENTITY_PROOF_FAILURE",
+    "delegatedInvestigator": "code_runtime_audit",
+    "independentRootReplay": "BLOCKED_BY_NETWORK_PROXY",
+    "findings": [
+      "workers.dev and chatgpt.site identity endpoints returned different build commits",
+      "both identity responses were CDN cache HIT and public max-age=0 must-revalidate, so static asset may shadow dynamic route",
+      "public/mizan-deployment.json and app/mizan-deployment.json/route.ts share URL path",
+      "GitHub workflow deploy trigger is not push-main and uses mizan-v45 root while Sites version source is separate root",
+      "three cron schedules are declared and runtime logs did not show scheduled events during audit"
+    ],
+    "notApplicationFailure": "These findings prove the identity proof path fails and surfaces diverge; they do not alone prove user-facing application failure.",
+    "requiredNextEvidence": [
+      "Choose official user-facing origin and deployment authority",
+      "Verify both origins on same controlled run if both remain",
+      "Replace or disambiguate static/dynamic identity path in a future stability change",
+      "Obtain Cloudflare deployment/build trigger and schedule records",
+      "Do not close Phase 1 while surfaces disagree"
+    ]
+  }
 }
