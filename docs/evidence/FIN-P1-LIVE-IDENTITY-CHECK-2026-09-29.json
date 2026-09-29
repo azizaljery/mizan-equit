@@ -1,0 +1,35 @@
+{
+  "project": "MIZAN_FINANCIAL",
+  "checkedAtUtc": "2026-09-29T12:21:10Z",
+  "method": "read-only curl via current execution proxy; same query parameter used for both origins",
+  "expectedVersion51": {
+    "savedSourceCommit": "65b623639588f40eb73c5d76616308737ab33f33",
+    "buildIdentity": "61ba1d1d325158e5b2b151bc79d273c0026f0372",
+    "deploymentId": "appgdep_6abac9f3b5b48191a3fb1defaa6b252d"
+  },
+  "origins": {
+    "workersDev": {
+      "url": "https://mizan-equity.aljeryabod.workers.dev/mizan-deployment.json?identity_check=20260929",
+      "transport": "HTTP 200",
+      "cfCacheStatus": "HIT",
+      "cacheControl": "public, max-age=0, must-revalidate",
+      "etag": "ae97977a8f8d909446b2cc088247770c",
+      "identity": {
+        "worker": "mizan-equity",
+        "commit": "beb407536e7b5e2c40f879d23d389f4d5201f267",
+        "generatedAt": "2026-09-27T20:34:08.219Z"
+      },
+      "matchesSavedVersion51": false
+    },
+    "chatgptSite": {
+      "url": "https://mizan-equity.aljeryabod.chatgpt.site/mizan-deployment.json?identity_check=20260929",
+      "transport": "BLOCKED_PROXY_CONNECT_TIMEOUT",
+      "identity": null,
+      "matchesSavedVersion51": "UNVERIFIED"
+    }
+  },
+  "result": "LIVE_IDENTITY_NOT_PROVEN; workers.dev identity mismatches saved Site version 51 build identity; chatgpt.site unavailable in this run",
+  "interpretation": "This proves the workers.dev endpoint is not the accepted version-51 identity. It does not prove the chatgpt.site application is broken or that the mismatch is current application drift; it may be a separate/legacy origin. Both origins and deployment authority must be reconciled.",
+  "productionChanged": false,
+  "humanReview": "PENDING"
+}
