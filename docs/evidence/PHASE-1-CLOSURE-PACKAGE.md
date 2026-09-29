@@ -113,3 +113,38 @@ Closure is blocked by:
 
 ## Package status
 Prepared for review. Not accepted as final closure evidence.
+
+
+## Rollback Risk Matrix
+
+This matrix records known rollback risks and their current mitigation status. It does not convert a dry run into an operational PASS.
+
+| Risk ID | Description | Impact | Likelihood | Severity | Mitigation | Status |
+|---|---|---:|---:|---:|---|---|
+| RB-RISK-001 | Application fails after rollback | High | Medium | HIGH | Post-rollback health and smoke tests | OPEN |
+| RB-RISK-002 | Return to the current release fails | High | Low | HIGH | Forward validation after rollback | OPEN |
+| RB-RISK-003 | Environment settings differ between releases | Medium | Medium | MEDIUM | Environment checklist and captured configuration | OPEN |
+| RB-RISK-004 | Database schema is incompatible with the rollback target | High | Medium | HIGH | Schema compatibility review | OPEN |
+| RB-RISK-005 | Data is lost or silently mutated during rollback | Critical | Low | CRITICAL | Snapshot and before/after hash verification | OPEN |
+| RB-RISK-006 | Hidden functionality fails while basic startup succeeds | High | Medium | HIGH | Complete rollback smoke-test matrix | OPEN |
+| RB-RISK-007 | Cron or Workers run a mismatched release | High | Medium | HIGH | Runtime version and trigger verification | OPEN |
+| RB-RISK-008 | Source does not match the rollback artifact | High | Low | HIGH | Release identity verification | OPEN |
+| RB-RISK-009 | Rollback is only theoretical and not executed | Medium | Medium | MEDIUM | Rollback execution evidence | OPEN |
+| RB-RISK-010 | Prior state cannot be restored precisely | High | Medium | HIGH | Documented recovery procedure and reconciliation | OPEN |
+
+### Risk evaluation rules
+
+- `CRITICAL` risks block `PASS` while they remain `OPEN`.
+- `HIGH` risks require evidence of mitigation or an explicit documented explanation.
+- `MEDIUM` and `LOW` risks remain documented and controlled according to the evidence review.
+- Allowed statuses are `OPEN`, `MITIGATED`, `ACCEPTED`, and `NOT_APPLICABLE`.
+
+E-002 cannot become `PASS` unless rollback execution (or an explicitly equivalent isolated rehearsal), post-rollback smoke tests, data-integrity verification, and return-to-current-version validation are evidenced and reviewed.
+
+## Residual Risks After Rollback Validation
+
+Rollback validation does not mean zero risk. If E-002 is later accepted, any remaining risk must be recorded here with an accepting reviewer and supporting evidence.
+
+| Risk ID | Residual risk | Accepted by | Notes |
+|---|---|---|---|
+| _To be completed after rollback validation_ | _No residual risks have been accepted at this time._ | _Pending_ | E-002 remains `DRY_RUN_PASS / PARTIAL`. |
