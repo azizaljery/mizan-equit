@@ -1,32 +1,17 @@
-# E-004 — Human Review & Sign-off
+# E-004 — Current Human Review Record
 
-**الحالة: `PENDING` — لا يوجد توقيع أو قرار بشري مسجّل.** هذا نموذج مراجعة فقط؛ لا تعتبره اعتمادًا لمجرد إنشائه أو اكتمال الفحوص الآلية.
+**Human decision:** written approval previously received and preserved. **Final Phase 1 closure:** held pending reconciliation of an E-002 evidence-retrieval gap surfaced after that approval.
 
-## Evidence for the reviewer
+## Prior written approval — retained
 
-- [Phase 1 closure matrix](closure-matrix.md)
-- [E-003 production restore record](e003-production-restore-validation.md)
-- [Sanitized evidence bundle](../evidence/FIN-P1-E003-PRODUCTION-RESTORE-2026-09-30/E-003-SUMMARY.md)
-- [GitHub Actions run 36779960771](https://github.com/azizaljery/Com/actions/runs/36779960771)
-- Existing E-001 and E-002 evidence and their previously accepted decisions (unchanged in this update)
+Aziz's explicit decision at 2026-09-30T22:05:12Z (`Sentinel_e7782b6dee14819198c385d1e145a8d8`) approved E-001–E-004 PASS and PHASE-1 CLOSED with `APPROVED_WITH_DOCUMENTED_LIMITATIONS`. He reaffirmed that decision at 2026-09-30T22:09:09Z (`Sentinel_962ad40631fc81919dbccbcd30df10d4`). It was a written-message decision; no handwritten or digital signature is claimed.
 
-## Questions the reviewer must decide
+## Current reconciliation
 
-- Does the real production D1 export identified by run `36779960771`, source UUID `e95b74e8-81d6-4beb-8ea2-ad59c863d21d`, export window `2026-09-30T21:32:54Z`–`21:33:07Z`, and SHA-256 `d1a75c8877647658b66e7e4f608b828f2b446567fd2e3f3e7b526bc69dd41393` satisfy the E-003 requirement for a production recovery point, despite having no provider backup ID or retention record?
-- Are the measured isolated restore and app smoke checks sufficient given that no numeric RPO or future recovery objective was established?
-- Are any residual risks or additional evidence required before closing Phase 1?
+The approval predates the audit's discovery that the original E-002 proof files were not recovered. This note preserves the prior decision and does not assert an E-002 test failure. E-002 remains technically accepted and frozen; no retests or improvements were performed. The current Sites source/version/deployment chain and E-003 technical pass are documented with their limits in the [Phase 1 evidence reconciliation](evidence-reconciliation-2026-09-30.md).
 
-## Reviewer decision — leave blank until Aziz responds
+**Current record state:** `FINAL_CLOSURE_HELD_FOR_E002_EVIDENCE_RECONCILIATION`. The prior approval is not withdrawn, but it is not represented as informed acceptance of this newly surfaced gap.
 
-- Reviewer name: `PENDING`
-- Role / authority: `PENDING`
-- Evidence versions/links reviewed: `PENDING`
-- E-003 decision (`APPROVE` / `REJECT`): `PENDING`
-- Acceptance of the recovery-point and RPO/retention limitations (`ACCEPT` / `REJECT`): `PENDING`
-- Residual risks, exceptions and rationale: `PENDING`
-- E-004 decision (`APPROVE` / `REJECT`): `PENDING`
-- Final Phase 1 closure decision: `PENDING`
-- Date/time UTC: `PENDING`
-- Signature or verified approval-record link: `PENDING`
+## Smallest next step
 
-Do not set E-004 or Phase 1 to `PASS`/`CLOSED` until the authorized human has explicitly made and recorded these decisions. If any limit is rejected, keep the relevant gate open and record the exact evidence still required.
+Aziz may provide the original three E-002 JSON files (or their original evidence archive), or explicitly authorize narrowly scoped reconstruction of the missing evidence. No E-002 retest or unrelated improvement is implied. Phase 2–4 remain not started. The owner has requested sequential continuation through these phases; execution remains subject to Phase 1 evidence closure and the transition gates in the approved recovery plan. This does not authorize unrelated research or bypass any locked phase.
