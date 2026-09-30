@@ -8,7 +8,7 @@ Aziz's explicit decision at 2026-09-30T22:05:12Z (`Sentinel_e7782b6dee14819198c3
 
 ## Current reconciliation
 
-The approval predates the audit's discovery that the original E-002 proof files were not recovered. This note preserves the prior decision and does not assert an E-002 test failure. E-002 remains technically accepted and frozen; no retests or improvements were performed. The current Sites source/version/deployment chain and E-003 technical pass are documented with their limits in the [Phase 1 evidence reconciliation](evidence-reconciliation-2026-09-30.md).
+The approval predates the audit's discovery that the original E-002 proof files were not recovered. The original control-room completion and owner-acceptance messages were subsequently recovered and are preserved in the [historical E-002 review record](e002-historical-review-2026-09-30.md); the original JSON contents remain unavailable. This note preserves the prior decision and does not assert an E-002 test failure. E-002 remains technically accepted and frozen; no retests or improvements were performed. The current Sites source/version/deployment chain and E-003 technical pass are documented with their limits in the [Phase 1 evidence reconciliation](evidence-reconciliation-2026-09-30.md).
 
 **Current record state:** `FINAL_CLOSURE_HELD_FOR_E002_EVIDENCE_RECONCILIATION`. The prior approval is not withdrawn, but it is not represented as informed acceptance of this newly surfaced gap.
 

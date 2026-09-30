@@ -31,7 +31,7 @@ E-002's previously accepted technical PASS and freeze remain unchanged. No E-002
 
 ## E-003 — isolated restore result
 
-The root-verified sanitized evidence is associated with [Com workflow run 36779960771](https://github.com/azizaljery/Com/actions/runs/36779960771), commit `e36cf43012cb9c4e722b341cf2e3ecd08c0d723f`. Reported technical checks passed: isolated import of 5,271 normalized statements; 42 tables; SQLite quick check; empty foreign-key check; seven critical table count/hash comparisons; five HTTP 200 smoke checks; post-smoke no-silent-mutation check; and isolated cleanup. No production mutation occurred. The sanitized artifact was reported with SHA-256 `c3fa64bbf802d378c93199e27dfd5f73b80c3ece0c5865bd64d3b21a6db4bdcd`. This record contains no raw SQL, database dump, or credentials.
+The verified sanitized evidence is associated with [Com workflow run 36779960771](https://github.com/azizaljery/Com/actions/runs/36779960771), commit `e36cf43012cb9c4e722b341cf2e3ecd08c0d723f`. Reported technical checks passed: isolated import of 5,271 normalized statements; 42 tables; SQLite quick check; empty foreign-key check; seven critical table count/hash comparisons; five HTTP 200 smoke checks; post-smoke no-silent-mutation check; and isolated cleanup. No production mutation occurred. The sanitized artifact was reported with SHA-256 `c3fa64bbf802d378c93199e27dfd5f73b80c3ece0c5865bd64d3b21a6db4bdcd`. This record contains no raw SQL, database dump, or credentials.
 
 The restore does not establish a long-term backup retention policy or guarantee, future RPO, guaranteed RTO, or success in every future incident. Three of the seven compared critical tables were empty; their empty state was restored and remained unchanged during the smoke/read checks, but transactions in absent rows were not tested. Five smoke checks do not establish broader transaction-flow coverage.
 
@@ -42,3 +42,7 @@ Aziz's written approval is recorded at 2026-09-30T22:05:12Z (`Sentinel_e7782b6de
 That approval predates this audit's discovery that the original E-002 files were not recovered. The approval is preserved, but it must not be described as an informed acceptance of this newly surfaced evidence-retrieval gap. **Final Phase 1 closure is held pending reconciliation of that gap; the prior approval is not erased, and no E-002 technical failure is asserted.**
 
 The smallest next step is for Aziz to provide the original three JSON files (or their original evidence archive), or explicitly authorize narrowly scoped reconstruction of the missing evidence. No E-002 retests or unrelated improvements are implied. Phase 2–4 work remains not started; AZIZ, Mizan Score, and research remain frozen until a separate Phase 2 scope is approved.
+
+## Original E-002 review recovered
+
+The original control-room conversation was subsequently retrieved. It directly records the reported isolated validation, original sandbox evidence references, D1 `SQLITE_AUTH` limitation, and the owner's technical acceptance. See [historical E-002 review record](e002-historical-review-2026-09-30.md). The original JSON contents remain unrecovered; this strengthens historical provenance without substituting a reconstructed report for the original test artifacts. No E-002 test was rerun.
