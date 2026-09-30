@@ -4,9 +4,12 @@
 
 - PHASE-1: `IN_PROGRESS`
 - E-001: `PASS` (as previously accepted by the user; unchanged by this evidence update)
-- E-002: `PASS` (as previously accepted by the user; unchanged by this evidence update)
+- E-002 technical status: `PASS`
+- E-002 closure status: `PASS_PENDING_HUMAN_REVIEW`
+- E-002 remains frozen: do not retest or improve it unless contradictory evidence appears; its existing evidence is unchanged
 - E-003: `PASS_PENDING_HUMAN_REVIEW` (technical restore and validation completed in isolated run 36779960771)
-- E-004: `PENDING` (authorized human review/sign-off not recorded)
+- E-004: `READY_FOR_HUMAN_REVIEW` (authorized human review/sign-off not recorded)
+- Closure readiness: `PENDING_HUMAN_REVIEW`
 
 ## E-003 evidence
 
@@ -17,7 +20,7 @@
 
 ## E-004 Human Review Signoff
 
-- Reviewer completes [`e004-human-review-signoff.md`](e004-human-review-signoff.md) after inspecting E-001, E-002 and E-003 evidence.
+- Reviewer completes [`e004-human-review-signoff.md`](e004-human-review-signoff.md) after inspecting the existing E-001/E-002 evidence and E-003 evidence; E-002 is not reopened or retested absent contradictory evidence.
 - Explicit `APPROVE` or `REJECT`, reviewer authority, UTC date/time, evidence references, residual-risk decision and signature/link are required.
 - No assistant or automation may fill in or infer the human signature.
 
