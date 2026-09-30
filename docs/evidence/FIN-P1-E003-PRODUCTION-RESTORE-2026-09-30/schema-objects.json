@@ -1,0 +1,430 @@
+{
+  "count": 85,
+  "objects": [
+    {
+      "name": "aziz_bars_symbol_session_idx",
+      "type": "index",
+      "sql": "CREATE INDEX aziz_bars_symbol_session_idx ON aziz_market_bars(symbol_id, session_date)"
+    },
+    {
+      "name": "aziz_datasets_symbol_retrieved_idx",
+      "type": "index",
+      "sql": "CREATE INDEX aziz_datasets_symbol_retrieved_idx ON aziz_market_datasets(symbol_id, retrieved_at)"
+    },
+    {
+      "name": "aziz_events_symbol_available_idx",
+      "type": "index",
+      "sql": "CREATE INDEX aziz_events_symbol_available_idx ON aziz_corporate_events(symbol_id, available_at)"
+    },
+    {
+      "name": "council_runs_created_idx",
+      "type": "index",
+      "sql": "CREATE INDEX council_runs_created_idx\n  ON council_runs(created_at DESC)"
+    },
+    {
+      "name": "council_runs_status_idx",
+      "type": "index",
+      "sql": "CREATE INDEX council_runs_status_idx\n  ON council_runs(status, created_at DESC)"
+    },
+    {
+      "name": "idx_accuracy_rows_run_ordinal",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_accuracy_rows_run_ordinal` ON `accuracy_rows` (`run_id`,`ordinal`)"
+    },
+    {
+      "name": "idx_accuracy_runs_created",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_accuracy_runs_created` ON `accuracy_runs` (`created_at`)"
+    },
+    {
+      "name": "idx_admin_audit_date",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_admin_audit_date` ON `admin_audit` (`created_at`)"
+    },
+    {
+      "name": "idx_backtest_results_run",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_backtest_results_run` ON `backtest_results` (`run_id`)"
+    },
+    {
+      "name": "idx_backtest_results_run_horizon",
+      "type": "index",
+      "sql": "CREATE UNIQUE INDEX `idx_backtest_results_run_horizon` ON `backtest_results` (`run_id`,`horizon`)"
+    },
+    {
+      "name": "idx_backtest_runs_created",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_backtest_runs_created` ON `backtest_runs` (`created_at`)"
+    },
+    {
+      "name": "idx_cash_portfolio_currency",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_cash_portfolio_currency` ON `paper_cash_entries` (`portfolio_id`,`currency`)"
+    },
+    {
+      "name": "idx_customer_market_watch_symbol",
+      "type": "index",
+      "sql": "CREATE INDEX idx_customer_market_watch_symbol ON customer_market_watch(symbol)"
+    },
+    {
+      "name": "idx_evaluation_forecast_revision",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_evaluation_forecast_revision` ON `evaluation_revisions` (`forecast_id`,`revision`)"
+    },
+    {
+      "name": "idx_evaluation_unique",
+      "type": "index",
+      "sql": "CREATE UNIQUE INDEX idx_evaluation_unique ON evaluation_revisions(forecast_id,revision)"
+    },
+    {
+      "name": "idx_forecast_date",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_forecast_date` ON `forecast_records` (`created_at`)"
+    },
+    {
+      "name": "idx_forecast_outcomes_eval",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_forecast_outcomes_eval` ON `forecast_outcomes` (`evaluated_at`)"
+    },
+    {
+      "name": "idx_forecast_symbol_date",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_forecast_symbol_date` ON `forecast_records` (`symbol`,`created_at`)"
+    },
+    {
+      "name": "idx_forecast_symbol_horizon",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_forecast_symbol_horizon` ON `forecast_records` (`symbol`,`horizon`)"
+    },
+    {
+      "name": "idx_market_observations_dedupe",
+      "type": "index",
+      "sql": "CREATE UNIQUE INDEX idx_market_observations_dedupe ON market_observations(symbol, observed_at, source)"
+    },
+    {
+      "name": "idx_market_observations_symbol_time",
+      "type": "index",
+      "sql": "CREATE INDEX idx_market_observations_symbol_time ON market_observations(symbol, observed_at)"
+    },
+    {
+      "name": "idx_portfolio_sessions_expiry",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_portfolio_sessions_expiry` ON `paper_portfolio_sessions` (`expires_at`)"
+    },
+    {
+      "name": "idx_portfolios_name",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_portfolios_name` ON `paper_portfolios` (`name`)"
+    },
+    {
+      "name": "idx_research_symbol_date",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_research_symbol_date` ON `research_runs` (`symbol`,`created_at`)"
+    },
+    {
+      "name": "idx_tests_owner_date",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_tests_owner_date` ON `forecast_tests` (`owner`,`created_at`)"
+    },
+    {
+      "name": "idx_tests_unique",
+      "type": "index",
+      "sql": "CREATE UNIQUE INDEX idx_tests_unique ON forecast_tests(owner,forecast_id,policy)"
+    },
+    {
+      "name": "idx_trades_portfolio_currency",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_trades_portfolio_currency` ON `paper_trades` (`portfolio_id`,`currency`)"
+    },
+    {
+      "name": "idx_trades_symbol_currency",
+      "type": "index",
+      "sql": "CREATE INDEX `idx_trades_symbol_currency` ON `paper_trades` (`symbol`,`currency`)"
+    },
+    {
+      "name": "screener_picks_forecast",
+      "type": "index",
+      "sql": "CREATE INDEX screener_picks_forecast ON screener_picks(forecast_id)"
+    },
+    {
+      "name": "screener_runs_created",
+      "type": "index",
+      "sql": "CREATE INDEX screener_runs_created ON screener_runs(created_at DESC)"
+    },
+    {
+      "name": "_cf_KV",
+      "type": "table",
+      "sql": "CREATE TABLE _cf_KV (\n        key TEXT PRIMARY KEY,\n        value BLOB\n      ) WITHOUT ROWID"
+    },
+    {
+      "name": "accuracy_rows",
+      "type": "table",
+      "sql": "CREATE TABLE `accuracy_rows` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`run_id` text NOT NULL,\n\t`ordinal` integer NOT NULL,\n\t`symbol` text NOT NULL,\n\t`company` text NOT NULL,\n\t`state` text DEFAULT 'pending' NOT NULL,\n\t`forecast` text,\n\t`inputs` text,\n\t`outcome` text,\n\t`error` text DEFAULT '' NOT NULL,\n\t`updated_at` text NOT NULL,\n\t`lease_token` text DEFAULT '' NOT NULL,\n\t`lease_until` integer DEFAULT 0 NOT NULL\n)"
+    },
+    {
+      "name": "accuracy_runs",
+      "type": "table",
+      "sql": "CREATE TABLE `accuracy_runs` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "admin_access",
+      "type": "table",
+      "sql": "CREATE TABLE `admin_access` (\n\t`id` integer PRIMARY KEY NOT NULL,\n\t`attempts` integer DEFAULT 0 NOT NULL,\n\t`window_started` integer DEFAULT 0 NOT NULL,\n\t`session_hash` text DEFAULT '' NOT NULL,\n\t`expires_at` integer DEFAULT 0 NOT NULL\n)"
+    },
+    {
+      "name": "admin_audit",
+      "type": "table",
+      "sql": "CREATE TABLE `admin_audit` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`action` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "analysis_snapshots",
+      "type": "table",
+      "sql": "CREATE TABLE `analysis_snapshots` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`symbol` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "aziz_corporate_events",
+      "type": "table",
+      "sql": "CREATE TABLE aziz_corporate_events (\n  id TEXT PRIMARY KEY,\n  symbol_id TEXT NOT NULL REFERENCES aziz_symbols(id),\n  provider TEXT NOT NULL,\n  event_type TEXT NOT NULL,\n  event_date TEXT,\n  announced_at TEXT,\n  available_at TEXT,\n  source_url TEXT,\n  source_payload TEXT,\n  retrieved_at TEXT NOT NULL,\n  availability_basis TEXT NOT NULL CHECK(availability_basis IN ('unknown','provider_published_time')),\n  created_at TEXT NOT NULL\n)"
+    },
+    {
+      "name": "aziz_import_runs",
+      "type": "table",
+      "sql": "CREATE TABLE aziz_import_runs (\n  id TEXT PRIMARY KEY,\n  started_at TEXT NOT NULL,\n  finished_at TEXT,\n  requested_batch INTEGER NOT NULL,\n  status TEXT NOT NULL CHECK(status IN ('running','completed','completed_with_errors','failed')),\n  provider TEXT NOT NULL,\n  requested_symbols_json TEXT NOT NULL,\n  result_json TEXT,\n  created_at TEXT NOT NULL\n)"
+    },
+    {
+      "name": "aziz_market_bars",
+      "type": "table",
+      "sql": "CREATE TABLE aziz_market_bars (\n  id TEXT PRIMARY KEY,\n  dataset_id TEXT NOT NULL REFERENCES aziz_market_datasets(id),\n  symbol_id TEXT NOT NULL REFERENCES aziz_symbols(id),\n  provider TEXT NOT NULL,\n  session_date TEXT NOT NULL,\n  opened REAL NOT NULL,\n  high REAL NOT NULL,\n  low REAL NOT NULL,\n  closed REAL NOT NULL,\n  adjusted_close REAL,\n  volume REAL,\n  retrieved_at TEXT NOT NULL,\n  available_at TEXT,\n  availability_basis TEXT NOT NULL CHECK(availability_basis IN ('retrieval_time_only','provider_published_time')),\n  quality_flags_json TEXT NOT NULL DEFAULT '[]',\n  created_at TEXT NOT NULL,\n  UNIQUE(symbol_id, provider, session_date)\n)"
+    },
+    {
+      "name": "aziz_market_datasets",
+      "type": "table",
+      "sql": "CREATE TABLE aziz_market_datasets (\n  id TEXT PRIMARY KEY,\n  import_run_id TEXT NOT NULL REFERENCES aziz_import_runs(id),\n  symbol_id TEXT NOT NULL REFERENCES aziz_symbols(id),\n  provider TEXT NOT NULL,\n  endpoint TEXT NOT NULL,\n  retrieved_at TEXT NOT NULL,\n  availability_basis TEXT NOT NULL CHECK(availability_basis IN ('retrieval_time_only','provider_published_time')),\n  raw_sha256 TEXT NOT NULL,\n  raw_payload TEXT NOT NULL,\n  source_status TEXT NOT NULL,\n  source_message TEXT,\n  created_at TEXT NOT NULL\n)"
+    },
+    {
+      "name": "aziz_symbols",
+      "type": "table",
+      "sql": "CREATE TABLE aziz_symbols (\n  id TEXT PRIMARY KEY,\n  market TEXT NOT NULL CHECK(market IN ('sa','us')),\n  symbol TEXT NOT NULL,\n  provider_symbol TEXT NOT NULL,\n  name TEXT NOT NULL,\n  sector TEXT NOT NULL,\n  active INTEGER NOT NULL DEFAULT 1 CHECK(active IN (0,1)),\n  replacement_for TEXT,\n  created_at TEXT NOT NULL,\n  updated_at TEXT NOT NULL,\n  UNIQUE(market, symbol)\n)"
+    },
+    {
+      "name": "backtest_results",
+      "type": "table",
+      "sql": "CREATE TABLE `backtest_results` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`run_id` text NOT NULL,\n\t`horizon` integer NOT NULL,\n\t`data` text NOT NULL,\n\t`created_at` text NOT NULL,\n\tFOREIGN KEY (`run_id`) REFERENCES `backtest_runs`(`id`) ON UPDATE no action ON DELETE cascade\n)"
+    },
+    {
+      "name": "backtest_runs",
+      "type": "table",
+      "sql": "CREATE TABLE `backtest_runs` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`symbol` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "council_runs",
+      "type": "table",
+      "sql": "CREATE TABLE council_runs (\n  id TEXT PRIMARY KEY NOT NULL,\n  created_at TEXT NOT NULL,\n  updated_at TEXT NOT NULL,\n  trigger TEXT NOT NULL,\n  status TEXT NOT NULL,\n  task TEXT NOT NULL,\n  data TEXT NOT NULL\n)"
+    },
+    {
+      "name": "customer_market_watch",
+      "type": "table",
+      "sql": "CREATE TABLE customer_market_watch (\n  account_key TEXT NOT NULL,\n  symbol TEXT NOT NULL,\n  market TEXT NOT NULL,\n  name TEXT NOT NULL,\n  created_at TEXT NOT NULL,\n  updated_at TEXT NOT NULL,\n  data TEXT NOT NULL,\n  PRIMARY KEY (account_key, symbol)\n)"
+    },
+    {
+      "name": "d1_migrations",
+      "type": "table",
+      "sql": "CREATE TABLE d1_migrations(\n\t\tid         INTEGER PRIMARY KEY AUTOINCREMENT,\n\t\tname       TEXT UNIQUE,\n\t\tapplied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL\n)"
+    },
+    {
+      "name": "evaluation_revisions",
+      "type": "table",
+      "sql": "CREATE TABLE `evaluation_revisions` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`forecast_id` text NOT NULL,\n\t`revision` integer NOT NULL,\n\t`created_at` text NOT NULL,\n\t`fingerprint` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "forecast_outcomes",
+      "type": "table",
+      "sql": "CREATE TABLE `forecast_outcomes` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`evaluated_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "forecast_records",
+      "type": "table",
+      "sql": "CREATE TABLE `forecast_records` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`snapshot_id` text NOT NULL,\n\t`symbol` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`horizon` integer NOT NULL,\n\t`model` text NOT NULL,\n\t`market` text NOT NULL,\n\t`sector` text NOT NULL,\n\t`confidence` text NOT NULL,\n\t`available` integer NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "forecast_tests",
+      "type": "table",
+      "sql": "CREATE TABLE `forecast_tests` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`owner` text NOT NULL,\n\t`forecast_id` text NOT NULL,\n\t`group_id` text NOT NULL,\n\t`symbol` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`archived` integer DEFAULT 0 NOT NULL,\n\t`policy` text NOT NULL,\n\t`selection` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "gold_budgets",
+      "type": "table",
+      "sql": "CREATE TABLE `gold_budgets` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`requests` integer DEFAULT 0 NOT NULL\n)"
+    },
+    {
+      "name": "gold_locks",
+      "type": "table",
+      "sql": "CREATE TABLE `gold_locks` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`until_ms` integer DEFAULT 0 NOT NULL,\n\t`token` text DEFAULT '' NOT NULL\n)"
+    },
+    {
+      "name": "gold_state",
+      "type": "table",
+      "sql": "CREATE TABLE `gold_state` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`data` text NOT NULL,\n\t`updated_at` text NOT NULL\n)"
+    },
+    {
+      "name": "market_observations",
+      "type": "table",
+      "sql": "CREATE TABLE market_observations (\n  id TEXT PRIMARY KEY NOT NULL,\n  symbol TEXT NOT NULL,\n  market TEXT NOT NULL,\n  observed_at TEXT NOT NULL,\n  source TEXT NOT NULL,\n  data TEXT NOT NULL\n)"
+    },
+    {
+      "name": "paper_cash_entries",
+      "type": "table",
+      "sql": "CREATE TABLE `paper_cash_entries` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`portfolio_id` text NOT NULL,\n\t`cash_type` text NOT NULL,\n\t`amount` text NOT NULL,\n\t`currency` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "paper_portfolio_sessions",
+      "type": "table",
+      "sql": "CREATE TABLE `paper_portfolio_sessions` (\n\t`token_hash` text PRIMARY KEY NOT NULL,\n\t`portfolio_id` text NOT NULL,\n\t`expires_at` integer NOT NULL,\n\t`created_at` text NOT NULL\n)"
+    },
+    {
+      "name": "paper_portfolios",
+      "type": "table",
+      "sql": "CREATE TABLE `paper_portfolios` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`name` text NOT NULL,\n\t`currency` text NOT NULL,\n\t`pin_hash` text DEFAULT '' NOT NULL,\n\t`attempts` integer DEFAULT 0 NOT NULL,\n\t`window_started` integer DEFAULT 0 NOT NULL,\n\t`created_at` text NOT NULL,\n\t`updated_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "paper_trades",
+      "type": "table",
+      "sql": "CREATE TABLE `paper_trades` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`symbol` text NOT NULL,\n\t`side` text NOT NULL,\n\t`quantity` text NOT NULL,\n\t`price` text NOT NULL,\n\t`currency` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n, `portfolio_id` text DEFAULT 'legacy' NOT NULL)"
+    },
+    {
+      "name": "recommendation_lock",
+      "type": "table",
+      "sql": "CREATE TABLE `recommendation_lock` (\n\t`id` integer PRIMARY KEY NOT NULL,\n\t`owner_id` text DEFAULT '' NOT NULL,\n\t`pin_hash` text NOT NULL,\n\t`attempts` integer DEFAULT 0 NOT NULL,\n\t`window_started` integer DEFAULT 0 NOT NULL\n)"
+    },
+    {
+      "name": "recovery_manifests",
+      "type": "table",
+      "sql": "CREATE TABLE `recovery_manifests` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "recovery_rows",
+      "type": "table",
+      "sql": "CREATE TABLE `recovery_rows` (\n\t`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,\n\t`checkpoint` text NOT NULL,\n\t`table_name` text NOT NULL,\n\t`row_data` text NOT NULL\n)"
+    },
+    {
+      "name": "research_budgets",
+      "type": "table",
+      "sql": "CREATE TABLE `research_budgets` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`reserved` integer DEFAULT 0 NOT NULL,\n\t`reported` integer DEFAULT 0 NOT NULL,\n\t`updated_at` text NOT NULL\n)"
+    },
+    {
+      "name": "research_locks",
+      "type": "table",
+      "sql": "CREATE TABLE `research_locks` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`token` text NOT NULL,\n\t`until_ms` integer NOT NULL\n)"
+    },
+    {
+      "name": "research_runs",
+      "type": "table",
+      "sql": "CREATE TABLE `research_runs` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`symbol` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "research_state",
+      "type": "table",
+      "sql": "CREATE TABLE `research_state` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`data` text NOT NULL,\n\t`updated_at` text NOT NULL\n)"
+    },
+    {
+      "name": "screener_batches",
+      "type": "table",
+      "sql": "CREATE TABLE screener_batches (\n run_id TEXT NOT NULL REFERENCES screener_runs(id),\n batch_index INTEGER NOT NULL CHECK(batch_index >= 0),\n created_at TEXT NOT NULL,\n result_json TEXT NOT NULL CHECK(json_valid(result_json)),\n PRIMARY KEY(run_id,batch_index)\n)"
+    },
+    {
+      "name": "screener_picks",
+      "type": "table",
+      "sql": "CREATE TABLE screener_picks (\n run_id TEXT NOT NULL REFERENCES screener_runs(id),\n market TEXT NOT NULL CHECK(market IN ('sa','us')),\n rank INTEGER NOT NULL CHECK(rank BETWEEN 1 AND 10),\n forecast_id TEXT NOT NULL REFERENCES forecast_records(id),\n PRIMARY KEY(run_id,market,rank),\n UNIQUE(run_id,forecast_id)\n)"
+    },
+    {
+      "name": "screener_runs",
+      "type": "table",
+      "sql": "CREATE TABLE screener_runs (\n id TEXT PRIMARY KEY NOT NULL,\n token_hash TEXT NOT NULL,\n created_at TEXT NOT NULL,\n completed_at TEXT,\n status TEXT NOT NULL CHECK(status IN ('scanning','complete')),\n plan_json TEXT NOT NULL CHECK(json_valid(plan_json)),\n result_json TEXT CHECK(result_json IS NULL OR json_valid(result_json)),\n fingerprint TEXT\n)"
+    },
+    {
+      "name": "settings_history",
+      "type": "table",
+      "sql": "CREATE TABLE `settings_history` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "site_settings",
+      "type": "table",
+      "sql": "CREATE TABLE `site_settings` (\n\t`id` integer PRIMARY KEY NOT NULL,\n\t`value` text NOT NULL\n)"
+    },
+    {
+      "name": "source_health",
+      "type": "table",
+      "sql": "CREATE TABLE `source_health` (\n\t`source_id` text PRIMARY KEY NOT NULL,\n\t`state` text DEFAULT 'unknown' NOT NULL,\n\t`success_count` integer DEFAULT 0 NOT NULL,\n\t`failure_count` integer DEFAULT 0 NOT NULL,\n\t`avg_latency_ms` real,\n\t`last_success_at` text,\n\t`last_failure_at` text,\n\t`last_error` text,\n\t`updated_at` text NOT NULL\n)"
+    },
+    {
+      "name": "source_status",
+      "type": "table",
+      "sql": "CREATE TABLE `source_status` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`status` text NOT NULL,\n\t`last_attempt` text NOT NULL,\n\t`last_success` text NOT NULL,\n\t`detail` text NOT NULL\n)"
+    },
+    {
+      "name": "watchlist",
+      "type": "table",
+      "sql": "CREATE TABLE `watchlist` (\n\t`symbol` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+    },
+    {
+      "name": "backtest_results_after_insert",
+      "type": "trigger",
+      "sql": "CREATE TRIGGER backtest_results_after_insert AFTER INSERT ON backtest_runs BEGIN\n INSERT OR IGNORE INTO backtest_results(id,run_id,horizon,data,created_at)\n SELECT NEW.id || ':' || json_extract(j.value,'$.horizon'),NEW.id,json_extract(j.value,'$.horizon'),j.value,NEW.created_at\n FROM json_each(CASE WHEN json_valid(NEW.data) THEN CASE json_extract(NEW.data,'$.kind') WHEN 'mizan-issued-forecast-audit-v1' THEN CASE WHEN json_type(NEW.data,'$.byHorizon')='array' THEN json_extract(NEW.data,'$.byHorizon') ELSE '[]' END WHEN 'mizan-issued-forecast-windows-v1' THEN CASE WHEN json_type(NEW.data,'$.aggregate.byHorizon')='array' THEN json_extract(NEW.data,'$.aggregate.byHorizon') ELSE '[]' END ELSE '[]' END ELSE '[]' END) j\n WHERE j.type='object' AND json_type(j.value,'$.horizon')='integer' AND json_extract(j.value,'$.horizon') IN (1,5,21,63,126,252);\nEND"
+    },
+    {
+      "name": "backtest_results_after_update",
+      "type": "trigger",
+      "sql": "CREATE TRIGGER backtest_results_after_update AFTER UPDATE OF data ON backtest_runs BEGIN\n DELETE FROM backtest_results WHERE run_id=NEW.id;\n INSERT OR IGNORE INTO backtest_results(id,run_id,horizon,data,created_at)\n SELECT NEW.id || ':' || json_extract(j.value,'$.horizon'),NEW.id,json_extract(j.value,'$.horizon'),j.value,NEW.created_at\n FROM json_each(CASE WHEN json_valid(NEW.data) THEN CASE json_extract(NEW.data,'$.kind') WHEN 'mizan-issued-forecast-audit-v1' THEN CASE WHEN json_type(NEW.data,'$.byHorizon')='array' THEN json_extract(NEW.data,'$.byHorizon') ELSE '[]' END WHEN 'mizan-issued-forecast-windows-v1' THEN CASE WHEN json_type(NEW.data,'$.aggregate.byHorizon')='array' THEN json_extract(NEW.data,'$.aggregate.byHorizon') ELSE '[]' END ELSE '[]' END ELSE '[]' END) j\n WHERE j.type='object' AND json_type(j.value,'$.horizon')='integer' AND json_extract(j.value,'$.horizon') IN (1,5,21,63,126,252);\nEND"
+    },
+    {
+      "name": "screener_batch_fixed",
+      "type": "trigger",
+      "sql": "CREATE TRIGGER screener_batch_fixed BEFORE UPDATE ON screener_batches BEGIN SELECT RAISE(ABORT,'screener_batch_is_immutable'); END"
+    },
+    {
+      "name": "screener_batch_keep",
+      "type": "trigger",
+      "sql": "CREATE TRIGGER screener_batch_keep BEFORE DELETE ON screener_batches BEGIN SELECT RAISE(ABORT,'screener_batch_is_immutable'); END"
+    },
+    {
+      "name": "screener_forecast_fixed",
+      "type": "trigger",
+      "sql": "CREATE TRIGGER screener_forecast_fixed BEFORE UPDATE ON forecast_records WHEN OLD.snapshot_id LIKE 'screener:%' BEGIN SELECT RAISE(ABORT,'issued_screener_forecast_is_immutable'); END"
+    },
+    {
+      "name": "screener_forecast_keep",
+      "type": "trigger",
+      "sql": "CREATE TRIGGER screener_forecast_keep BEFORE DELETE ON forecast_records WHEN OLD.snapshot_id LIKE 'screener:%' BEGIN SELECT RAISE(ABORT,'issued_screener_forecast_is_immutable'); END"
+    },
+    {
+      "name": "screener_input_fixed",
+      "type": "trigger",
+      "sql": "CREATE TRIGGER screener_input_fixed BEFORE UPDATE ON analysis_snapshots WHEN OLD.id LIKE 'screener:%' BEGIN SELECT RAISE(ABORT,'issued_screener_input_is_immutable'); END"
+    },
+    {
+      "name": "screener_input_keep",
+      "type": "trigger",
+      "sql": "CREATE TRIGGER screener_input_keep BEFORE DELETE ON analysis_snapshots WHEN OLD.id LIKE 'screener:%' BEGIN SELECT RAISE(ABORT,'issued_screener_input_is_immutable'); END"
+    },
+    {
+      "name": "screener_pick_fixed",
+      "type": "trigger",
+      "sql": "CREATE TRIGGER screener_pick_fixed BEFORE UPDATE ON screener_picks BEGIN SELECT RAISE(ABORT,'screener_pick_is_immutable'); END"
+    },
+    {
+      "name": "screener_pick_keep",
+      "type": "trigger",
+      "sql": "CREATE TRIGGER screener_pick_keep BEFORE DELETE ON screener_picks BEGIN SELECT RAISE(ABORT,'screener_pick_is_immutable'); END"
+    },
+    {
+      "name": "screener_run_keep",
+      "type": "trigger",
+      "sql": "CREATE TRIGGER screener_run_keep BEFORE DELETE ON screener_runs BEGIN SELECT RAISE(ABORT,'screener_run_is_immutable'); END"
+    },
+    {
+      "name": "screener_run_sealed",
+      "type": "trigger",
+      "sql": "CREATE TRIGGER screener_run_sealed BEFORE UPDATE ON screener_runs WHEN OLD.status='complete' BEGIN SELECT RAISE(ABORT,'screener_run_is_immutable'); END"
+    }
+  ]
+}
