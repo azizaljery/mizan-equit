@@ -1,0 +1,421 @@
+{
+  "project": "MIZAN_FINANCIAL",
+  "wave": "TRUST",
+  "phase": "PHASE-2-TRUST-BASELINE",
+  "planStatus": "OWNER_APPROVED_IN_PROGRESS",
+  "ownerApproval": {
+    "status": "OWNER_APPROVED",
+    "scope": "The new 10-item Phase 2 Trust Baseline and stated safety boundaries",
+    "approvalSource": "User authorization conveyed in the root conversation; root informed the user of the merged Phase 1 baseline on 2026-10-03"
+  },
+  "recordedAt": "2026-10-03T22:29:00Z",
+  "repository": "azizaljery/mizan-equit",
+  "canonicalApplicationPath": "mizan-v45",
+  "baseline": {
+    "commit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+    "branch": "main",
+    "state": "FROZEN",
+    "source": "PR2 merged to main; exact SHA verified and set by root",
+    "useCanonicalApplicationCheckout": true,
+    "doNotUseAsCodeBaseline": "The older Sites source snapshot at 93808ca6b93188581adda966a3caf019d741898c"
+  },
+  "phaseProgress": {
+    "requirementsTotal": 10,
+    "requirementsPassed": 0,
+    "requirementsPartial": 1,
+    "requirementsFailed": 0,
+    "requirementsBlocked": 0,
+    "requirementsNotStarted": 9,
+    "closureReadiness": null,
+    "monitoringOnly": false,
+    "closureRule": "All 10 requirements PASS with linked evidence and human review; P2-09 has no open CRITICAL risks; percentage alone never closes the phase."
+  },
+  "executionGate": {
+    "phase1": "CLOSED; PR2 merged",
+    "phase2DocsArchive": "PR3 archive pending",
+    "applicationTests": "NOT_STARTED; wait for explicit root GO",
+    "productionMutation": false,
+    "realTrades": false,
+    "secretsInEvidence": false,
+    "p201RemainingIdentityGapBlocksSyntheticWork": false,
+    "p201RemainingIdentityGap": "Provider DB name/UUID and independent D2 remain unresolved; continue only independent synthetic local P2-02..P2-08 after root GO."
+  },
+  "identity": {
+    "currentSiteMetadata": {
+      "capturedAt": "2026-10-03T22:20:52Z",
+      "source": "Read-only Sites database overview",
+      "projectId": "appgprj_6a9bd7353ed4819193fcd5363ed1d38f",
+      "selectedBindingName": "DB",
+      "tables": [
+        "accuracy_rows",
+        "accuracy_runs",
+        "admin_access",
+        "admin_audit",
+        "analysis_snapshots",
+        "aziz_corporate_events",
+        "aziz_import_runs",
+        "aziz_market_bars",
+        "aziz_market_datasets",
+        "aziz_monitor_records",
+        "aziz_symbols",
+        "backtest_results",
+        "backtest_runs",
+        "council_runs",
+        "customer_market_watch",
+        "evaluation_revisions",
+        "forecast_outcomes",
+        "forecast_records",
+        "forecast_tests",
+        "gold_budgets",
+        "gold_locks",
+        "gold_state",
+        "market_observations",
+        "paper_cash_entries",
+        "paper_portfolio_sessions",
+        "paper_portfolios",
+        "paper_trades",
+        "recommendation_lock",
+        "recovery_manifests",
+        "recovery_rows",
+        "research_budgets",
+        "research_locks",
+        "research_runs",
+        "research_state",
+        "screener_batches",
+        "screener_picks",
+        "screener_runs",
+        "settings_history",
+        "site_settings",
+        "source_health",
+        "source_status",
+        "watchlist"
+      ],
+      "providerDatabaseName": null,
+      "providerDatabaseUuid": null,
+      "status": "PARTIAL_METADATA_ONLY",
+      "limitations": [
+        "Overview returned the live Sites binding and table names only; it did not expose the provider database name or UUID.",
+        "No table rows were read."
+      ]
+    },
+    "historicalD1Reference": {
+      "provider": "Cloudflare D1",
+      "name": "mizan-equity-db",
+      "uuid": "e95b74e8-81d6-4beb-8ea2-ad59c863d21d",
+      "source": "Phase 1 E-003 recovery-point/context records",
+      "useAsFreshCurrentIdentity": false
+    },
+    "historicalE003RestoreTarget": {
+      "provider": "Cloudflare D1",
+      "name": "mizan-equity-e003-36779960771",
+      "uuid": "679bd26c-c70a-4d1d-89dc-487a61bfeb2d",
+      "region": "EEUR",
+      "state": "Temporary isolated restore target; deleted after validation; historical only and not to be reused",
+      "source": "docs/evidence/FIN-P1-E003-PRODUCTION-RESTORE-2026-09-30/isolated-db-identity.json",
+      "useAsD2Identity": false
+    },
+    "d2": {
+      "status": "UNKNOWN",
+      "referentType": null,
+      "authoritativeDefinitionSource": null,
+      "identifier": null,
+      "mustBeIndependentOf": [
+        "Production D1 mizan-equity-db",
+        "Deleted E-003 restore target mizan-equity-e003-36779960771"
+      ],
+      "evidenceStatus": "P2-01_PARTIAL_UNTIL_OWNER_CLARIFIES_D2_REFERENT_AND_AUTHORITATIVE_IDENTITY",
+      "contextReview": "Prior records do not define what D2 refers to. They distinguish production D1 and the E-003 isolated restore target; do not infer that either is D2."
+    },
+    "openOwnerQuestion": "What does D2 refer to in the new Phase 2 scope, and what authoritative source or identifier should we use to verify it independently? Please distinguish it from production D1 and the deleted E-003 restore target; no credentials or secrets are needed."
+  },
+  "syntheticTestDatabase": {
+    "logicalId": "P2-TRUST-LOCAL-DB-2026-10-03-V1",
+    "target": "Fresh local-only synthetic database at a new unique temporary path per work package",
+    "creationRule": "Start empty and seed only from P2-TRUST-SEED-V1; never connect to live binding DB, never restore E-002/E-003 data, never share a writable DB between parallel packages.",
+    "sourceFixturePlannedPath": "mizan-v45/tests/fixtures/phase2-trust-seed-v1.json",
+    "seedId": "P2-TRUST-SEED-V1",
+    "canonicalSeedSha256": "ffe716976c5582eff379c989d11eaf731da538d328b9c6f5963f105a01f3be6d",
+    "canonicalization": "SHA-256 of the seed object only after recursively sorting object keys and serializing compact UTF-8 JSON; arrays preserve order.",
+    "seed": {
+      "portfolioId": "P2-TRUST-PORTFOLIO-001",
+      "instrument": "SYNTH-SAR-001",
+      "currency": "SAR",
+      "openingCash": 10000,
+      "fees": 0,
+      "events": [
+        {
+          "id": "P2-TRUST-TRADE-001",
+          "sequence": 1,
+          "side": "buy",
+          "quantity": 10,
+          "price": 100,
+          "at": "2026-10-03T00:00:01Z"
+        },
+        {
+          "id": "P2-TRUST-TRADE-002",
+          "sequence": 2,
+          "side": "buy",
+          "quantity": 5,
+          "price": 120,
+          "at": "2026-10-03T00:00:02Z"
+        },
+        {
+          "id": "P2-TRUST-TRADE-003",
+          "sequence": 3,
+          "side": "sell",
+          "quantity": 4,
+          "price": 130,
+          "at": "2026-10-03T00:00:03Z"
+        },
+        {
+          "id": "P2-TRUST-MARK-001",
+          "sequence": 4,
+          "side": "mark",
+          "quantity": null,
+          "price": 110,
+          "at": "2026-10-03T00:00:05Z"
+        },
+        {
+          "id": "P2-TRUST-TRADE-004",
+          "sequence": 5,
+          "side": "sell",
+          "quantity": 11,
+          "price": 110,
+          "at": "2026-10-03T00:00:06Z"
+        }
+      ],
+      "forecastSnapshot": {
+        "id": "P2-TRUST-FORECAST-001",
+        "modelVersion": "SYNTHETIC-1",
+        "settingsVersion": "SYNTHETIC-1",
+        "anchorDate": "2026-10-03",
+        "values": {
+          "low": 100,
+          "point": 110,
+          "high": 120
+        }
+      },
+      "expectedCheckpoints": {
+        "afterTwoBuys": {
+          "cash": 8400,
+          "units": 15,
+          "averageCost": 106.66666666666667
+        },
+        "afterPartialSale": {
+          "cash": 8920,
+          "units": 11,
+          "realizedPnl": 93.33333333333333
+        },
+        "atMark": {
+          "mark": 110,
+          "unrealizedPnl": 36.66666666666667
+        },
+        "afterFullSale": {
+          "cash": 10130,
+          "units": 0,
+          "cumulativeRealizedPnl": 130,
+          "unrealizedPnl": 0
+        }
+      }
+    },
+    "state": "SPECIFIED_NOT_INSTANTIATED_OR_EXECUTED",
+    "restoreDatabaseLogicalId": "P2-TRUST-LOCAL-RESTORE-DB-2026-10-03-V1",
+    "backupRestoreProcedure": "After fixture writes are quiesced, create a consistent local DB-level backup/export from the synthetic test database and restore/import it into the separate fresh local restore store above. Do not use an application restore endpoint. Compare schema, row counts, full synthetic trade IDs, per-record hashes, balances and P&L. Never restore production/E-002/E-003 data."
+  },
+  "requirements": [
+    {
+      "id": "P2-01",
+      "name": "Baseline and independent identity",
+      "status": "PARTIAL",
+      "humanReview": "PENDING",
+      "evidence": [
+        "EVD-TRUST-P2-01-IDENTITY"
+      ],
+      "verified": [
+        "Frozen canonical baseline SHA",
+        "Sites project and selected DB binding metadata captured read-only"
+      ],
+      "remaining": [
+        "Fresh provider DB name/UUID or documented provider limitation",
+        "Authoritative independent D2 definition and identity"
+      ]
+    },
+    {
+      "id": "P2-02",
+      "name": "Synthetic portfolio lifecycle and accounting",
+      "status": "NOT_STARTED",
+      "humanReview": "PENDING",
+      "evidence": [
+        "EVD-TRUST-P2-02-PORTFOLIO"
+      ],
+      "acceptanceSummary": "Fresh local synthetic portfolio create/buy/add/partial-sell/full-sell/reload. Create a consistent DB-level backup after writes are quiesced; restore into a separate fresh local store (no app restore endpoint) and compare schema, rows, IDs, hashes and independent cash/units/cost/P&L arithmetic."
+    },
+    {
+      "id": "P2-03",
+      "name": "Ledger integrity and traceability",
+      "status": "NOT_STARTED",
+      "humanReview": "PENDING",
+      "evidence": [
+        "EVD-TRUST-P2-03-LEDGER"
+      ]
+    },
+    {
+      "id": "P2-04",
+      "name": "Forecast snapshot immutability",
+      "status": "NOT_STARTED",
+      "humanReview": "PENDING",
+      "evidence": [
+        "EVD-TRUST-P2-04-FORECAST"
+      ]
+    },
+    {
+      "id": "P2-05",
+      "name": "Saudi and US authoritative market-data identity/period validation",
+      "status": "NOT_STARTED",
+      "humanReview": "PENDING",
+      "evidence": [
+        "EVD-TRUST-P2-05-SA",
+        "EVD-TRUST-P2-05-US"
+      ]
+    },
+    {
+      "id": "P2-06",
+      "name": "Missing/stale/outage/zero/null handling",
+      "status": "NOT_STARTED",
+      "humanReview": "PENDING",
+      "evidence": [
+        "EVD-TRUST-P2-06-FAILURE-MATRIX"
+      ]
+    },
+    {
+      "id": "P2-07",
+      "name": "Same-input/version deterministic replay",
+      "status": "NOT_STARTED",
+      "humanReview": "PENDING",
+      "evidence": [
+        "EVD-TRUST-P2-07-REPLAY"
+      ]
+    },
+    {
+      "id": "P2-08",
+      "name": "Performance baseline without optimization or invented thresholds",
+      "status": "NOT_STARTED",
+      "humanReview": "PENDING",
+      "evidence": [
+        "EVD-TRUST-P2-08-PERFORMANCE"
+      ]
+    },
+    {
+      "id": "P2-09",
+      "name": "Risk register",
+      "status": "NOT_STARTED",
+      "humanReview": "PENDING",
+      "evidence": [
+        "EVD-TRUST-P2-09-RISKS"
+      ]
+    },
+    {
+      "id": "P2-10",
+      "name": "Human review and phase closure",
+      "status": "NOT_STARTED",
+      "humanReview": "PENDING",
+      "evidence": [
+        "EVD-TRUST-P2-10-REVIEW"
+      ]
+    }
+  ],
+  "evidenceIndex": [
+    {
+      "evidenceId": "EVD-TRUST-P2-01-IDENTITY",
+      "requirementId": "P2-01",
+      "status": "PARTIAL",
+      "artifact": "Frozen baseline SHA plus read-only Sites binding metadata; current DB provider identity and D2 remain unresolved",
+      "result": null
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-02-PORTFOLIO",
+      "requirementId": "P2-02",
+      "status": "PLANNED_NOT_RUN",
+      "artifact": "Synthetic portfolio lifecycle, manual arithmetic worksheet, local DB-level backup/restore into a separate fresh store, and restored-state comparison; no app restore endpoint",
+      "result": null
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-03-LEDGER",
+      "requirementId": "P2-03",
+      "status": "PLANNED_NOT_RUN",
+      "artifact": "Synthetic ledger integrity, unique-ID, chronology, link and replay report",
+      "result": null
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-04-FORECAST",
+      "requirementId": "P2-04",
+      "status": "PLANNED_NOT_RUN",
+      "artifact": "Forecast immutable-field before/after snapshot comparison",
+      "result": null
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-05-SA",
+      "requirementId": "P2-05",
+      "status": "PLANNED_NOT_RUN",
+      "artifact": "Saudi sample identity/period/source evidence",
+      "result": null
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-05-US",
+      "requirementId": "P2-05",
+      "status": "PLANNED_NOT_RUN",
+      "artifact": "US sample identity/period/source evidence",
+      "result": null
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-06-FAILURE-MATRIX",
+      "requirementId": "P2-06",
+      "status": "PLANNED_NOT_RUN",
+      "artifact": "Missing/stale/outage/zero/null expected-versus-actual matrix",
+      "result": null
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-07-REPLAY",
+      "requirementId": "P2-07",
+      "status": "PLANNED_NOT_RUN",
+      "artifact": "Deterministic replay metadata, canonical digest and diff",
+      "result": null
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-08-PERFORMANCE",
+      "requirementId": "P2-08",
+      "status": "PLANNED_NOT_RUN",
+      "artifact": "Measurement-only performance baseline and environment manifest",
+      "result": null
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-09-RISKS",
+      "requirementId": "P2-09",
+      "status": "PLANNED_NOT_RUN",
+      "artifact": "Reviewed risk register snapshot and linked mitigations",
+      "result": null
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-10-REVIEW",
+      "requirementId": "P2-10",
+      "status": "PLANNED_NOT_RUN",
+      "artifact": "Human review record with explicit decision and date",
+      "result": null
+    }
+  ],
+  "scopeGuardrails": [
+    "Synthetic local test state only; never reuse production, E-002 recovery, or E-003 restore state.",
+    "No real trades, production-record mutation, or secrets in evidence.",
+    "Use canonical mizan-v45 source at baseline SHA 18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241, not the older Site source commit.",
+    "Each parallel work package uses a separate fresh local synthetic database/worktree; avoid shared writable D1 state.",
+    "No application tests until root GO after PR3 documentation archive.",
+    "No AZIZ, Mizan Score, research, new models, AI features, or optimization; Phase 3 intelligence only after Phase 2 CLOSED.",
+    "UNKNOWN, PARTIAL, BLOCKED, and NOT_RUN are never PASS."
+  ],
+  "historicalPhase2Scope": {
+    "status": "PRESERVED_AS_HISTORICAL_CONTEXT; NOT THIS PHASE'S EXECUTION SCOPE",
+    "source": "docs/MIZAN-FINANCIAL-RECOVERY-STABILIZATION.md",
+    "description": "Earlier P2-01..P2-09 described deployment independence (deployer/Sites/Worker/DBs/secrets/repo pipeline/deployment parity/duplicate deployment risks). Preserve it; do not mix its evidence IDs, statuses, or acceptance criteria with this Trust Baseline.",
+    "oldRoadmapMustBePreserved": true
+  }
+}
