@@ -1,0 +1,14 @@
+{
+  "kind": "sanitized-initial-canonical-test-harness-attempt",
+  "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+  "command": "npm test",
+  "networkPolicy": "global fetch denied including loopback",
+  "result": {"exitCode": 1, "tests": 212, "passed": 209, "failed": 2, "skipped": 1, "durationMs": 6154.692869},
+  "failedTests": [
+    {"file": "tests/state-backtest.test.mjs:188", "name": "CLI sends real Cookie and matching Origin, rejects HTTP errors without exposing secrets", "harnessEffect": "test-owned HTTP server on 127.0.0.1 was blocked by deny-all fetch policy; expected local response exit 0, got 1"},
+    {"file": "tests/state-backtest.test.mjs:197", "name": "verify:full saves JSON/HTML/Markdown despite failed checks; isolated HTTP receives no default writes or secrets in reports", "harnessEffect": "test-owned HTTP server on 127.0.0.1 was blocked by deny-all fetch policy; expected two local verify requests, observed zero"}
+  ],
+  "interpretation": "harness policy overblocked loopback; not treated as an application failure. The rerun allowed only loopback and passed both tests.",
+  "rawCredentialBearingOutputRetained": false,
+  "productionBindingUsed": false
+}
