@@ -1,0 +1,501 @@
+{
+  "evidenceId": "EVD-TRUST-P2-03-LEDGER",
+  "requirementId": "P2-03",
+  "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+  "capturedAt": "2026-10-03T22:55:01.031Z",
+  "environment": {
+    "runtime": "v24.19.0",
+    "nodeExecutable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "storage": "fresh file-backed local SQLite via node:sqlite; all 16 canonical migrations",
+    "externalNetworkUsed": false,
+    "productionOrCloudflareUsed": false,
+    "temporaryStateDeletedAfterRun": true
+  },
+  "safeSourceOrTargetIdentity": {
+    "canonicalSourceManifestSha256": "5fdf6dd6273c7765252495f6f960f74ad82592e619f583a24bd4d5bec03923bb",
+    "logicalLocalDatabaseIds": [
+      "P2-TRUST-LOCAL-DB-2026-10-03-V1",
+      "P2-TRUST-LOCAL-RESTORE-DB-2026-10-03-V1"
+    ],
+    "storage": "local SQLite only"
+  },
+  "procedure": [
+    "Verify all 4 synthetic trade events and the opening cash entry exist exactly once with unique IDs.",
+    "Verify trade chronology and application ledger order, portfolio references, null forecast references, same-ID retry idempotency, and out-of-order rejection with no mutation.",
+    "Compare repeated reload projections and restore all synthetic local state into a separate fresh local store; verify schema, counts, row hashes, IDs, app reload, and integrity."
+  ],
+  "expected": {
+    "tradeCount": 4,
+    "cashEntryCount": 1,
+    "uniqueTradeIds": 4,
+    "chronologicalTradeOrder": true,
+    "portfolioReferencesResolve": true,
+    "forecastReferences": "explicit null by contract for this fixture",
+    "sameIdRetry": "exact retry leaves count and row hash unchanged",
+    "outOfOrderAttempt": "rejected with no mutation",
+    "reloadAndRestore": "canonical ledger state matches"
+  },
+  "actual": {
+    "checkpoints": [
+      {
+        "checkpoint": "opening",
+        "cash": 10000,
+        "units": 0,
+        "averageCost": null,
+        "realizedPnl": 0,
+        "unrealizedPnl": 0,
+        "unrealizedState": "no holdings"
+      },
+      {
+        "checkpoint": "afterFirstBuy",
+        "cash": 9000,
+        "units": 10,
+        "averageCost": 100,
+        "cost": 1000,
+        "realizedPnl": 0,
+        "unrealizedPnl": null,
+        "tradeIds": [
+          "4c3740f6-7f12-570d-963e-f7212c80a452"
+        ],
+        "tradeRowHashes": [
+          {
+            "id": "4c3740f6-7f12-570d-963e-f7212c80a452",
+            "sha256": "379a003786a421983cef780fd21fc599e8816066377dc454b20269daeb22fe2f"
+          }
+        ]
+      },
+      {
+        "checkpoint": "afterTwoBuys",
+        "cash": 8400,
+        "units": 15,
+        "averageCost": 106.66666666666667,
+        "cost": 1600,
+        "realizedPnl": 0,
+        "unrealizedPnl": null,
+        "tradeIds": [
+          "4c3740f6-7f12-570d-963e-f7212c80a452",
+          "6a28e621-1f41-53dc-a035-9e0ef50ad4e0"
+        ],
+        "tradeRowHashes": [
+          {
+            "id": "4c3740f6-7f12-570d-963e-f7212c80a452",
+            "sha256": "379a003786a421983cef780fd21fc599e8816066377dc454b20269daeb22fe2f"
+          },
+          {
+            "id": "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+            "sha256": "f97e4a8e309910b9f3214ce87bd661d778ba6fb4287410425c41abb0734bd207"
+          }
+        ]
+      },
+      {
+        "checkpoint": "afterPartialSale",
+        "cash": 8920,
+        "units": 11,
+        "averageCost": 106.66666666666666,
+        "cost": 1173.3333333333333,
+        "realizedPnl": 93.33333333333331,
+        "unrealizedPnl": null,
+        "tradeIds": [
+          "4c3740f6-7f12-570d-963e-f7212c80a452",
+          "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+          "2a35d333-7135-50c2-960c-005ad5338e29"
+        ],
+        "tradeRowHashes": [
+          {
+            "id": "4c3740f6-7f12-570d-963e-f7212c80a452",
+            "sha256": "379a003786a421983cef780fd21fc599e8816066377dc454b20269daeb22fe2f"
+          },
+          {
+            "id": "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+            "sha256": "f97e4a8e309910b9f3214ce87bd661d778ba6fb4287410425c41abb0734bd207"
+          },
+          {
+            "id": "2a35d333-7135-50c2-960c-005ad5338e29",
+            "sha256": "6ccf980a2388f27842e0e4115c42357e641b2065e6353deb848fd15b1c085337"
+          }
+        ]
+      },
+      {
+        "checkpoint": "atFrozenMark",
+        "cash": 8920,
+        "units": 11,
+        "averageCost": 106.66666666666666,
+        "cost": 1173.3333333333333,
+        "realizedPnl": 93.33333333333331,
+        "unrealizedPnl": null,
+        "tradeIds": [
+          "4c3740f6-7f12-570d-963e-f7212c80a452",
+          "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+          "2a35d333-7135-50c2-960c-005ad5338e29"
+        ],
+        "tradeRowHashes": [
+          {
+            "id": "4c3740f6-7f12-570d-963e-f7212c80a452",
+            "sha256": "379a003786a421983cef780fd21fc599e8816066377dc454b20269daeb22fe2f"
+          },
+          {
+            "id": "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+            "sha256": "f97e4a8e309910b9f3214ce87bd661d778ba6fb4287410425c41abb0734bd207"
+          },
+          {
+            "id": "2a35d333-7135-50c2-960c-005ad5338e29",
+            "sha256": "6ccf980a2388f27842e0e4115c42357e641b2065e6353deb848fd15b1c085337"
+          }
+        ],
+        "mark": {
+          "price": 110,
+          "currency": "SAR",
+          "quoteTime": "2026-10-03T00:00:05Z",
+          "marketValue": 1210,
+          "unrealizedPnl": 36.66666666666674
+        }
+      },
+      {
+        "checkpoint": "afterFullSale",
+        "cash": 10130,
+        "units": 0,
+        "averageCost": null,
+        "cost": 0,
+        "realizedPnl": 130.00000000000009,
+        "unrealizedPnl": 0,
+        "tradeIds": [
+          "4c3740f6-7f12-570d-963e-f7212c80a452",
+          "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+          "2a35d333-7135-50c2-960c-005ad5338e29",
+          "f8c5ac72-6354-5c82-bd92-e4190069cb7c"
+        ],
+        "tradeRowHashes": [
+          {
+            "id": "4c3740f6-7f12-570d-963e-f7212c80a452",
+            "sha256": "379a003786a421983cef780fd21fc599e8816066377dc454b20269daeb22fe2f"
+          },
+          {
+            "id": "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+            "sha256": "f97e4a8e309910b9f3214ce87bd661d778ba6fb4287410425c41abb0734bd207"
+          },
+          {
+            "id": "2a35d333-7135-50c2-960c-005ad5338e29",
+            "sha256": "6ccf980a2388f27842e0e4115c42357e641b2065e6353deb848fd15b1c085337"
+          },
+          {
+            "id": "f8c5ac72-6354-5c82-bd92-e4190069cb7c",
+            "sha256": "b5a86eb21c21039888660ca11e2f2a226cd9341b91fb5d8ec7c355f1ffc6f33a"
+          }
+        ],
+        "unrealizedAtFrozenMark": 0
+      }
+    ],
+    "tradeCountAfterEachWrite": [
+      {
+        "logicalId": "P2-TRUST-TRADE-001",
+        "tradeId": "4c3740f6-7f12-570d-963e-f7212c80a452",
+        "side": "buy",
+        "quantity": 10,
+        "price": 100,
+        "createdAt": "2026-10-03T00:00:01.000Z",
+        "count": 1
+      },
+      {
+        "logicalId": "P2-TRUST-TRADE-002",
+        "tradeId": "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+        "side": "buy",
+        "quantity": 5,
+        "price": 120,
+        "createdAt": "2026-10-03T00:00:02.000Z",
+        "count": 2
+      },
+      {
+        "logicalId": "P2-TRUST-TRADE-003",
+        "tradeId": "2a35d333-7135-50c2-960c-005ad5338e29",
+        "side": "sell",
+        "quantity": 4,
+        "price": 130,
+        "createdAt": "2026-10-03T00:00:03.000Z",
+        "count": 3
+      },
+      {
+        "logicalId": "P2-TRUST-TRADE-004",
+        "tradeId": "f8c5ac72-6354-5c82-bd92-e4190069cb7c",
+        "side": "sell",
+        "quantity": 11,
+        "price": 110,
+        "createdAt": "2026-10-03T00:00:06.000Z",
+        "count": 4
+      }
+    ],
+    "retry": {
+      "logicalId": "P2-TRUST-TRADE-001",
+      "httpStatus": 200,
+      "tradeCountBefore": 1,
+      "tradeCountAfter": 1,
+      "persistedRowSha256Before": "379a003786a421983cef780fd21fc599e8816066377dc454b20269daeb22fe2f",
+      "persistedRowSha256After": "379a003786a421983cef780fd21fc599e8816066377dc454b20269daeb22fe2f",
+      "samePersistedRow": true,
+      "exactlyOneLogicalTrade": true,
+      "credentialValuesRecorded": false
+    },
+    "orderingProbe": {
+      "logicalId": "96aea6b9-9fb8-55fe-a5e9-36a50aecef5f",
+      "createdAt": "2026-10-03T00:00:01.500Z",
+      "httpStatus": 400,
+      "expectedRejected": true,
+      "actualError": "أدخل العمليات التاريخية بترتيب وقتها. توجد عملية أحدث في المحفظة؛ لم نغيّر تكلفتها أو أرباحها بأثر رجعي.",
+      "tradeCountBefore": 2,
+      "tradeCountAfter": 2,
+      "noMutation": true
+    },
+    "restore": {
+      "procedure": "DatabaseSync.serialize() on quiesced local SQLite connection; write snapshot file; copy bytes into previously nonexistent new local path; reopen from restored file; call app researchGET using preserved test-only in-memory session token",
+      "backupBytes": 520192,
+      "backupSha256": "3e2652052f125f41c6672444f57e81a8c4edd4a451d097eb117f5926c88c3766",
+      "restoredFileBytes": 520192,
+      "restoredFileSha256": "3e2652052f125f41c6672444f57e81a8c4edd4a451d097eb117f5926c88c3766",
+      "backupEqualsRestoredBytes": true,
+      "schemaObjects": 86,
+      "schemaSha256": "c7ed18b628ed31aa7f96b597bc762a36492e650046e6435b12638c7f107ce125",
+      "tableCount": 42,
+      "allTableRowCountsMatch": true,
+      "allTableCountDigest": "0c7bc89f5e778be2340f1842cd557bf5110b505b07f1d2bca86d6e4c8c8b2244",
+      "relevantRowCounts": {
+        "paper_portfolios": 2,
+        "paper_cash_entries": 1,
+        "paper_trades": 4,
+        "paper_portfolio_sessions": 1,
+        "forecast_records": 0,
+        "forecast_outcomes": 0
+      },
+      "relevantDomainRowHashes": {
+        "portfolio": "e994c81b41502d5287b30cd0e28d8cd4b70fb78f74c13fd39a729298c48f9323",
+        "cash": "7496a6590c00f49f0d3721207b2d1698c63deeb42f9aab7eeccfe3c54071c9ec",
+        "trades": "0aec573871db6a07f683cf89ad8fcfdf78129c4811e1b9d8744f4abebd7fe3ee",
+        "sessionsWithoutTokenDigest": "708e0cf5d13926f0ced7a760629d7576a68c5113999f6cde6991617d317d60e0"
+      },
+      "domainRowsAndHashesMatch": true,
+      "appReloadStatus": 200,
+      "restoredLedgerProjection": {
+        "activePortfolio": {
+          "id": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+          "name": "P2 Trust Synthetic 001",
+          "currency": "SAR",
+          "createdAt": "2026-10-03T00:00:00.000Z",
+          "updatedAt": "2026-10-03T00:00:00.000Z"
+        },
+        "trades": [
+          {
+            "id": "4c3740f6-7f12-570d-963e-f7212c80a452",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "sequence": 1,
+            "symbol": "SYNTH-SAR-001",
+            "side": "buy",
+            "quantity": 10,
+            "price": 100,
+            "currency": "SAR",
+            "createdAt": "2026-10-03T00:00:01.000Z",
+            "forecastId": null,
+            "forecastSnapshot": null
+          },
+          {
+            "id": "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "sequence": 2,
+            "symbol": "SYNTH-SAR-001",
+            "side": "buy",
+            "quantity": 5,
+            "price": 120,
+            "currency": "SAR",
+            "createdAt": "2026-10-03T00:00:02.000Z",
+            "forecastId": null,
+            "forecastSnapshot": null
+          },
+          {
+            "id": "2a35d333-7135-50c2-960c-005ad5338e29",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "sequence": 3,
+            "symbol": "SYNTH-SAR-001",
+            "side": "sell",
+            "quantity": 4,
+            "price": 130,
+            "currency": "SAR",
+            "createdAt": "2026-10-03T00:00:03.000Z",
+            "forecastId": null,
+            "forecastSnapshot": null
+          },
+          {
+            "id": "f8c5ac72-6354-5c82-bd92-e4190069cb7c",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "sequence": 4,
+            "symbol": "SYNTH-SAR-001",
+            "side": "sell",
+            "quantity": 11,
+            "price": 110,
+            "currency": "SAR",
+            "createdAt": "2026-10-03T00:00:06.000Z",
+            "forecastId": null,
+            "forecastSnapshot": null
+          }
+        ],
+        "cashEntries": [
+          {
+            "id": "34dc7827-6d80-41ee-81fa-ad2eacf2cc89",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "cashType": "deposit",
+            "amount": 10000,
+            "currency": "SAR",
+            "createdAt": "2026-10-03T00:00:00.000Z"
+          }
+        ],
+        "summary": {
+          "cash": 10130,
+          "units": 0,
+          "averageCost": null,
+          "cost": 0,
+          "realizedPnl": 130.00000000000009,
+          "unrealizedPnl": 0,
+          "marketValue": 0,
+          "totalValue": 10130
+        }
+      },
+      "repeatedReloadMatchesBeforeBackup": true,
+      "integrityCheck": [
+        "ok"
+      ],
+      "foreignKeyViolations": 0
+    },
+    "finalLedger": {
+      "tradeCount": 4,
+      "cashEntryCount": 1,
+      "tradeIds": [
+        "4c3740f6-7f12-570d-963e-f7212c80a452",
+        "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+        "2a35d333-7135-50c2-960c-005ad5338e29",
+        "f8c5ac72-6354-5c82-bd92-e4190069cb7c"
+      ],
+      "tradeIdOrder": [
+        "4c3740f6-7f12-570d-963e-f7212c80a452",
+        "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+        "2a35d333-7135-50c2-960c-005ad5338e29",
+        "f8c5ac72-6354-5c82-bd92-e4190069cb7c"
+      ],
+      "tradeTimes": [
+        "2026-10-03T00:00:01.000Z",
+        "2026-10-03T00:00:02.000Z",
+        "2026-10-03T00:00:03.000Z",
+        "2026-10-03T00:00:06.000Z"
+      ],
+      "ledgerSequences": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "allTradeIdsUnique": true,
+      "portfolioAndCashReferences": {
+        "portfolioExists": true,
+        "allTradePortfolioRefsResolve": true,
+        "allCashPortfolioRefsResolve": true,
+        "trades": [
+          {
+            "id": "4c3740f6-7f12-570d-963e-f7212c80a452",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "forecastId": null,
+            "purchaseForecastIds": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
+            ]
+          },
+          {
+            "id": "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "forecastId": null,
+            "purchaseForecastIds": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
+            ]
+          },
+          {
+            "id": "2a35d333-7135-50c2-960c-005ad5338e29",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "forecastId": null,
+            "purchaseForecastIds": []
+          },
+          {
+            "id": "f8c5ac72-6354-5c82-bd92-e4190069cb7c",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "forecastId": null,
+            "purchaseForecastIds": []
+          }
+        ],
+        "allForecastRefsExplicitlyNullOrPresent": true
+      },
+      "forecastIdsExplicitlyNull": true,
+      "allCashTradingReferencesResolve": true,
+      "repeatedReloadIdentical": true,
+      "seedUnchanged": true,
+      "references": {
+        "portfolioExists": true,
+        "allTradePortfolioRefsResolve": true,
+        "allCashPortfolioRefsResolve": true,
+        "trades": [
+          {
+            "id": "4c3740f6-7f12-570d-963e-f7212c80a452",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "forecastId": null,
+            "purchaseForecastIds": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
+            ]
+          },
+          {
+            "id": "6a28e621-1f41-53dc-a035-9e0ef50ad4e0",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "forecastId": null,
+            "purchaseForecastIds": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
+            ]
+          },
+          {
+            "id": "2a35d333-7135-50c2-960c-005ad5338e29",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "forecastId": null,
+            "purchaseForecastIds": []
+          },
+          {
+            "id": "f8c5ac72-6354-5c82-bd92-e4190069cb7c",
+            "portfolioId": "5eaa7148-cd35-410c-a99a-4a97f41b8720",
+            "forecastId": null,
+            "purchaseForecastIds": []
+          }
+        ],
+        "allForecastRefsExplicitlyNullOrPresent": true
+      }
+    }
+  },
+  "result": "PASS",
+  "limitations": [
+    "P2-01 remains PARTIAL outside this work package; this synthetic local test is independent of production identity and D2.",
+    "The source migrations seed the legacy placeholder portfolio and baseline rows in other modules; those bootstrap rows were left untouched, no out-of-scope APIs were exercised, and the temporary database was removed after validation.",
+    "No quotes are specified in the frozen seed before 00:00:05Z; the application GET returns unrealized P&L as unavailable/null before the frozen mark, which is reported rather than imputed.",
+    "Database restore uses Node SQLite serialize() snapshot after quiesced writes, then copies the snapshot bytes to a new local file path; no production/E-002/E-003 state was used."
+  ],
+  "artifactPathOrLink": "artifacts/p2-02-03-raw-results.json",
+  "sha256": "7cc9b26684dceb6276de0ad4feeb220b4360ab600e385197363251341ff8a5ff",
+  "reviewer": null,
+  "reviewedAt": null
+}
