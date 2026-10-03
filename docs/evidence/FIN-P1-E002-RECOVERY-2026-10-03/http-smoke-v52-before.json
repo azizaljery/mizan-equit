@@ -1,0 +1,214 @@
+{
+  "evidenceId": "EVD-RB-002",
+  "campaign": "E002-EVIDENCE-RECOVERY-2026-10-03",
+  "generatedAt": "2026-10-03T21:06:34.585Z",
+  "stage": "v52-before",
+  "sourceSha": "93808ca6b93188581adda966a3caf019d741898c",
+  "runtime": "locally built Worker via Wrangler local dev; no saved provider archive was executed",
+  "baseUrl": "http://127.0.0.1:8787",
+  "workerBoundTo127001": true,
+  "mode": "--local with isolated synthetic D1; no remote bindings; no authentication cookies/headers",
+  "startup": {
+    "ready": false,
+    "readinessProbes": 40,
+    "firstReadyElapsedMs": 10091,
+    "probePath": "/",
+    "probeExcludedFromMatrix": true
+  },
+  "assertedMatrixRequests": 20,
+  "categoryCounts": {
+    "page": 9,
+    "release-identity": 1,
+    "read-api": 4,
+    "auth-boundary": 6
+  },
+  "routes": [
+    {
+      "path": "/",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/manual",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/screener",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/screener/operations",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/tests",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/accuracy",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/accuracy-sample",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/aziz",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/gold",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/mizan-deployment.json",
+      "method": "GET",
+      "category": "release-identity",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/api/site-settings",
+      "method": "GET",
+      "category": "read-api",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/api/temporal?symbol=SYNTH&date=2026-10-03",
+      "method": "GET",
+      "category": "read-api",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/api/aziz/readiness?market=us&symbol=AAPL",
+      "method": "GET",
+      "category": "read-api",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/api/aziz/monitor",
+      "method": "GET",
+      "category": "read-api",
+      "expectedStatus": 200,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/api/research",
+      "method": "GET",
+      "category": "auth-boundary",
+      "expectedStatus": 401,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/api/forecast-tests",
+      "method": "GET",
+      "category": "auth-boundary",
+      "expectedStatus": 401,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/api/market-watch",
+      "method": "GET",
+      "category": "auth-boundary",
+      "expectedStatus": 401,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/api/accuracy-sample",
+      "method": "GET",
+      "category": "auth-boundary",
+      "expectedStatus": 401,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/api/admin/verify",
+      "method": "GET",
+      "category": "auth-boundary",
+      "expectedStatus": 403,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    },
+    {
+      "path": "/api/admin/dashboard",
+      "method": "GET",
+      "category": "auth-boundary",
+      "expectedStatus": 403,
+      "status": null,
+      "error": "TypeError",
+      "passed": false
+    }
+  ],
+  "status": "FAILED",
+  "rawResponseBodiesStored": false,
+  "notes": [
+    "Every matrix request used GET with redirect manual.",
+    "Response bodies were hashed and discarded; only the release identity fields and specified readiness fields were parsed.",
+    "Startup readiness probes are separate from the 20 asserted matrix GETs."
+  ]
+}
