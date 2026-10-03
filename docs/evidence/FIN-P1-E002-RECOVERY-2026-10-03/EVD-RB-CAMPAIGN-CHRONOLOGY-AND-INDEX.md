@@ -37,7 +37,7 @@ The three HTTP matrices contain 60 asserted route GETs total. Readiness probe(s)
 | EVD-RB-005 | [PRAGMA capability result](EVD-RB-005-pragma-capability-results.json) | D1 `quick_check` and FK checks passed; D1 `integrity_check` was blocked by `SQLITE_AUTH`; a separate read-only SQLite check of the same isolated file returned `ok`. |
 | EVD-RB-006 | [round-trip sequence summary](EVD-RB-006-roundtrip-sequence-results.json) | v52 → v51 → v52 sequence and unchanged synthetic data/schema recorded. Does not make the closure decision. |
 
-All companion logs, scripts, configs, SQL, snapshots, and diagnostics are enumerated by the repository’s root-maintained [`SHA256SUMS.txt`](SHA256SUMS.txt). The archive verification record reports 62/62 entries verified at commit `77dafe7c9cf77ef084969dbbb7592153b5f0ad56`; the root agent will update the canonical manifest and verification after archiving this index and the EVD-RB-002 summary.
+All companion logs, scripts, configs, SQL, snapshots, and diagnostics are enumerated by the repository checksum manifest [`SHA256SUMS.txt`](SHA256SUMS.txt). The archive verification record reports 62/62 entries verified at commit `77dafe7c9cf77ef084969dbbb7592153b5f0ad56`; the canonical manifest and archive verification should be refreshed after these two records are archived.
 
 ## Limits and disposition
 
