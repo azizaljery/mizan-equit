@@ -1,0 +1,264 @@
+{
+  "evidenceId": "EVD-RB-002",
+  "campaign": "E002-EVIDENCE-RECOVERY-2026-10-03",
+  "generatedAt": "2026-10-03T21:18:39.591Z",
+  "stage": "v52-before",
+  "sourceSha": "93808ca6b93188581adda966a3caf019d741898c",
+  "runtime": "built Worker under Miniflare, served by a loopback HTTP bridge in the same Node process using dispatchFetch URL+init; no saved provider archive was executed",
+  "harnessAttempt": "Miniflare v4 URL+init bridge",
+  "clientExecution": "same process as the loopback HTTP bridge",
+  "baseUrl": "http://127.0.0.1:8787",
+  "workerBoundTo127001": true,
+  "mode": "--local with isolated synthetic D1; no remote bindings; no authentication cookies/headers",
+  "startup": {
+    "ready": true,
+    "readinessProbes": 1,
+    "firstReadyElapsedMs": 254,
+    "probePath": "/",
+    "probeExcludedFromMatrix": true
+  },
+  "assertedMatrixRequests": 20,
+  "categoryCounts": {
+    "page": 9,
+    "release-identity": 1,
+    "read-api": 4,
+    "auth-boundary": 6
+  },
+  "routes": [
+    {
+      "path": "/",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bodyBytes": 26199,
+      "bodySha256": "40ec99f59a73b937c02dd08e5a35eed3db8a817fffdf3552f59aa5edef22d291",
+      "passed": true
+    },
+    {
+      "path": "/manual",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bodyBytes": 59502,
+      "bodySha256": "dc3677b48177f98909852afeefe54ae1be7f55abda492c512be58cb596529586",
+      "passed": true
+    },
+    {
+      "path": "/screener",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bodyBytes": 13643,
+      "bodySha256": "b61bd2fc25115497377bfd42811e125a3ee9a8186d3f4599458b1660485aeee0",
+      "passed": true
+    },
+    {
+      "path": "/screener/operations",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bodyBytes": 9559,
+      "bodySha256": "bb1eb804b0b6dda1cb17d263fa98b7d6c9e1c9402ecedf121395689c81bbbe22",
+      "passed": true
+    },
+    {
+      "path": "/tests",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bodyBytes": 10077,
+      "bodySha256": "7915eb6acbf5c127060a330579e05b8a01d4665dfcb336118841301c2497f8dd",
+      "passed": true
+    },
+    {
+      "path": "/accuracy",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bodyBytes": 9681,
+      "bodySha256": "385bdb6390ac7abf9c5232a6899ec690fd0764b62fc2e0fc4b385f0fc042d6b1",
+      "passed": true
+    },
+    {
+      "path": "/accuracy-sample",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bodyBytes": 11731,
+      "bodySha256": "4b089fd739c2900deea5416e93e3a0001cd7b448b8de3c5a330f7d7249f05b6c",
+      "passed": true
+    },
+    {
+      "path": "/aziz",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bodyBytes": 12022,
+      "bodySha256": "5499746c741736f23b99f9696a8146416964d1627d55088d742a19a563eecea8",
+      "passed": true
+    },
+    {
+      "path": "/gold",
+      "method": "GET",
+      "category": "page",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bodyBytes": 18989,
+      "bodySha256": "f35929448055a3291571c798852351576a847f16f35a83d95fae0c73d529d4df",
+      "passed": true
+    },
+    {
+      "path": "/mizan-deployment.json",
+      "method": "GET",
+      "category": "release-identity",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "application/json",
+      "bodyBytes": 118,
+      "bodySha256": "b16f69300c6f73770da61ce5d06a866608c411e64ad12cb2a308cb7e8b543e73",
+      "identity": {
+        "worker": "mizan-equity",
+        "commit": "93808ca6b93188581adda966a3caf019d741898c"
+      },
+      "passed": true
+    },
+    {
+      "path": "/api/site-settings",
+      "method": "GET",
+      "category": "read-api",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "application/json",
+      "bodyBytes": 36065,
+      "bodySha256": "8e482c36f5225c7ecbd09f706e8a88a852b165a400a60017bd5a2dcf143dd81f",
+      "passed": true
+    },
+    {
+      "path": "/api/temporal?symbol=SYNTH&date=2026-10-03",
+      "method": "GET",
+      "category": "read-api",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "application/json",
+      "bodyBytes": 244,
+      "bodySha256": "c6ecab0c01c906f436574700dbe6beb17f7040ffdba119d482679cf1a0b79e9a",
+      "available": false,
+      "passed": true
+    },
+    {
+      "path": "/api/aziz/readiness?market=us&symbol=AAPL",
+      "method": "GET",
+      "category": "read-api",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "application/json",
+      "bodyBytes": 663,
+      "bodySha256": "eb50c5c5d21d9633d3f5cf54e21d666061a9e026e0d82f9ad394243ab70d71fd",
+      "readinessStatus": "not_ready",
+      "canForecast": false,
+      "passed": true
+    },
+    {
+      "path": "/api/aziz/monitor",
+      "method": "GET",
+      "category": "read-api",
+      "expectedStatus": 200,
+      "status": 200,
+      "contentType": "application/json",
+      "bodyBytes": 1424,
+      "bodySha256": "25c30cc74fe79039ead901cc610ea899aef7e2c3f99749efc9748b547fe1f989",
+      "passed": true
+    },
+    {
+      "path": "/api/research",
+      "method": "GET",
+      "category": "auth-boundary",
+      "expectedStatus": 401,
+      "status": 401,
+      "contentType": "application/json",
+      "bodyBytes": 177,
+      "bodySha256": "81446d1978c588f7c028a0d497ef0ded7436274ca0c340cfa0e6a2e1c34a98a9",
+      "passed": true
+    },
+    {
+      "path": "/api/forecast-tests",
+      "method": "GET",
+      "category": "auth-boundary",
+      "expectedStatus": 401,
+      "status": 401,
+      "contentType": "application/json",
+      "bodyBytes": 93,
+      "bodySha256": "649c5164494cbb6cf842ef7ae1b0ed98ca0f067becedb0942c626e2189fc2cef",
+      "passed": true
+    },
+    {
+      "path": "/api/market-watch",
+      "method": "GET",
+      "category": "auth-boundary",
+      "expectedStatus": 401,
+      "status": 401,
+      "contentType": "application/json",
+      "bodyBytes": 84,
+      "bodySha256": "efbfde17e194001e47ef145f9fd8a737c4958b4a5ddb9ee2e1d4d3d7e7c104cb",
+      "passed": true
+    },
+    {
+      "path": "/api/accuracy-sample",
+      "method": "GET",
+      "category": "auth-boundary",
+      "expectedStatus": 401,
+      "status": 401,
+      "contentType": "application/json",
+      "bodyBytes": 156,
+      "bodySha256": "ec0e6d497baa9f00c2e61cf7a798c9662c76bf58e9e91cb7a7874495405b3666",
+      "passed": true
+    },
+    {
+      "path": "/api/admin/verify",
+      "method": "GET",
+      "category": "auth-boundary",
+      "expectedStatus": 403,
+      "status": 403,
+      "contentType": "application/json; charset=utf-8",
+      "bodyBytes": 59,
+      "bodySha256": "2f5787118723e9c85cc238707a023afb2ff18b9818129008f50b4e56d1f00976",
+      "passed": true
+    },
+    {
+      "path": "/api/admin/dashboard",
+      "method": "GET",
+      "category": "auth-boundary",
+      "expectedStatus": 403,
+      "status": 403,
+      "contentType": "application/json; charset=utf-8",
+      "bodyBytes": 59,
+      "bodySha256": "2f5787118723e9c85cc238707a023afb2ff18b9818129008f50b4e56d1f00976",
+      "passed": true
+    }
+  ],
+  "status": "PASSED",
+  "rawResponseBodiesStored": false,
+  "notes": [
+    "Every matrix request used GET with redirect manual.",
+    "Response bodies were hashed and discarded; only the release identity fields and specified readiness fields were parsed.",
+    "Startup readiness probes are separate from the 20 asserted matrix GETs.",
+    "The HTTP client and Worker bridge share this process because a separate executor process could not reach the loopback listener."
+  ]
+}
