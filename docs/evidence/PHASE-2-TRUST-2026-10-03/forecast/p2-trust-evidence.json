@@ -1,0 +1,1306 @@
+{
+  "evidenceBundle": "P2-04/06/07/08 forecast trust validation",
+  "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+  "canonicalSourceParityManifest": "/tmp/mizan-v45-canonical-18ba8f39-20261003T223500Z/source-parity.ndjson",
+  "canonicalSourceParityManifestSha256": "5fdf6dd6273c7765252495f6f960f74ad82592e619f583a24bd4d5bec03923bb",
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "linux",
+    "architecture": "x64",
+    "reportedCpuCount": 9,
+    "totalMemoryBytes": 10451464192,
+    "freeMemoryBytesAtCapture": 7466078208,
+    "testRoot": "/tmp/P2-TRUST-LOCAL-FORECAST-2026-10-03-V1",
+    "source": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241"
+  },
+  "syntheticOnly": true,
+  "noUserOrProductionData": true,
+  "network": "outbound blocked; loopback used only in parent test suite, P2 harness did not fetch",
+  "horizons": {
+    "code": [
+      {
+        "name": "يومي",
+        "sessions": 1
+      },
+      {
+        "name": "أسبوع",
+        "sessions": 5
+      },
+      {
+        "name": "شهر",
+        "sessions": 21
+      },
+      {
+        "name": "3 أشهر",
+        "sessions": 63
+      },
+      {
+        "name": "6 أشهر",
+        "sessions": 126
+      },
+      {
+        "name": "سنة",
+        "sessions": 252
+      }
+    ],
+    "semantics": "1-session daily plus five named periods [5,21,63,126,252]"
+  },
+  "results": {
+    "p204": {
+      "supportedFlowOriginalRowsUnchanged": true,
+      "fixedSyntheticSeed": {
+        "id": "P2-TRUST-FORECAST-001",
+        "instrument": "SYNTH-SAR-001",
+        "symbol": "P2T01.SR",
+        "currency": "SAR",
+        "createdAt": "2026-10-03T20:00:00.000Z",
+        "modelVersion": "SYNTHETIC-1",
+        "settingsVersion": "SYNTHETIC-1",
+        "anchorDate": "2026-10-03",
+        "values": {
+          "low": 100,
+          "point": 110,
+          "high": 120
+        }
+      },
+      "originalSeedSha256": "ce29134895c50e7ca4bce7885e04df2e5632b14420f26c0bed6bd754b25f55db",
+      "originalAppSnapshotSha256": "fad6fdfb88df56b7af9faa4a558beb2f174ff8ac52c27d88c9047a814b0a42f2",
+      "originalAppForecastFields": [
+        {
+          "snapshotId": "df710e98-916f-42c6-919f-90fd3155450f",
+          "recordId": "5a05eab5-a70c-41aa-b3dd-edfa6ccdfe38",
+          "symbol": "P2T01.SR",
+          "currency": "SAR",
+          "createdAt": "2026-10-03T20:00:00.000Z",
+          "horizon": 1,
+          "model": "mizan-scenarios-7-a3434e85",
+          "settingsUsed": {
+            "weights": {
+              "fundamental": 100,
+              "technical": 100,
+              "liquidity": 100,
+              "risk": 100
+            },
+            "maxSigma": 3,
+            "minConfidence": "low",
+            "periods": {
+              "1": {
+                "enabled": true,
+                "expanded": false
+              },
+              "5": {
+                "enabled": true,
+                "expanded": false
+              },
+              "21": {
+                "enabled": true,
+                "expanded": false
+              },
+              "63": {
+                "enabled": true,
+                "expanded": false
+              },
+              "126": {
+                "enabled": true,
+                "expanded": false
+              },
+              "252": {
+                "enabled": true,
+                "expanded": false
+              }
+            }
+          },
+          "anchorDate": "2026-10-03",
+          "price": 112.57689264547423,
+          "predictedPrice": 112.58314371545534,
+          "range": [
+            112.24405484753068,
+            112.9225754792738
+          ]
+        },
+        {
+          "snapshotId": "df710e98-916f-42c6-919f-90fd3155450f",
+          "recordId": "b0b8d59c-967d-40ec-8235-481866ab9826",
+          "symbol": "P2T01.SR",
+          "currency": "SAR",
+          "createdAt": "2026-10-03T20:00:00.000Z",
+          "horizon": 5,
+          "model": "mizan-scenarios-7-a3434e85",
+          "settingsUsed": {
+            "weights": {
+              "fundamental": 100,
+              "technical": 100,
+              "liquidity": 100,
+              "risk": 100
+            },
+            "maxSigma": 3,
+            "minConfidence": "low",
+            "periods": {
+              "1": {
+                "enabled": true,
+                "expanded": false
+              },
+              "5": {
+                "enabled": true,
+                "expanded": false
+              },
+              "21": {
+                "enabled": true,
+                "expanded": false
+              },
+              "63": {
+                "enabled": true,
+                "expanded": false
+              },
+              "126": {
+                "enabled": true,
+                "expanded": false
+              },
+              "252": {
+                "enabled": true,
+                "expanded": false
+              }
+            }
+          },
+          "anchorDate": "2026-10-03",
+          "price": 112.57689264547423,
+          "predictedPrice": 112.61636654630693,
+          "range": [
+            111.83622850732536,
+            113.4023104014605
+          ]
+        },
+        {
+          "snapshotId": "df710e98-916f-42c6-919f-90fd3155450f",
+          "recordId": "d2159d77-050e-401f-bfcc-169081a51ea5",
+          "symbol": "P2T01.SR",
+          "currency": "SAR",
+          "createdAt": "2026-10-03T20:00:00.000Z",
+          "horizon": 21,
+          "model": "mizan-scenarios-7-a3434e85",
+          "settingsUsed": {
+            "weights": {
+              "fundamental": 100,
+              "technical": 100,
+              "liquidity": 100,
+              "risk": 100
+            },
+            "maxSigma": 3,
+            "minConfidence": "low",
+            "periods": {
+              "1": {
+                "enabled": true,
+                "expanded": false
+              },
+              "5": {
+                "enabled": true,
+                "expanded": false
+              },
+              "21": {
+                "enabled": true,
+                "expanded": false
+              },
+              "63": {
+                "enabled": true,
+                "expanded": false
+              },
+              "126": {
+                "enabled": true,
+                "expanded": false
+              },
+              "252": {
+                "enabled": true,
+                "expanded": false
+              }
+            }
+          },
+          "anchorDate": "2026-10-03",
+          "price": 112.57689264547423,
+          "predictedPrice": 112.77983285024504,
+          "range": [
+            111.24357871087052,
+            114.33730238747081
+          ]
+        },
+        {
+          "snapshotId": "df710e98-916f-42c6-919f-90fd3155450f",
+          "recordId": "e5bf5c18-550c-40c3-befb-fddf202517b9",
+          "symbol": "P2T01.SR",
+          "currency": "SAR",
+          "createdAt": "2026-10-03T20:00:00.000Z",
+          "horizon": 63,
+          "model": "mizan-scenarios-7-a3434e85",
+          "settingsUsed": {
+            "weights": {
+              "fundamental": 100,
+              "technical": 100,
+              "liquidity": 100,
+              "risk": 100
+            },
+            "maxSigma": 3,
+            "minConfidence": "low",
+            "periods": {
+              "1": {
+                "enabled": true,
+                "expanded": false
+              },
+              "5": {
+                "enabled": true,
+                "expanded": false
+              },
+              "21": {
+                "enabled": true,
+                "expanded": false
+              },
+              "63": {
+                "enabled": true,
+                "expanded": false
+              },
+              "126": {
+                "enabled": true,
+                "expanded": false
+              },
+              "252": {
+                "enabled": true,
+                "expanded": false
+              }
+            }
+          },
+          "anchorDate": "2026-10-03",
+          "price": 112.57689264547423,
+          "predictedPrice": 113.18110586868727,
+          "range": [
+            110.53648838342374,
+            115.88899659291147
+          ]
+        },
+        {
+          "snapshotId": "df710e98-916f-42c6-919f-90fd3155450f",
+          "recordId": "06dce1c6-1fe9-455a-93de-ee241b01460a",
+          "symbol": "P2T01.SR",
+          "currency": "SAR",
+          "createdAt": "2026-10-03T20:00:00.000Z",
+          "horizon": 126,
+          "model": "mizan-scenarios-7-a3434e85",
+          "settingsUsed": {
+            "weights": {
+              "fundamental": 100,
+              "technical": 100,
+              "liquidity": 100,
+              "risk": 100
+            },
+            "maxSigma": 3,
+            "minConfidence": "low",
+            "periods": {
+              "1": {
+                "enabled": true,
+                "expanded": false
+              },
+              "5": {
+                "enabled": true,
+                "expanded": false
+              },
+              "21": {
+                "enabled": true,
+                "expanded": false
+              },
+              "63": {
+                "enabled": true,
+                "expanded": false
+              },
+              "126": {
+                "enabled": true,
+                "expanded": false
+              },
+              "252": {
+                "enabled": true,
+                "expanded": false
+              }
+            }
+          },
+          "anchorDate": "2026-10-03",
+          "price": 112.57689264547423,
+          "predictedPrice": 113.43232800526717,
+          "range": [
+            109.69155348233183,
+            117.30067291614216
+          ]
+        },
+        {
+          "snapshotId": "df710e98-916f-42c6-919f-90fd3155450f",
+          "recordId": "b28710c2-3b43-4086-9e7c-07e4a380fc2a",
+          "symbol": "P2T01.SR",
+          "currency": "SAR",
+          "createdAt": "2026-10-03T20:00:00.000Z",
+          "horizon": 252,
+          "model": "mizan-scenarios-7-a3434e85",
+          "settingsUsed": {
+            "weights": {
+              "fundamental": 100,
+              "technical": 100,
+              "liquidity": 100,
+              "risk": 100
+            },
+            "maxSigma": 3,
+            "minConfidence": "low",
+            "periods": {
+              "1": {
+                "enabled": true,
+                "expanded": false
+              },
+              "5": {
+                "enabled": true,
+                "expanded": false
+              },
+              "21": {
+                "enabled": true,
+                "expanded": false
+              },
+              "63": {
+                "enabled": true,
+                "expanded": false
+              },
+              "126": {
+                "enabled": true,
+                "expanded": false
+              },
+              "252": {
+                "enabled": true,
+                "expanded": false
+              }
+            }
+          },
+          "anchorDate": "2026-10-03",
+          "price": 112.57689264547423,
+          "predictedPrice": 113.78856197425853,
+          "range": [
+            108.50328883642452,
+            119.3312845630822
+          ]
+        }
+      ],
+      "roundtripReloadAndRestore": true,
+      "genericSnapshotForecastTriggers": [
+        {
+          "name": "screener_input_fixed",
+          "tbl_name": "analysis_snapshots"
+        },
+        {
+          "name": "screener_input_keep",
+          "tbl_name": "analysis_snapshots"
+        },
+        {
+          "name": "screener_forecast_fixed",
+          "tbl_name": "forecast_records"
+        },
+        {
+          "name": "screener_forecast_keep",
+          "tbl_name": "forecast_records"
+        }
+      ],
+      "directSqlUpdateAllowedWithinRolledBackSyntheticTransaction": true,
+      "limitation": "This verifies supported app activity/reload/restore behavior. The observed SQLite schema does not block arbitrary direct SQL UPDATE to generic analysis_snapshots; the mutation was inside a transaction and rolled back. A separate correction endpoint was not invoked; changed analyses appended distinct snapshots. No app edit was made."
+    },
+    "p206": {
+      "matrixCases": 38,
+      "passed": 38,
+      "failed": 0,
+      "cases": [
+        {
+          "id": "P2-06-US-identity-price-currency-valid",
+          "status": "PASS",
+          "expected": "AAPL/USD/NMS with valid close 110",
+          "actual": {
+            "symbol": "AAPL",
+            "currency": "USD",
+            "close": 110,
+            "priceCount": 1
+          }
+        },
+        {
+          "id": "US-identity-missing",
+          "status": "PASS",
+          "expected": "missing symbol rejected",
+          "actual": "Yahoo history: بنية الرد غير صالحة."
+        },
+        {
+          "id": "US-identity-mismatch",
+          "status": "PASS",
+          "expected": "different ticker rejected",
+          "actual": "Yahoo history: meta.symbol=MSFT لا يطابق المتوقع AAPL."
+        },
+        {
+          "id": "US-currency-missing",
+          "status": "PASS",
+          "expected": "missing currency rejected",
+          "actual": "عملة السعر غير متحققة."
+        },
+        {
+          "id": "US-currency-wrong",
+          "status": "PASS",
+          "expected": "SAR currency for US ticker rejected",
+          "actual": "عملة السعر لا تطابق السهم الأمريكي المطلوب."
+        },
+        {
+          "id": "US-exchange-missing",
+          "status": "PASS",
+          "expected": "missing exchange rejected",
+          "actual": "بورصة السعر لا تطابق السوق الأمريكي أو لم يتم التحقق منها."
+        },
+        {
+          "id": "US-price-zero",
+          "status": "PASS",
+          "expected": "zero quote close rejected as price",
+          "actual": "Yahoo history: لا جلسات سعرية صالحة."
+        },
+        {
+          "id": "US-price-null",
+          "status": "PASS",
+          "expected": "null quote close rejected as price",
+          "actual": "Yahoo history: لا جلسات سعرية صالحة."
+        },
+        {
+          "id": "US-price-absent",
+          "status": "PASS",
+          "expected": "missing timestamp/price series rejected",
+          "actual": "Yahoo history: لا جلسات سعرية صالحة."
+        },
+        {
+          "id": "P2-06-SA-identity-price-currency-valid",
+          "status": "PASS",
+          "expected": "2222.SR/SAR with explicit time and zero volume preserved",
+          "actual": {
+            "symbol": "2222.SR",
+            "currency": "SAR",
+            "volume": 0,
+            "time": "2026-10-02T15:00:00.000Z"
+          },
+          "notes": "Zero volume is an explicit valid zero; it is not replaced."
+        },
+        {
+          "id": "SA-identity-missing",
+          "status": "PASS",
+          "expected": "missing company identity rejected",
+          "actual": "Tadawul: يجب وجود سجل واحد مطابق للرمز."
+        },
+        {
+          "id": "SA-identity-mismatch",
+          "status": "PASS",
+          "expected": "wrong company ticker rejected",
+          "actual": "Tadawul: يجب وجود سجل واحد مطابق للرمز."
+        },
+        {
+          "id": "SA-currency-missing",
+          "status": "PASS",
+          "expected": "missing SAR currency rejected",
+          "actual": "Tadawul: الرمز أو العملة مفقودان أو غير مطابقين."
+        },
+        {
+          "id": "SA-currency-wrong",
+          "status": "PASS",
+          "expected": "USD currency for Tadawul rejected",
+          "actual": "Tadawul: الرمز أو العملة مفقودان أو غير مطابقين."
+        },
+        {
+          "id": "SA-price-zero",
+          "status": "PASS",
+          "expected": "zero last price rejected",
+          "actual": "Tadawul: سعر موجب ووقت مصدر صريح مطلوبان."
+        },
+        {
+          "id": "SA-price-null",
+          "status": "PASS",
+          "expected": "null last price rejected",
+          "actual": "Tadawul: سعر موجب ووقت مصدر صريح مطلوبان."
+        },
+        {
+          "id": "SA-price-time-missing",
+          "status": "PASS",
+          "expected": "missing source timestamp rejected",
+          "actual": "Tadawul: سعر موجب ووقت مصدر صريح مطلوبان."
+        },
+        {
+          "id": "SA-price-future-time",
+          "status": "PASS",
+          "expected": "price after fixed cutoff rejected",
+          "actual": "Tadawul: السعر بعد تاريخ التقييم."
+        },
+        {
+          "id": "P2-06-SA-zero-null-period",
+          "status": "PASS",
+          "expected": "explicit zero retained; null omitted; valid period remains annual",
+          "actual": {
+            "revenue": 0,
+            "netIncome": 0,
+            "periods": [
+              "annual"
+            ]
+          },
+          "notes": "A valid zero stays zero; a null field is omitted, not coerced."
+        },
+        {
+          "id": "P2-06-SA-publication-null-not-fabricated",
+          "status": "PASS",
+          "expected": "missing publication remains null",
+          "actual": null
+        },
+        {
+          "id": "SA-period-end-missing",
+          "status": "PASS",
+          "expected": "missing period end yields no accepted lines",
+          "actual": "Tadawul: لا توجد بنود مالية صالحة."
+        },
+        {
+          "id": "SA-period-end-future",
+          "status": "PASS",
+          "expected": "future period is not accepted",
+          "actual": "Tadawul: لا توجد بنود مالية صالحة."
+        },
+        {
+          "id": "SA-period-quarter-type-invalid",
+          "status": "PASS",
+          "expected": "12M input is not relabeled as quarter",
+          "actual": "Tadawul: لا توجد بنود مالية صالحة."
+        },
+        {
+          "id": "SA-period-unit-scale-missing",
+          "status": "PASS",
+          "expected": "unknown units rejected rather than guessed",
+          "actual": "Tadawul: يلزم توثيق وحدة المبالغ بالريال الأساسي (unitScale=1)."
+        },
+        {
+          "id": "P2-06-SA-quarter-3M-preserved",
+          "status": "PASS",
+          "expected": "quarter period is 3M and dated",
+          "actual": {
+            "period": "quarterly",
+            "periodEnd": "2026-06-30"
+          }
+        },
+        {
+          "id": "P2-06-US-zero-financial-period",
+          "status": "PASS",
+          "expected": "explicit zero and annual period preserved",
+          "actual": {
+            "value": 0,
+            "period": "annual",
+            "periodEnd": "2025-09-27"
+          }
+        },
+        {
+          "id": "US-financial-identity-mismatch",
+          "status": "PASS",
+          "expected": "mismatched financial symbol rejected",
+          "actual": "رمز الشركة في القوائم المالية غير مطابق أو غير متحقق؛ لم نستخدم هذه القوائم."
+        },
+        {
+          "id": "US-financial-period-missing",
+          "status": "PASS",
+          "expected": "missing period end yields no accepted line",
+          "actual": "Yahoo financials: لا بنود صالحة."
+        },
+        {
+          "id": "US-financial-period-future",
+          "status": "PASS",
+          "expected": "future period not accepted",
+          "actual": "Yahoo financials: لا بنود صالحة."
+        },
+        {
+          "id": "US-financial-quarter-12M-not-quarter",
+          "status": "PASS",
+          "expected": "12M quarterly record is not relabeled",
+          "actual": "Yahoo financials: لا بنود صالحة."
+        },
+        {
+          "id": "source-outage-explicit",
+          "status": "PASS",
+          "expected": "all injected source reads fail with recorded attempts",
+          "actual": {
+            "state": "failed",
+            "attempts": [
+              "failed"
+            ],
+            "hasValue": false
+          }
+        },
+        {
+          "id": "http-200-malformed-explicit",
+          "status": "PASS",
+          "expected": "HTTP 200 invalid JSON is a failed source result",
+          "actual": {
+            "state": "failed",
+            "attempts": [
+              "failed"
+            ],
+            "hasValue": false
+          }
+        },
+        {
+          "id": "stale-price-gate",
+          "status": "PASS",
+          "expected": ">21-day price age is stated and all forecast horizons abstain",
+          "actual": {
+            "staleDays": 64,
+            "quality": "غير صالحة",
+            "unavailable": [
+              "آخر سعر قديم جدًا لإصدار توقع مفيد."
+            ],
+            "available": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "id": "missing-financials-not-zero",
+          "status": "PASS",
+          "expected": "missing financials stay null and lower confidence; valid prices may still support conditional ranges",
+          "actual": {
+            "pe": null,
+            "roe": null,
+            "cashConversion": null,
+            "quality": "متوسطة",
+            "confidence": [
+              "منخفض",
+              "منخفض",
+              "منخفض",
+              "منخفض",
+              "منخفض",
+              "منخفض"
+            ],
+            "warnings": [
+              "درجة الثقة منخفضة بسبب نقص بعض البيانات المالية.",
+              "الأخبار والإفصاحات المتاحة غير مكتملة؛ لا يعني ذلك غياب الأحداث."
+            ]
+          }
+        },
+        {
+          "id": "currency-mismatch-no-conversion",
+          "status": "PASS",
+          "expected": "USD quote with SAR facts is not silently converted",
+          "actual": {
+            "pe": null,
+            "blockers": [
+              "عملة القوائم لا تطابق عملة السعر؛ التقييم النقدي غير متاح دون تحويل موثق."
+            ],
+            "currency": "SAR"
+          }
+        },
+        {
+          "id": "zero-analysis-price-not-fabricated",
+          "status": "PASS",
+          "expected": "zero close does not become forecast price/range",
+          "actual": {
+            "available": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "ranges": [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        {
+          "id": "missing-analysis-price-not-fabricated",
+          "status": "PASS",
+          "expected": "missing history causes unavailable rows rather than default price",
+          "actual": {
+            "price": null,
+            "available": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "id": "stale-quote-not-used-as-current",
+          "status": "PASS",
+          "expected": "old quote is not substituted; reported price/time are the fixed daily-bar close/date",
+          "actual": {
+            "quotePrice": 9999,
+            "selectedPrice": 112.57689264547423,
+            "dailyBar": 112.57689264547423,
+            "selectedTime": "2026-10-02",
+            "dailyTime": "2026-10-02"
+          }
+        }
+      ]
+    },
+    "p207": {
+      "markets": {
+        "sa": {
+          "modelVersion": "mizan-scenarios-7-a3434e85",
+          "inputSha256": "c7de6cc769ce6e50c34456046231e7e027628b04a60a4dff9ab34719225d9e5f",
+          "outputSha256": "3c5ee6794dfee2fffa02a47bb84d90f0e819a2a00bba13a27309bacf9ad65476",
+          "normalizedPersistedSha256": "83512cb45043a9afdb245a9e7ac31cf23797a0662a35ffa4c4b05420fa9beaa1",
+          "rows": [
+            {
+              "sessions": 1,
+              "period": "يومي",
+              "available": true,
+              "price": 112.57689264547423,
+              "predictedPrice": 112.58314371545534,
+              "range": [
+                112.24405484753068,
+                112.9225754792738
+              ],
+              "change": [
+                -0.29565374396299804,
+                0.3070637549822841
+              ],
+              "confidence": "منخفض",
+              "coverage": 97
+            },
+            {
+              "sessions": 5,
+              "period": "أسبوع",
+              "available": true,
+              "price": 112.57689264547423,
+              "predictedPrice": 112.61636654630693,
+              "range": [
+                111.83622850732536,
+                113.4023104014605
+              ],
+              "change": [
+                -0.6579184420033357,
+                0.7332035345705146
+              ],
+              "confidence": "متوسط",
+              "coverage": 91
+            },
+            {
+              "sessions": 21,
+              "period": "شهر",
+              "available": true,
+              "price": 112.57689264547423,
+              "predictedPrice": 112.77983285024504,
+              "range": [
+                111.24357871087052,
+                114.33730238747081
+              ],
+              "change": [
+                -1.1843584445011879,
+                1.563739858711899
+              ],
+              "confidence": "متوسط",
+              "coverage": 84
+            },
+            {
+              "sessions": 63,
+              "period": "3 أشهر",
+              "available": true,
+              "price": 112.57689264547423,
+              "predictedPrice": 113.18110586868727,
+              "range": [
+                110.53648838342374,
+                115.88899659291147
+              ],
+              "change": [
+                -1.8124538829438985,
+                2.9420815138926137
+              ],
+              "confidence": "متوسط",
+              "coverage": 83
+            },
+            {
+              "sessions": 126,
+              "period": "6 أشهر",
+              "available": true,
+              "price": 112.57689264547423,
+              "predictedPrice": 113.43232800526717,
+              "range": [
+                109.69155348233183,
+                117.30067291614216
+              ],
+              "change": [
+                -2.56299414146105,
+                4.196047838648376
+              ],
+              "confidence": "متوسط",
+              "coverage": 81.5
+            },
+            {
+              "sessions": 252,
+              "period": "سنة",
+              "available": true,
+              "price": 112.57689264547423,
+              "predictedPrice": 113.78856197425853,
+              "range": [
+                108.50328883642452,
+                119.3312845630822
+              ],
+              "change": [
+                -3.6185079489431837,
+                5.999803120236069
+              ],
+              "confidence": "متوسط",
+              "coverage": 80
+            }
+          ],
+          "volatileFields": [
+            "analysis_snapshots.id",
+            "forecast_records.id",
+            "forecast_records.snapshot_id",
+            "forecast_records.data.id"
+          ]
+        },
+        "us": {
+          "modelVersion": "mizan-scenarios-7-a3434e85",
+          "inputSha256": "31baea5e57d25f8ca14718f73621c5d1f4dc999f789164b638a3255b20479806",
+          "outputSha256": "3cd07fd19fb7324b91882b24cec5154cee75726cc47c5c5e67c65aebce5ff6f3",
+          "normalizedPersistedSha256": "26e5ca84982e80433b693658a9be8fa6a9da6ab341ba61f75e0937d8a4c8b4a6",
+          "rows": [
+            {
+              "sessions": 1,
+              "period": "يومي",
+              "available": true,
+              "price": 112.57689264547423,
+              "predictedPrice": 112.58314371545534,
+              "range": [
+                112.24405484753068,
+                112.9225754792738
+              ],
+              "change": [
+                -0.29565374396299804,
+                0.3070637549822841
+              ],
+              "confidence": "منخفض",
+              "coverage": 97
+            },
+            {
+              "sessions": 5,
+              "period": "أسبوع",
+              "available": true,
+              "price": 112.57689264547423,
+              "predictedPrice": 112.61636654630693,
+              "range": [
+                111.83622850732536,
+                113.4023104014605
+              ],
+              "change": [
+                -0.6579184420033357,
+                0.7332035345705146
+              ],
+              "confidence": "متوسط",
+              "coverage": 91
+            },
+            {
+              "sessions": 21,
+              "period": "شهر",
+              "available": true,
+              "price": 112.57689264547423,
+              "predictedPrice": 112.77983285024504,
+              "range": [
+                111.24357871087052,
+                114.33730238747081
+              ],
+              "change": [
+                -1.1843584445011879,
+                1.563739858711899
+              ],
+              "confidence": "متوسط",
+              "coverage": 84
+            },
+            {
+              "sessions": 63,
+              "period": "3 أشهر",
+              "available": true,
+              "price": 112.57689264547423,
+              "predictedPrice": 113.18110586868727,
+              "range": [
+                110.53648838342374,
+                115.88899659291147
+              ],
+              "change": [
+                -1.8124538829438985,
+                2.9420815138926137
+              ],
+              "confidence": "متوسط",
+              "coverage": 83
+            },
+            {
+              "sessions": 126,
+              "period": "6 أشهر",
+              "available": true,
+              "price": 112.57689264547423,
+              "predictedPrice": 113.43232800526717,
+              "range": [
+                109.69155348233183,
+                117.30067291614216
+              ],
+              "change": [
+                -2.56299414146105,
+                4.196047838648376
+              ],
+              "confidence": "متوسط",
+              "coverage": 81.5
+            },
+            {
+              "sessions": 252,
+              "period": "سنة",
+              "available": true,
+              "price": 112.57689264547423,
+              "predictedPrice": 113.78856197425853,
+              "range": [
+                108.50328883642452,
+                119.3312845630822
+              ],
+              "change": [
+                -3.6185079489431837,
+                5.999803120236069
+              ],
+              "confidence": "متوسط",
+              "coverage": 80
+            }
+          ],
+          "volatileFields": [
+            "analysis_snapshots.id",
+            "forecast_records.id",
+            "forecast_records.snapshot_id",
+            "forecast_records.data.id"
+          ]
+        }
+      },
+      "volatileAllowlist": [
+        "analysis_snapshots.id",
+        "forecast_records.id",
+        "forecast_records.snapshot_id",
+        "forecast_records.data.id"
+      ],
+      "allOtherSavedFieldsCompared": true,
+      "positiveControlChangedMaterialPrice": true
+    },
+    "p208": {
+      "method": {
+        "cold": "first invocation after module import and fixture preparation",
+        "warmupOperations": 3,
+        "samplesPerOperation": 30,
+        "quantile": "nearest-rank; p50=ceil(.50*n)-1, p95=ceil(.95*n)-1",
+        "analysisMetric": "automaticAnalysis(report) on an already-built synthetic report",
+        "forecastMetric": "forecasts(report,null,fixedNow,settings) for all six canonical horizons",
+        "saveMetric": "recordAnalysis end-to-end including forecast recompute, history reads and inserts into fresh in-memory SQLite; schema setup excluded",
+        "excluded": [
+          "market-data retrieval/network",
+          "report-construction",
+          "Cloudflare Worker CPU",
+          "remote D1 latency/durability",
+          "UI/browser/render",
+          "portfolio update (measured by the separate portfolio work package)"
+        ],
+        "optimizationPerformed": false,
+        "thresholdSet": false
+      },
+      "markets": {
+        "sa": {
+          "fixture": {
+            "symbol": "P2T01.SR",
+            "currency": "SAR",
+            "barCount": 300,
+            "factCount": 59,
+            "asOf": "2026-10-03",
+            "synthetic": true
+          },
+          "cold": {
+            "automaticAnalysis_ms": 1.385534000000007,
+            "allHorizonsForecast_ms": 8.98268900000005,
+            "recordAnalysisEndToEnd_ms": 18.90375999999992
+          },
+          "warm": {
+            "automaticAnalysis": {
+              "sampleCount": 30,
+              "p50_ms": 1.075614000000087,
+              "p95_ms": 1.5119520000000648,
+              "max_ms": 1.7628740000000107,
+              "min_ms": 0.9937930000000961
+            },
+            "allHorizonsForecast": {
+              "sampleCount": 30,
+              "p50_ms": 9.00968899999998,
+              "p95_ms": 14.134578000000147,
+              "max_ms": 14.540219999999977,
+              "min_ms": 7.3566880000000765
+            },
+            "recordAnalysisEndToEnd": {
+              "sampleCount": 30,
+              "p50_ms": 17.84700399999997,
+              "p95_ms": 26.111807999999883,
+              "max_ms": 30.92090500000006,
+              "min_ms": 15.090286000000106
+            }
+          },
+          "rawWarmSamples_ms": {
+            "automaticAnalysis": [
+              1.0486650000000282,
+              1.14674100000002,
+              1.0037589999999454,
+              1.1204510000000028,
+              1.2271299999999883,
+              1.0655500000000302,
+              1.0871920000000728,
+              1.3031119999999419,
+              1.098679000000061,
+              1.1937709999999697,
+              1.7628740000000107,
+              1.4161999999998898,
+              1.0454400000000987,
+              1.0437580000000253,
+              1.0436779999999999,
+              1.0076340000000528,
+              1.1416730000000825,
+              1.0511679999999615,
+              1.3591049999999996,
+              1.5119520000000648,
+              1.0239180000000943,
+              1.2205099999998765,
+              1.0068230000001677,
+              0.9937930000000961,
+              1.0815539999998691,
+              1.075614000000087,
+              1.0637970000000223,
+              1.1239060000000336,
+              1.0480639999998402,
+              0.9992319999998927
+            ],
+            "allHorizonsForecast": [
+              8.401167999999984,
+              9.00968899999998,
+              10.640557999999942,
+              7.95127100000002,
+              11.676668999999947,
+              12.289193000000068,
+              8.422748999999953,
+              9.717389000000026,
+              14.540219999999977,
+              8.734591000000023,
+              13.537343000000078,
+              14.134578000000147,
+              8.284173999999894,
+              7.964118999999982,
+              10.924608999999919,
+              8.557029000000057,
+              10.600729000000001,
+              11.118016000000125,
+              9.821151999999984,
+              8.596857999999884,
+              8.391904000000068,
+              10.262756999999965,
+              7.3566880000000765,
+              8.100852000000032,
+              10.553126999999904,
+              9.760332000000062,
+              8.746970000000147,
+              9.997935000000098,
+              8.895148999999947,
+              8.24091999999996
+            ],
+            "recordAnalysisEndToEnd": [
+              17.12382200000002,
+              15.426243999999997,
+              15.402628999999934,
+              22.688263000000006,
+              17.623020999999994,
+              19.76480600000002,
+              18.458600000000047,
+              21.676321999999914,
+              30.92090500000006,
+              21.368569999999977,
+              26.111807999999883,
+              17.20967799999994,
+              16.6834980000001,
+              17.412098000000015,
+              17.84700399999997,
+              18.243230999999923,
+              18.097375000000056,
+              17.054358000000093,
+              15.108551999999918,
+              18.75379799999996,
+              18.91460600000005,
+              15.090286000000106,
+              17.868925999999874,
+              16.973719000000074,
+              16.0596230000001,
+              18.15490899999986,
+              17.735849000000144,
+              16.92569800000001,
+              19.00394899999992,
+              18.134689999999864
+            ]
+          },
+          "recordedOutputs": {
+            "forecastRows": 6,
+            "modelVersion": "mizan-scenarios-7-a3434e85"
+          }
+        },
+        "us": {
+          "fixture": {
+            "symbol": "P2TUS1",
+            "currency": "USD",
+            "barCount": 300,
+            "factCount": 59,
+            "asOf": "2026-10-03",
+            "synthetic": true
+          },
+          "cold": {
+            "automaticAnalysis_ms": 0.9044810000000325,
+            "allHorizonsForecast_ms": 9.364695999999867,
+            "recordAnalysisEndToEnd_ms": 14.072376000000077
+          },
+          "warm": {
+            "automaticAnalysis": {
+              "sampleCount": 30,
+              "p50_ms": 0.9796319999995831,
+              "p95_ms": 1.0869020000000091,
+              "max_ms": 1.120350999999573,
+              "min_ms": 0.8889180000001033
+            },
+            "allHorizonsForecast": {
+              "sampleCount": 30,
+              "p50_ms": 7.8702200000000175,
+              "p95_ms": 11.20227100000011,
+              "max_ms": 12.30951200000004,
+              "min_ms": 7.260005000000092
+            },
+            "recordAnalysisEndToEnd": {
+              "sampleCount": 30,
+              "p50_ms": 16.026614999999993,
+              "p95_ms": 19.699159999999893,
+              "max_ms": 20.557412999999997,
+              "min_ms": 14.149421000000075
+            }
+          },
+          "rawWarmSamples_ms": {
+            "automaticAnalysis": [
+              1.0447590000001128,
+              1.0869020000000091,
+              1.066932000000179,
+              1.0001729999999043,
+              1.016627999999855,
+              1.0310289999999895,
+              1.0167569999998705,
+              0.987423999999919,
+              1.0225360000001729,
+              1.0821539999999459,
+              0.9610150000000885,
+              0.9565889999998944,
+              0.928717000000006,
+              1.0462009999998827,
+              0.9796319999995831,
+              0.9614059999998972,
+              0.9537640000003194,
+              0.9578799999999319,
+              1.0462710000001607,
+              0.9796830000000227,
+              0.8889180000001033,
+              0.9309210000001258,
+              0.9253619999999501,
+              1.0203729999998359,
+              1.120350999999573,
+              0.9719009999998889,
+              0.9234089999999924,
+              0.8943060000001424,
+              0.9735430000000633,
+              0.9205349999997452
+            ],
+            "allHorizonsForecast": [
+              12.30951200000004,
+              8.008424999999988,
+              7.804693000000043,
+              9.266258999999991,
+              7.8702200000000175,
+              8.512280999999803,
+              9.240742000000182,
+              7.7867559999999685,
+              8.051638999999795,
+              9.273210999999947,
+              7.658456000000115,
+              7.688300000000027,
+              8.864022999999861,
+              7.326504000000114,
+              7.6857560000003105,
+              9.008156999999755,
+              7.467433000000256,
+              7.949667999999747,
+              9.521939000000202,
+              7.486621000000014,
+              7.380263000000014,
+              8.908930000000055,
+              7.470146999999997,
+              8.064118000000235,
+              11.20227100000011,
+              7.627100000000155,
+              7.509074000000055,
+              9.568297999999686,
+              7.260005000000092,
+              7.41427399999975
+            ],
+            "recordAnalysisEndToEnd": [
+              19.699159999999893,
+              18.186025999999856,
+              14.902927999999974,
+              15.426103999999896,
+              17.357878000000028,
+              15.449998999999934,
+              14.560179999999946,
+              20.557412999999997,
+              16.132360999999946,
+              14.640879999999925,
+              16.026614999999993,
+              14.627970000000005,
+              16.281030999999984,
+              17.516503999999713,
+              16.783406000000014,
+              14.26847799999996,
+              16.221774000000096,
+              15.82414400000016,
+              14.341625999999906,
+              16.4855349999998,
+              15.462178000000222,
+              14.149421000000075,
+              17.622961000000032,
+              17.182408000000123,
+              17.048609999999826,
+              17.004675000000134,
+              15.305984999999964,
+              14.355757000000267,
+              16.409091000000444,
+              14.739656000000195
+            ]
+          },
+          "recordedOutputs": {
+            "forecastRows": 6,
+            "modelVersion": "mizan-scenarios-7-a3434e85"
+          }
+        }
+      }
+    },
+    "preexistingBaselineTests": {
+      "suite": "npm test",
+      "passed": 211,
+      "failed": 0,
+      "skipped": 1,
+      "total": 212,
+      "skipName": "Current Saudi and US behavior matches the actual pre-change module with identical inputs and a fixed clock",
+      "skipReason": "MIZAN_LIVE_BASELINE_MODULE environment variable was unset"
+    }
+  },
+  "status": "PASS_WITH_STORAGE_ENFORCEMENT_LIMIT",
+  "assertionCases": 62,
+  "failures": []
+}
