@@ -1,26 +1,19 @@
 # E-004 Current Review — 2026-10-03
 
-**Status:** E1 PASS · E2 PASS_PENDING_HUMAN_REVIEW · E3 PASS_PENDING_HUMAN_REVIEW · E4 READY_FOR_HUMAN_REVIEW · Phase 1 IN_PROGRESS.
+**E1:** PASS · **E2:** PASS · **E3:** PASS · **E4:** PASS · **Phase 1:** CLOSED  
+**Decision:** `APPROVED_WITH_DOCUMENTED_LIMITATIONS`  
+**Human approval:** user-authored message `Sentinel_0df0ca8a9d0081918f06181b42d7488c` at `2026-10-03T22:01:25Z`.
 
 ## Five-question review
 
-1. **Are the Phase 1 requirements linked to reviewable evidence? YES, within the documented scope.** E1 provenance is recorded in [the existing reconciliation](evidence-reconciliation-2026-09-30.md); E3 in [the restore record](e003-production-restore-validation.md); P1-08 in canonical [legacy migration evidence](../evidence/legacy-migrations.json) and [focused tests](../evidence/legacy-tests.tap). The six new E2 evidence IDs are mapped below. The archive audit verified 62 entries at commit 77dafe7c9cf77ef084969dbbb7592153b5f0ad56; subsequent summary/index additions were individually read back and verified. The original Oct 1 bundle remains unrecovered; this is new Oct 3 evidence.
-2. **Is an unresolved closure decision remaining? YES.** Human acceptance of the local source-built rehearsal as an equivalent isolated rollback rehearsal remains open. D1's SQLITE_AUTH result is a documented, previously accepted interface limitation with compensating checks, not a separate newly opened requirement. Preserved startup and bridge diagnostics are not successful tests; the final three-stage route matrices passed.
-3. **Was a critical risk identified? NO.** This was a bounded evidence review, not an exhaustive risk audit.
-4. **Are the material limits documented? YES.** The run used local Miniflare builds, not provider-saved archives or the Sites control plane; the database fixtures were synthetic; no production D1/deployment was touched; D1 SQLITE_AUTH is recorded separately from SQLite's local result. Previously accepted E3 empty-table, RPO/RTO and retention limits carry forward.
-5. **Does the packet cover the stock Phase 1 scope? YES.** E1 provenance, the previously reviewed P1-05 source parity, canonical P1-08 legacy preservation, E3 restore, and the six new E2 evidence IDs are represented. The source-built versus provider-archive equivalence remains for human decision.
+1. **Are all Phase 1 requirements covered? YES.** E1 provider provenance is in the [Sep 30 reconciliation](evidence-reconciliation-2026-09-30.md); E2 is mapped to [EVD-RB-001–006](../evidence/FIN-P1-E002-RECOVERY-2026-10-03/EVD-RB-CAMPAIGN-CHRONOLOGY-AND-INDEX.md); E3 is in the restore record and [run 36779960771](https://github.com/azizaljery/Com/actions/runs/36779960771); P1-05 and P1-08 evidence are described in the [Oct 3 reconciliation](evidence-reconciliation-2026-10-03.md). The current PR #2 tree at `a51050c6da0ae5c95dd48d141565bbb04906b57e` has 65 manifest entries, all checked against remote SHA-256 and GitHub blob identities with zero mismatches. The separately stored 62-entry verification record is a historical checkpoint at `77dafe7c9cf77ef084969dbbb7592153b5f0ad56`.
+2. **Is any Phase 1 requirement still OPEN, FAIL, or BLOCKED? NO.** The human reviewer accepted the local source-built E2 rehearsal as an equivalent within Phase 1 scope. Its limits, including D1 `SQLITE_AUTH`, remain disclosed and accepted in the closure decision.
+3. **Was a critical risk identified? NO.** This is a bounded evidence review, not an exhaustive risk audit.
+4. **Are the known limitations documented and accepted? YES.** E2 ran pinned source-built local Worker bundles, not saved provider archives or a Sites control-plane rollback; no production D1, Cloudflare, Cron, deployment, authenticated owner flow, POST, or external provider request was involved. E3 limits on empty tables, absent-row semantics, retention, and future RPO/RTO are carried forward. E1 live HTTP identity remains unverified.
+5. **Does the evidence cover the full Phase 1 scope? YES.** E1–E4 are PASS. P1-05 source parity, P1-06 rollback, and P1-08 portfolio/forecast/admin preservation are represented by the linked evidence. The accepted evidence boundaries remain part of the Phase 1 record.
 
-## E2 evidence map
+## Closure recommendation
 
-The linked E2 files are stored under docs/evidence/FIN-P1-E002-RECOVERY-2026-10-03/ in the review branch.
+**CLOSE PHASE-1** with `APPROVED_WITH_DOCUMENTED_LIMITATIONS`, as explicitly approved by the user at `2026-10-03T22:01:25Z` (message `Sentinel_0df0ca8a9d0081918f06181b42d7488c`). See the [human decision record](e004-human-review-signoff.md) for the source wording and limitation list. This records written approval; no handwritten or cryptographic signature is claimed.
 
-- EVD-RB-001: [source/version identity](../evidence/FIN-P1-E002-RECOVERY-2026-10-03/EVD-RB-001-source-version-identity.json) and [local builds](../evidence/FIN-P1-E002-RECOVERY-2026-10-03/EVD-RB-001-build-results.json).
-- EVD-RB-002: [matrix summary](../evidence/FIN-P1-E002-RECOVERY-2026-10-03/EVD-RB-002-http-matrix-summary.json) — 20 GETs per stage, 60 total, source identity matched each stage.
-- EVD-RB-003: [migration/schema result](../evidence/FIN-P1-E002-RECOVERY-2026-10-03/EVD-RB-003-migration-schema-results.json) — 16 migrations applied to a fresh synthetic D1; no pending migrations.
-- EVD-RB-004: [data/schema preservation](../evidence/FIN-P1-E002-RECOVERY-2026-10-03/EVD-RB-004-data-integrity-compatibility-results.json) — six synthetic table hashes/counts stable; site_settings fixture proves row preservation only.
-- EVD-RB-005: [pragma results](../evidence/FIN-P1-E002-RECOVERY-2026-10-03/EVD-RB-005-pragma-capability-results.json) — D1 integrity_check=SQLITE_AUTH; local read-only SQLite result is separate.
-- EVD-RB-006: [round-trip sequence](../evidence/FIN-P1-E002-RECOVERY-2026-10-03/EVD-RB-006-roundtrip-sequence-results.json) — local source-built v52 → v51 → v52; no provider archive replay or production mutation.
-
-**Recommendation: KEEP PHASE-1 OPEN.** The evidence archive is now available for review, but the current reviewer must explicitly accept the E2 equivalence and record the E004 closure decision, carrying forward accepted E3 limits. PR merge and Phase 1 closure remain pending. Sep 30 written approval remains historical; no new human decision, merge, or signature is claimed here.
-
-Reviewer: ____________________  Decision: ____________________  UTC date/time: ____________________
+Phase 2 may be scoped as Wave 2 Trust with ten requirements; its exact baseline must be recorded before implementation, and legacy P2 IDs are not automatically carried forward. Phase 3 Intelligence remains gated until Phase 2 is closed. The latest owner-defined Trust-10 and Phase 3 Intelligence scope supersedes the historical numbering. D2 remains independent as approved. Research, AZIZ, Mizan Score, and Response Dynamics remain frozen pending separately approved scope.
