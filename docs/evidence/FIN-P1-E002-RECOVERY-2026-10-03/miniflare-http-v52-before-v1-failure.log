@@ -1,0 +1,65 @@
+/workspace/scratch/621fd6e6940e/mizan-site-open-v52/node_modules/miniflare/dist/src/index.js:77156
+      throw new MiniflareCoreError("ERR_MODULE_DYNAMIC_SPEC", message);
+            ^
+
+MiniflareCoreError [ERR_MODULE_DYNAMIC_SPEC]: Unable to resolve "dist/server/ssr/assets/router-DF8RHnEj.js" dependency: dynamic module specifiers are unsupported.
+You must manually define your modules when constructing Miniflare:
+  new Miniflare({
+    ...,
+    modules: [
+      { type: "ESModule", path: "dist/server/index.js" },
+      { type: "ESModule", path: "dist/server/assets/forecast-journal-GRNrLj__.js" },
+      { type: "ESModule", path: "dist/server/assets/us-directory-CAjVsq3y.js" },
+      { type: "ESModule", path: "dist/server/assets/us-directory-IeMCx0aS.js" },
+      { type: "ESModule", path: "dist/server/__vite_rsc_assets_manifest.js" },
+      { type: "ESModule", path: "dist/server/ssr/index.js" },
+      { type: "ESModule", path: "dist/server/ssr/__vite_rsc_assets_manifest.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/page-bM8NL7pv.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/scale-BJjNg2GV.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/Icon-Onzytwr8.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/earth-gn3jYBh7.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/forecast-horizons-vj_TjtsN.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/accuracy-sample-Dx40k1wS.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/settings-context-DRrMUapc.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/analysis-DjX8nnQ-.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/export-data-9g7WENBv.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/source-link-45FzxX9Y.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/source-info-DyEzLu1q.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/page-kEg8UBIv.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/import-panel-B5A1rMAT.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/page-qJznKr0W.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/forecast-tests-workspace-B-ceYbg7.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/paper-stock-picker-BZVlYMqm.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/forecast-range-calibration-CkUVDAoC.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/monitor-panel-LQGTTR2I.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/page-ChDPq9nq.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/research-workspace-DDHGefZg.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/explain-YBhNdU3f.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/documents-D4F9JHdq.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/advanced-technical-DdvdSNkA.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/page-D2XtXItL.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/layout-segment-context-ur-QeabQ.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/gold-market-DtE_2J_-.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/request-panel-5Iu2kCeL.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/link-CMbmKzmu.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/query-DUzkKffu.js" },
+      { type: "ESModule", path: "dist/server/ssr/assets/router-DF8RHnEj.js" },
+      ...
+    ]
+  })
+    at /workspace/scratch/621fd6e6940e/e002-worktrees/v52/dist/server/ssr/assets/router-DF8RHnEj.js:351:3
+    at #visitModule (/workspace/scratch/621fd6e6940e/mizan-site-open-v52/node_modules/miniflare/dist/src/index.js:77156:13)
+    at Object.ImportExpression (/workspace/scratch/621fd6e6940e/mizan-site-open-v52/node_modules/miniflare/dist/src/index.js:77123:26)
+    at c2 (/workspace/scratch/621fd6e6940e/mizan-site-open-v52/node_modules/miniflare/dist/src/index.js:76631:21)
+    at Object.skipThrough (/workspace/scratch/621fd6e6940e/mizan-site-open-v52/node_modules/miniflare/dist/src/index.js:76636:3)
+    at c2 (/workspace/scratch/621fd6e6940e/mizan-site-open-v52/node_modules/miniflare/dist/src/index.js:76629:22)
+    at base.ReturnStatement.base.YieldExpression.base.AwaitExpression (/workspace/scratch/621fd6e6940e/mizan-site-open-v52/node_modules/miniflare/dist/src/index.js:76691:5)
+    at c2 (/workspace/scratch/621fd6e6940e/mizan-site-open-v52/node_modules/miniflare/dist/src/index.js:76629:22)
+    at Object.skipThrough (/workspace/scratch/621fd6e6940e/mizan-site-open-v52/node_modules/miniflare/dist/src/index.js:76636:3)
+    at c2 (/workspace/scratch/621fd6e6940e/mizan-site-open-v52/node_modules/miniflare/dist/src/index.js:76629:22)
+    at base.VariableDeclarator (/workspace/scratch/621fd6e6940e/mizan-site-open-v52/node_modules/miniflare/dist/src/index.js:76753:5) {
+  code: 'ERR_MODULE_DYNAMIC_SPEC',
+  cause: undefined
+}
+
+Node.js v24.19.0
