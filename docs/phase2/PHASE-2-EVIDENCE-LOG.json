@@ -8,7 +8,7 @@
     "scope": "The new 10-item Phase 2 Trust Baseline and stated safety boundaries",
     "approvalSource": "User authorization conveyed in the root conversation; root informed the user of the merged Phase 1 baseline on 2026-10-03"
   },
-  "recordedAt": "2026-10-03T22:29:00Z",
+  "recordedAt": "2026-10-03T23:38:00Z",
   "repository": "azizaljery/mizan-equit",
   "canonicalApplicationPath": "mizan-v45",
   "baseline": {
@@ -22,23 +22,44 @@
   "phaseProgress": {
     "requirementsTotal": 10,
     "requirementsPassed": 0,
-    "requirementsPartial": 1,
+    "requirementsTechnicalPass": 5,
+    "requirementsPartial": 2,
+    "requirementsInProgress": 1,
+    "requirementsNotStarted": 1,
     "requirementsFailed": 0,
     "requirementsBlocked": 0,
-    "requirementsNotStarted": 9,
+    "humanReviewPending": 9,
     "closureReadiness": null,
     "monitoringOnly": false,
-    "closureRule": "All 10 requirements PASS with linked evidence and human review; P2-09 has no open CRITICAL risks; percentage alone never closes the phase."
+    "closureRule": "All 10 requirements must be linked to archived evidence and human-reviewed PASS; P2-09 has no open CRITICAL risks; percentage or technical pass alone never closes the phase.",
+    "requirementsMeasuredPendingHumanReview": 1
   },
   "executionGate": {
     "phase1": "CLOSED; PR2 merged",
-    "phase2DocsArchive": "PR3 archive pending",
-    "applicationTests": "NOT_STARTED; wait for explicit root GO",
+    "phase2DocsArchive": "PR3 draft/unmerged at head 1affff26c2697db60dde5d5523158f0cbdc3cfc4; forecast/portfolio/source evidence is archived and readback-verified at this head; updated requirements/risk/D2 architecture documents are local drafts pending root archive.",
+    "applicationTests": "IN_PROGRESS_ON_CANONICAL_BASELINE_WITH_SYNTHETIC_LOCAL_FIXTURES",
     "productionMutation": false,
     "realTrades": false,
     "secretsInEvidence": false,
     "p201RemainingIdentityGapBlocksSyntheticWork": false,
-    "p201RemainingIdentityGap": "Provider DB name/UUID and independent D2 remain unresolved; continue only independent synthetic local P2-02..P2-08 after root GO."
+    "p201RemainingIdentityGap": "None for D1 identity; current owner UI verifies D1. P2-01 remains PARTIAL for D2 purpose/data-boundary discovery only.",
+    "p201RemainingGap": "D2 is a new initiative under DISCOVERY with role UNKNOWN; answer the recorded discovery questions before any implementation proposal. No physical D2 provider/resource identity is selected or required now.",
+    "p204CandidateWork": "Root authorized a separate local append-only migration and compatibility checks; candidate work is in progress, not a delivered fix and not part of canonical baseline.",
+    "canonicalBaselineOrProductionChanged": false,
+    "productionMigrationOrDeployment": false,
+    "forecastEvidenceArchive": {
+      "status": "ARCHIVED_AND_READBACK_VERIFIED",
+      "head": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "files": [
+        "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-evidence.json",
+        "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-cases.ndjson.gz",
+        "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/P2-TRUST-SHA256SUMS",
+        "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-packing.json"
+      ]
+    },
+    "candidateWork": {
+      "P2-04": "Local append-only migration/compatibility candidate in progress; canonical baseline/evidence untouched; no production migration or deployment; not delivered."
+    }
   },
   "identity": {
     "currentSiteMetadata": {
@@ -92,10 +113,11 @@
       ],
       "providerDatabaseName": null,
       "providerDatabaseUuid": null,
-      "status": "PARTIAL_METADATA_ONLY",
+      "status": "LIVE_BINDING_AND_TABLES_OBSERVED_SEPARATELY; UUID_LINK_NOT_NEWLY_PROVEN",
       "limitations": [
-        "Overview returned the live Sites binding and table names only; it did not expose the provider database name or UUID.",
-        "No table rows were read."
+        "Sites overview returned project ID and selected binding DB with table names, but did not expose the provider UUID.",
+        "A separate owner-controlled provider UI currently verifies the D1 identity; this Sites observation did not establish a direct binding-to-UUID mapping.",
+        "No database rows were read for the Sites overview observation."
       ]
     },
     "historicalD1Reference": {
@@ -115,24 +137,98 @@
       "useAsD2Identity": false
     },
     "d2": {
-      "status": "UNKNOWN",
-      "referentType": null,
-      "authoritativeDefinitionSource": null,
-      "identifier": null,
-      "mustBeIndependentOf": [
-        "Production D1 mizan-equity-db",
-        "Deleted E-003 restore target mizan-equity-e003-36779960771"
+      "status": "DISCOVERY",
+      "initiative": "New D2 initiative, complementary candidate; not a replacement for D1.",
+      "role": "ACCEPTED_IN_PRINCIPLE_HISTORICAL_ANALYTICAL_COMPLEMENT",
+      "goal": "Understand why D2 is needed and which data, if any, belongs there.",
+      "implementationDecision": "NOT_APPROVED",
+      "providerSelected": false,
+      "physicalResourceIdentitySelected": false,
+      "d1ReplacementApproved": false,
+      "d1ToD2MigrationApproved": false,
+      "sourceRecord": "Owner-provided Pasted text(1).txt; full 1,353-line file read. Candidate roles and diagrams are not implementation approval.",
+      "discoveryRecord": "docs/phase2/D2-DISCOVERY.md",
+      "discoveryQuestions": [
+        "What concrete problem should D2 solve that D1 cannot adequately solve?",
+        "What data classes, if any, should be copied to D2 and why?",
+        "Which state must remain authoritative in D1?",
+        "Why not keep the proposed data in D1 until a measured need exists?",
+        "What trigger, retention, access, backup, failure/retry, ownership and cost requirements apply?"
       ],
-      "evidenceStatus": "P2-01_PARTIAL_UNTIL_OWNER_CLARIFIES_D2_REFERENT_AND_AUTHORITATIVE_IDENTITY",
-      "contextReview": "Prior records do not define what D2 refers to. They distinguish production D1 and the E-003 isolated restore target; do not infer that either is D2."
+      "syntheticTrustWorkBlocked": false,
+      "conceptDisposition": "A complementary analytical/historical initiative is being explored; an attached draft ADR is marked ACCEPTED_IN_PRINCIPLE but explicitly says implementation NOT_STARTED, provider NOT_SELECTED, discovery/baseline only, and Implementation Authorization NOT_GRANTED.",
+      "ownerApprovedScope": "Record the D2 discovery plan and preserve the full owner source; no provider/resource selection, provisioning, schema migration, production transfer or D1 replacement.",
+      "candidateFiles": [
+        {
+          "path": "docs/architecture/ADR-P2-001-D2-DATA-PLATFORM.md",
+          "status": "Extracted draft; accepted-in-principle wording in source; implementation authorization not granted"
+        },
+        {
+          "path": "docs/architecture/D2-DATAFLOW.mmd",
+          "status": "Extracted proposal only"
+        },
+        {
+          "path": "docs/architecture/D2-DATAFLOW-DETAILED.mmd",
+          "status": "Extracted proposal only"
+        },
+        {
+          "path": "docs/architecture/D2-SCHEMA-V1.sql",
+          "status": "Extracted 10-table draft for docs only; not a runtime migration; not executed"
+        }
+      ],
+      "initialActivationSuggestionInSource": [
+        "source_snapshots",
+        "source_files",
+        "forecasts_history",
+        "forecast_evaluations",
+        "transfer_batches"
+      ],
+      "deferredTablesInSource": [
+        "backtest_runs",
+        "backtest_results",
+        "research_datasets",
+        "model_evaluations"
+      ],
+      "implementationGate": "No implementation until D2 purpose, data boundaries, technology, classification, access/security, retention, cost, backup/recovery, failure/retry and transfer reconciliation are reviewed and explicitly approved.",
+      "documentationApproval": {
+        "messageId": "Sentinel_044d17e6fc408191b486b16e4be652d1",
+        "timestamp": "2026-10-03T23:36:12Z",
+        "ownerText": "اعتمد ذلك",
+        "scope": "Adopt the D2 discovery/architecture documentation for design; D2 creation and data transfer remain governed by separate execution gates."
+      },
+      "candidateFilesStatus": "Owner-approved for design/documentation; still proposals; no schema/runtime migration applied.",
+      "migrationApproved": false,
+      "implementationRoleSelection": "UNSELECTED; physical provider and operational details remain under discovery",
+      "sourceArchive": "docs/phase2/source/D2-owner-package-2026-10-03.txt",
+      "sourceSha256": "304698c744e3cbae575c9b14b87a1f2f7f011eca71f0be0d4eea2c83a47943a7"
     },
-    "openOwnerQuestion": "What does D2 refer to in the new Phase 2 scope, and what authoritative source or identifier should we use to verify it independently? Please distinguish it from production D1 and the deleted E-003 restore target; no credentials or secrets are needed."
+    "currentD1ProviderUI": {
+      "provider": "Cloudflare D1",
+      "name": "mizan-equity-db",
+      "uuid": "e95b74e8-81d6-4beb-8ea2-ad59c863d21d",
+      "region": "EEUR",
+      "displayedSize": "86.63 MB",
+      "tableCount": 42,
+      "status": "CURRENT_OWNER_UI_IDENTITY_VERIFIED",
+      "matchesHistoricalIdentity": true,
+      "observationArtifact": "EVD-TRUST-P2-01-CURRENT-D1-IDENTITY.json"
+    },
+    "ownerDecisionTimestamp": "2026-10-03T23:16:54Z",
+    "ownerDecisionMessageId": "Sentinel_69aaeee0fbf881918a5b3a3a06dc50a3",
+    "openD2DiscoveryQuestions": [
+      "What concrete problem should D2 solve that D1 cannot adequately solve?",
+      "What data classes, if any, should be copied to D2 and why?",
+      "Which state must remain authoritative in D1?",
+      "Why not keep the proposed data in D1 until a measured need exists?",
+      "What trigger, retention, access, backup, failure/retry, ownership and cost requirements apply?"
+    ],
+    "openD2DiscoveryQuestionsStatus": "Recorded in D2-DISCOVERY.md; they are discovery items, not an unasked request to identify a physical DB or supply credentials."
   },
   "syntheticTestDatabase": {
     "logicalId": "P2-TRUST-LOCAL-DB-2026-10-03-V1",
     "target": "Fresh local-only synthetic database at a new unique temporary path per work package",
     "creationRule": "Start empty and seed only from P2-TRUST-SEED-V1; never connect to live binding DB, never restore E-002/E-003 data, never share a writable DB between parallel packages.",
-    "sourceFixturePlannedPath": "mizan-v45/tests/fixtures/phase2-trust-seed-v1.json",
+    "sourceFixturePlannedPath": "docs/evidence/PHASE-2-TRUST-2026-10-03/portfolio/frozen-seed-v1.json",
     "seedId": "P2-TRUST-SEED-V1",
     "canonicalSeedSha256": "ffe716976c5582eff379c989d11eaf731da538d328b9c6f5963f105a01f3be6d",
     "canonicalization": "SHA-256 of the seed object only after recursively sorting object keys and serializing compact UTF-8 JSON; arrays preserve order.",
@@ -218,101 +314,161 @@
         }
       }
     },
-    "state": "SPECIFIED_NOT_INSTANTIATED_OR_EXECUTED",
+    "state": "COMPLETED_EXACT_BASELINE_SYNTHETIC_RUNS; TEMPORARY_LOCAL_STATES_DELETED",
     "restoreDatabaseLogicalId": "P2-TRUST-LOCAL-RESTORE-DB-2026-10-03-V1",
-    "backupRestoreProcedure": "After fixture writes are quiesced, create a consistent local DB-level backup/export from the synthetic test database and restore/import it into the separate fresh local restore store above. Do not use an application restore endpoint. Compare schema, row counts, full synthetic trade IDs, per-record hashes, balances and P&L. Never restore production/E-002/E-003 data."
+    "backupRestoreProcedure": "Verified P2-02/03: quiesced local SQLite serialize() backup restored into a distinct previously nonexistent local file path, reopened, and compared schema objects, all 42 table row counts, domain row hashes, IDs, application reload and ledger arithmetic; backup and restored bytes/hash matched. No app restore endpoint and no production/E-002/E-003 data.",
+    "runEvidence": {
+      "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+      "canonicalSourceManifestSha256": "5fdf6dd6273c7765252495f6f960f74ad82592e619f583a24bd4d5bec03923bb",
+      "storage": "Fresh file-backed local SQLite via node:sqlite; full 16 baseline migrations",
+      "productionOrCloudflareUsed": false,
+      "externalNetworkUsedForPortfolioAndLedger": false,
+      "temporaryStateDeletedAfterRun": true,
+      "accountingToleranceAbsolute": 1e-09,
+      "portfolioEvidenceArchiveCommit": "488444c"
+    }
   },
   "requirements": [
     {
       "id": "P2-01",
-      "name": "Baseline and independent identity",
-      "status": "PARTIAL",
+      "name": "Baseline, current D1 identity, D2 discovery disposition, and evidence index",
+      "status": "TECHNICAL_PASS_PENDING_HUMAN_REVIEW",
       "humanReview": "PENDING",
       "evidence": [
-        "EVD-TRUST-P2-01-IDENTITY"
+        "EVD-TRUST-P2-01-CURRENT-D1-IDENTITY",
+        "EVD-TRUST-P2-01-BASELINE-PARITY-TESTS",
+        "EVD-TRUST-P2-01-D2-DISCOVERY"
       ],
       "verified": [
-        "Frozen canonical baseline SHA",
-        "Sites project and selected DB binding metadata captured read-only"
+        "Frozen canonical baseline",
+        "697-file source parity",
+        "Canonical npm test 211 passed / 0 failed / 1 optional skip",
+        "Current D1 provider UI identity",
+        "D2 discovery disposition and plan recorded"
       ],
       "remaining": [
-        "Fresh provider DB name/UUID or documented provider limitation",
-        "Authoritative independent D2 definition and identity"
-      ]
+        "Human review of the archived baseline and identity/discovery documentation"
+      ],
+      "currentSummary": "Canonical source/test-target identities, DoD and evidence log are recorded. Current D1 owner UI evidence and separate Sites DB binding observation are documented. D2 is an accepted-in-principle historical/analytical concept under discovery, with no selected provider or implementation approval. Recording that disposition satisfies this baseline requirement; completing future D2 discovery is not a new Trust closure prerequisite.",
+      "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241"
     },
     {
       "id": "P2-02",
       "name": "Synthetic portfolio lifecycle and accounting",
-      "status": "NOT_STARTED",
+      "status": "TECHNICAL_PASS_PENDING_HUMAN_REVIEW",
       "humanReview": "PENDING",
       "evidence": [
         "EVD-TRUST-P2-02-PORTFOLIO"
       ],
-      "acceptanceSummary": "Fresh local synthetic portfolio create/buy/add/partial-sell/full-sell/reload. Create a consistent DB-level backup after writes are quiesced; restore into a separate fresh local store (no app restore endpoint) and compare schema, rows, IDs, hashes and independent cash/units/cost/P&L arithmetic."
+      "acceptanceSummary": "Fresh local synthetic portfolio create/buy/add/partial-sell/full-sell/reload. Create a consistent DB-level backup after writes are quiesced; restore into a separate fresh local store (no app restore endpoint) and compare schema, rows, IDs, hashes and independent cash/units/cost/P&L arithmetic.",
+      "currentSummary": "Exact-baseline synthetic lifecycle passed all independent weighted-average cash/units/cost/realized/unrealized checkpoints within 1e-9. Quiesced local backup was restored to a separate fresh local DB; temporary stores were removed.",
+      "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+      "archivePath": "docs/evidence/PHASE-2-TRUST-2026-10-03/portfolio/EVD-TRUST-P2-02-PORTFOLIO.json",
+      "archiveCommit": "488444c"
     },
     {
       "id": "P2-03",
       "name": "Ledger integrity and traceability",
-      "status": "NOT_STARTED",
+      "status": "TECHNICAL_PASS_PENDING_HUMAN_REVIEW",
       "humanReview": "PENDING",
       "evidence": [
         "EVD-TRUST-P2-03-LEDGER"
-      ]
+      ],
+      "currentSummary": "Four unique chronological trades and one cash entry; same-ID retry idempotent; out-of-order write rejected without mutation; references resolved or explicitly null; reload and isolated restore matched.",
+      "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+      "archivePath": "docs/evidence/PHASE-2-TRUST-2026-10-03/portfolio/EVD-TRUST-P2-03-LEDGER.json",
+      "archiveCommit": "488444c"
     },
     {
       "id": "P2-04",
       "name": "Forecast snapshot immutability",
-      "status": "NOT_STARTED",
+      "status": "PARTIAL_PENDING_RISK_REVIEW",
       "humanReview": "PENDING",
       "evidence": [
         "EVD-TRUST-P2-04-FORECAST"
-      ]
+      ],
+      "currentSummary": "Supported app save/reanalysis/reload/restore flows preserved the original snapshot and six forecast rows. Direct SQL UPDATE was possible only within a synthetic transaction that was rolled back; no generic immutable-write trigger. Source trace found no legitimate runtime UPDATE/DELETE; corrections use outcome/revision records. Local append-only candidate migration and compatibility checks are in progress, not delivered.",
+      "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+      "remaining": [
+        "Assess/validate local append-only candidate and compatibility evidence; human reviewer must accept the storage-enforcement boundary before requirement PASS."
+      ],
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "readbackVerified": true,
+      "archivePath": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-evidence.json and p2-trust-cases.ndjson.gz",
+      "candidateWork": "Separate local append-only migration/compatibility candidate remains in progress; not delivered and not part of baseline."
     },
     {
       "id": "P2-05",
       "name": "Saudi and US authoritative market-data identity/period validation",
-      "status": "NOT_STARTED",
+      "status": "PARTIAL",
       "humanReview": "PENDING",
       "evidence": [
         "EVD-TRUST-P2-05-SA",
         "EVD-TRUST-P2-05-US"
+      ],
+      "currentSummary": "Saudi 2222.SR and 1120.SR sample OHLCV matched official search-result excerpts for 2026-09-10; direct exchange pages returned 403. US AAPL/MSFT prices/identity/date matched Nasdaq, but app volume is 10 shares lower for each; cause unresolved.",
+      "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+      "archivePath": "docs/evidence/PHASE-2-TRUST-2026-10-03/sources/",
+      "archiveHead": "14d41ec892adb4afd9553218176c195b7150b30a",
+      "remaining": [
+        "Resolve or clearly retain unexplained AAPL/MSFT -10-share variance and source-access limitations; human review."
       ]
     },
     {
       "id": "P2-06",
       "name": "Missing/stale/outage/zero/null handling",
-      "status": "NOT_STARTED",
+      "status": "TECHNICAL_PASS_PENDING_ARCHIVE_AND_REVIEW",
       "humanReview": "PENDING",
       "evidence": [
         "EVD-TRUST-P2-06-FAILURE-MATRIX"
-      ]
+      ],
+      "currentSummary": "All 38 deterministic missing/stale/outage/zero/null and identity/period cases passed.",
+      "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "readbackVerified": true,
+      "archivePath": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-evidence.json and p2-trust-cases.ndjson.gz"
     },
     {
       "id": "P2-07",
       "name": "Same-input/version deterministic replay",
-      "status": "NOT_STARTED",
+      "status": "TECHNICAL_PASS_PENDING_ARCHIVE_AND_REVIEW",
       "humanReview": "PENDING",
       "evidence": [
         "EVD-TRUST-P2-07-REPLAY"
-      ]
+      ],
+      "currentSummary": "Same input/version replays matched decision-bearing and persisted digests for both markets; changed-price positive controls changed output digests at the same model version.",
+      "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "readbackVerified": true,
+      "archivePath": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-evidence.json and p2-trust-cases.ndjson.gz"
     },
     {
       "id": "P2-08",
       "name": "Performance baseline without optimization or invented thresholds",
-      "status": "NOT_STARTED",
+      "status": "MEASURED_PENDING_HUMAN_REVIEW",
       "humanReview": "PENDING",
       "evidence": [
-        "EVD-TRUST-P2-08-PERFORMANCE"
-      ]
+        "EVD-TRUST-P2-08-PERFORMANCE",
+        "EVD-TRUST-P2-08-PORTFOLIO-UPDATE"
+      ],
+      "currentSummary": "Saudi/US analysis, six-horizon forecast/save and portfolio update were measured on exact-baseline synthetic local Node/SQLite workloads; no threshold or optimization. Network, browser, Worker CPU and remote D1 latency/durability are excluded.",
+      "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+      "archivePath": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-evidence.json and docs/evidence/PHASE-2-TRUST-2026-10-03/portfolio/EVD-TRUST-P2-08-PORTFOLIO-UPDATE.json",
+      "archiveCommit": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "readbackVerified": true
     },
     {
       "id": "P2-09",
       "name": "Risk register",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "humanReview": "PENDING",
       "evidence": [
         "EVD-TRUST-P2-09-RISKS"
-      ]
+      ],
+      "currentSummary": "Risk register reflects measured mitigations and remaining forecast storage-enforcement, source-volume variance, D2 discovery, and evidence archive/review limitations.",
+      "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+      "localDocumentPath": "phase2-proposal/PHASE-2-RISK-REGISTER.md"
     },
     {
       "id": "P2-10",
@@ -321,85 +477,182 @@
       "humanReview": "PENDING",
       "evidence": [
         "EVD-TRUST-P2-10-REVIEW"
-      ]
+      ],
+      "currentSummary": "Human review has not completed; Phase 2 is not closed.",
+      "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241"
     }
   ],
   "evidenceIndex": [
     {
       "evidenceId": "EVD-TRUST-P2-01-IDENTITY",
       "requirementId": "P2-01",
-      "status": "PARTIAL",
-      "artifact": "Frozen baseline SHA plus read-only Sites binding metadata; current DB provider identity and D2 remain unresolved",
-      "result": null
+      "status": "DOCUMENTATION_COMPLETE_PENDING_HUMAN_REVIEW",
+      "artifact": "Frozen baseline/source parity, isolated test targets, current D1 owner UI metadata and approved D2 discovery disposition; future D2 provisioning/discovery completion is not required for this baseline record.",
+      "result": null,
+      "archiveStatus": "PR3 document update pending root archive"
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-01-BASELINE-PARITY-TESTS",
+      "requirementId": "P2-01",
+      "status": "ARCHIVED_AND_READBACK_VERIFIED",
+      "artifact": "docs/evidence/PHASE-2-TRUST-2026-10-03/source-parity.ndjson (697-file canonical parity); docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/canonical-npm-test-run.json and canonical-npm-test.sanitized.tap",
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "testResult": {
+        "total": 212,
+        "passed": 211,
+        "failed": 0,
+        "skipped": 1,
+        "skipReason": "MIZAN_LIVE_BASELINE_MODULE was unset; optional pre-change comparator only"
+      },
+      "separateHarnessAttempt": "Initial deny-all attempt is preserved separately and is not conflated with canonical npm test."
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-01-CURRENT-D1-IDENTITY",
+      "requirementId": "P2-01",
+      "status": "CURRENT_PROVIDER_IDENTITY_VERIFIED",
+      "artifact": "phase2-proposal/EVD-TRUST-P2-01-CURRENT-D1-IDENTITY.json; safe provider UI observation, no screenshot or row data",
+      "archiveTarget": "docs/evidence/PHASE-2-TRUST-2026-10-03/identity/EVD-TRUST-P2-01-CURRENT-D1-IDENTITY.json",
+      "result": {
+        "name": "mizan-equity-db",
+        "uuid": "e95b74e8-81d6-4beb-8ea2-ad59c863d21d",
+        "region": "EEUR",
+        "displayedSize": "86.63 MB",
+        "tableCount": 42,
+        "siteBinding": "DB observed separately; direct UUID link not newly captured"
+      },
+      "archiveStatus": "LOCAL_DRAFT_PENDING_ROOT_ARCHIVE"
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-01-D2-DISCOVERY",
+      "requirementId": "P2-01",
+      "status": "DOCUMENTATION_APPROVED_DISCOVERY_IMPLEMENTATION_GATED",
+      "artifact": "docs/phase2/D2-DISCOVERY.md and extracted docs/architecture/ADR-P2-001-D2-DATA-PLATFORM.md, D2-DATAFLOW.mmd, D2-DATAFLOW-DETAILED.mmd, D2-SCHEMA-V1.sql; pending PR3 archive.",
+      "result": {
+        "d1": "ACTIVE operational Source of Truth and permanent site memory",
+        "d2": "new initiative under DISCOVERY",
+        "role": "Historical/analytical complement accepted in principle; provider and implementation scope unselected",
+        "conceptualComplementaryPath": "accepted in principle in draft source; implementation NOT_APPROVED",
+        "providerSelected": false,
+        "replacementApproved": false,
+        "migrationApproved": false
+      },
+      "sourceContext": {
+        "ownerMessageId": "Sentinel_69aaeee0fbf881918a5b3a3a06dc50a3",
+        "timestamp": "2026-10-03T23:16:54Z",
+        "fullSource": "Pasted text(1).txt, 29404 bytes, 1353 lines, fully read and preserved unchanged in owner Library"
+      },
+      "ownerDocumentationApproval": {
+        "messageId": "Sentinel_044d17e6fc408191b486b16e4be652d1",
+        "timestamp": "2026-10-03T23:36:12Z",
+        "ownerText": "اعتمد ذلك",
+        "scope": "Adopt the D2 discovery/architecture documentation for design; D2 creation and data transfer remain governed by separate execution gates."
+      }
     },
     {
       "evidenceId": "EVD-TRUST-P2-02-PORTFOLIO",
       "requirementId": "P2-02",
-      "status": "PLANNED_NOT_RUN",
-      "artifact": "Synthetic portfolio lifecycle, manual arithmetic worksheet, local DB-level backup/restore into a separate fresh store, and restored-state comparison; no app restore endpoint",
-      "result": null
+      "status": "TECHNICAL_PASS_PENDING_HUMAN_REVIEW",
+      "artifact": "docs/evidence/PHASE-2-TRUST-2026-10-03/portfolio/EVD-TRUST-P2-02-PORTFOLIO.json; exact-baseline synthetic accounting and isolated SQLite backup/restore",
+      "result": null,
+      "archiveCommit": "488444c",
+      "readbackVerified": true,
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "readbackVerifiedAtCurrentHead": true
     },
     {
       "evidenceId": "EVD-TRUST-P2-03-LEDGER",
       "requirementId": "P2-03",
-      "status": "PLANNED_NOT_RUN",
-      "artifact": "Synthetic ledger integrity, unique-ID, chronology, link and replay report",
-      "result": null
+      "status": "TECHNICAL_PASS_PENDING_HUMAN_REVIEW",
+      "artifact": "docs/evidence/PHASE-2-TRUST-2026-10-03/portfolio/EVD-TRUST-P2-03-LEDGER.json; unique IDs, order/retry, references and restore verified",
+      "result": null,
+      "archiveCommit": "488444c",
+      "readbackVerified": true,
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "readbackVerifiedAtCurrentHead": true
     },
     {
       "evidenceId": "EVD-TRUST-P2-04-FORECAST",
       "requirementId": "P2-04",
-      "status": "PLANNED_NOT_RUN",
-      "artifact": "Forecast immutable-field before/after snapshot comparison",
-      "result": null
+      "status": "PARTIAL_PENDING_RISK_REVIEW",
+      "artifact": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-evidence.json and p2-trust-cases.ndjson.gz; supported app flows pass, rolled-back direct SQL UPDATE probe exposes no-trigger boundary.",
+      "result": null,
+      "temporaryLocalPath": "/tmp/P2-TRUST-LOCAL-FORECAST-2026-10-03-V1/p2-trust-evidence.json",
+      "plannedArchivePath": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/",
+      "archiveStatus": "PENDING_CONFIRMATION",
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "readbackVerified": true,
+      "candidateWork": "Separate local append-only candidate/compatibility work is in progress; not delivered and not part of canonical baseline."
     },
     {
       "evidenceId": "EVD-TRUST-P2-05-SA",
       "requirementId": "P2-05",
-      "status": "PLANNED_NOT_RUN",
-      "artifact": "Saudi sample identity/period/source evidence",
-      "result": null
+      "status": "PASS_AT_SAMPLE_DATE_WITH_LIMITS",
+      "artifact": "docs/evidence/PHASE-2-TRUST-2026-10-03/sources/EVD-TRUST-P2-05-SA.json; two Saudi samples, official search excerpt for 2026-09-10; direct page returned 403",
+      "result": null,
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "readbackVerified": true
     },
     {
       "evidenceId": "EVD-TRUST-P2-05-US",
       "requirementId": "P2-05",
-      "status": "PLANNED_NOT_RUN",
-      "artifact": "US sample identity/period/source evidence",
-      "result": null
+      "status": "PARTIAL_WITH_UNRESOLVED_VOLUME_MISMATCH",
+      "artifact": "docs/evidence/PHASE-2-TRUST-2026-10-03/sources/EVD-TRUST-P2-05-US.json; AAPL and MSFT each app volume is 10 shares below Nasdaq; cause unresolved.",
+      "result": null,
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "readbackVerified": true
     },
     {
       "evidenceId": "EVD-TRUST-P2-06-FAILURE-MATRIX",
       "requirementId": "P2-06",
-      "status": "PLANNED_NOT_RUN",
-      "artifact": "Missing/stale/outage/zero/null expected-versus-actual matrix",
-      "result": null
+      "status": "TECHNICAL_PASS_38_OF_38_PENDING_HUMAN_REVIEW",
+      "artifact": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-evidence.json and compressed p2-trust-cases.ndjson.gz; portfolio component also at docs/evidence/PHASE-2-TRUST-2026-10-03/portfolio/EVD-TRUST-P2-08-PORTFOLIO-UPDATE.json",
+      "result": {
+        "matrixCases": 38,
+        "passed": 38,
+        "failed": 0
+      },
+      "archiveStatus": "ARCHIVED_AND_READBACK_VERIFIED",
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4"
     },
     {
       "evidenceId": "EVD-TRUST-P2-07-REPLAY",
       "requirementId": "P2-07",
-      "status": "PLANNED_NOT_RUN",
-      "artifact": "Deterministic replay metadata, canonical digest and diff",
-      "result": null
+      "status": "TECHNICAL_PASS_WITH_POSITIVE_CONTROLS_PENDING_HUMAN_REVIEW",
+      "artifact": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-evidence.json and compressed p2-trust-cases.ndjson.gz; portfolio component also at docs/evidence/PHASE-2-TRUST-2026-10-03/portfolio/EVD-TRUST-P2-08-PORTFOLIO-UPDATE.json",
+      "result": null,
+      "archiveStatus": "ARCHIVED_AND_READBACK_VERIFIED",
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4"
     },
     {
       "evidenceId": "EVD-TRUST-P2-08-PERFORMANCE",
       "requirementId": "P2-08",
-      "status": "PLANNED_NOT_RUN",
-      "artifact": "Measurement-only performance baseline and environment manifest",
-      "result": null
+      "status": "MEASURED_NO_THRESHOLD_PENDING_HUMAN_REVIEW",
+      "artifact": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-evidence.json and compressed p2-trust-cases.ndjson.gz; portfolio component also at docs/evidence/PHASE-2-TRUST-2026-10-03/portfolio/EVD-TRUST-P2-08-PORTFOLIO-UPDATE.json",
+      "result": null,
+      "archiveCommit": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "portfolioReadbackVerified": true,
+      "limitations": [
+        "Synthetic local Node/SQLite workloads only",
+        "No network retrieval",
+        "No browser/UI/render",
+        "No Cloudflare Worker CPU or production D1 latency/durability",
+        "No threshold set and no optimization performed"
+      ],
+      "archiveStatus": "ARCHIVED_AND_READBACK_VERIFIED",
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4"
     },
     {
       "evidenceId": "EVD-TRUST-P2-09-RISKS",
       "requirementId": "P2-09",
-      "status": "PLANNED_NOT_RUN",
-      "artifact": "Reviewed risk register snapshot and linked mitigations",
+      "status": "IN_PROGRESS",
+      "artifact": "Updated local PHASE-2-RISK-REGISTER.md; archive with current PR3 document update",
       "result": null
     },
     {
       "evidenceId": "EVD-TRUST-P2-10-REVIEW",
       "requirementId": "P2-10",
-      "status": "PLANNED_NOT_RUN",
-      "artifact": "Human review record with explicit decision and date",
+      "status": "NOT_STARTED",
+      "artifact": "Human review and phase closure signoff not started",
       "result": null
     }
   ],
@@ -407,8 +660,10 @@
     "Synthetic local test state only; never reuse production, E-002 recovery, or E-003 restore state.",
     "No real trades, production-record mutation, or secrets in evidence.",
     "Use canonical mizan-v45 source at baseline SHA 18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241, not the older Site source commit.",
+    "No production D1 migration, D2 provider selection, D2 provisioning, or D2 implementation is approved; D1 remains ACTIVE operational Source of Truth and permanent site memory.",
+    "D2 is under DISCOVERY with role UNKNOWN; the discovery questions do not block independent synthetic Trust tests.",
+    "P2-04 candidate append-only work is a separate local candidate only; it is not delivered and does not modify the canonical baseline or production.",
     "Each parallel work package uses a separate fresh local synthetic database/worktree; avoid shared writable D1 state.",
-    "No application tests until root GO after PR3 documentation archive.",
     "No AZIZ, Mizan Score, research, new models, AI features, or optimization; Phase 3 intelligence only after Phase 2 CLOSED.",
     "UNKNOWN, PARTIAL, BLOCKED, and NOT_RUN are never PASS."
   ],
@@ -417,5 +672,74 @@
     "source": "docs/MIZAN-FINANCIAL-RECOVERY-STABILIZATION.md",
     "description": "Earlier P2-01..P2-09 described deployment independence (deployer/Sites/Worker/DBs/secrets/repo pipeline/deployment parity/duplicate deployment risks). Preserve it; do not mix its evidence IDs, statuses, or acceptance criteria with this Trust Baseline.",
     "oldRoadmapMustBePreserved": true
+  },
+  "ownerDecision": {
+    "messageId": "Sentinel_69aaeee0fbf881918a5b3a3a06dc50a3",
+    "timestamp": "2026-10-03T23:16:54Z",
+    "ownerText": "اعتمد الان خطة دي ١ ودي٢ واضف كل ماهنا لدييك",
+    "recordedDisposition": {
+      "D1": "ACTIVE; current operational Source of Truth and permanent site memory",
+      "D2": "New initiative under DISCOVERY; role UNKNOWN; implementation/provisioning NOT APPROVED; not a D1 replacement",
+      "discoveryRecord": "docs/phase2/D2-DISCOVERY.md",
+      "implementationOrMigrationApproved": false,
+      "documentationApproved": true,
+      "d2ImplementationOrProvisioningApproved": false,
+      "d2DataTransferApproved": false
+    },
+    "sourceFile": {
+      "name": "Pasted text(1).txt",
+      "createdAt": "2026-10-03T23:16:51.306010Z",
+      "sizeBytes": 29404,
+      "totalLines": 1353,
+      "fullFileReviewed": true,
+      "preservedUnchangedInOwnerLibrary": true
+    },
+    "documentationApproval": {
+      "messageId": "Sentinel_044d17e6fc408191b486b16e4be652d1",
+      "timestamp": "2026-10-03T23:36:12Z",
+      "ownerText": "اعتمد ذلك",
+      "scope": "Adopt the D2 discovery/architecture documentation for design; D2 creation and data transfer remain governed by separate execution gates."
+    }
+  },
+  "archives": {
+    "portfolio": {
+      "status": "ARCHIVED_AND_READBACK_VERIFIED",
+      "evidenceCommit": "488444c",
+      "currentPR3Head": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "path": "docs/evidence/PHASE-2-TRUST-2026-10-03/portfolio/"
+    },
+    "sources": {
+      "status": "ARCHIVED_AND_READBACK_VERIFIED",
+      "currentPR3Head": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "path": "docs/evidence/PHASE-2-TRUST-2026-10-03/sources/",
+      "includes": "Saudi/US evidence, source diagnosis, gzip raw source bundle, archive packing metadata"
+    },
+    "forecast": {
+      "status": "ARCHIVED_AND_READBACK_VERIFIED",
+      "currentPR3Head": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "path": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/",
+      "includes": "Canonical npm test, separate deny-all attempt, forecast Trust bundle, gzip cases, packing/checksum metadata"
+    },
+    "updatedDocuments": {
+      "status": "LOCAL_DRAFT_PENDING_ROOT_ARCHIVE",
+      "paths": [
+        "phase2-proposal/PHASE-2-REQUIREMENTS.md",
+        "phase2-proposal/PHASE-2-EVIDENCE-LOG.json",
+        "phase2-proposal/PHASE-2-RISK-REGISTER.md",
+        "phase2-proposal/docs/phase2/D2-DISCOVERY.md",
+        "phase2-proposal/docs/architecture/ADR-P2-001-D2-DATA-PLATFORM.md",
+        "phase2-proposal/docs/architecture/D2-DATAFLOW.mmd",
+        "phase2-proposal/docs/architecture/D2-DATAFLOW-DETAILED.mmd",
+        "phase2-proposal/docs/architecture/D2-SCHEMA-V1.sql",
+        "phase2-proposal/EVD-TRUST-P2-01-CURRENT-D1-IDENTITY.json"
+      ]
+    }
+  },
+  "scopeClarification": {
+    "ownerMessages": [
+      "Sentinel_69aaeee0fbf881918a5b3a3a06dc50a3",
+      "Sentinel_044d17e6fc408191b486b16e4be652d1"
+    ],
+    "meaning": "P2-01 records the approved discovery disposition of D2; no nonexistent database UUID or completed implementation is required. No D2 implementation gate is marked passed."
   }
 }

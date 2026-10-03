@@ -1,0 +1,41 @@
+flowchart LR
+
+    D1[(D1 Operational Store)]
+
+    EXPORT[Export Contract]
+
+    BATCH[Transfer Batch]
+
+    HASH[Hash Validation]
+
+    D2[(D2 Historical Store)]
+
+    FORECAST[Forecast Analytics]
+
+    BACKTEST[Backtesting]
+
+    RESEARCH[Research Datasets]
+
+    AZIZ[Future AZIZ]
+
+    SCORE[Future Mizan Score]
+
+    D1 --> EXPORT
+
+    EXPORT --> BATCH
+
+    BATCH --> HASH
+
+    HASH -->|PASS| D2
+    HASH -->|FAIL| QUARANTINE[Quarantine Queue]
+
+    D2 --> FORECAST
+    D2 --> BACKTEST
+    D2 --> RESEARCH
+    D2 --> AZIZ
+    D2 --> SCORE
+
+    AZIZ -. Read Only .-> D2
+    SCORE -. Read Only .-> D2
+
+    D2 -. No Direct Write .-> D1
