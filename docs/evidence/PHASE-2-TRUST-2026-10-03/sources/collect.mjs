@@ -1,0 +1,19 @@
+import {createHash} from 'node:crypto';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {parseChart,upstream} from '/tmp/mizan-v45-canonical-18ba8f39-20261003T223500Z/mizan-v45/lib/market-data.ts';
+const out='/workspace/scratch/621fd6e6940e/p2-05-source-validation';
+await mkdir(out,{recursive:true});
+const asOf='2026-09-10';
+const symbols=['2222.SR','AAPL','1120.SR','MSFT'];
+function dailyURL(symbol,asOf){const end=Date.parse(asOf+'T00:00:00Z'),start=new Date(end);start.setUTCFullYear(start.getUTCFullYear()-5);if(start.getUTCMonth()!==new Date(end).getUTCMonth())start.setUTCDate(0);return `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&period1=${Math.floor(start.getTime()/1000)}&period2=${Math.floor(end/1000)+86400}&events=splits%2Cdiv`;}
+const originals=globalThis.fetch,rawChartBodies=[];
+globalThis.fetch=async (input,init)=>{const url=String(input),response=await originals(input,init);if(url.includes('/v8/finance/chart/')){const body=await response.clone().text();rawChartBodies.push({url,status:response.status,sha256:createHash('sha256').update(body,'utf8').digest('hex'),body});}return response;};
+const results=[];
+for(const symbol of symbols){const url=dailyURL(symbol,asOf),startedAt=new Date().toISOString();try{const data=await upstream(url,true,0);const normalized=parseChart(data,asOf);const sample=normalized.prices.find(p=>p.date===asOf);const m=normalized.meta;results.push({symbol,status:sample?'VALUE_FOUND':'NODATA_FOR_ASOF',requestUrl:url,requestStartedAt:startedAt,retrievedAt:new Date().toISOString(),asOf,meta:{symbol:m.symbol,longName:m.longName??null,shortName:m.shortName??null,currency:m.currency??null,exchangeName:m.exchangeName??null,fullExchangeName:m.fullExchangeName??null,instrumentType:m.instrumentType??null,exchangeTimezoneName:m.exchangeTimezoneName??null,gmtoffset:m.gmtoffset??null,dataGranularity:m.dataGranularity??null},sample:sample??null,priceCount:normalized.prices.length,firstPriceDate:normalized.prices[0]?.date??null,lastPriceDate:normalized.prices.at(-1)?.date??null,corporateActions:normalized.corporateActions});}catch(e){results.push({symbol,status:'FETCH_OR_NORMALIZATION_ERROR',requestUrl:url,requestStartedAt:startedAt,error:e instanceof Error?e.message:String(e)});}}
+globalThis.fetch=originals;
+const captureTime=new Date().toISOString();
+const bodyBundle={captureType:'exact UTF-8 HTTP response bodies cloned inside the canonical app upstream fetch path; parser consumed the corresponding original response',baselineCommit:'18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241',sourceParityManifestSha256:'5fdf6dd6273c7765252495f6f960f74ad82592e619f583a24bd4d5bec03923bb',capturedAt:captureTime,bodies:rawChartBodies};
+const bodyJson=JSON.stringify(bodyBundle,null,2)+'\n';await writeFile(out+'/yahoo-chart-responses.json',bodyJson);
+const resultBundle={baselineCommit:'18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241',sourceParityManifestSha256:'5fdf6dd6273c7765252495f6f960f74ad82592e619f583a24bd4d5bec03923bb',capturedAt:captureTime,asOf,symbols,execution:'lib/market-data.ts upstream(url,true,0) then canonical parseChart(response, asOf); no configuredReader, database, production app API, telemetry, or analysis write was used',results};
+await writeFile(out+'/normalized-app-results.json',JSON.stringify(resultBundle,null,2)+'\n');
+console.log(JSON.stringify({results:results.map(r=>({symbol:r.symbol,status:r.status,name:r.meta?.longName||r.meta?.shortName,currency:r.meta?.currency,exchange:r.meta?.fullExchangeName||r.meta?.exchangeName,instrument:r.meta?.instrumentType,timezone:r.meta?.exchangeTimezoneName,asOf:r.asOf,sample:r.sample,priceCount:r.priceCount,first:r.firstPriceDate,last:r.lastPriceDate,actions:r.corporateActions,error:r.error})),chartBodies:rawChartBodies.map(x=>({url:x.url,status:x.status,sha256:x.sha256,bytes:Buffer.byteLength(x.body)}))},null,2));
