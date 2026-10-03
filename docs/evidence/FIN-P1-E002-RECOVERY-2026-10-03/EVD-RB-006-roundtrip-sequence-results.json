@@ -1,0 +1,233 @@
+{
+  "evidenceId": "EVD-RB-006",
+  "campaign": "E002-EVIDENCE-RECOVERY-2026-10-03",
+  "generatedAt": "2026-10-03T21:28:30Z",
+  "kind": "rollback_forward_return_sequence_summary",
+  "status": "PASSED_LOCAL_SOURCE_ROUNDTRIP_WITH_DOCUMENTED_LIMITS",
+  "sequence": [
+    "v52-before",
+    "v51-rollback",
+    "v52-return"
+  ],
+  "executionEnvironment": {
+    "runtime": "Miniflare built Worker bundles and client assets behind a same-process loopback HTTP bridge; HTTP client used Node fetch to 127.0.0.1.",
+    "loopbackOnly": true,
+    "workerPort": 8787,
+    "testConfigFiles": [
+      "wrangler-e002-v52.json",
+      "wrangler-e002-v51.json"
+    ],
+    "d1DatabaseName": "mizan-e002-isolated-20261003",
+    "d1DatabaseId": "00000000-0000-4000-8000-202610032032",
+    "samePersistentD1AcrossStages": true,
+    "localD1PersistenceRoot": "/workspace/scratch/621fd6e6940e/e002-isolated-2026-10-03/.wrangler/state/v3/d1",
+    "productionSiteOrD1Touched": false,
+    "cronSchedules": [],
+    "credentialsOrAuthHeadersProvided": false
+  },
+  "migrations": {
+    "sourceAndSchemaEvidence": "EVD-RB-003-migration-schema-results.json",
+    "sourceAndSchemaSha256": "fb84dea3c8879136feba9befe05e56a32f8da2b41a60cc4d412a8c0b45ee64db",
+    "sqlMigrationCount": 16,
+    "pendingAfterApply": 0,
+    "applicationSchemaSha256": "a63b91a55666d769127b0b42c7ef6dbefea131f320e54ae40384ba25ea71bed1"
+  },
+  "stages": [
+    {
+      "stage": "v52-before",
+      "sourceSha": "93808ca6b93188581adda966a3caf019d741898c",
+      "generatedAt": "2026-10-03T21:18:39.591Z",
+      "result": "PASSED",
+      "assertedMatrixGetRequests": 20,
+      "startupReadinessProbes": 1,
+      "statusCounts": {
+        "200": 14,
+        "401": 4,
+        "403": 2
+      },
+      "categoryCounts": {
+        "page": 9,
+        "release-identity": 1,
+        "read-api": 4,
+        "auth-boundary": 6
+      },
+      "deploymentIdentity": {
+        "worker": "mizan-equity",
+        "commit": "93808ca6b93188581adda966a3caf019d741898c"
+      },
+      "allRouteAssertionsPassed": true,
+      "routeEvidence": {
+        "path": "http-smoke-v52-before-v4.json",
+        "sha256": "a7f3bb0bbe5426144be4b3cf0e1c3b8bbea8c2218c40aa677f28516e1c7560dd",
+        "serverLogPath": "miniflare-http-v52-before-v4.log",
+        "serverLogSha256": "2ce46022962b7a1fdf555b511ebccf4cb1501bbf8ce7bab81c317f66f4574295"
+      },
+      "snapshot": {
+        "path": "snapshot-after-v52-before.json",
+        "sha256": "18d0efc9397368305f484639cb720314a05f9fbb9a2e9412dc138a7d4c186af5",
+        "applicationSchemaSha256": "a63b91a55666d769127b0b42c7ef6dbefea131f320e54ae40384ba25ea71bed1",
+        "combinedDomainDataSha256": "ba4ddb9efb24bb904b9a0d3736802488c946f93b6c67b9edf003d22670644513",
+        "tableRowCounts": {
+          "site_settings": 1,
+          "paper_portfolios": 2,
+          "paper_trades": 1,
+          "paper_cash_entries": 1,
+          "analysis_snapshots": 1,
+          "forecast_records": 1
+        },
+        "tableRowsSha256": {
+          "site_settings": "d42d7394a9d15bbb17f90dc8dbfa4af41dad4dd2a75679093e3fa21c30ef9eff",
+          "paper_portfolios": "2ed8e9364f7f3bca5faf52e36b5b7f9f66aec8efd2e6407927adc8536afaf618",
+          "paper_trades": "55546e7d071f0a367ce61deba5a8e632fcca5a387e9f88f741b11fc0c440b710",
+          "paper_cash_entries": "1bd1c8ead61900ed3a0e7ea76e10aa15a5e37a66415d36f24f9b8a06be3b66e4",
+          "analysis_snapshots": "060c8e7baf165c60f15f97cb36629a461c1776387ccaff817c17fd95e5945236",
+          "forecast_records": "53a2f8a7554aa5d6533bf1ff964320129df66cb87bca7971621465c8a7a64546"
+        }
+      }
+    },
+    {
+      "stage": "v51-rollback",
+      "sourceSha": "65b623639588f40eb73c5d76616308737ab33f33",
+      "generatedAt": "2026-10-03T21:19:55.154Z",
+      "result": "PASSED",
+      "assertedMatrixGetRequests": 20,
+      "startupReadinessProbes": 1,
+      "statusCounts": {
+        "200": 14,
+        "401": 4,
+        "403": 2
+      },
+      "categoryCounts": {
+        "page": 9,
+        "release-identity": 1,
+        "read-api": 4,
+        "auth-boundary": 6
+      },
+      "deploymentIdentity": {
+        "worker": "mizan-equity",
+        "commit": "65b623639588f40eb73c5d76616308737ab33f33"
+      },
+      "allRouteAssertionsPassed": true,
+      "routeEvidence": {
+        "path": "http-smoke-v51-rollback-v4.json",
+        "sha256": "da8cf6b6f7d5cd9b61eef39685f0d592532439e9dc7d49b08c770514e042da9a",
+        "serverLogPath": "miniflare-http-v51-rollback-v4.log",
+        "serverLogSha256": "e4d11d20b615161a1f29b8472f44c9c40ffd04cdb570934d4b2f3abd9a873d9f"
+      },
+      "snapshot": {
+        "path": "snapshot-after-v51-rollback.json",
+        "sha256": "954db194ab13e8bef1d9aa6c2339195ed4dd861d55092457d6a578734561cae8",
+        "applicationSchemaSha256": "a63b91a55666d769127b0b42c7ef6dbefea131f320e54ae40384ba25ea71bed1",
+        "combinedDomainDataSha256": "ba4ddb9efb24bb904b9a0d3736802488c946f93b6c67b9edf003d22670644513",
+        "tableRowCounts": {
+          "site_settings": 1,
+          "paper_portfolios": 2,
+          "paper_trades": 1,
+          "paper_cash_entries": 1,
+          "analysis_snapshots": 1,
+          "forecast_records": 1
+        },
+        "tableRowsSha256": {
+          "site_settings": "d42d7394a9d15bbb17f90dc8dbfa4af41dad4dd2a75679093e3fa21c30ef9eff",
+          "paper_portfolios": "2ed8e9364f7f3bca5faf52e36b5b7f9f66aec8efd2e6407927adc8536afaf618",
+          "paper_trades": "55546e7d071f0a367ce61deba5a8e632fcca5a387e9f88f741b11fc0c440b710",
+          "paper_cash_entries": "1bd1c8ead61900ed3a0e7ea76e10aa15a5e37a66415d36f24f9b8a06be3b66e4",
+          "analysis_snapshots": "060c8e7baf165c60f15f97cb36629a461c1776387ccaff817c17fd95e5945236",
+          "forecast_records": "53a2f8a7554aa5d6533bf1ff964320129df66cb87bca7971621465c8a7a64546"
+        }
+      }
+    },
+    {
+      "stage": "v52-return",
+      "sourceSha": "93808ca6b93188581adda966a3caf019d741898c",
+      "generatedAt": "2026-10-03T21:20:58.974Z",
+      "result": "PASSED",
+      "assertedMatrixGetRequests": 20,
+      "startupReadinessProbes": 1,
+      "statusCounts": {
+        "200": 14,
+        "401": 4,
+        "403": 2
+      },
+      "categoryCounts": {
+        "page": 9,
+        "release-identity": 1,
+        "read-api": 4,
+        "auth-boundary": 6
+      },
+      "deploymentIdentity": {
+        "worker": "mizan-equity",
+        "commit": "93808ca6b93188581adda966a3caf019d741898c"
+      },
+      "allRouteAssertionsPassed": true,
+      "routeEvidence": {
+        "path": "http-smoke-v52-return-v4.json",
+        "sha256": "a9ae6d44f00a7f0d2c5e40574cc3e584d511dad3b555c7928d9cbcd3b7950243",
+        "serverLogPath": "miniflare-http-v52-return-v4.log",
+        "serverLogSha256": "3cef012d930eb04a4ae1e145dd6558e9f3901e6d5f8287ae91aa078db2b819ff"
+      },
+      "snapshot": {
+        "path": "snapshot-after-v52-return.json",
+        "sha256": "275e4371267a518b911f42aae94b0c375b0fe7a449b1e3bfdad3828fbd129efd",
+        "applicationSchemaSha256": "a63b91a55666d769127b0b42c7ef6dbefea131f320e54ae40384ba25ea71bed1",
+        "combinedDomainDataSha256": "ba4ddb9efb24bb904b9a0d3736802488c946f93b6c67b9edf003d22670644513",
+        "tableRowCounts": {
+          "site_settings": 1,
+          "paper_portfolios": 2,
+          "paper_trades": 1,
+          "paper_cash_entries": 1,
+          "analysis_snapshots": 1,
+          "forecast_records": 1
+        },
+        "tableRowsSha256": {
+          "site_settings": "d42d7394a9d15bbb17f90dc8dbfa4af41dad4dd2a75679093e3fa21c30ef9eff",
+          "paper_portfolios": "2ed8e9364f7f3bca5faf52e36b5b7f9f66aec8efd2e6407927adc8536afaf618",
+          "paper_trades": "55546e7d071f0a367ce61deba5a8e632fcca5a387e9f88f741b11fc0c440b710",
+          "paper_cash_entries": "1bd1c8ead61900ed3a0e7ea76e10aa15a5e37a66415d36f24f9b8a06be3b66e4",
+          "analysis_snapshots": "060c8e7baf165c60f15f97cb36629a461c1776387ccaff817c17fd95e5945236",
+          "forecast_records": "53a2f8a7554aa5d6533bf1ff964320129df66cb87bca7971621465c8a7a64546"
+        }
+      }
+    }
+  ],
+  "checks": {
+    "stageOrderCorrect": true,
+    "allStageHttpMatricesPassed": true,
+    "assertedMatrixGetRequestsTotal": 60,
+    "allDeploymentIdentityRoutesMatchedSourceSha": true,
+    "applicationSchemaHashStable": true,
+    "syntheticDomainDataHashStable": true,
+    "allSixTableHashesStable": true,
+    "postPragmaFinalSnapshotMatches": true,
+    "fixtureDefinitionSha256": "41e4b9c1b5618cbcfe1ce80a5f1da1654255a4312856f217b4a34cdb2e2fd630",
+    "syntheticFixtureSqlSha256": "19a3a3165cc919cfe67ac08a478630766c8f6589d57f8ebe4389aebf49b7999e",
+    "pragmaCapabilityEvidence": "EVD-RB-005-pragma-capability-results.json",
+    "pragmaCapabilityEvidenceSha256": "24623a655e176f81006bf22429c4a7fc8d97db4ffc0e99bc884a5f29bb4678d4"
+  },
+  "harnessHistory": {
+    "wranglerDevAttempt": "Failed before Worker startup because the Node runtime could not enumerate interfaces (`uv_interface_addresses`); this was a local executor issue, not a route result.",
+    "miniflareAutoModuleAttempt": "Stopped before D1/HTTP because automatic module collection rejected a dynamic import; corrected with explicit built module list.",
+    "separateExecLoopbackAttempt": "Client in a separate exec session could not connect; cause not established, and no request reached Worker.",
+    "miniflareRequestObjectAttempt": "Bridge returned 502 for all paths; exact exception not retained. Corrected to the supported Miniflare `dispatchFetch(url, init)` signature; v4 route evidence passes.",
+    "diagnosticEvidencePaths": [
+      "worker-v52-before.log",
+      "miniflare-http-v52-before-v1-failure.log",
+      "EVD-RB-002-miniflare-v1-harness-diagnostic.json",
+      "http-smoke-v52-before.json",
+      "EVD-RB-002-loopback-boundary-diagnostic.json",
+      "http-smoke-v52-before-inprocess.json"
+    ]
+  },
+  "limits": [
+    "The original three 2026-10-01 JSON artifacts remain unrecovered; this is a fresh retest and fresh evidence set.",
+    "Provider archive hashes/metadata were recorded, but saved provider archives were not downloaded or executed; this verifies the exact source-built Worker bundles only.",
+    "The fixture is synthetic and local; it does not validate real production portfolio records or settings semantics.",
+    "The D1 SQL interface rejected PRAGMA integrity_check with SQLITE_AUTH; supported D1 quick_check and foreign_key_check passed, and direct read-only SQLite integrity_check on the same isolated file returned ok.",
+    "No production deployment, production D1 action, cron execution, authenticated owner flow, POST, or external market/provider request was performed."
+  ],
+  "governance": {
+    "historicalE002AcceptancePreserved": "PASS_PENDING_HUMAN_REVIEW",
+    "closureDecisionMadeByThisArtifact": false,
+    "phase1ClosedByThisArtifact": false
+  }
+}
