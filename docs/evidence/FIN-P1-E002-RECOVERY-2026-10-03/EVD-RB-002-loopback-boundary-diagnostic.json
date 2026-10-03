@@ -1,0 +1,24 @@
+{
+  "evidenceId": "EVD-RB-002",
+  "campaign": "E002-EVIDENCE-RECOVERY-2026-10-03",
+  "generatedAt": "2026-10-03T21:09:15Z",
+  "attempt": "v52-before Miniflare loopback bridge with client in a separate executor process",
+  "status": "CLIENT_COULD_NOT_REACH_LOOPBACK_SERVER_ACROSS_EXEC_SESSIONS",
+  "workerRuntimeStarted": true,
+  "workerReadyLog": "miniflare-http-v52-before-v2.log",
+  "workerReadyLogSha256": "14dfb1a27a9d9dde952dbfc1247d0307ca87fe06fed8f3b2df2aa46773196853",
+  "workerBoundAddress": "127.0.0.1:8787",
+  "workerSourceSha": "93808ca6b93188581adda966a3caf019d741898c",
+  "localSyntheticD1": "00000000-0000-4000-8000-202610032032",
+  "clientMatrix": {
+    "attemptedRoutes": 20,
+    "deliveredRoutes": 0,
+    "startupProbesAttempted": 40,
+    "startupProbesSucceeded": 0,
+    "observedError": "TypeError on all fetches; independent curl returned ECONNREFUSED immediately",
+    "resultPath": "http-smoke-v52-before.json",
+    "resultSha256": "c0d7b229e99d9f536df62101e6251bca6ee997e7b9a55efb514087e7faac7409"
+  },
+  "d1AccessOrMutationByWorkerRequests": false,
+  "note": "Observed: a separate exec-session client could not connect to the loopback server. The cause is not established. No HTTP request reached the Worker. The next attempt will run the TCP client and Worker bridge in the same process."
+}

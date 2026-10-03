@@ -1,3 +1,11 @@
+# Current controlling decision — 2026-10-03
+
+Phase 1 is CLOSED with APPROVED_WITH_DOCUMENTED_LIMITATIONS. E-001 through E-004 are PASS. [Written human decision and limits](phase1/e004-human-review-signoff.md).
+
+The owner's latest Phase 2 scope is TRUST with ten requirements, followed by Phase 3 INTELLIGENCE only after Phase 2 closes. It supersedes the historical Phase 2 deployment-independence labels below. Freeze the new baseline and Definition of Done before implementation. D2 remains independent. Research, AZIZ, Mizan Score and new models remain frozen during Trust.
+
+## Historical roadmap retained for provenance (not the current Phase 2 scope)
+
 # MIZAN FINANCIAL RECOVERY & STABILIZATION PLAN
 
 المرجع التنفيذي الرسمي لنسخة الأسهم — اعتمد بطلب المستخدم في 2026-09-28 (Asia/Riyadh).

@@ -1,0 +1,20 @@
+{
+  "evidenceId": "EVD-RB-005",
+  "campaign": "E002-EVIDENCE-RECOVERY-2026-10-03",
+  "generatedAt": "2026-10-03T21:25:05Z",
+  "kind": "direct_sqlite_integrity_check_capability_alternative",
+  "status": "PASSED",
+  "databaseFile": "8d0c7ad2bf0853d3c70660d4b4d8d942cc582ba4a421ac3c57f807b6fa374db5.sqlite",
+  "databaseDirectory": "/workspace/scratch/621fd6e6940e/e002-isolated-2026-10-03/.wrangler/state/v3/d1/miniflare-D1DatabaseObject",
+  "databaseId": "00000000-0000-4000-8000-202610032032",
+  "productionDatabase": false,
+  "connectionMode": "read-only SQLite URI (mode=ro) with PRAGMA query_only=ON",
+  "queryOnlyValue": 1,
+  "pragma": "PRAGMA integrity_check",
+  "resultRows": [
+    [
+      "ok"
+    ]
+  ],
+  "interpretation": "This direct SQLite read-only check uses the same isolated Miniflare D1 persistence file; it does not change the earlier D1-interface SQLITE_AUTH result."
+}

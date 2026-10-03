@@ -1,0 +1,186 @@
+[
+  {
+    "results": [
+      {
+        "name": "_cf_METADATA",
+        "sql": "CREATE TABLE _cf_METADATA (\n        key INTEGER PRIMARY KEY,\n        value BLOB\n      )"
+      },
+      {
+        "name": "accuracy_rows",
+        "sql": "CREATE TABLE `accuracy_rows` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`run_id` text NOT NULL,\n\t`ordinal` integer NOT NULL,\n\t`symbol` text NOT NULL,\n\t`company` text NOT NULL,\n\t`state` text DEFAULT 'pending' NOT NULL,\n\t`forecast` text,\n\t`inputs` text,\n\t`outcome` text,\n\t`error` text DEFAULT '' NOT NULL,\n\t`updated_at` text NOT NULL,\n\t`lease_token` text DEFAULT '' NOT NULL,\n\t`lease_until` integer DEFAULT 0 NOT NULL\n)"
+      },
+      {
+        "name": "accuracy_runs",
+        "sql": "CREATE TABLE `accuracy_runs` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "admin_access",
+        "sql": "CREATE TABLE `admin_access` (\n\t`id` integer PRIMARY KEY NOT NULL,\n\t`attempts` integer DEFAULT 0 NOT NULL,\n\t`window_started` integer DEFAULT 0 NOT NULL,\n\t`session_hash` text DEFAULT '' NOT NULL,\n\t`expires_at` integer DEFAULT 0 NOT NULL\n)"
+      },
+      {
+        "name": "admin_audit",
+        "sql": "CREATE TABLE `admin_audit` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`action` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "analysis_snapshots",
+        "sql": "CREATE TABLE `analysis_snapshots` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`symbol` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "aziz_corporate_events",
+        "sql": "CREATE TABLE aziz_corporate_events (\n  id TEXT PRIMARY KEY,\n  symbol_id TEXT NOT NULL REFERENCES aziz_symbols(id),\n  provider TEXT NOT NULL,\n  event_type TEXT NOT NULL,\n  event_date TEXT,\n  announced_at TEXT,\n  available_at TEXT,\n  source_url TEXT,\n  source_payload TEXT,\n  retrieved_at TEXT NOT NULL,\n  availability_basis TEXT NOT NULL CHECK(availability_basis IN ('unknown','provider_published_time')),\n  created_at TEXT NOT NULL\n)"
+      },
+      {
+        "name": "aziz_import_runs",
+        "sql": "CREATE TABLE aziz_import_runs (\n  id TEXT PRIMARY KEY,\n  started_at TEXT NOT NULL,\n  finished_at TEXT,\n  requested_batch INTEGER NOT NULL,\n  status TEXT NOT NULL CHECK(status IN ('running','completed','completed_with_errors','failed')),\n  provider TEXT NOT NULL,\n  requested_symbols_json TEXT NOT NULL,\n  result_json TEXT,\n  created_at TEXT NOT NULL\n)"
+      },
+      {
+        "name": "aziz_market_bars",
+        "sql": "CREATE TABLE aziz_market_bars (\n  id TEXT PRIMARY KEY,\n  dataset_id TEXT NOT NULL REFERENCES aziz_market_datasets(id),\n  symbol_id TEXT NOT NULL REFERENCES aziz_symbols(id),\n  provider TEXT NOT NULL,\n  session_date TEXT NOT NULL,\n  opened REAL NOT NULL,\n  high REAL NOT NULL,\n  low REAL NOT NULL,\n  closed REAL NOT NULL,\n  adjusted_close REAL,\n  volume REAL,\n  retrieved_at TEXT NOT NULL,\n  available_at TEXT,\n  availability_basis TEXT NOT NULL CHECK(availability_basis IN ('retrieval_time_only','provider_published_time')),\n  quality_flags_json TEXT NOT NULL DEFAULT '[]',\n  created_at TEXT NOT NULL,\n  UNIQUE(symbol_id, provider, session_date)\n)"
+      },
+      {
+        "name": "aziz_market_datasets",
+        "sql": "CREATE TABLE aziz_market_datasets (\n  id TEXT PRIMARY KEY,\n  import_run_id TEXT NOT NULL REFERENCES aziz_import_runs(id),\n  symbol_id TEXT NOT NULL REFERENCES aziz_symbols(id),\n  provider TEXT NOT NULL,\n  endpoint TEXT NOT NULL,\n  retrieved_at TEXT NOT NULL,\n  availability_basis TEXT NOT NULL CHECK(availability_basis IN ('retrieval_time_only','provider_published_time')),\n  raw_sha256 TEXT NOT NULL,\n  raw_payload TEXT NOT NULL,\n  source_status TEXT NOT NULL,\n  source_message TEXT,\n  created_at TEXT NOT NULL\n)"
+      },
+      {
+        "name": "aziz_monitor_records",
+        "sql": "CREATE TABLE `aziz_monitor_records` (\n  `id` text PRIMARY KEY NOT NULL,\n  `symbol` text NOT NULL,\n  `market` text NOT NULL,\n  `issued_at` text NOT NULL,\n  `available_at` text NOT NULL,\n  `horizon` integer NOT NULL,\n  `base_price` real NOT NULL,\n  `currency` text NOT NULL,\n  `status` text NOT NULL,\n  `data` text NOT NULL\n)"
+      },
+      {
+        "name": "aziz_symbols",
+        "sql": "CREATE TABLE aziz_symbols (\n  id TEXT PRIMARY KEY,\n  market TEXT NOT NULL CHECK(market IN ('sa','us')),\n  symbol TEXT NOT NULL,\n  provider_symbol TEXT NOT NULL,\n  name TEXT NOT NULL,\n  sector TEXT NOT NULL,\n  active INTEGER NOT NULL DEFAULT 1 CHECK(active IN (0,1)),\n  replacement_for TEXT,\n  created_at TEXT NOT NULL,\n  updated_at TEXT NOT NULL,\n  UNIQUE(market, symbol)\n)"
+      },
+      {
+        "name": "backtest_results",
+        "sql": "CREATE TABLE `backtest_results` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`run_id` text NOT NULL,\n\t`horizon` integer NOT NULL,\n\t`data` text NOT NULL,\n\t`created_at` text NOT NULL,\n\tFOREIGN KEY (`run_id`) REFERENCES `backtest_runs`(`id`) ON UPDATE no action ON DELETE cascade\n)"
+      },
+      {
+        "name": "backtest_runs",
+        "sql": "CREATE TABLE `backtest_runs` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`symbol` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "council_runs",
+        "sql": "CREATE TABLE council_runs (\n  id TEXT PRIMARY KEY NOT NULL,\n  created_at TEXT NOT NULL,\n  updated_at TEXT NOT NULL,\n  trigger TEXT NOT NULL,\n  status TEXT NOT NULL,\n  task TEXT NOT NULL,\n  data TEXT NOT NULL\n)"
+      },
+      {
+        "name": "customer_market_watch",
+        "sql": "CREATE TABLE customer_market_watch (\n  account_key TEXT NOT NULL,\n  symbol TEXT NOT NULL,\n  market TEXT NOT NULL,\n  name TEXT NOT NULL,\n  created_at TEXT NOT NULL,\n  updated_at TEXT NOT NULL,\n  data TEXT NOT NULL,\n  PRIMARY KEY (account_key, symbol)\n)"
+      },
+      {
+        "name": "d1_migrations",
+        "sql": "CREATE TABLE d1_migrations(\n\t\tid         INTEGER PRIMARY KEY AUTOINCREMENT,\n\t\tname       TEXT UNIQUE,\n\t\tapplied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL\n)"
+      },
+      {
+        "name": "evaluation_revisions",
+        "sql": "CREATE TABLE `evaluation_revisions` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`forecast_id` text NOT NULL,\n\t`revision` integer NOT NULL,\n\t`created_at` text NOT NULL,\n\t`fingerprint` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "forecast_outcomes",
+        "sql": "CREATE TABLE `forecast_outcomes` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`evaluated_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "forecast_records",
+        "sql": "CREATE TABLE `forecast_records` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`snapshot_id` text NOT NULL,\n\t`symbol` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`horizon` integer NOT NULL,\n\t`model` text NOT NULL,\n\t`market` text NOT NULL,\n\t`sector` text NOT NULL,\n\t`confidence` text NOT NULL,\n\t`available` integer NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "forecast_tests",
+        "sql": "CREATE TABLE `forecast_tests` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`owner` text NOT NULL,\n\t`forecast_id` text NOT NULL,\n\t`group_id` text NOT NULL,\n\t`symbol` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`archived` integer DEFAULT 0 NOT NULL,\n\t`policy` text NOT NULL,\n\t`selection` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "gold_budgets",
+        "sql": "CREATE TABLE `gold_budgets` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`requests` integer DEFAULT 0 NOT NULL\n)"
+      },
+      {
+        "name": "gold_locks",
+        "sql": "CREATE TABLE `gold_locks` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`until_ms` integer DEFAULT 0 NOT NULL,\n\t`token` text DEFAULT '' NOT NULL\n)"
+      },
+      {
+        "name": "gold_state",
+        "sql": "CREATE TABLE `gold_state` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`data` text NOT NULL,\n\t`updated_at` text NOT NULL\n)"
+      },
+      {
+        "name": "market_observations",
+        "sql": "CREATE TABLE market_observations (\n  id TEXT PRIMARY KEY NOT NULL,\n  symbol TEXT NOT NULL,\n  market TEXT NOT NULL,\n  observed_at TEXT NOT NULL,\n  source TEXT NOT NULL,\n  data TEXT NOT NULL\n)"
+      },
+      {
+        "name": "paper_cash_entries",
+        "sql": "CREATE TABLE `paper_cash_entries` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`portfolio_id` text NOT NULL,\n\t`cash_type` text NOT NULL,\n\t`amount` text NOT NULL,\n\t`currency` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "paper_portfolio_sessions",
+        "sql": "CREATE TABLE `paper_portfolio_sessions` (\n\t`token_hash` text PRIMARY KEY NOT NULL,\n\t`portfolio_id` text NOT NULL,\n\t`expires_at` integer NOT NULL,\n\t`created_at` text NOT NULL\n)"
+      },
+      {
+        "name": "paper_portfolios",
+        "sql": "CREATE TABLE `paper_portfolios` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`name` text NOT NULL,\n\t`currency` text NOT NULL,\n\t`pin_hash` text DEFAULT '' NOT NULL,\n\t`attempts` integer DEFAULT 0 NOT NULL,\n\t`window_started` integer DEFAULT 0 NOT NULL,\n\t`created_at` text NOT NULL,\n\t`updated_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "paper_trades",
+        "sql": "CREATE TABLE `paper_trades` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`symbol` text NOT NULL,\n\t`side` text NOT NULL,\n\t`quantity` text NOT NULL,\n\t`price` text NOT NULL,\n\t`currency` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n, `portfolio_id` text DEFAULT 'legacy' NOT NULL)"
+      },
+      {
+        "name": "recommendation_lock",
+        "sql": "CREATE TABLE `recommendation_lock` (\n\t`id` integer PRIMARY KEY NOT NULL,\n\t`owner_id` text DEFAULT '' NOT NULL,\n\t`pin_hash` text NOT NULL,\n\t`attempts` integer DEFAULT 0 NOT NULL,\n\t`window_started` integer DEFAULT 0 NOT NULL\n)"
+      },
+      {
+        "name": "recovery_manifests",
+        "sql": "CREATE TABLE `recovery_manifests` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "recovery_rows",
+        "sql": "CREATE TABLE `recovery_rows` (\n\t`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,\n\t`checkpoint` text NOT NULL,\n\t`table_name` text NOT NULL,\n\t`row_data` text NOT NULL\n)"
+      },
+      {
+        "name": "research_budgets",
+        "sql": "CREATE TABLE `research_budgets` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`reserved` integer DEFAULT 0 NOT NULL,\n\t`reported` integer DEFAULT 0 NOT NULL,\n\t`updated_at` text NOT NULL\n)"
+      },
+      {
+        "name": "research_locks",
+        "sql": "CREATE TABLE `research_locks` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`token` text NOT NULL,\n\t`until_ms` integer NOT NULL\n)"
+      },
+      {
+        "name": "research_runs",
+        "sql": "CREATE TABLE `research_runs` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`symbol` text NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "research_state",
+        "sql": "CREATE TABLE `research_state` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`data` text NOT NULL,\n\t`updated_at` text NOT NULL\n)"
+      },
+      {
+        "name": "screener_batches",
+        "sql": "CREATE TABLE screener_batches (\n run_id TEXT NOT NULL REFERENCES screener_runs(id),\n batch_index INTEGER NOT NULL CHECK(batch_index >= 0),\n created_at TEXT NOT NULL,\n result_json TEXT NOT NULL CHECK(json_valid(result_json)),\n PRIMARY KEY(run_id,batch_index)\n)"
+      },
+      {
+        "name": "screener_picks",
+        "sql": "CREATE TABLE screener_picks (\n run_id TEXT NOT NULL REFERENCES screener_runs(id),\n market TEXT NOT NULL CHECK(market IN ('sa','us')),\n rank INTEGER NOT NULL CHECK(rank BETWEEN 1 AND 10),\n forecast_id TEXT NOT NULL REFERENCES forecast_records(id),\n PRIMARY KEY(run_id,market,rank),\n UNIQUE(run_id,forecast_id)\n)"
+      },
+      {
+        "name": "screener_runs",
+        "sql": "CREATE TABLE screener_runs (\n id TEXT PRIMARY KEY NOT NULL,\n token_hash TEXT NOT NULL,\n created_at TEXT NOT NULL,\n completed_at TEXT,\n status TEXT NOT NULL CHECK(status IN ('scanning','complete')),\n plan_json TEXT NOT NULL CHECK(json_valid(plan_json)),\n result_json TEXT CHECK(result_json IS NULL OR json_valid(result_json)),\n fingerprint TEXT\n)"
+      },
+      {
+        "name": "settings_history",
+        "sql": "CREATE TABLE `settings_history` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      },
+      {
+        "name": "site_settings",
+        "sql": "CREATE TABLE `site_settings` (\n\t`id` integer PRIMARY KEY NOT NULL,\n\t`value` text NOT NULL\n)"
+      },
+      {
+        "name": "source_health",
+        "sql": "CREATE TABLE `source_health` (\n\t`source_id` text PRIMARY KEY NOT NULL,\n\t`state` text DEFAULT 'unknown' NOT NULL,\n\t`success_count` integer DEFAULT 0 NOT NULL,\n\t`failure_count` integer DEFAULT 0 NOT NULL,\n\t`avg_latency_ms` real,\n\t`last_success_at` text,\n\t`last_failure_at` text,\n\t`last_error` text,\n\t`updated_at` text NOT NULL\n)"
+      },
+      {
+        "name": "source_status",
+        "sql": "CREATE TABLE `source_status` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`status` text NOT NULL,\n\t`last_attempt` text NOT NULL,\n\t`last_success` text NOT NULL,\n\t`detail` text NOT NULL\n)"
+      },
+      {
+        "name": "watchlist",
+        "sql": "CREATE TABLE `watchlist` (\n\t`symbol` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`data` text NOT NULL\n)"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  }
+]

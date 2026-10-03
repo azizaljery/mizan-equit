@@ -1,0 +1,591 @@
+{
+  "evidenceId": "EVD-RB-002",
+  "campaign": "E002-EVIDENCE-RECOVERY-2026-10-03",
+  "generatedAt": "2026-10-03T21:33:37Z",
+  "kind": "three_stage_http_matrix_summary",
+  "status": "PASSED_LOCAL_SOURCE_HTTP_MATRIX",
+  "sequence": [
+    "v52-before",
+    "v51-rollback",
+    "v52-return"
+  ],
+  "countSemantics": {
+    "uniqueRoutesPerStage": 20,
+    "assertedMatrixGetRequestsPerStage": 20,
+    "assertedMatrixGetRequestsTotal": 60,
+    "readinessProbePolicy": "Readiness probe(s) are recorded in each stage artifact and excluded from the asserted matrix count; no total network-request count is claimed."
+  },
+  "categoryCounts": {
+    "page": 9,
+    "release-identity": 1,
+    "read-api": 4,
+    "auth-boundary": 6
+  },
+  "statusCountsByStage": {
+    "v52-before": {
+      "200": 14,
+      "401": 4,
+      "403": 2
+    },
+    "v51-rollback": {
+      "200": 14,
+      "401": 4,
+      "403": 2
+    },
+    "v52-return": {
+      "200": 14,
+      "401": 4,
+      "403": 2
+    }
+  },
+  "runtime": {
+    "kind": "Built Worker bundles under Miniflare behind same-process loopback HTTP bridge using URL+init dispatch",
+    "clientBaseUrl": "http://127.0.0.1:8787",
+    "loopbackOnly": true,
+    "samePersistentSyntheticLocalD1AcrossStages": true,
+    "authenticationCookiesOrHeadersProvided": false,
+    "providerArchiveExecuted": false
+  },
+  "stages": [
+    {
+      "stage": "v52-before",
+      "sourceSha": "93808ca6b93188581adda966a3caf019d741898c",
+      "generatedAt": "2026-10-03T21:18:39.591Z",
+      "result": "PASSED",
+      "assertedMatrixGetRequests": 20,
+      "readinessProbes": 1,
+      "deploymentIdentity": {
+        "worker": "mizan-equity",
+        "commit": "93808ca6b93188581adda966a3caf019d741898c"
+      },
+      "matrixArtifact": {
+        "path": "http-smoke-v52-before-v4.json",
+        "sha256": "a7f3bb0bbe5426144be4b3cf0e1c3b8bbea8c2218c40aa677f28516e1c7560dd"
+      },
+      "serverLog": {
+        "path": "miniflare-http-v52-before-v4.log",
+        "sha256": "2ce46022962b7a1fdf555b511ebccf4cb1501bbf8ce7bab81c317f66f4574295"
+      }
+    },
+    {
+      "stage": "v51-rollback",
+      "sourceSha": "65b623639588f40eb73c5d76616308737ab33f33",
+      "generatedAt": "2026-10-03T21:19:55.154Z",
+      "result": "PASSED",
+      "assertedMatrixGetRequests": 20,
+      "readinessProbes": 1,
+      "deploymentIdentity": {
+        "worker": "mizan-equity",
+        "commit": "65b623639588f40eb73c5d76616308737ab33f33"
+      },
+      "matrixArtifact": {
+        "path": "http-smoke-v51-rollback-v4.json",
+        "sha256": "da8cf6b6f7d5cd9b61eef39685f0d592532439e9dc7d49b08c770514e042da9a"
+      },
+      "serverLog": {
+        "path": "miniflare-http-v51-rollback-v4.log",
+        "sha256": "e4d11d20b615161a1f29b8472f44c9c40ffd04cdb570934d4b2f3abd9a873d9f"
+      }
+    },
+    {
+      "stage": "v52-return",
+      "sourceSha": "93808ca6b93188581adda966a3caf019d741898c",
+      "generatedAt": "2026-10-03T21:20:58.974Z",
+      "result": "PASSED",
+      "assertedMatrixGetRequests": 20,
+      "readinessProbes": 1,
+      "deploymentIdentity": {
+        "worker": "mizan-equity",
+        "commit": "93808ca6b93188581adda966a3caf019d741898c"
+      },
+      "matrixArtifact": {
+        "path": "http-smoke-v52-return-v4.json",
+        "sha256": "a9ae6d44f00a7f0d2c5e40574cc3e584d511dad3b555c7928d9cbcd3b7950243"
+      },
+      "serverLog": {
+        "path": "miniflare-http-v52-return-v4.log",
+        "sha256": "3cef012d930eb04a4ae1e145dd6558e9f3901e6d5f8287ae91aa078db2b819ff"
+      }
+    }
+  ],
+  "routeMatrix": [
+    {
+      "method": "GET",
+      "path": "/",
+      "category": "page",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/manual",
+      "category": "page",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/screener",
+      "category": "page",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/screener/operations",
+      "category": "page",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/tests",
+      "category": "page",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/accuracy",
+      "category": "page",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/accuracy-sample",
+      "category": "page",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/aziz",
+      "category": "page",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/gold",
+      "category": "page",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/mizan-deployment.json",
+      "category": "release-identity",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/site-settings",
+      "category": "read-api",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/temporal?symbol=SYNTH&date=2026-10-03",
+      "category": "read-api",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/aziz/readiness?market=us&symbol=AAPL",
+      "category": "read-api",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/aziz/monitor",
+      "category": "read-api",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/research",
+      "category": "auth-boundary",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/forecast-tests",
+      "category": "auth-boundary",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/market-watch",
+      "category": "auth-boundary",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/accuracy-sample",
+      "category": "auth-boundary",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verify",
+      "category": "auth-boundary",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 403,
+          "actualStatus": 403,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 403,
+          "actualStatus": 403,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 403,
+          "actualStatus": 403,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/dashboard",
+      "category": "auth-boundary",
+      "perStage": {
+        "v52-before": {
+          "expectedStatus": 403,
+          "actualStatus": 403,
+          "passed": true
+        },
+        "v51-rollback": {
+          "expectedStatus": 403,
+          "actualStatus": 403,
+          "passed": true
+        },
+        "v52-return": {
+          "expectedStatus": 403,
+          "actualStatus": 403,
+          "passed": true
+        }
+      },
+      "passedAllStages": true
+    }
+  ],
+  "retainedHarnessDiagnostics": [
+    {
+      "path": "EVD-RB-002-miniflare-v1-harness-diagnostic.json",
+      "sha256": "4a81ce5b32f32e3abb454b38bf0f37183b0897bd785e650eac9abc6fcc2b361d",
+      "outcome": "dynamic module discovery blocked startup; no HTTP or D1 operation"
+    },
+    {
+      "path": "EVD-RB-002-loopback-boundary-diagnostic.json",
+      "sha256": "8b9deea1b90ea95347e75d4761ea43919710a7a5ca3da89a59d2bced50714aba",
+      "outcome": "separate executor client could not reach loopback; cause not established; no Worker request delivered"
+    }
+  ],
+  "limits": [
+    "The original 2026-10-01 E-002 HTTP evidence remains unavailable; this is a fresh 2026-10-03 retest.",
+    "The saved v51/v52 provider archive bytes were not downloaded or executed; these results exercise source-built Worker bundles only.",
+    "All responses were unauthenticated; authenticated owner flows were not tested.",
+    "No production deployment, production D1, cron execution, POST, or external market/provider request occurred."
+  ]
+}

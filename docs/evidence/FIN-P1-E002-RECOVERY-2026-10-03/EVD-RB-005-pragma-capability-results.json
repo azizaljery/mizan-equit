@@ -1,0 +1,72 @@
+{
+  "evidenceId": "EVD-RB-005",
+  "campaign": "E002-EVIDENCE-RECOVERY-2026-10-03",
+  "generatedAt": "2026-10-03T21:26:06Z",
+  "kind": "d1_pragma_capability_and_direct_sqlite_alternative",
+  "status": "PASSED_WITH_D1_INTEGRITY_INTERFACE_LIMITATION",
+  "execution": {
+    "sourceStage": "after-v52-return",
+    "resourceLocation": "local",
+    "wranglerVersion": "4.92.0",
+    "testConfigPath": "dist/server/wrangler-e002.json",
+    "databaseId": "00000000-0000-4000-8000-202610032032",
+    "databaseName": "mizan-e002-isolated-20261003",
+    "persistenceRoot": "/workspace/scratch/621fd6e6940e/e002-isolated-2026-10-03/.wrangler/state/v3/d1",
+    "productionD1Touched": false
+  },
+  "d1InterfaceResults": {
+    "quick_check": {
+      "command": "PRAGMA quick_check",
+      "exitCode": 0,
+      "result": "ok",
+      "log": "pragma-quick-check.log",
+      "sha256": "86357a95a7b7ec7fc951c5011c2956469fd99aa9131d845dfade8c548510dab7"
+    },
+    "foreign_key_check": {
+      "command": "PRAGMA foreign_key_check",
+      "exitCode": 0,
+      "violationRows": 0,
+      "log": "pragma-foreign-key-check.log",
+      "sha256": "fc456e0f54e14096015866a2238d62e3a3bfa6ea1bfbf1ead743a657b3e9a2c3"
+    },
+    "foreign_keys": {
+      "command": "PRAGMA foreign_keys",
+      "exitCode": 0,
+      "value": 1,
+      "log": "pragma-foreign-keys.log",
+      "sha256": "cebc95169c70d8e92531bbd7247db6689ea9ee054bd0e1a3b4668ad6bf5c2262"
+    },
+    "integrity_check": {
+      "command": "PRAGMA integrity_check",
+      "exitCode": 1,
+      "result": "blocked",
+      "error": "not authorized: SQLITE_AUTH",
+      "log": "pragma-integrity-check-d1.log",
+      "sha256": "36466051eb409faf7c70d4b2c3ef02b98f2e489769a31a800d5a946a50ba5cac",
+      "claimedAsD1Pass": false
+    }
+  },
+  "directSqliteAlternative": {
+    "script": "run-direct-sqlite-integrity.py",
+    "scriptSha256": "bfbb980321c742a66cdcb65f50b6ac09f969107974c0954a318a1dc190f26653",
+    "resultFile": "pragma-integrity-check-sqlite-direct.json",
+    "resultSha256": "c7db8eb9eac38103345ee229f81f763e2277a9be300e06e7bae0ed128308a619",
+    "databaseFile": "8d0c7ad2bf0853d3c70660d4b4d8d942cc582ba4a421ac3c57f807b6fa374db5.sqlite",
+    "connection": "SQLite URI mode=ro; PRAGMA query_only=ON; query PRAGMA integrity_check",
+    "queryOnlyValue": 1,
+    "result": "ok",
+    "independentOfD1Interface": true
+  },
+  "dataStateAtProbe": {
+    "snapshotFile": "snapshot-after-v52-return.json",
+    "snapshotSha256": "275e4371267a518b911f42aae94b0c375b0fe7a449b1e3bfdad3828fbd129efd",
+    "schemaSha256": "a63b91a55666d769127b0b42c7ef6dbefea131f320e54ae40384ba25ea71bed1",
+    "combinedSyntheticDomainDataSha256": "ba4ddb9efb24bb904b9a0d3736802488c946f93b6c67b9edf003d22670644513",
+    "pragmaChecksReadOnly": true
+  },
+  "interpretation": "D1 rejected the integrity_check pragma with SQLITE_AUTH. Supported D1 quick_check and foreign_key_check passed; foreign_keys was enabled. The direct read-only SQLite integrity_check on the exact same isolated Miniflare file returned ok. This does not relabel the D1 command as passed or the denial as corruption.",
+  "limits": [
+    "The SQLite alternative is a local file-level check, not a result returned by the D1 SQL API.",
+    "The checked database is synthetic and local; no production D1 was read or modified."
+  ]
+}

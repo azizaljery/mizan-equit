@@ -1,0 +1,66 @@
+{
+  "evidenceId": "EVD-RB-001",
+  "campaign": "E002-EVIDENCE-RECOVERY-2026-10-03",
+  "generatedAt": "2026-10-03T20:28:25Z",
+  "kind": "locked_install_and_source_build_identity",
+  "status": "PASSED",
+  "environment": {
+    "node": "v24.19.0",
+    "npm": "11.9.0",
+    "runtime": "isolated local Sites/Vite build; no production runtime"
+  },
+  "dependencyInstall": {
+    "command": "npm run install:ci",
+    "result": "passed",
+    "packagesAdded": 646,
+    "lockfileSha256": "98380253690bbc4c5695382f611d3c938d833133e357bbae826a6c735056ef37",
+    "log": {
+      "path": "install.log",
+      "sha256": "a56127f6bcd94cbaac523f6991e4d427bf1dcde6955c75dcec7abe0133e964bf"
+    },
+    "notes": [
+      "Locked Vinext tarball preflight passed integrity verification.",
+      "The repository wrapper ran one bounded npm ci.",
+      "Dependency deprecation warnings appeared; install completed successfully."
+    ]
+  },
+  "builds": [
+    {
+      "version": 51,
+      "sourceSha": "65b623639588f40eb73c5d76616308737ab33f33",
+      "command": "npm run build",
+      "worktree": "/workspace/scratch/621fd6e6940e/e002-worktrees/v51",
+      "startedAt": "2026-10-03T20:28:08Z",
+      "completedAt": "2026-10-03T20:28:14Z",
+      "result": "passed",
+      "buildIdentityCommitMatched": true,
+      "releaseBundleStatus": "passed",
+      "serverReferencedClientAssetsVerified": 34,
+      "log": {
+        "path": "build-v51.log",
+        "sha256": "e6a3825735d43dd99d99d60023c17d202463852a5b7c615f6b6dc3920ea68793"
+      }
+    },
+    {
+      "version": 52,
+      "sourceSha": "93808ca6b93188581adda966a3caf019d741898c",
+      "command": "npm run build",
+      "worktree": "/workspace/scratch/621fd6e6940e/e002-worktrees/v52",
+      "startedAt": "2026-10-03T20:28:19Z",
+      "completedAt": "2026-10-03T20:28:25Z",
+      "result": "passed",
+      "buildIdentityCommitMatched": true,
+      "releaseBundleStatus": "passed",
+      "serverReferencedClientAssetsVerified": 34,
+      "log": {
+        "path": "build-v52.log",
+        "sha256": "f91c682f90e00fd43cea3284c991920e75c487c0a4ea375452fe9407af3ce422"
+      }
+    }
+  ],
+  "scopeAndLimits": [
+    "Builds ran against exact saved v51/v52 source SHAs in disposable detached worktrees, sharing dependencies from the identical lockfile.",
+    "The build is local verification only; no Site save, publish, deployment, Cloudflare, Cron, or production D1 action occurred.",
+    "This records build checks only and does not claim HTTP, rollback, or database checks have passed."
+  ]
+}

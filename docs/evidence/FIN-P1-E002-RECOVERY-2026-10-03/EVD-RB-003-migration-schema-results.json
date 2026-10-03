@@ -1,0 +1,82 @@
+{
+  "evidenceId": "EVD-RB-003",
+  "campaign": "E002-EVIDENCE-RECOVERY-2026-10-03",
+  "generatedAt": "2026-10-03T20:41:56Z",
+  "kind": "isolated_local_migration_apply_and_schema_baseline",
+  "status": "PASSED_LOCAL_MIGRATION_AND_SCHEMA_BASELINE",
+  "testOutcome": "all 16 source migrations applied to an initially empty synthetic local D1; no pending migrations; schema query succeeded",
+  "isolation": {
+    "resourceLocation": "local",
+    "wranglerVersion": "4.92.0",
+    "syntheticDatabaseId": "00000000-0000-4000-8000-202610032032",
+    "syntheticDatabaseName": "mizan-e002-isolated-20261003",
+    "localPersistenceRoot": "/workspace/scratch/621fd6e6940e/e002-isolated-2026-10-03/.wrangler/state",
+    "cloudflareAccountIdOrApiTokenInCommandEnvironment": false,
+    "productionD1Touched": false,
+    "cronSchedulesInTestConfig": [],
+    "databaseWasFreshAtApplyStart": true
+  },
+  "sourceAndMigrationIdentity": {
+    "v51SourceSha": "65b623639588f40eb73c5d76616308737ab33f33",
+    "v52SourceSha": "93808ca6b93188581adda966a3caf019d741898c",
+    "sqlMigrationFilesByteIdenticalAcrossSources": true,
+    "sourceManifestPath": "EVD-RB-003-migration-source-manifest.json",
+    "sourceManifestSha256": "307e619be951053c18456171948376d61341506c4cda6d3e10e7143dd00f27b9",
+    "sqlMigrationCount": 16,
+    "appliedMigrationLedgerRows": 16,
+    "wranglerMigrationsStatus": "No migrations to apply!"
+  },
+  "execution": {
+    "failedHarnessPreflight": {
+      "exitCode": 127,
+      "observedError": "env: node: No such file or directory",
+      "databaseOperationStarted": false,
+      "reason": "Clean PATH omitted the runtime Node directory; corrected before Wrangler invocation."
+    },
+    "successfulApplyCommand": "./node_modules/.bin/wrangler d1 migrations apply DB --config dist/server/wrangler-e002.json --local --persist-to /workspace/scratch/621fd6e6940e/e002-isolated-2026-10-03/.wrangler/state",
+    "successfulApplyStartedAt": null,
+    "successfulApplyStartedAtNote": "Not emitted by the command and not timestamp-wrapped; no start time is invented.",
+    "successfulApplyLogLastWriteUtc": "2026-10-03T20:36:22.126152Z",
+    "applyLogPath": "migrations-apply.log",
+    "applyLogSha256": "28d1b2bd7d61fa25d56e2cd408d049642999ef360d4cbaf20dfb7adb67e1597a",
+    "applyCommandExitCode": 0,
+    "statusCommand": "./node_modules/.bin/wrangler d1 migrations list DB --config dist/server/wrangler-e002.json --local --persist-to /workspace/scratch/621fd6e6940e/e002-isolated-2026-10-03/.wrangler/state",
+    "statusCommandExitCode": 0,
+    "statusLogLastWriteUtc": "2026-10-03T20:36:39.806133Z",
+    "statusLogPath": "migrations-status.log",
+    "statusLogSha256": "37500c641d31c2b0e26bbc0b00411e5027d72cf0c6d37dbc49f6e8f9b112b475"
+  },
+  "schemaBaseline": {
+    "query": "SELECT name, sql FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name",
+    "querySuccess": true,
+    "applicationTableCount": 42,
+    "wranglerLedgerTableCount": 1,
+    "providerInternalMetadataTableCount": 1,
+    "applicationSchemaSha256": "a63b91a55666d769127b0b42c7ef6dbefea131f320e54ae40384ba25ea71bed1",
+    "canonicalization": "JSON UTF-8 array of {name,sql}, table-name sorted, compact separators, excluding d1_migrations, _cf_METADATA, and sqlite_*.",
+    "schemaQueryLogPath": "schema-inventory.log",
+    "schemaQueryLogSha256": "f485850d7c75b18fe7f7711a72dc1e00dd4b7afdfbfe0d325b8a0a4c712204d1"
+  },
+  "preFixtureDomainRowCounts": {
+    "site_settings": 0,
+    "paper_portfolios": 1,
+    "paper_trades": 0,
+    "paper_cash_entries": 0,
+    "analysis_snapshots": 0,
+    "forecast_records": 0
+  },
+  "baselineCountQuery": {
+    "successfulSqlPath": "baseline-domain-counts-retry.sql",
+    "successfulLogPath": "baseline-domain-counts-retry.log",
+    "successfulLogSha256": "3ed8c631d4145ab27b484c4e4f825b7288d3200036983254d55c772f58515cd5",
+    "failedHarnessAttempt": {
+      "sqlPath": "baseline-domain-counts.sql",
+      "logPath": "baseline-domain-counts.log",
+      "logSha256": "99a5aa23d80b2e0f2bbbc054803884ee45044d2bca721a5108125232c48d9ede",
+      "error": "too many terms in compound SELECT: SQLITE_ERROR",
+      "databaseWriteOccurred": false,
+      "fix": "Repeated as six individual read-only SELECT statements."
+    }
+  },
+  "scopeLimit": "This is migration/schema baseline only. Synthetic domain rows are not seeded yet; rollback/forward compatibility and runtime HTTP remain pending."
+}

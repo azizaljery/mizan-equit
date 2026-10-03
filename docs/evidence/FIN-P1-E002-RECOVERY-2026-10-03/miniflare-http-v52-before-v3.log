@@ -1,0 +1,117 @@
+E002_LOCAL_WORKER_READY={"bindAddress":"127.0.0.1","port":8787,"stage":"v52-before","workerName":"mizan-equity","sourceIdentity":"93808ca6b93188581adda966a3caf019d741898c","d1Database":"mizan-e002-isolated-20261003","d1Id":"00000000-0000-4000-8000-202610032032","cronSchedules":[],"explicitModuleCount":39,"mainModule":"dist/server/index.js","runtime":"Miniflare built Worker with same-process loopback HTTP client"}
+{
+  "path": "/workspace/shared/engineering-qa/mizan-e002-2026-10-03/http-smoke-v52-before-inprocess.json",
+  "status": "FAILED",
+  "stage": "v52-before",
+  "sourceSha": "93808ca6b93188581adda966a3caf019d741898c",
+  "assertedMatrixRequests": 20,
+  "categoryCounts": {
+    "page": 9,
+    "release-identity": 1,
+    "read-api": 4,
+    "auth-boundary": 6
+  },
+  "startupProbes": 40,
+  "failed": [
+    {
+      "path": "/",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/manual",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/screener",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/screener/operations",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/tests",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/accuracy",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/accuracy-sample",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/aziz",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/gold",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/mizan-deployment.json",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/api/site-settings",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/api/temporal?symbol=SYNTH&date=2026-10-03",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/api/aziz/readiness?market=us&symbol=AAPL",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/api/aziz/monitor",
+      "status": 502,
+      "expectedStatus": 200
+    },
+    {
+      "path": "/api/research",
+      "status": 502,
+      "expectedStatus": 401
+    },
+    {
+      "path": "/api/forecast-tests",
+      "status": 502,
+      "expectedStatus": 401
+    },
+    {
+      "path": "/api/market-watch",
+      "status": 502,
+      "expectedStatus": 401
+    },
+    {
+      "path": "/api/accuracy-sample",
+      "status": 502,
+      "expectedStatus": 401
+    },
+    {
+      "path": "/api/admin/verify",
+      "status": 502,
+      "expectedStatus": 403
+    },
+    {
+      "path": "/api/admin/dashboard",
+      "status": 502,
+      "expectedStatus": 403
+    }
+  ]
+}

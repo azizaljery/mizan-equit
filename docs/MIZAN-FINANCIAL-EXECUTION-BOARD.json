@@ -1,25 +1,19 @@
 {
   "project": "MIZAN_FINANCIAL",
   "owner": "Abdulaziz",
-  "current_stage": "Wave 1 — Stability",
-  "status": "IN_PROGRESS",
-  "primary_objective": "Close Phase 1",
-  "secondary_objective": "Prepare Phase 2",
+  "current_stage": "PHASE_2_TRUST_BASELINE",
+  "status": "PHASE_1_CLOSED_PHASE_2_BASELINE_PENDING",
+  "primary_objective": "Freeze and validate Phase 2 TRUST requirements",
+  "secondary_objective": "Preserve D2 independence and documented evidence",
   "open_phases": [
-    1,
-    2,
-    3
+    2
   ],
   "locked_phases": [
-    4,
-    5,
-    6,
-    7,
-    8
+    3
   ],
   "research": "DEFERRED",
   "new_algorithms": "FROZEN",
-  "reason": "Wave 1 not completed",
+  "reason": "Phase 1 closed by explicit written owner approval with documented limitations; new Trust-10 scope replaces historical Phase 2 definitions.",
   "frozen_scope": [
     "AZIZ",
     "Mizan Score",
@@ -38,6 +32,92 @@
     "requires_human_review": true
   },
   "phases": [
+    {
+      "id": 1,
+      "status": "CLOSED",
+      "owner": "Abdulaziz",
+      "wave": "Stability",
+      "tasks": [
+        {
+          "id": "P1-01",
+          "description": "تحديد Commit المصدر المنشور: 65b623639588f40eb73c5d76616308737ab33f33.",
+          "status": "VERIFIED",
+          "evidence": "MIZAN-FINANCIAL-RECOVERY-STABILIZATION.md#أدلة-خط-الأساس--الإصدار-51"
+        },
+        {
+          "id": "P1-02",
+          "description": "تحديد Deployment الإصدار 51: appgdep_6abac9f3b5b48191a3fb1defaa6b252d.",
+          "status": "VERIFIED",
+          "evidence": "MIZAN-FINANCIAL-RECOVERY-STABILIZATION.md#أدلة-خط-الأساس--الإصدار-51"
+        },
+        {
+          "id": "P1-03",
+          "description": "توثيق نسخة GitHub: aac8a10c357214c69b94535de6a965f5a241299f.",
+          "status": "VERIFIED",
+          "evidence": "MIZAN-FINANCIAL-RECOVERY-STABILIZATION.md#أدلة-خط-الأساس--الإصدار-51"
+        },
+        {
+          "id": "P1-04",
+          "description": "توثيق Build وTests: البناء نجح، 34 أصل واجهة تحقق، 211 ناجحًا و1 متجاوزًا و0 فشل.",
+          "status": "VERIFIED",
+          "evidence": "MIZAN-FINANCIAL-RECOVERY-STABILIZATION.md#أدلة-خط-الأساس--الإصدار-51"
+        },
+        {
+          "id": "P1-05",
+          "description": "مقارنة شاملة للمصدر المنشور مع main وتصنيف جميع الفروق.",
+          "status": "VERIFIED",
+          "evidence": "phase1/closure-matrix.md"
+        },
+        {
+          "id": "P1-06",
+          "description": "توثيق إجراء Rollback وخطوات التحقق وحدود قاعدة البيانات.",
+          "status": "VERIFIED",
+          "evidence": "phase1/closure-matrix.md"
+        },
+        {
+          "id": "P1-07",
+          "description": "اختبار قراءة الإعدادات القديمة: اختبار انحدار لهيكل الأقسام السابق نجح؛ لا يعاد حفظ الإعدادات أثناء القراءة.",
+          "status": "VERIFIED",
+          "evidence": "MIZAN-FINANCIAL-RECOVERY-STABILIZATION.md#أدلة-خط-الأساس--الإصدار-51"
+        },
+        {
+          "id": "P1-08",
+          "description": "اختبار عدم إتلاف السجلات القديمة بعينة تغطي المحافظ والتوقعات والإدارة؛ نجاح اختبار الإعدادات وحده لا يغلق هذا البند.",
+          "status": "VERIFIED_WITH_DOCUMENTED_LIMITS",
+          "evidence": "phase1/closure-matrix.md"
+        }
+      ],
+      "definition_of_done_source": "MIZAN-FINANCIAL-RECOVERY-STABILIZATION.md — المرحلة 1",
+      "closed_at": "2026-10-03T22:01:25Z",
+      "closure_record": "phase1/e004-human-review-signoff.md",
+      "closure_checklist": "phase1/closure-checklist.md",
+      "human_review": {
+        "status": "PASS",
+        "reviewer": "Owner written approval",
+        "decision": "APPROVED_WITH_DOCUMENTED_LIMITATIONS",
+        "reviewed_at": "2026-10-03T22:01:25Z",
+        "approval_message_reference": "Sentinel_0df0ca8a9d0081918f06181b42d7488c"
+      }
+    },
+    {
+      "id": 2,
+      "name": "TRUST",
+      "status": "BASELINE_PENDING",
+      "tasks": [],
+      "scope_reference": "Owner Trust-10 direction of 2026-10-03T22:02:47Z; PHASE-2-REQUIREMENTS.md to be frozen next",
+      "human_review_required": true
+    },
+    {
+      "id": 3,
+      "name": "INTELLIGENCE",
+      "status": "LOCKED_UNTIL_PHASE_2_CLOSED",
+      "tasks": []
+    }
+  ],
+  "phase_1_remaining": [],
+  "updated_at": "2026-10-03T22:13:00Z",
+  "current_phase": 2,
+  "legacy_phases": [
     {
       "id": 1,
       "status": "IN_PROGRESS",
@@ -608,11 +688,11 @@
       "closure_record": null
     }
   ],
-  "phase_1_remaining": [
-    "P1-05",
-    "P1-06",
-    "P1-08"
-  ],
-  "updated_at": "2026-09-28T23:39:58+03:00",
-  "current_phase": 1
+  "roadmap_revision": {
+    "at": "2026-10-03T22:02:47Z",
+    "source": "Owner's explicit Phase 2 Trust-10 direction",
+    "legacy_phases_are_historical": true,
+    "phase2_name": "TRUST",
+    "phase3_name": "INTELLIGENCE"
+  }
 }

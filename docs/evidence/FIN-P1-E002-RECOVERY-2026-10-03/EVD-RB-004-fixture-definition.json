@@ -1,0 +1,31 @@
+{
+  "evidenceId": "EVD-RB-004",
+  "campaign": "E002-EVIDENCE-RECOVERY-2026-10-03",
+  "generatedAt": "2026-10-03T20:43:19Z",
+  "kind": "synthetic_fixture_definition",
+  "status": "FIXTURE_DEFINED_NOT_YET_INSERTED",
+  "fixtureSqlPath": "synthetic-fixture-seed.sql",
+  "fixtureSqlSha256": "19a3a3165cc919cfe67ac08a478630766c8f6589d57f8ebe4389aebf49b7999e",
+  "database": "fresh local Wrangler D1 only; synthetic ID 00000000-0000-4000-8000-202610032032",
+  "dataShape": {
+    "site_settings": 1,
+    "paper_portfolios": 1,
+    "paper_trades": 1,
+    "paper_cash_entries": 1,
+    "analysis_snapshots": 1,
+    "forecast_records": 1
+  },
+  "legacyPortfolioHandling": "Preserve the migration-created id=legacy placeholder; attach one clearly synthetic trade and cash row to it; add one separate synthetic portfolio row.",
+  "syntheticIdentifiers": [
+    "E002",
+    "SYNTH",
+    "e002-synthetic-portfolio-001",
+    "e002-synthetic-trade-001",
+    "e002-synthetic-cash-001",
+    "e002-synthetic-snapshot-001",
+    "e002-synthetic-forecast-001"
+  ],
+  "productionDataCopied": false,
+  "credentialsOrRealPortfolioSecrets": false,
+  "purpose": "Exercise app schema/data compatibility across source-only v52→v51→v52 using deterministic synthetic values."
+}

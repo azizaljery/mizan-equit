@@ -1,0 +1,64 @@
+{
+  "evidenceId": "EVD-RB-001",
+  "campaign": "E002-EVIDENCE-RECOVERY-2026-10-03",
+  "generatedAt": "2026-10-03T20:22:58Z",
+  "kind": "site_source_and_saved_version_identity",
+  "status": "VERIFIED_SOURCE_METADATA",
+  "testOutcome": null,
+  "localCheckout": {
+    "path": "/workspace/scratch/621fd6e6940e/mizan-site-open-v52",
+    "head": "93808ca6b93188581adda966a3caf019d741898c",
+    "worktreeCleanAtCapture": true,
+    "v51CommitObjectPresent": true,
+    "v51Source": "65b623639588f40eb73c5d76616308737ab33f33",
+    "workingRemoteConfigured": false
+  },
+  "savedSiteVersions": {
+    "metadataReadAt": "2026-10-03T20:21:02Z",
+    "projectId": "appgprj_6a9bd7353ed4819193fcd5363ed1d38f",
+    "v51": {
+      "versionNumber": 51,
+      "versionId": "appgprj_6a9bd7353ed4819193fcd5363ed1d38f~appgver_92ee4c220a748191801077c74c5adad1",
+      "sourceSha": "65b623639588f40eb73c5d76616308737ab33f33",
+      "archiveFormat": "tar",
+      "archiveSha256": "f3ec527cc3651d039a938c9c43b17f9c33a4d6ad305badd18a33867535832cc4",
+      "archiveSizeBytes": 14376960,
+      "archiveFileCount": 329,
+      "deploymentId": "appgdep_6abac9f3b5b48191a3fb1defaa6b252d"
+    },
+    "v52": {
+      "versionNumber": 52,
+      "versionId": "appgprj_6a9bd7353ed4819193fcd5363ed1d38f~appgver_13a54e9ec4308191bf75e3b8c4d1279d",
+      "sourceSha": "93808ca6b93188581adda966a3caf019d741898c",
+      "archiveFormat": "tar",
+      "archiveSha256": "1af72758b6974fc96d5f4a4b2eb252ed18ab18bccd61a069280867e1a2fba837",
+      "archiveSizeBytes": 13987840,
+      "archiveFileCount": 327,
+      "deploymentId": "appgdep_6abbb00642b4819197824191355626ab"
+    }
+  },
+  "sourceDiff": {
+    "command": "git diff --name-status 65b623639588f40eb73c5d76616308737ab33f33..93808ca6b93188581adda966a3caf019d741898c",
+    "changedPaths": [
+      "M lib/deployment-identity.json",
+      "D public/mizan-deployment.json",
+      "M scripts/stamp-deployment-route.mjs",
+      "M scripts/verify-deployment.mjs",
+      "M scripts/verify-release-bundle.mjs",
+      "M tests/deployment-stamp.test.mjs",
+      "M tests/release-bundle.test.mjs"
+    ],
+    "databaseAndMigrationPathsChanged": false
+  },
+  "commandsAndSources": [
+    "git status --short && git rev-parse HEAD",
+    "git cat-file -e 65b623639588f40eb73c5d76616308737ab33f33^{commit}",
+    "git diff --name-status 65b623639588f40eb73c5d76616308737ab33f33..HEAD",
+    "Sites list_site_versions(project_id=appgprj_6a9bd7353ed4819193fcd5363ed1d38f, limit=50)"
+  ],
+  "scopeAndLimits": [
+    "These are fresh source and provider metadata observations; they do not recover the lost 2026-10-01 artifacts.",
+    "No build, server, HTTP smoke, migration apply, database test, or saved-archive runtime was run for this record.",
+    "The provider archive hashes are metadata only; the saved archives were not downloaded or executed."
+  ]
+}
