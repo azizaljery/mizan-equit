@@ -324,7 +324,7 @@
       "productionOrCloudflareUsed": false,
       "externalNetworkUsedForPortfolioAndLedger": false,
       "temporaryStateDeletedAfterRun": true,
-      "accountingToleranceAbsolute": 1e-09,
+      "accountingToleranceAbsolute": 1e-9,
       "portfolioEvidenceArchiveCommit": "488444c"
     }
   },
@@ -387,7 +387,7 @@
       "evidence": [
         "EVD-TRUST-P2-04-FORECAST"
       ],
-      "currentSummary": "Supported app save/reanalysis/reload/restore flows preserved the original snapshot and six forecast rows. Direct SQL UPDATE was possible only within a synthetic transaction that was rolled back; no generic immutable-write trigger. Source trace found no legitimate runtime UPDATE/DELETE; corrections use outcome/revision records. Local append-only candidate migration and compatibility checks are in progress, not delivered.",
+      "currentSummary": "Canonical supported application flows preserved snapshots and five named forecast periods plus daily1. The rolled-back direct SQL probe exposed the documented storage-enforcement boundary. Optional local hardening candidates v1 and v2 are NOT_READY; baseline application-flow evidence remains valid within its tested scope.",
       "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
       "remaining": [
         "Assess/validate local append-only candidate and compatibility evidence; human reviewer must accept the storage-enforcement boundary before requirement PASS."
@@ -395,7 +395,8 @@
       "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
       "readbackVerified": true,
       "archivePath": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-evidence.json and p2-trust-cases.ndjson.gz",
-      "candidateWork": "Separate local append-only migration/compatibility candidate remains in progress; not delivered and not part of baseline."
+      "candidateWork": "Local v1 and v2 audits are archived, both NOT_READY. V1 has a hidden-rowid REPLACE bypass; v2 fails standard SQL export/import compatibility due to stale physical-rowid ledgers. A separate v2.1 offline restore-only prototype is in progress and not included in this archive. No production changes.",
+      "candidateAuditArchive": "docs/evidence/PHASE-2-TRUST-2026-10-03/candidate-audits/stock-candidate-evidence-20261004-index.json"
     },
     {
       "id": "P2-05",
@@ -456,7 +457,27 @@
       "archivePath": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-evidence.json and docs/evidence/PHASE-2-TRUST-2026-10-03/portfolio/EVD-TRUST-P2-08-PORTFOLIO-UPDATE.json",
       "archiveCommit": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
       "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
-      "readbackVerified": true
+      "readbackVerified": true,
+      "methodologyCorrection": {
+        "archive": "docs/evidence/PHASE-2-TRUST-2026-10-03/candidate-audits/stock-candidate-evidence-20261004-index.json",
+        "internalPath": "canonical-timing-correction/methodology-correction-addendum.json",
+        "sha256": "ce2c6c365dc82360f962d1a3864afbc20ac7624cd1a3ddc26515302827f09c77",
+        "note": "Original recordAnalysis timing included schema setup despite contrary wording. Preserve original captures; use corrected canonical rerun for schema-excluded save measurements. Five named horizons plus daily1, not a requirement mismatch.",
+        "canonicalSourceFilesVerified": 697,
+        "samples": 30,
+        "schemaExcludedMs": {
+          "SA": {
+            "p50": 12.284,
+            "p95": 14.271,
+            "max": 14.486
+          },
+          "US": {
+            "p50": 11.648,
+            "p95": 15.121,
+            "max": 19.862
+          }
+        }
+      }
     },
     {
       "id": "P2-09",
@@ -578,10 +599,11 @@
       "result": null,
       "temporaryLocalPath": "/tmp/P2-TRUST-LOCAL-FORECAST-2026-10-03-V1/p2-trust-evidence.json",
       "plannedArchivePath": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/",
-      "archiveStatus": "PENDING_CONFIRMATION",
+      "archiveStatus": "ARCHIVED_AND_READBACK_VERIFIED",
       "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
       "readbackVerified": true,
-      "candidateWork": "Separate local append-only candidate/compatibility work is in progress; not delivered and not part of canonical baseline."
+      "candidateWork": "Local v1 and v2 audits are archived, both NOT_READY. V1 has a hidden-rowid REPLACE bypass; v2 fails standard SQL export/import compatibility due to stale physical-rowid ledgers. A separate v2.1 offline restore-only prototype is in progress and not included in this archive. No production changes.",
+      "candidateAuditArchive": "docs/evidence/PHASE-2-TRUST-2026-10-03/candidate-audits/stock-candidate-evidence-20261004-index.json"
     },
     {
       "evidenceId": "EVD-TRUST-P2-05-SA",
@@ -639,7 +661,27 @@
         "No threshold set and no optimization performed"
       ],
       "archiveStatus": "ARCHIVED_AND_READBACK_VERIFIED",
-      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4"
+      "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
+      "methodologyCorrection": {
+        "archive": "docs/evidence/PHASE-2-TRUST-2026-10-03/candidate-audits/stock-candidate-evidence-20261004-index.json",
+        "internalPath": "canonical-timing-correction/methodology-correction-addendum.json",
+        "sha256": "ce2c6c365dc82360f962d1a3864afbc20ac7624cd1a3ddc26515302827f09c77",
+        "note": "Original recordAnalysis timing included schema setup despite contrary wording. Preserve original captures; use corrected canonical rerun for schema-excluded save measurements. Five named horizons plus daily1, not a requirement mismatch.",
+        "canonicalSourceFilesVerified": 697,
+        "samples": 30,
+        "schemaExcludedMs": {
+          "SA": {
+            "p50": 12.284,
+            "p95": 14.271,
+            "max": 14.486
+          },
+          "US": {
+            "p50": 11.648,
+            "p95": 15.121,
+            "max": 19.862
+          }
+        }
+      }
     },
     {
       "evidenceId": "EVD-TRUST-P2-09-RISKS",
@@ -654,6 +696,14 @@
       "status": "NOT_STARTED",
       "artifact": "Human review and phase closure signoff not started",
       "result": null
+    },
+    {
+      "evidenceId": "EVD-TRUST-P2-04-CANDIDATE-AUDITS",
+      "requirementId": "P2-04",
+      "status": "NOT_READY_LOCAL_CANDIDATES",
+      "artifact": "docs/evidence/PHASE-2-TRUST-2026-10-03/candidate-audits/stock-candidate-evidence-20261004-index.json",
+      "archiveCommit": "f5d09b74ec87b807c26be4d67c892b31c969c7cf",
+      "readbackVerified": true
     }
   ],
   "scopeGuardrails": [
@@ -721,7 +771,7 @@
       "includes": "Canonical npm test, separate deny-all attempt, forecast Trust bundle, gzip cases, packing/checksum metadata"
     },
     "updatedDocuments": {
-      "status": "LOCAL_DRAFT_PENDING_ROOT_ARCHIVE",
+      "status": "ARCHIVED_AND_READBACK_VERIFIED",
       "paths": [
         "phase2-proposal/PHASE-2-REQUIREMENTS.md",
         "phase2-proposal/PHASE-2-EVIDENCE-LOG.json",
@@ -732,7 +782,16 @@
         "phase2-proposal/docs/architecture/D2-DATAFLOW-DETAILED.mmd",
         "phase2-proposal/docs/architecture/D2-SCHEMA-V1.sql",
         "phase2-proposal/EVD-TRUST-P2-01-CURRENT-D1-IDENTITY.json"
-      ]
+      ],
+      "archiveCommit": "642b1d1f8a46772f8f0241714a54a450c6db172b"
+    },
+    "candidateAudits": {
+      "status": "ARCHIVED_AND_READBACK_VERIFIED",
+      "archiveCommit": "f5d09b74ec87b807c26be4d67c892b31c969c7cf",
+      "path": "docs/evidence/PHASE-2-TRUST-2026-10-03/candidate-audits/",
+      "archive": "stock-candidate-evidence-20261004.tar.gz",
+      "sha256": "68b268948443437a52ad2d16f4f4bdebc6ea491fd13d4eae37e6cb204032c54f",
+      "index": "docs/evidence/PHASE-2-TRUST-2026-10-03/candidate-audits/stock-candidate-evidence-20261004-index.json"
     }
   },
   "scopeClarification": {
