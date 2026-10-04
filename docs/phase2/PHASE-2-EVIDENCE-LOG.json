@@ -395,7 +395,7 @@
       "archiveHead": "1affff26c2697db60dde5d5523158f0cbdc3cfc4",
       "readbackVerified": true,
       "archivePath": "docs/evidence/PHASE-2-TRUST-2026-10-03/forecast/p2-trust-evidence.json and p2-trust-cases.ndjson.gz",
-      "candidateWork": "Local v1 and v2 audits are archived, both NOT_READY. V1 has a hidden-rowid REPLACE bypass; v2 fails standard SQL export/import compatibility due to stale physical-rowid ledgers. A separate v2.1 offline restore-only prototype is in progress and not included in this archive. No production changes.",
+      "candidateWork": "V1 and v2 remain NOT_READY. V2.1 local synthetic D1 repair mechanics and independent review are complete and archived. Rollout is still NOT_READY/HOLD: production writer quiescence/resume hash enforcement and eligible screener forecast append/sealing are not established. No further implementation or rollout is represented.",
       "candidateAuditArchive": "docs/evidence/PHASE-2-TRUST-2026-10-03/candidate-audits/stock-candidate-evidence-20261004-index.json"
     },
     {
@@ -792,6 +792,17 @@
       "archive": "stock-candidate-evidence-20261004.tar.gz",
       "sha256": "68b268948443437a52ad2d16f4f4bdebc6ea491fd13d4eae37e6cb204032c54f",
       "index": "docs/evidence/PHASE-2-TRUST-2026-10-03/candidate-audits/stock-candidate-evidence-20261004-index.json"
+    },
+    "restorePrototypeReview": {
+      "status": "ARCHIVE_INCLUDED_IN_THIS_COMMIT",
+      "path": "docs/evidence/PHASE-2-TRUST-2026-10-03/candidate-audits/stock-v21-restore-review-evidence-20261004-index.json",
+      "sha256": "0d2aa995ea4c88306d9472f90bcd68f429a356c1a83910165f3d479e7bba0cc0",
+      "rollout": "NOT_READY_HOLD",
+      "localMechanics": "DEMONSTRATED_SYNTHETIC_D1",
+      "remaining": [
+        "Actual application/scheduled-writer quiescence and durable resume logical-hash enforcement",
+        "Eligible screener forecast append and archive sealing"
+      ]
     }
   },
   "scopeClarification": {
