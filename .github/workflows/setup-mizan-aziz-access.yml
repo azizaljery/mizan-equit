@@ -30,7 +30,7 @@ jobs:
           const acct = process.env.CLOUDFLARE_ACCOUNT_ID;
           const email = (process.env.OWNER_EMAIL || '').trim();
           const host = 'mizan-aziz.aljeryabod.workers.dev';
-          const paths = ['/admin', '/admin/*', '/api/admin/*', '/api/private-recommendation', '/api/backtest'];
+          const paths = ['/admin', '/admin/*', '/api/admin', '/api/admin/*', '/api/private-recommendation', '/api/backtest'];
           const base = `https://api.cloudflare.com/client/v4/accounts/${acct}/access`;
           async function api(method, path, body) {
             const r = await fetch(base + path, {
@@ -59,6 +59,7 @@ jobs:
               ? await api('PUT', `/apps/${existing.id}`, body)
               : await api('POST', '/apps', body);
             console.log(existing ? 'update app:' : 'create app:', res.status, res.ok, JSON.stringify(res.errors || []));
+            if (res.ok) console.log('AUD:', res.result && res.result.aud);
             if (res.ok) console.log('app id:', res.result && res.result.id, 'destinations:', JSON.stringify((res.result && res.result.destinations) || []));
             process.exit(res.ok ? 0 : 1);
           })();
