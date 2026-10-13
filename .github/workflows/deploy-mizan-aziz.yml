@@ -1,0 +1,134 @@
+name: Deploy Mizan Aziz (new, Claude-managed)
+
+on:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - "mizan-v45/**"
+      - ".github/workflows/deploy-mizan-aziz.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: mizan-aziz-production
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: mizan-v45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Use Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: mizan-v45/package-lock.json
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Stamp release identity
+        run: |
+          node scripts/verify-deployment.mjs --mark
+          node scripts/stamp-deployment-route.mjs
+
+      - name: Build
+        run: npm run build
+
+      - name: Locate generated Wrangler config
+        id: wrangler
+        shell: bash
+        run: |
+          config="$(find dist -type f -name wrangler.json -print -quit)"
+          if [ -z "$config" ]; then
+            echo "No generated Wrangler config found under dist/" >&2
+            find dist -maxdepth 3 -type f | sort || true
+            exit 1
+          fi
+          echo "config=$config" >> "$GITHUB_OUTPUT"
+          echo "Using $config"
+
+      - name: Stage D1 migrations beside generated Wrangler config
+        shell: bash
+        run: |
+          config="${{ steps.wrangler.outputs.config }}"
+          config_dir="$(dirname "$config")"
+          rm -rf "$config_dir/drizzle"
+          cp -R drizzle "$config_dir/drizzle"
+          test -n "$(find "$config_dir/drizzle" -maxdepth 1 -type f -name '*.sql' -print -quit)"
+
+      - name: Apply D1 migrations (shared database with mizan-equity — idempotent)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler d1 migrations apply mizan-equity-db --remote --config "${{ steps.wrangler.outputs.config }}"
+
+      - name: Sync secrets (owner-provided keys and generated hashes)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          OPENAI_API_KEY: ${{ secrets.MIZAN_AZIZ_OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.MIZAN_AZIZ_ANTHROPIC_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.MIZAN_AZIZ_DEEPSEEK_API_KEY }}
+          GOLDAPI_KEY: ${{ secrets.MIZAN_AZIZ_GOLDAPI_KEY }}
+          METALS_DEV_API_KEY: ${{ secrets.MIZAN_AZIZ_METALS_DEV_API_KEY }}
+          TWELVE_DATA_API_KEY: ${{ secrets.MIZAN_AZIZ_TWELVE_DATA_API_KEY }}
+          ADMIN_PASSWORD_HASH: ${{ secrets.MIZAN_AZIZ_ADMIN_PASSWORD_HASH }}
+          RECOMMENDATION_INITIAL_HASH: ${{ secrets.MIZAN_AZIZ_RECOMMENDATION_HASH }}
+          MIZAN_PROVIDER_VAULT_KEY: ${{ secrets.MIZAN_AZIZ_VAULT_KEY }}
+          RECOMMENDATION_OWNER_EMAIL: ${{ secrets.MIZAN_AZIZ_OWNER_EMAIL }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          config="${{ steps.wrangler.outputs.config }}"
+          export SECRET_FILE="$RUNNER_TEMP/mizan-aziz-secrets.json"
+          trap 'rm -f "$SECRET_FILE"' EXIT
+          node <<'NODE'
+          const fs=require('fs');
+          const names=[
+            'OPENAI_API_KEY','ANTHROPIC_API_KEY','DEEPSEEK_API_KEY',
+            'GOLDAPI_KEY','METALS_DEV_API_KEY','TWELVE_DATA_API_KEY',
+            'ADMIN_PASSWORD_HASH','RECOMMENDATION_INITIAL_HASH',
+            'MIZAN_PROVIDER_VAULT_KEY','RECOMMENDATION_OWNER_EMAIL'
+          ];
+          const data={};
+          for(const name of names) if(process.env[name]) data[name]=process.env[name];
+          fs.writeFileSync(process.env.SECRET_FILE, JSON.stringify(data), {mode:0o600});
+          console.log('Secrets prepared:', Object.keys(data).join(', ') || '(none provided yet)');
+          NODE
+          npx wrangler secret bulk "$SECRET_FILE" --config "$config"
+
+      - name: Deploy mizan-aziz
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy --config "${{ steps.wrangler.outputs.config }}"
+
+      - name: Wait for deployed bindings
+        run: sleep 5
+
+      - name: Verify deployed pages and exact release
+        run: node scripts/verify-deployment.mjs --verify
+
+      - name: Preserve sanitized deployment evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: mizan-aziz-deploy-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: mizan-v45/verify-out/
+          retention-days: 7
+          if-no-files-found: warn
