@@ -22,6 +22,8 @@ const localBindingConfig = {
   compatibility_flags: ["nodejs_compat"],
   vars: {
     MIZAN_BACKGROUND_CRON_ENABLED: "true",
+    ACCESS_TEAM_DOMAIN: "solitary-frost-7b9b.cloudflareaccess.com",
+    ACCESS_AUD: "582c09009e29c93fefe8a25e12dce19ef6278dee307d433d23ccfd595cf48655",
     MIZAN_OPENAI_MODEL: "gpt-5.6-sol",
     MIZAN_ANTHROPIC_MODEL: "claude-sonnet-5",
     MIZAN_DEEPSEEK_MODEL: "deepseek-v4-pro",

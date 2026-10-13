@@ -7,11 +7,14 @@ import { scheduledMarketWatch } from './watchlist-scheduled';
 import { scheduledMarketCollection, scheduledForecastSeed } from './market-collector';
 import { scheduledCouncil } from './council-scheduled';
 import { scheduledScreenerFollowup } from './screener-followup';
+import { withVerifiedIdentity } from './owner-identity';
 
 interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
   MIZAN_BACKGROUND_CRON_ENABLED?: string;
+  ACCESS_TEAM_DOMAIN?: string;
+  ACCESS_AUD?: string;
   OPENAI_API_KEY?: string;
   ANTHROPIC_API_KEY?: string;
   DEEPSEEK_API_KEY?: string;
@@ -55,6 +58,7 @@ const worker = {
         },
       }, allowedWidths);
     }
+    request = await withVerifiedIdentity(request, env);
     const response = await handler.fetch(request, env, ctx);
     if (/text\/html|text\/x-component/.test(response.headers.get('content-type') || '')) {
       const headers = new Headers(response.headers);
