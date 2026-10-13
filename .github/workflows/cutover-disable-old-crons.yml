@@ -1,0 +1,66 @@
+name: Cutover step 1 - disable crons on old mizan-equity worker
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/cutover-disable-old-crons.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  disable-old-crons:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Record and clear mizan-equity cron schedules
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          node <<'NODE' > out/cutover.log 2>&1
+          const token = process.env.CLOUDFLARE_API_TOKEN, acct = process.env.CLOUDFLARE_ACCOUNT_ID;
+          const url = `https://api.cloudflare.com/client/v4/accounts/${acct}/workers/scripts/mizan-equity/schedules`;
+          const call = async (method, body) => {
+            const r = await fetch(url, { method, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+            const j = await r.json().catch(() => ({}));
+            return { status: r.status, ok: j.success === true, errors: j.errors, result: j.result };
+          };
+          (async () => {
+            const before = await call('GET');
+            console.log('BEFORE:', before.status, before.ok, JSON.stringify(before.errors || []), JSON.stringify(before.result));
+            if (!before.ok) process.exit(1);
+            const put = await call('PUT', []);
+            console.log('CLEAR:', put.status, put.ok, JSON.stringify(put.errors || []));
+            const after = await call('GET');
+            console.log('AFTER:', after.status, after.ok, JSON.stringify(after.result));
+            const empty = after.ok && (!after.result || !(after.result.schedules || []).length);
+            console.log(empty ? 'RESULT: old worker has no crons' : 'RESULT: FAILED to clear');
+            process.exit(empty ? 0 : 1);
+          })();
+          NODE
+          code=$?
+          cat out/cutover.log
+          echo "$code" > out/code.txt
+
+      - name: Publish log to repo
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          [ -f out/cutover.log ] || echo "(no log)" > out/cutover.log
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/cutover-${{ github.run_id }}-${{ github.run_attempt }}.log" \
+            -f message="ci diagnostics: cutover log run ${{ github.run_id }}" \
+            -f content="$(base64 -w0 out/cutover.log)" \
+            -f branch="${{ github.ref_name }}" || echo "WARN: publish failed" >&2
+
+      - name: Fail if not cleared
+        run: test "$(cat out/code.txt 2>/dev/null || echo 1)" = "0"
