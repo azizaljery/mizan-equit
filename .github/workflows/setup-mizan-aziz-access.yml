@@ -2,6 +2,11 @@ name: Setup Access for Mizan Aziz (owner-only paths)
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/setup-mizan-aziz-access.yml"
 
 permissions:
   contents: write
