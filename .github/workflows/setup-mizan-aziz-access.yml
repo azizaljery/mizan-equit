@@ -46,6 +46,7 @@ jobs:
             const apps = await api('GET', '/apps?per_page=100');
             console.log('list apps:', apps.status, apps.ok, JSON.stringify(apps.errors || []));
             if (!apps.ok) process.exit(1);
+            for (const a of (apps.result || [])) console.log('APP', a.id, '|', a.name, '|', a.type, '|', a.domain || '', '|', JSON.stringify((a.destinations || []).map(d => d.uri)), '| policies:', JSON.stringify((a.policies || []).map(p => p.name)));
             const name = 'Mizan Aziz owner-only';
             const existing = (apps.result || []).find(a => a.name === name);
             const policy = { name: 'Owner email only', decision: 'allow', include: [{ email: { email } }] };
