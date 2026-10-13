@@ -1,0 +1,82 @@
+name: Setup Access for Mizan Aziz (owner-only paths)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  setup-access:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Create or update Cloudflare Access app for owner-only paths
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          OWNER_EMAIL: ${{ secrets.MIZAN_AZIZ_OWNER_EMAIL }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          node <<'NODE' > out/access.log 2>&1
+          const token = process.env.CLOUDFLARE_API_TOKEN;
+          const acct = process.env.CLOUDFLARE_ACCOUNT_ID;
+          const email = (process.env.OWNER_EMAIL || '').trim();
+          const host = 'mizan-aziz.aljeryabod.workers.dev';
+          const paths = ['/admin', '/admin/*', '/api/admin/*', '/api/private-recommendation', '/api/backtest'];
+          const base = `https://api.cloudflare.com/client/v4/accounts/${acct}/access`;
+          async function api(method, path, body) {
+            const r = await fetch(base + path, {
+              method,
+              headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+              body: body ? JSON.stringify(body) : undefined,
+            });
+            const j = await r.json().catch(() => ({}));
+            return { status: r.status, ok: j.success === true, errors: j.errors, result: j.result };
+          }
+          (async () => {
+            if (!email) { console.log('FAIL: owner email secret missing'); process.exit(1); }
+            const apps = await api('GET', '/apps?per_page=100');
+            console.log('list apps:', apps.status, apps.ok, JSON.stringify(apps.errors || []));
+            if (!apps.ok) process.exit(1);
+            const name = 'Mizan Aziz owner-only';
+            const existing = (apps.result || []).find(a => a.name === name);
+            const policy = { name: 'Owner email only', decision: 'allow', include: [{ email: { email } }] };
+            const body = {
+              name, type: 'self_hosted', session_duration: '24h',
+              destinations: paths.map(p => ({ type: 'public', uri: host + p })),
+              policies: [policy],
+            };
+            const res = existing
+              ? await api('PUT', `/apps/${existing.id}`, body)
+              : await api('POST', '/apps', body);
+            console.log(existing ? 'update app:' : 'create app:', res.status, res.ok, JSON.stringify(res.errors || []));
+            if (res.ok) console.log('app id:', res.result && res.result.id, 'destinations:', JSON.stringify((res.result && res.result.destinations) || []));
+            process.exit(res.ok ? 0 : 1);
+          })();
+          NODE
+          code=$?
+          cat out/access.log
+          echo "exit=$code" >> out/access.log
+          echo "$code" > out/code.txt
+
+      - name: Publish log to repo (Actions logs are unreadable from my sandbox)
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          [ -f out/access.log ] || echo "(no log)" > out/access.log
+          b64="$(base64 -w0 out/access.log)"
+          dest="ci-diagnostics/access-${{ github.run_id }}-${{ github.run_attempt }}.log"
+          gh api --method PUT "repos/${{ github.repository }}/contents/${dest}" \
+            -f message="ci diagnostics: access setup log run ${{ github.run_id }}" \
+            -f content="${b64}" \
+            -f branch="${{ github.ref_name }}" \
+            || echo "WARN: failed to publish log" >&2
+
+      - name: Fail if setup failed
+        run: test "$(cat out/code.txt 2>/dev/null || echo 1)" = "0"
