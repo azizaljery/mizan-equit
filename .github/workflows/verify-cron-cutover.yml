@@ -1,0 +1,44 @@
+name: Verify cron cutover (read-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/verify-cron-cutover.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read schedules of both workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          for w in mizan-aziz mizan-equity; do
+            echo "== $w ==" >> out/verify.log
+            curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/$w/schedules" \
+              | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s);console.log(j.success,JSON.stringify((j.result&&j.result.schedules||[]).map(x=>x.cron)))})' >> out/verify.log 2>&1
+          done
+          cat out/verify.log
+      - name: Publish log to repo
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          [ -f out/verify.log ] || echo "(no log)" > out/verify.log
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/verify-cron-${{ github.run_id }}.log" \
+            -f message="ci diagnostics: cron verify ${{ github.run_id }}" \
+            -f content="$(base64 -w0 out/verify.log)" \
+            -f branch="${{ github.ref_name }}" || true
