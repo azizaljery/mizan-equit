@@ -15,10 +15,8 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 const localBindingConfig = {
   name: "mizan-aziz",
   main: "./worker/index.ts",
-  // Crons intentionally disabled on this worker until the owner confirms cutover,
-  // to avoid running paid background jobs twice against the same shared database
-  // while mizan-equity (the original worker) is still live.
-  triggers: { crons: [] },
+  // Cutover done: crons now run here; they were cleared on the old mizan-equity worker.
+  triggers: { crons: [EVALUATE_DUE_CRON, ACCURACY_SAMPLE_CRON, SCREENER_FOLLOWUP_CRON] },
   compatibility_flags: ["nodejs_compat"],
   vars: {
     MIZAN_BACKGROUND_CRON_ENABLED: "true",
