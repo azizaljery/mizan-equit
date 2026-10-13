@@ -74,7 +74,21 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx wrangler d1 migrations apply mizan-equity-db --remote --config "${{ steps.wrangler.outputs.config }}"
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p verify-out
+          npx wrangler --version > verify-out/migrate.log 2>&1 || true
+          echo "--- token/account presence (masked) ---" >> verify-out/migrate.log
+          [ -n "${CLOUDFLARE_API_TOKEN:-}" ] && echo "CLOUDFLARE_API_TOKEN: set (len=${#CLOUDFLARE_API_TOKEN})" >> verify-out/migrate.log || echo "CLOUDFLARE_API_TOKEN: MISSING" >> verify-out/migrate.log
+          [ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ] && echo "CLOUDFLARE_ACCOUNT_ID: set (${CLOUDFLARE_ACCOUNT_ID})" >> verify-out/migrate.log || echo "CLOUDFLARE_ACCOUNT_ID: MISSING" >> verify-out/migrate.log
+          echo "--- wrangler d1 migrations list (remote) ---" >> verify-out/migrate.log
+          npx wrangler d1 migrations list mizan-equity-db --remote --config "${{ steps.wrangler.outputs.config }}" >> verify-out/migrate.log 2>&1
+          echo "--- wrangler d1 migrations apply (remote) ---" >> verify-out/migrate.log
+          npx wrangler d1 migrations apply mizan-equity-db --remote --config "${{ steps.wrangler.outputs.config }}" >> verify-out/migrate.log 2>&1
+          status=$?
+          cat verify-out/migrate.log
+          exit $status
 
       - name: Sync secrets (owner-provided keys and generated hashes)
         env:
