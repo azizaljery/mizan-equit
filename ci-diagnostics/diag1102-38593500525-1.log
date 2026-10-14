@@ -1,0 +1,22 @@
+script settings http=200: {"limits":null,"usage_model":"standard","compat":"2026-05-15","flags":["nodejs_compat"],"placement":{},"errors":[]}
+subscriptions http=403: [] errors=["Authentication error"]
+workers account-settings http=200: {"result":{"default_usage_model":"standard","green_compute":false},"errors":[]}
+analytics 24h http=200: {"errors":["failed to recognize JSON request: 'invalid character 'C' looking for beginning of value'"],"rows":null}
+curl stderr: 
+== PATCH limits.cpu_ms=30000 http=415: {"success":false,"errors":[{"code":10001,"message":"Content-Type must be one of: multipart/form-data"}],"limits":null}
+== settings after patch http=200: {"limits":null,"usage_model":"standard"}
+== probes
+[US N=1] us ["AAPL"] http=503 error code: 1102
+[US N=2] us ["AAPL","MSFT"] http=503 error code: 1102
+[US N=2] us ["NVDA","JPM"] http=200 {"market":"us","horizonSessions":5,"horizonName":"أسبوع","scanned":2,"analyzed":2,"el
+[SA N=1] sa ["2222.SR"] http=200 {"market":"sa","horizonSessions":5,"horizonName":"أسبوع","scanned":1,"analyzed":1,"el
+[SA N=2] sa ["2222.SR","1120.SR"] http=503 error code: 1102
+[SA N=5] sa ["2222.SR","1120.SR","2010.SR","7010.SR","1180.SR"] http=200 {"market":"sa","horizonSessions":5,"horizonName":"أسبوع","scanned":5,"analyzed":5,"el
+== tail events
+{"outcome":"exceededCpu","cpuTime":10,"wallTime":1171,"status":null,"exceptions":[]}
+{"outcome":"exceededCpu","cpuTime":10,"wallTime":571,"status":503,"exceptions":["Worker exceeded CPU time limit."]}
+{"outcome":"exceededCpu","cpuTime":2010,"wallTime":9229,"status":503,"exceptions":["Worker exceeded CPU time limit."]}
+{"outcome":"ok","cpuTime":737,"wallTime":7146,"status":200,"exceptions":[]}
+{"outcome":"ok","cpuTime":77,"wallTime":1084,"status":200,"exceptions":[]}
+{"outcome":"exceededCpu","cpuTime":10,"wallTime":253,"status":503,"exceptions":["Worker exceeded CPU time limit."]}
+{"outcome":"ok","cpuTime":323,"wallTime":3761,"status":200,"exceptions":[]}
