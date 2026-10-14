@@ -1,5 +1,6 @@
 /** Selection/presentation only. forecasts() remains the sole prediction engine. */
 import {HORIZONS} from './forecast-horizons';
+import {mergeVosaSummaries} from './screener-vosa';
 export type ScreenerMarket='sa'|'us'|'both';
 export type ScreenerRequest={market:ScreenerMarket;horizonSessions:number;resultCount?:number;scanLimit?:number;limit?:number;symbols?:string[];expectedVersion?:string};
 export type ScreenerCandidate={
@@ -15,7 +16,8 @@ export type ScreenerResult={market:ScreenerMarket;horizonSessions:number;horizon
  scanned:number;analyzed:number;eligible:number;failed:number;excluded:number;
  requestedResultCount:number;returned:number;missingCount:number;
  candidates:ScreenerCandidate[];failures:ScreenerFailure[];exclusionCounts:Record<string,number>;
- durationMs:number;generatedAt:string;modelVersion:string;rankingPolicy:string;scope:string};
+ durationMs:number;generatedAt:string;modelVersion:string;rankingPolicy:string;scope:string;
+ vosa?:import('./screener-vosa').VosaScreenerSummary};
 // Keep each Worker request below source/D1 resource pressure; full scans progress through more small immutable batches.
 export const SCREENER_BATCH_SIZE=2;
 export const SCREENER_MAX_SCAN=200;
@@ -82,5 +84,6 @@ export function mergeScreenerResults(a:ScreenerResult|null,b:ScreenerResult):Scr
  return {...b,scanned:a.scanned+b.scanned,analyzed:a.analyzed+b.analyzed,eligible:a.eligible+b.eligible,
   failed:a.failed+b.failed,excluded:a.excluded+b.excluded,returned:candidates.length,
   missingCount:Math.max(0,a.requestedResultCount*(a.market==='both'?2:1)-candidates.length),candidates,
-  failures:[...a.failures,...b.failures].slice(0,200),exclusionCounts,durationMs:a.durationMs+b.durationMs};
+  failures:[...a.failures,...b.failures].slice(0,200),exclusionCounts,durationMs:a.durationMs+b.durationMs,
+  ...(a.vosa||b.vosa?{vosa:mergeVosaSummaries(a.vosa,b.vosa)}:{})};
 }

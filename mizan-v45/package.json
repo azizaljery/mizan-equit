@@ -12,6 +12,7 @@
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "node scripts/test-analysis.mjs",
     "test:quant": "node --test --import tsx tests/quant-core.test.ts",
+    "test:vosa": "node --test --import tsx tests/vosa-screener.test.ts tests/screener-policy.test.ts",
     "test:sources": "node --test --import tsx lib/sources/__tests__/acceptance.test.ts lib/sources/parsers/__tests__/parsers.test.ts tests/source-cik.test.mjs lib/sources/__tests__/live.test.ts",
     "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate",
