@@ -44,3 +44,4 @@ jobs:
           gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/shara-live-${{ github.run_id }}-${{ github.run_attempt }}.log" \
             -f message="ci diagnostics: SHARA live scan run ${{ github.run_id }}" -f content="${b64}" -f branch="${{ github.ref_name }}" \
             || echo "WARN: failed to publish log" >&2
+# rerun 14:48Z: confirm the renamed key after deploy completes
