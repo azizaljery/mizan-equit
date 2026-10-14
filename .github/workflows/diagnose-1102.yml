@@ -33,6 +33,7 @@ jobs:
                '{ dimensions { status } sum { requests errors subrequests } quantiles { cpuTimeP50 cpuTimeP99 wallTimeP50 wallTimeP99 } } } } }') % (acc, fmt(now - datetime.timedelta(hours=24)), fmt(now))
           print(json.dumps({"query": q}))
           PY
+          echo "== analytics request body (first 200 bytes): $(head -c 200 out/q.json)" >> out/diag.log
           echo "== analytics (last 24h)" >> out/diag.log
           curl -sS -m 60 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' --data @out/q.json \
             https://api.cloudflare.com/client/v4/graphql >> out/diag.log 2>&1 || echo "analytics call failed" >> out/diag.log
@@ -61,10 +62,16 @@ jobs:
           ' >> out/diag.log 2>&1
           rm -f out/cf-*.json out/q.json
 
-      - name: Controlled live probes (US, horizon 5) by batch size
+      - name: Controlled live probes (US, horizon 5) by batch size, with wrangler tail
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         shell: bash
         run: |
           set -uo pipefail
+          npx --yes wrangler@4 tail mizan-aziz --format json > out/tail.jsonl 2> out/tail.err &
+          TAILPID=$!
+          sleep 25
           base="https://mizan-aziz.aljeryabod.workers.dev"
           probe() { # label, json symbols array
             local label="$1" syms="$2" t0 t1 code
@@ -82,6 +89,10 @@ jobs:
           probe "N=5-repeat" '["AAPL","MSFT","NVDA","JPM","XOM"]'
           probe "N=3" '["AAPL","MSFT","NVDA"]'
           probe "N=4" '["AAPL","MSFT","NVDA","JPM"]'
+          sleep 10; kill $TAILPID 2>/dev/null || true
+          echo "== tail stderr: $(head -c 400 out/tail.err)" >> out/diag.log
+          echo "== tail events (outcome / cpuTime / wallTime per invocation):" >> out/diag.log
+          jq -c 'select(.outcome!=null) | {outcome, cpuTime, wallTime, url: .event.request.url, status: .event.response.status, exceptions: (.exceptions|map(.message)|.[0:2]), logs: (.logs|map(.message|tostring|.[0:160])|.[0:3])}' out/tail.jsonl >> out/diag.log 2>&1 || echo "no tail events" >> out/diag.log
 
       - name: Publish log to repo
         if: ${{ always() }}
