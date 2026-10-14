@@ -75,28 +75,33 @@ export class VosaEngine implements VosaOrchestrator {
       const at = this.#now().toISOString();
       const gate = { gateId: "ENVELOPE_INTEGRITY", gateVersion: "1" };
       const result: GateResult = { ...gate, status: "SUSPEND", findings: [finding] };
+      const integrityEvent: AuditEvent = {
+        eventId: this.#makeId(),
+        runId,
+        pipelineId: this.#pipelineId,
+        pipelineVersion: this.#pipelineVersion,
+        mode: this.#mode,
+        candidate: candidate.identity,
+        gate,
+        gateOrder: 0,
+        gateConfigHash: "none",
+        status: "SUSPEND",
+        findings: [finding],
+        startedAt: at,
+        completedAt: at,
+        durationMs: 0,
+      };
+      // The rejection itself must be auditable; a failing sink must not turn a safe SUSPEND into a crash.
+      try {
+        await this.#auditSink?.append(integrityEvent);
+      } catch {
+        /* identity itself may be non-JSON-safe; the SUSPEND result below still carries the event */
+      }
       return {
         candidate: candidate.identity,
         finalStatus: "SUSPEND",
         gateResults: [result],
-        auditTrail: [
-          {
-            eventId: this.#makeId(),
-            runId,
-            pipelineId: this.#pipelineId,
-            pipelineVersion: this.#pipelineVersion,
-            mode: this.#mode,
-            candidate: candidate.identity,
-            gate,
-            gateOrder: 0,
-            gateConfigHash: "none",
-            status: "SUSPEND",
-            findings: [finding],
-            startedAt: at,
-            completedAt: at,
-            durationMs: 0,
-          },
-        ],
+        auditTrail: [integrityEvent],
         pipelineId: this.#pipelineId,
         pipelineVersion: this.#pipelineVersion,
         runId,
