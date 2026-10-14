@@ -1,0 +1,45 @@
+name: Probe free price sources from CI (read-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/probe-price-sources.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Probe
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out; : > out/probe.log
+          UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36'
+          t(){ name="$1"; shift; code="$(curl -sS -m 40 -o out/body.tmp -w '%{http_code}' -A "$UA" "$@" 2>>out/probe.log || echo 000)"; echo "$name http=$code bytes=$(wc -c < out/body.tmp) head=$(head -c 140 out/body.tmp | tr '\n' ' ')" >> out/probe.log; }
+          t yahoo-q1-AAPL  "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?interval=1d&range=1mo"
+          t yahoo-q2-AAPL  "https://query2.finance.yahoo.com/v8/finance/chart/AAPL?interval=1d&range=1mo"
+          t yahoo-q2-2222  "https://query2.finance.yahoo.com/v8/finance/chart/2222.SR?interval=1d&range=1mo"
+          t yahoo-www-AAPL "https://finance.yahoo.com/quote/AAPL/history/"
+          t stooq-aapl     "https://stooq.com/q/d/l/?s=aapl.us&i=d"
+          t stooq-2222     "https://stooq.com/q/d/l/?s=2222.sr&i=d"
+          t tiingo-none    "https://api.tiingo.com/api/test/"
+          t nasdaq-aapl    "https://api.nasdaq.com/api/quote/AAPL/historical?assetclass=stocks&fromdate=2025-09-01&limit=30&todate=2025-10-10"
+          t saudiexchange  "https://www.saudiexchange.sa/wps/portal/saudiexchange/hidden/company-profile-main/?companySymbol=2222"
+          t github-sp500   "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
+          cat out/probe.log
+      - name: Publish
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          b64="$(base64 -w0 out/probe.log)"
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/probe-${{ github.run_id }}-${{ github.run_attempt }}.log" -f message="ci diagnostics: price source probe" -f content="${b64}" -f branch="${{ github.ref_name }}" || true
