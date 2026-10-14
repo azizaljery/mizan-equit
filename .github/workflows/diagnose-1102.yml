@@ -41,23 +41,6 @@ jobs:
           } 2>&1 | sed -E 's/[A-Za-z0-9_-]{32,}/<redacted>/g' >> out/diag.log
           rm -f out/*.json
 
-      - name: Plan test - set explicit cpu_ms=30000 (equals the Standard default; rejected on Free)
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        shell: bash
-        run: |
-          set -uo pipefail
-          B="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
-          code="$(curl -sS -m 60 -o out/patch.json -w '%{http_code}' -X PATCH -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            -F 'settings={"limits":{"cpu_ms":30000}};type=application/json' "$B/workers/scripts/mizan-aziz/settings" 2>>out/diag.err || echo 000)"
-          {
-            echo "== PATCH limits.cpu_ms=30000 http=$code: $(jq -c '{success, errors:[.errors[]? | {code,message}], limits:.result.limits}' out/patch.json 2>&1 | head -c 700)"
-            c2="$(curl -sS -m 60 -o out/after.json -w '%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$B/workers/scripts/mizan-aziz/settings" || echo 000)"
-            echo "== settings after patch http=$c2: $(jq -c '{limits:.result.limits, usage_model:.result.usage_model}' out/after.json 2>&1 | head -c 300)"
-          } 2>&1 | sed -E 's/[A-Za-z0-9_-]{32,}/<redacted>/g' >> out/diag.log
-          rm -f out/patch.json out/after.json
-
       - name: Probes with wrangler tail (N=1 vs N=2) to record outcome and CPU time
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
