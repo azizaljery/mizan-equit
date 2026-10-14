@@ -1,0 +1,19 @@
+script settings http=200: {"limits":null,"usage_model":"standard","compat":"2026-05-15","flags":["nodejs_compat"],"placement":{},"errors":[]}
+subscriptions http=403: [] errors=["Authentication error"]
+workers account-settings http=200: {"result":{"default_usage_model":"standard","green_compute":false},"errors":[]}
+analytics 24h http=200: {"errors":["failed to recognize JSON request: 'invalid character 'C' looking for beginning of value'"],"rows":null}
+curl stderr: 
+== probes
+[US N=1] us ["AAPL"] http=200 {"market":"us","horizonSessions":5,"horizonName":"أسبوع","scanned":1,"analyzed":1,"el
+[US N=2] us ["AAPL","MSFT"] http=200 {"market":"us","horizonSessions":5,"horizonName":"أسبوع","scanned":2,"analyzed":2,"el
+[US N=2] us ["NVDA","JPM"] http=503 error code: 1102
+[SA N=1] sa ["2222.SR"] http=200 {"market":"sa","horizonSessions":5,"horizonName":"أسبوع","scanned":1,"analyzed":1,"el
+[SA N=2] sa ["2222.SR","1120.SR"] http=200 {"market":"sa","horizonSessions":5,"horizonName":"أسبوع","scanned":2,"analyzed":2,"el
+[SA N=5] sa ["2222.SR","1120.SR","2010.SR","7010.SR","1180.SR"] http=503 error code: 1102
+== tail events
+{"outcome":"ok","cpuTime":614,"wallTime":4317,"status":200,"exceptions":[]}
+{"outcome":"ok","cpuTime":1338,"wallTime":8227,"status":200,"exceptions":[]}
+{"outcome":"exceededCpu","cpuTime":76,"wallTime":698,"status":503,"exceptions":["Worker exceeded CPU time limit."]}
+{"outcome":"ok","cpuTime":144,"wallTime":1698,"status":200,"exceptions":[]}
+{"outcome":"ok","cpuTime":309,"wallTime":2634,"status":200,"exceptions":[]}
+{"outcome":"exceededCpu","cpuTime":10,"wallTime":170,"status":503,"exceptions":["Worker exceeded CPU time limit."]}
