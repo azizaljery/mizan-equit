@@ -1,0 +1,59 @@
+name: Inspect old mizan-equity Worker (read-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/inspect-old-worker.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Download deployed scripts and look for VOSA (read-only GET)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          : > out/inspect.log
+          for name in mizan-equity mizan-aziz; do
+            f="out/$name.bin"
+            code="$(curl -sS -o "$f" -w '%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/$name" 2>>out/inspect.log || echo 000)"
+            {
+              echo "== $name http=$code bytes=$(wc -c < "$f")"
+              for term in vosa KILL SUSPEND "ملف جاهزية" "تجربة مستقلة" "ميزان الخاص" "mizan-scenarios" "dynamic-gating" "aziz" "regime"; do
+                echo "count[$term]=$(grep -a -o -i -- "$term" "$f" | wc -l)"
+              done
+              echo "-- distinct vosa-related tokens:"
+              grep -a -o -i -E '[A-Za-z0-9_/.\-]{0,40}vosa[A-Za-z0-9_/.\-]{0,40}' "$f" | sort | uniq -c | sort -rn | head -40
+              echo "-- model version strings:"
+              grep -a -o -E 'mizan-scenarios-[0-9]+-[a-f0-9]{6,10}' "$f" | sort | uniq -c | head
+            } >> out/inspect.log 2>&1
+          done
+          cat out/inspect.log
+
+      - name: Publish log to repo
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          [ -f out/inspect.log ] || echo "(no log)" > out/inspect.log
+          b64="$(base64 -w0 out/inspect.log)"
+          dest="ci-diagnostics/inspect-${{ github.run_id }}-${{ github.run_attempt }}.log"
+          gh api --method PUT "repos/${{ github.repository }}/contents/${dest}" \
+            -f message="ci diagnostics: inspect old worker run ${{ github.run_id }}" \
+            -f content="${b64}" \
+            -f branch="${{ github.ref_name }}" \
+            || echo "WARN: failed to publish log" >&2
