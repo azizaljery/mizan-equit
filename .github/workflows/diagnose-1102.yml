@@ -24,12 +24,42 @@ jobs:
         run: |
           set -uo pipefail
           mkdir -p out; : > out/diag.log
-          from="$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)"; to="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          q="query { viewer { accounts(filter:{accountTag:\"$CLOUDFLARE_ACCOUNT_ID\"}) { workersInvocationsAdaptive(limit:100, filter:{scriptName:\"mizan-aziz\", datetime_geq:\"$from\", datetime_leq:\"$to\"}) { dimensions { status } sum { requests errors subrequests } quantiles { cpuTimeP50 cpuTimeP99 wallTimeP50 wallTimeP99 } } } } }"
-          echo "== analytics window $from .. $to" >> out/diag.log
-          curl -sS -m 60 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' \
-            -d "$(jq -cn --arg q "$q" '{query:$q}')" https://api.cloudflare.com/client/v4/graphql >> out/diag.log 2>&1 || echo "analytics call failed" >> out/diag.log
+          python3 - <<'PY' > out/q.json
+          import json, os, datetime
+          now = datetime.datetime.now(datetime.timezone.utc)
+          fmt = lambda d: d.strftime("%Y-%m-%dT%H:%M:%SZ")
+          acc = os.environ["CLOUDFLARE_ACCOUNT_ID"]
+          q = ('query { viewer { accounts(filter:{accountTag:"%s"}) { workersInvocationsAdaptive(limit:100, filter:{scriptName:"mizan-aziz", datetime_geq:"%s", datetime_leq:"%s"}) '
+               '{ dimensions { status } sum { requests errors subrequests } quantiles { cpuTimeP50 cpuTimeP99 wallTimeP50 wallTimeP99 } } } } }') % (acc, fmt(now - datetime.timedelta(hours=24)), fmt(now))
+          print(json.dumps({"query": q}))
+          PY
+          echo "== analytics (last 24h)" >> out/diag.log
+          curl -sS -m 60 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' --data @out/q.json \
+            https://api.cloudflare.com/client/v4/graphql >> out/diag.log 2>&1 || echo "analytics call failed" >> out/diag.log
           echo >> out/diag.log
+
+      - name: Real SEC companyfacts size and parsed heap (memory hypothesis)
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          echo "== SEC companyfacts: raw bytes vs parsed heap (node $(node -v))" >> out/diag.log
+          ua="Mizan equity research https://mizan-equity.aljeryabod.chatgpt.site"
+          for cik in 0000320193 0000789019 0001045810 0000019617 0000034088; do
+            curl -sS -m 60 -A "$ua" -H 'Accept: application/json' -o out/cf-$cik.json "https://data.sec.gov/api/xbrl/companyfacts/CIK$cik.json" 2>>out/diag.log || echo "fetch $cik failed" >> out/diag.log
+            sleep 1
+          done
+          node --expose-gc -e '
+            const fs=require("fs");let keep=[];
+            for(const f of fs.readdirSync("out").filter(x=>x.startsWith("cf-"))){
+              const raw=fs.readFileSync("out/"+f,"utf8");if(raw.length<1000){console.log(f,"unusable",raw.slice(0,80));continue}
+              global.gc();const before=process.memoryUsage().heapUsed;const obj=JSON.parse(raw);keep.push(obj);global.gc();
+              const after=process.memoryUsage().heapUsed;
+              console.log(f,"raw_MB="+(raw.length/1e6).toFixed(2),"parsed_heap_MB="+((after-before)/1e6).toFixed(1),"ratio="+(((after-before))/raw.length).toFixed(1)+"x");
+            }
+            global.gc();console.log("TOTAL heapUsed_MB after keeping all parsed:",(process.memoryUsage().heapUsed/1e6).toFixed(1),"(Worker isolate limit: 128 MB)");
+          ' >> out/diag.log 2>&1
+          rm -f out/cf-*.json out/q.json
 
       - name: Controlled live probes (US, horizon 5) by batch size
         shell: bash
