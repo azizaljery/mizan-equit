@@ -24,38 +24,22 @@ jobs:
         run: |
           set -uo pipefail
           mkdir -p out; : > out/diag.log
-          cat > out/api.py <<'PY'
-          import json, os, re, datetime, urllib.request, urllib.error
-          tok, acc = os.environ["CLOUDFLARE_API_TOKEN"], os.environ["CLOUDFLARE_ACCOUNT_ID"]
-          def call(url, body=None):
-              req = urllib.request.Request(url, data=json.dumps(body).encode() if body else None,
-                                           headers={"Authorization": "Bearer " + tok, "Content-Type": "application/json"})
-              try:
-                  with urllib.request.urlopen(req, timeout=60) as r: return r.status, json.loads(r.read().decode())
-              except urllib.error.HTTPError as e:
-                  try: return e.code, json.loads(e.read().decode())
-                  except Exception: return e.code, {"error": "non-json"}
-              except Exception as e: return 0, {"error": repr(e)[:200]}
-          def errs(d): return [e.get("message", "")[:160] for e in (d.get("errors") or [])] if isinstance(d, dict) else []
-          base = "https://api.cloudflare.com/client/v4/accounts/" + acc
-          # Whitelisted fields only: never print bindings, vars or secrets.
-          code, d = call(base + "/workers/scripts/mizan-aziz/settings")
-          r = (d.get("result") or {}) if isinstance(d, dict) else {}
-          print("script settings: http=%s limits=%s usage_model=%s compat_date=%s compat_flags=%s placement=%s errors=%s" % (code, r.get("limits"), r.get("usage_model"), r.get("compatibility_date"), r.get("compatibility_flags"), r.get("placement"), errs(d)))
-          code, d = call(base + "/subscriptions")
-          res = d.get("result") if isinstance(d, dict) else None
-          print("subscriptions: http=%s %s errors=%s" % (code, [((x.get("rate_plan") or {}).get("public_name"), (x.get("rate_plan") or {}).get("id"), (x.get("product") or {}).get("name"), x.get("state")) for x in (res or [])][:12], errs(d)))
-          code, d = call(base + "/workers/account-settings")
-          print("workers account-settings: http=%s result=%s errors=%s" % (code, json.dumps((d.get("result") if isinstance(d, dict) else None))[:300], errs(d)))
-          now = datetime.datetime.now(datetime.timezone.utc); f = lambda x: x.strftime("%Y-%m-%dT%H:%M:%SZ")
-          q = ('query { viewer { accounts(filter:{accountTag:"%s"}) { workersInvocationsAdaptive(limit:100, filter:{scriptName:"mizan-aziz", datetime_geq:"%s", datetime_leq:"%s"}) '
-               '{ dimensions { status } sum { requests errors subrequests } quantiles { cpuTimeP50 cpuTimeP99 wallTimeP50 wallTimeP99 } } } } }') % (acc, f(now - datetime.timedelta(hours=24)), f(now))
-          code, d = call("https://api.cloudflare.com/client/v4/graphql", {"query": q})
-          rows = (((d.get("data") or {}).get("viewer") or {}).get("accounts") or [{}])[0].get("workersInvocationsAdaptive") if isinstance(d, dict) and d.get("data") else None
-          print("analytics 24h: http=%s errors=%s rows=%s" % (code, errs(d), json.dumps(rows)[:2500]))
-          PY
-          python3 out/api.py 2>&1 | sed -E 's/[A-Za-z0-9_-]{32,}/<redacted>/g' >> out/diag.log
-          rm -f out/api.py
+          B="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
+          get() { curl -sS -m 60 -o "out/$1.json" -w '%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$2" 2>>out/diag.err || echo 000; }
+          c1="$(get settings "$B/workers/scripts/mizan-aziz/settings")"
+          c2="$(get subs "$B/subscriptions")"
+          c3="$(get acct "$B/workers/account-settings")"
+          now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"; from="$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)"
+          jq -cn --arg q "query { viewer { accounts(filter:{accountTag:\"$CLOUDFLARE_ACCOUNT_ID\"}) { workersInvocationsAdaptive(limit:100, filter:{scriptName:\"mizan-aziz\", datetime_geq:\"$from\", datetime_leq:\"$now\"}) { dimensions { status } sum { requests errors subrequests } quantiles { cpuTimeP50 cpuTimeP99 wallTimeP50 wallTimeP99 } } } } }" '{query:$q}' > out/q.json
+          c4="$(curl -sS -m 60 -o out/an.json -w '%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' --data-binary @out/q.json https://api.cloudflare.com/client/v4/graphql 2>>out/diag.err || echo 000)"
+          {
+            echo "script settings http=$c1: $(jq -c '{limits:.result.limits, usage_model:.result.usage_model, compat:.result.compatibility_date, flags:.result.compatibility_flags, placement:.result.placement, errors:[.errors[]?.message]}' out/settings.json 2>&1 | head -c 600)"
+            echo "subscriptions http=$c2: $(jq -c '[.result[]? | {plan:.rate_plan.public_name, id:.rate_plan.id, product:.product.name, state}]' out/subs.json 2>&1 | head -c 900) errors=$(jq -c '[.errors[]?.message]' out/subs.json 2>/dev/null)"
+            echo "workers account-settings http=$c3: $(jq -c '{result, errors:[.errors[]?.message]}' out/acct.json 2>&1 | head -c 500)"
+            echo "analytics 24h http=$c4: $(jq -c '{errors:[.errors[]?.message], rows:.data.viewer.accounts[0].workersInvocationsAdaptive}' out/an.json 2>&1 | head -c 2500)"
+            echo "curl stderr: $(head -c 300 out/diag.err 2>/dev/null)"
+          } 2>&1 | sed -E 's/[A-Za-z0-9_-]{32,}/<redacted>/g' >> out/diag.log
+          rm -f out/*.json
 
       - name: Probes with wrangler tail (N=1 vs N=2) to record outcome and CPU time
         env:
