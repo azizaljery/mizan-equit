@@ -1,0 +1,14 @@
+== analytics window 2026-10-13T15:17:56Z .. 2026-10-14T15:17:56Z
+{"data":null,"errors":[{"message":"failed to recognize JSON request: 'invalid character 'C' looking for beginning of value'","path":null,"extensions":{"timestamp":"2026-10-14T15:17:56.532053343Z","ray_id":"a4a78dc3cebc884c-SEA"}}]}
+== probes
+[N=1] symbols=["AAPL"] http=200 wall=4.5s bytes=809 {"scanned":1,"analyzed":1,"failed":0,"durationMs":3816}
+[N=1] symbols=["MSFT"] http=200 wall=5.6s bytes=809 {"scanned":1,"analyzed":1,"failed":0,"durationMs":4057}
+[N=1] symbols=["NVDA"] http=200 wall=4.3s bytes=809 {"scanned":1,"analyzed":1,"failed":0,"durationMs":3356}
+[N=1] symbols=["JPM"] http=200 wall=4.4s bytes=808 {"scanned":1,"analyzed":1,"failed":0,"durationMs":4082}
+[N=1] symbols=["XOM"] http=200 wall=3.5s bytes=808 {"scanned":1,"analyzed":1,"failed":0,"durationMs":3024}
+[N=2] symbols=["AAPL","MSFT"] http=503 wall=1.7s bytes=17 error code: 1102
+[N=2] symbols=["NVDA","JPM"] http=503 wall=5.1s bytes=17 error code: 1102
+[N=5] symbols=["AAPL","MSFT","NVDA","JPM","XOM"] http=503 wall=8.6s bytes=17 error code: 1102
+[N=5-repeat] symbols=["AAPL","MSFT","NVDA","JPM","XOM"] http=503 wall=0.2s bytes=17 error code: 1102
+[N=3] symbols=["AAPL","MSFT","NVDA"] http=503 wall=11.3s bytes=17 error code: 1102
+[N=4] symbols=["AAPL","MSFT","NVDA","JPM"] http=503 wall=0.2s bytes=17 error code: 1102
