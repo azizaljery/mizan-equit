@@ -1,4 +1,4 @@
-import type {CandidateIdentity, VosaStatus} from './contracts';
+import type {CandidateIdentity, SharaStatus} from './contracts';
 
 export interface CandidateRef {
   readonly candidateId: string;
@@ -12,7 +12,7 @@ const keyOf = (ref: CandidateRef): string => `${ref.candidateId}@${ref.version}`
  * (re-registering with the same payloadHash is a harmless no-op, a different payloadHash throws); parents must exist.
  * Status: experimental, in-memory; not wired into production.
  */
-export class VosaLineage {
+export class SharaLineage {
   readonly #nodes = new Map<string, {identity: CandidateIdentity; parents: readonly string[]}>();
   readonly #latest = new Map<string, number>();
 
@@ -55,23 +55,23 @@ export class VosaLineage {
   }
 }
 
-export class VosaResurrectionError extends Error {}
+export class SharaResurrectionError extends Error {}
 
 /**
  * No Resurrection within one run: once (run, candidate, version) is KILLed, nothing — score, ranker, retry, re-evaluation —
  * may change that status. SUSPEND may later resolve (evidence arrived); PASS may be tightened to KILL; never KILL -> anything else.
  * A new immutable version is a different key and is evaluated from scratch (the KILL is NOT inherited).
  */
-export class VosaRunLedger {
-  readonly #status = new Map<string, VosaStatus>();
+export class SharaRunLedger {
+  readonly #status = new Map<string, SharaStatus>();
 
-  record(runId: string, ref: CandidateRef, status: VosaStatus): void {
+  record(runId: string, ref: CandidateRef, status: SharaStatus): void {
     const key = `${runId}|${keyOf(ref)}`;
     const previous = this.#status.get(key);
-    if (previous === 'KILL' && status !== 'KILL') throw new VosaResurrectionError(`KILL cannot be revoked in run ${runId}: ${keyOf(ref)} -> ${status}`);
+    if (previous === 'KILL' && status !== 'KILL') throw new SharaResurrectionError(`KILL cannot be revoked in run ${runId}: ${keyOf(ref)} -> ${status}`);
     this.#status.set(key, status);
   }
-  statusOf(runId: string, ref: CandidateRef): VosaStatus | undefined {
+  statusOf(runId: string, ref: CandidateRef): SharaStatus | undefined {
     return this.#status.get(`${runId}|${keyOf(ref)}`);
   }
   /** Rankable only if the latest recorded status in this run is PASS. Unknown candidates are NOT rankable. */

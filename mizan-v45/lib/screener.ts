@@ -6,7 +6,7 @@ import {eligibleSaudiCompanies} from './saudi-directory';
 import {eligibleUSCompanies} from './us-directory';
 import {assertCurrentInstrument} from './listing-lifecycle';
 import type {ScreenerEvidence} from './screener-snapshot';
-import {evaluateScreenerVosa,type VosaScreenerSummary} from './screener-vosa';
+import {evaluateScreenerShara,type SharaScreenerSummary} from './screener-shara';
 import {validateScreenerRequest,selectScreenerSymbols,selectScreenerCandidates,candidateExclusion,
  SCREENER_BATCH_SIZE,SCREENER_RANKING,SCREENER_SCOPE,
  type ScreenerRequest,type ScreenerResult,type ScreenerCandidate,type ScreenerFailure} from './screener-policy';
@@ -81,16 +81,16 @@ export async function runScreener(db:any,input:ScreenerRequest,capture?:(evidenc
  const outcomes=await runBatched(symbols,s=>analyzeSymbol(s,req,read,settings));
  const rows=outcomes.flatMap(o=>o.ok?[o.candidate]:[]),failures=outcomes.flatMap(o=>o.ok?[]:[o.failure]);
  const exclusionCounts:Record<string,number>={};for(const c of rows){const reason=candidateExclusion(c);if(reason)exclusionCounts[reason]=(exclusionCounts[reason]||0)+1;}
- // VOSA gate layer: parity + provisional market gates. Shadow by default (removed is empty); a VOSA failure never blocks screening.
- let vosa:VosaScreenerSummary|undefined,vosaRemoved=new Set<string>();
- try{const v=await evaluateScreenerVosa(outcomes.flatMap(o=>o.ok?[{candidate:o.candidate,report:o.report}]:[]));vosa=v.summary;vosaRemoved=v.removed;}catch{/* shadow layer must not affect the scan */}
- if(vosaRemoved.size)exclusionCounts.vosa_market_gate=rows.filter(c=>vosaRemoved.has(c.symbol)&&!candidateExclusion(c)).length;
- const {candidates,eligible}=selectScreenerCandidates(vosaRemoved.size?rows.filter(c=>!vosaRemoved.has(c.symbol)):rows,req.resultCount,req.market);
+ // SHARA gate layer: parity + provisional market gates. Shadow by default (removed is empty); a SHARA failure never blocks screening.
+ let shara:SharaScreenerSummary|undefined,sharaRemoved=new Set<string>();
+ try{const v=await evaluateScreenerShara(outcomes.flatMap(o=>o.ok?[{candidate:o.candidate,report:o.report}]:[]));shara=v.summary;sharaRemoved=v.removed;}catch{/* shadow layer must not affect the scan */}
+ if(sharaRemoved.size)exclusionCounts.shara_market_gate=rows.filter(c=>sharaRemoved.has(c.symbol)&&!candidateExclusion(c)).length;
+ const {candidates,eligible}=selectScreenerCandidates(sharaRemoved.size?rows.filter(c=>!sharaRemoved.has(c.symbol)):rows,req.resultCount,req.market);
  const result:ScreenerResult={market:req.market,horizonSessions:req.horizonSessions,horizonName:req.horizonName,
   scanned:symbols.length,analyzed:rows.length,eligible,failed:failures.length,excluded:rows.length-eligible,
   requestedResultCount:req.resultCount,returned:candidates.length,missingCount:req.resultCount*(req.market==='both'?2:1)-candidates.length,
   candidates,failures,exclusionCounts,durationMs:Date.now()-started,generatedAt:new Date().toISOString(),modelVersion,
-  rankingPolicy:SCREENER_RANKING,scope:SCREENER_SCOPE,...(vosa?{vosa}:{})};
+  rankingPolicy:SCREENER_RANKING,scope:SCREENER_SCOPE,...(shara?{shara}:{})};
  if(capture){
   const included=new Set(candidates.map(c=>c.symbol));
   const evidence=outcomes.flatMap(o=>o.ok&&included.has(o.candidate.symbol)?[{candidate:o.candidate,report:o.report,projection:o.projection}]:[]);

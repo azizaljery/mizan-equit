@@ -5,45 +5,45 @@ import type {
   GateContext,
   GateResult,
   SurvivorRanker,
-  VosaEvaluation,
-  VosaGate,
-  VosaRunMode,
-  VosaSelection,
-  VosaStatus,
+  SharaEvaluation,
+  SharaGate,
+  SharaRunMode,
+  SharaSelection,
+  SharaStatus,
 } from "./contracts";
-import type { VosaOrchestrator } from "./interface";
+import type { SharaOrchestrator } from "./interface";
 import { assertJsonSafe } from "./audit";
 
-const PRECEDENCE: Readonly<Record<VosaStatus, number>> = {
+const PRECEDENCE: Readonly<Record<SharaStatus, number>> = {
   PASS: 0,
   SUSPEND: 1,
   KILL: 2,
 };
 
-export interface VosaEngineOptions {
+export interface SharaEngineOptions {
   readonly pipelineId: string;
   readonly pipelineVersion: string;
-  readonly mode?: VosaRunMode;
+  readonly mode?: SharaRunMode;
   readonly auditSink?: AuditSink;
   readonly now?: () => Date;
   readonly makeId?: () => string;
 }
 
-export class VosaEngine implements VosaOrchestrator {
-  readonly #gates: readonly VosaGate[];
+export class SharaEngine implements SharaOrchestrator {
+  readonly #gates: readonly SharaGate[];
   readonly #pipelineId: string;
   readonly #pipelineVersion: string;
-  readonly #mode: VosaRunMode;
+  readonly #mode: SharaRunMode;
   readonly #auditSink: AuditSink | undefined;
   readonly #now: () => Date;
   readonly #makeId: () => string;
 
-  constructor(gates: readonly VosaGate[], options: VosaEngineOptions) {
-    if (gates.length === 0) throw new Error("At least one VOSA gate is required");
+  constructor(gates: readonly SharaGate[], options: SharaEngineOptions) {
+    if (gates.length === 0) throw new Error("At least one SHARA gate is required");
 
     const identities = gates.map((gate) => `${gate.gateId}@${gate.gateVersion}`);
     if (new Set(identities).size !== identities.length) {
-      throw new Error("Duplicate VOSA gate identity");
+      throw new Error("Duplicate SHARA gate identity");
     }
 
     const mode = options.mode ?? "EXECUTION";
@@ -60,7 +60,7 @@ export class VosaEngine implements VosaOrchestrator {
     this.#makeId = options.makeId ?? (() => crypto.randomUUID());
   }
 
-  async evaluate(candidate: CandidateEvidenceEnvelope): Promise<VosaEvaluation> {
+  async evaluate(candidate: CandidateEvidenceEnvelope): Promise<SharaEvaluation> {
     const runId = this.#makeId();
     try {
       assertJsonSafe(candidate);
@@ -201,7 +201,7 @@ export class VosaEngine implements VosaOrchestrator {
       }
     }
 
-    const finalStatus = gateResults.reduce<VosaStatus>(
+    const finalStatus = gateResults.reduce<SharaStatus>(
       (current, result) =>
         PRECEDENCE[result.status] > PRECEDENCE[current]
           ? result.status
@@ -224,7 +224,7 @@ export class VosaEngine implements VosaOrchestrator {
   async select(
     candidates: readonly CandidateEvidenceEnvelope[],
     ranker: SurvivorRanker,
-  ): Promise<VosaSelection> {
+  ): Promise<SharaSelection> {
     const evaluations = await Promise.all(
       candidates.map((candidate) => this.evaluate(candidate)),
     );

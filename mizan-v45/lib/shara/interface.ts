@@ -1,17 +1,17 @@
 import type {
   CandidateEvidenceEnvelope,
   SurvivorRanker,
-  VosaEvaluation,
-  VosaSelection,
+  SharaEvaluation,
+  SharaSelection,
 } from "./contracts";
 
-export interface VosaOrchestrator {
-  evaluate(candidate: CandidateEvidenceEnvelope): Promise<VosaEvaluation>;
+export interface SharaOrchestrator {
+  evaluate(candidate: CandidateEvidenceEnvelope): Promise<SharaEvaluation>;
 
   select(
     candidates: readonly CandidateEvidenceEnvelope[],
     ranker: SurvivorRanker,
-  ): Promise<VosaSelection>;
+  ): Promise<SharaSelection>;
 }
 
 export interface EvidenceProvider<TInput = unknown> {
@@ -21,6 +21,6 @@ export interface EvidenceProvider<TInput = unknown> {
   collect(input: TInput): Promise<CandidateEvidenceEnvelope>;
 }
 
-export interface VosaWorkerService {
+export interface SharaWorkerService {
   evaluateRequest(request: Request): Promise<Response>;
 }

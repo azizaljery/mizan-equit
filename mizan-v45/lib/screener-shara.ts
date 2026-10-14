@@ -1,28 +1,28 @@
 /**
- * VOSA gate layer for the screener (selection only; forecasts() remains the sole prediction engine).
+ * SHARA gate layer for the screener (selection only; forecasts() remains the sole prediction engine).
  *
  * Two pipelines per candidate:
  *  1. PARITY  — the existing eligibility rules (candidateExclusion) re-expressed as veto gates with an audit trail.
- *               It never changes who is selected: tests/vosa-screener.test.ts proves survivors == candidateExclusion()===null.
+ *               It never changes who is selected: tests/shara-screener.test.ts proves survivors == candidateExclusion()===null.
  *  2. MARKET  — NEW financial veto gates (liquidity, zero-volume days, volatility, evidence freshness).
  *               PROVISIONAL: thresholds are engineering defaults, NOT validated on outcomes. They run in SHADOW mode
- *               (recorded, never removing a candidate) until VOSA_ENFORCE_MARKET_GATES is switched on after review.
+ *               (recorded, never removing a candidate) until SHARA_ENFORCE_MARKET_GATES is switched on after review.
  *
- * Semantics (owner-proposed VOSA): PASS = permission to be ranked only; KILL = veto with proof; SUSPEND = missing/invalid
+ * Semantics (owner-proposed SHARA, formerly named VOSA — Veto-Only Survival Architecture): PASS = permission to be ranked only; KILL = veto with proof; SUSPEND = missing/invalid
  * evidence (not rankable, not a permanent rejection); the ranker only ever sees survivors; nothing resurrects a KILL.
  */
-import {VosaEngine} from './vosa/engine';
-import {defineGate, fingerprint, maximumGate, minimumGate, readNumber, readString, readValue} from './vosa/gates';
-import type {CandidateEvidenceEnvelope, EvidenceRecord, JsonValue, VosaEvaluation, VosaGate, VosaStatus} from './vosa/contracts';
+import {SharaEngine} from './shara/engine';
+import {defineGate, fingerprint, maximumGate, minimumGate, readNumber, readString, readValue} from './shara/gates';
+import type {CandidateEvidenceEnvelope, EvidenceRecord, JsonValue, SharaEvaluation, SharaGate, SharaStatus} from './shara/contracts';
 import type {ScreenerCandidate} from './screener-policy';
 import type {Price} from './analysis';
 
-export const VOSA_SCREENER_VERSION = 'vosa-screener-1';
+export const SHARA_SCREENER_VERSION = 'shara-screener-1';
 /** Switch to true only after the owner reviews the shadow report. Default keeps selection identical to before. */
-export const VOSA_ENFORCE_MARKET_GATES = false;
+export const SHARA_ENFORCE_MARKET_GATES = false;
 
 /** PROVISIONAL thresholds (unvalidated). Kept in one place so a validation study can replace them. */
-export const VOSA_MARKET_THRESHOLDS = {
+export const SHARA_MARKET_THRESHOLDS = {
   sa: {minMedianTradedValue: 1_000_000, currency: 'SAR'},
   us: {minMedianTradedValue: 2_000_000, currency: 'USD'},
   maxZeroVolumeDays20: 3,
@@ -31,12 +31,12 @@ export const VOSA_MARKET_THRESHOLDS = {
 } as const;
 
 type Item = {candidate: ScreenerCandidate; report: {prices?: Price[]; retrievedAt?: string}};
-export type VosaVerdict = {symbol: string; parity: VosaStatus; parityRule?: string; market: VosaStatus | 'NOT_RUN'; marketRules: string[]};
-export type VosaScreenerSummary = {
+export type SharaVerdict = {symbol: string; parity: SharaStatus; parityRule?: string; market: SharaStatus | 'NOT_RUN'; marketRules: string[]};
+export type SharaScreenerSummary = {
   version: string; mode: 'shadow' | 'enforce'; provisionalThresholds: true;
   evaluated: number; parityPass: number; marketPass: number; marketKill: number; marketSuspend: number;
   byGate: Record<string, {kill: number; suspend: number}>;
-  wouldRemoveSymbols: string[]; removedSymbols: string[]; verdicts: VosaVerdict[];
+  wouldRemoveSymbols: string[]; removedSymbols: string[]; verdicts: SharaVerdict[];
 };
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -83,7 +83,7 @@ const kill = (ruleId: string, message: string, observed?: JsonValue, required?: 
 const suspend = (finding: {ruleId: string; message: string; observed?: JsonValue; required?: JsonValue}) => ({status: 'SUSPEND' as const, findings: [finding]});
 const PASS = {status: 'PASS' as const};
 
-export function parityGates(): VosaGate[] {
+export function parityGates(): SharaGate[] {
   return [
     defineGate({id: 'model_unavailable', description: 'Forecast row must be available', run: (c) => {
       const r = readValue(c, 'available');
@@ -139,8 +139,8 @@ export function parityGates(): VosaGate[] {
 }
 
 /* ---------------- market gates (PROVISIONAL, shadow by default) ---------------- */
-export function marketGates(market: 'sa' | 'us'): VosaGate[] {
-  const t = VOSA_MARKET_THRESHOLDS;
+export function marketGates(market: 'sa' | 'us'): SharaGate[] {
+  const t = SHARA_MARKET_THRESHOLDS;
   return [
     defineGate({id: 'fresh_price_series', description: 'Last bar must be recent; stale evidence suspends (never kills)', config: {maxAgeDays: t.maxLastBarAgeDays}, run: (c) => {
       const r = readNumber(c, 'lastBarAgeDays');
@@ -154,23 +154,23 @@ export function marketGates(market: 'sa' | 'us'): VosaGate[] {
 }
 
 /* ---------------- orchestration ---------------- */
-const emptySummary = (enforce: boolean): VosaScreenerSummary => ({
-  version: VOSA_SCREENER_VERSION, mode: enforce ? 'enforce' : 'shadow', provisionalThresholds: true,
+const emptySummary = (enforce: boolean): SharaScreenerSummary => ({
+  version: SHARA_SCREENER_VERSION, mode: enforce ? 'enforce' : 'shadow', provisionalThresholds: true,
   evaluated: 0, parityPass: 0, marketPass: 0, marketKill: 0, marketSuspend: 0, byGate: {}, wouldRemoveSymbols: [], removedSymbols: [], verdicts: [],
 });
-const lastRule = (e: VosaEvaluation) => e.gateResults.at(-1)?.gateId;
+const lastRule = (e: SharaEvaluation) => e.gateResults.at(-1)?.gateId;
 
-export async function evaluateScreenerVosa(items: Item[], enforce = VOSA_ENFORCE_MARKET_GATES): Promise<{summary: VosaScreenerSummary; removed: Set<string>}> {
-  const parity = new VosaEngine(parityGates(), {pipelineId: 'screener-parity', pipelineVersion: VOSA_SCREENER_VERSION});
+export async function evaluateScreenerShara(items: Item[], enforce = SHARA_ENFORCE_MARKET_GATES): Promise<{summary: SharaScreenerSummary; removed: Set<string>}> {
+  const parity = new SharaEngine(parityGates(), {pipelineId: 'screener-parity', pipelineVersion: SHARA_SCREENER_VERSION});
   const markets = {
-    sa: new VosaEngine(marketGates('sa'), {pipelineId: 'screener-market-sa', pipelineVersion: VOSA_SCREENER_VERSION}),
-    us: new VosaEngine(marketGates('us'), {pipelineId: 'screener-market-us', pipelineVersion: VOSA_SCREENER_VERSION}),
+    sa: new SharaEngine(marketGates('sa'), {pipelineId: 'screener-market-sa', pipelineVersion: SHARA_SCREENER_VERSION}),
+    us: new SharaEngine(marketGates('us'), {pipelineId: 'screener-market-us', pipelineVersion: SHARA_SCREENER_VERSION}),
   };
   const summary = emptySummary(enforce), removed = new Set<string>();
   for (const item of items) {
     const envelope = candidateEnvelope(item), symbol = item.candidate.symbol;
     const p = await parity.evaluate(envelope);
-    const verdict: VosaVerdict = {symbol, parity: p.finalStatus, market: 'NOT_RUN', marketRules: []};
+    const verdict: SharaVerdict = {symbol, parity: p.finalStatus, market: 'NOT_RUN', marketRules: []};
     summary.evaluated++;
     if (p.finalStatus === 'PASS') {
       summary.parityPass++;
@@ -192,9 +192,9 @@ export async function evaluateScreenerVosa(items: Item[], enforce = VOSA_ENFORCE
   return {summary, removed};
 }
 
-export function mergeVosaSummaries(a?: VosaScreenerSummary, b?: VosaScreenerSummary): VosaScreenerSummary | undefined {
+export function mergeSharaSummaries(a?: SharaScreenerSummary, b?: SharaScreenerSummary): SharaScreenerSummary | undefined {
   if (!a || !b) return b ?? a;
-  const byGate: VosaScreenerSummary['byGate'] = {};
+  const byGate: SharaScreenerSummary['byGate'] = {};
   for (const src of [a.byGate, b.byGate]) for (const [k, v] of Object.entries(src)) {
     const slot = (byGate[k] ??= {kill: 0, suspend: 0}); slot.kill += v.kill; slot.suspend += v.suspend;
   }

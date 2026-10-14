@@ -1,4 +1,4 @@
-import type {CandidateEvidenceEnvelope, GateResult, JsonValue, VosaFinding, VosaGate} from './contracts';
+import type {CandidateEvidenceEnvelope, GateResult, JsonValue, SharaFinding, SharaGate} from './contracts';
 
 /** Deterministic 32-bit FNV-1a over canonical JSON (sync, dependency-free; identifies a gate configuration, not a secret). */
 export function canonicalJson(value: unknown): string {
@@ -17,7 +17,7 @@ export function fingerprint(value: unknown): string {
   return hash.toString(16).padStart(8, '0');
 }
 
-export type EvidenceRead<T> = {ok: true; value: T} | {ok: false; finding: VosaFinding};
+export type EvidenceRead<T> = {ok: true; value: T} | {ok: false; finding: SharaFinding};
 
 /** Missing / non-finite / wrongly typed evidence is NEVER a pass: callers must turn the finding into SUSPEND. */
 export function readNumber(candidate: CandidateEvidenceEnvelope, key: string): EvidenceRead<number> {
@@ -43,10 +43,10 @@ export function readValue(candidate: CandidateEvidenceEnvelope, key: string): Ev
   return {ok: true, value: record.value};
 }
 
-type GateBody = (candidate: CandidateEvidenceEnvelope) => {status: 'PASS'} | {status: 'KILL' | 'SUSPEND'; findings: VosaFinding[]};
+type GateBody = (candidate: CandidateEvidenceEnvelope) => {status: 'PASS'} | {status: 'KILL' | 'SUSPEND'; findings: SharaFinding[]};
 
 /** Build a pure (read-only, deterministic) gate. */
-export function defineGate(spec: {id: string; version?: string; description: string; config?: Record<string, JsonValue>; run: GateBody}): VosaGate {
+export function defineGate(spec: {id: string; version?: string; description: string; config?: Record<string, JsonValue>; run: GateBody}): SharaGate {
   const gateVersion = spec.version ?? '1';
   return {
     gateId: spec.id,
@@ -64,7 +64,7 @@ export function defineGate(spec: {id: string; version?: string; description: str
 }
 
 /** KILL when value < min (proof attached); SUSPEND when the evidence is missing or invalid. */
-export function minimumGate(id: string, key: string, min: number, description: string, version = '1'): VosaGate {
+export function minimumGate(id: string, key: string, min: number, description: string, version = '1'): SharaGate {
   return defineGate({id, version, description, config: {key, min}, run: (c) => {
     const read = readNumber(c, key);
     if (!read.ok) return {status: 'SUSPEND', findings: [read.finding]};
@@ -73,7 +73,7 @@ export function minimumGate(id: string, key: string, min: number, description: s
   }});
 }
 /** KILL when value > max (proof attached); SUSPEND when the evidence is missing or invalid. */
-export function maximumGate(id: string, key: string, max: number, description: string, version = '1'): VosaGate {
+export function maximumGate(id: string, key: string, max: number, description: string, version = '1'): SharaGate {
   return defineGate({id, version, description, config: {key, max}, run: (c) => {
     const read = readNumber(c, key);
     if (!read.ok) return {status: 'SUSPEND', findings: [read.finding]};

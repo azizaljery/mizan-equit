@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {sha256Hex} from '../lib/vosa/sha256';
-import {ChainedAuditSink, verifyAuditChain, AUDIT_GENESIS, type ChainedAuditRecord} from '../lib/vosa/chain';
-import {VosaLineage, VosaRunLedger, VosaResurrectionError} from '../lib/vosa/lineage';
-import {VosaEngine} from '../lib/vosa/engine';
-import {maximumGate} from '../lib/vosa/gates';
-import type {CandidateEvidenceEnvelope} from '../lib/vosa/contracts';
+import {sha256Hex} from '../lib/shara/sha256';
+import {ChainedAuditSink, verifyAuditChain, AUDIT_GENESIS, type ChainedAuditRecord} from '../lib/shara/chain';
+import {SharaLineage, SharaRunLedger, SharaResurrectionError} from '../lib/shara/lineage';
+import {SharaEngine} from '../lib/shara/engine';
+import {maximumGate} from '../lib/shara/gates';
+import type {CandidateEvidenceEnvelope} from '../lib/shara/contracts';
 
 const id = (candidateId: string, version: number, payloadHash = 'h') => ({candidateId, version, payloadHash});
 
@@ -21,7 +21,7 @@ const envelope = (c: string, x: unknown): CandidateEvidenceEnvelope => ({
 });
 async function realChain() {
   const sink = new ChainedAuditSink();
-  const engine = new VosaEngine([maximumGate('A', 'x', 1, 'x<=1')], {pipelineId: 't', pipelineVersion: '1', mode: 'EXECUTION', auditSink: sink});
+  const engine = new SharaEngine([maximumGate('A', 'x', 1, 'x<=1')], {pipelineId: 't', pipelineVersion: '1', mode: 'EXECUTION', auditSink: sink});
   for (const [c, x] of [['a', 0], ['b', 5], ['c', Number.NaN], ['d', 1]] as const) await engine.evaluate(envelope(c, x));
   return sink;
 }
@@ -61,7 +61,7 @@ test('chain: non-finite numbers are rejected at append (cannot be audited silent
   assert.equal(sink.records.length, 0);
 });
 test('lineage: immutability, increasing versions, unknown parent, same-payload idempotency, bad versions', () => {
-  const l = new VosaLineage();
+  const l = new SharaLineage();
   l.register(id('A', 1));
   l.register(id('A', 1)); // idempotent, same payload
   assert.throws(() => l.register(id('A', 1, 'other')), /immutable/);
@@ -74,10 +74,10 @@ test('lineage: immutability, increasing versions, unknown parent, same-payload i
   assert.throws(() => l.ancestors({candidateId: 'nope', version: 1}), /unknown node/);
 });
 test('No Resurrection: KILL is terminal within a run; new version and other run are independent', () => {
-  const led = new VosaRunLedger();
+  const led = new SharaRunLedger();
   const a1 = {candidateId: 'A', version: 1};
   led.record('r1', a1, 'KILL');
-  for (const s of ['PASS', 'SUSPEND'] as const) assert.throws(() => led.record('r1', a1, s), VosaResurrectionError);
+  for (const s of ['PASS', 'SUSPEND'] as const) assert.throws(() => led.record('r1', a1, s), SharaResurrectionError);
   assert.equal(led.isRankable('r1', a1), false);
   led.record('r1', a1, 'KILL'); // idempotent
   led.record('r1', {candidateId: 'A', version: 2}, 'PASS'); // from scratch
@@ -87,9 +87,9 @@ test('No Resurrection: KILL is terminal within a run; new version and other run 
   assert.equal(led.isRankable('r1', {candidateId: 'unknown', version: 1}), false, 'unknown is never rankable');
 });
 test('ledger: SUSPEND may resolve; PASS may be tightened to KILL but then stays KILL', () => {
-  const led = new VosaRunLedger(); const c = {candidateId: 'S', version: 1};
+  const led = new SharaRunLedger(); const c = {candidateId: 'S', version: 1};
   led.record('r', c, 'SUSPEND'); assert.equal(led.isRankable('r', c), false);
   led.record('r', c, 'PASS'); assert.equal(led.isRankable('r', c), true);
   led.record('r', c, 'KILL'); assert.equal(led.isRankable('r', c), false);
-  assert.throws(() => led.record('r', c, 'PASS'), VosaResurrectionError);
+  assert.throws(() => led.record('r', c, 'PASS'), SharaResurrectionError);
 });

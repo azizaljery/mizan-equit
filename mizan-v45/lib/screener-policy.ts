@@ -1,6 +1,6 @@
 /** Selection/presentation only. forecasts() remains the sole prediction engine. */
 import {HORIZONS} from './forecast-horizons';
-import {mergeVosaSummaries} from './screener-vosa';
+import {mergeSharaSummaries} from './screener-shara';
 export type ScreenerMarket='sa'|'us'|'both';
 export type ScreenerRequest={market:ScreenerMarket;horizonSessions:number;resultCount?:number;scanLimit?:number;limit?:number;symbols?:string[];expectedVersion?:string};
 export type ScreenerCandidate={
@@ -17,7 +17,9 @@ export type ScreenerResult={market:ScreenerMarket;horizonSessions:number;horizon
  requestedResultCount:number;returned:number;missingCount:number;
  candidates:ScreenerCandidate[];failures:ScreenerFailure[];exclusionCounts:Record<string,number>;
  durationMs:number;generatedAt:string;modelVersion:string;rankingPolicy:string;scope:string;
- vosa?:import('./screener-vosa').VosaScreenerSummary};
+ shara?:import('./screener-shara').SharaScreenerSummary;
+ /** @deprecated read-only: archives written before the rename (VOSA -> SHARA) carry the summary under this key; never written. */
+ vosa?:import('./screener-shara').SharaScreenerSummary};
 // Keep each Worker request below source/D1 resource pressure; full scans progress through more small immutable batches.
 export const SCREENER_BATCH_SIZE=2;
 export const SCREENER_MAX_SCAN=200;
@@ -78,6 +80,7 @@ export function selectScreenerCandidates(rows:ScreenerCandidate[],count:number,m
 }
 export function mergeScreenerResults(a:ScreenerResult|null,b:ScreenerResult):ScreenerResult{
  if(!a)return b;
+ const sa=a.shara??a.vosa,sb=b.shara??b.vosa;
  if(a.modelVersion!==b.modelVersion||a.market!==b.market||a.horizonSessions!==b.horizonSessions||a.requestedResultCount!==b.requestedResultCount)throw new Error('تغير إعداد المسح؛ لا يمكن جمع نتائج غير متجانسة.');
  const candidates=selectScreenerCandidates([...a.candidates,...b.candidates],a.requestedResultCount,a.market).candidates;
  const exclusionCounts={...a.exclusionCounts};for(const [k,n]of Object.entries(b.exclusionCounts))exclusionCounts[k]=(exclusionCounts[k]||0)+n;
@@ -85,5 +88,5 @@ export function mergeScreenerResults(a:ScreenerResult|null,b:ScreenerResult):Scr
   failed:a.failed+b.failed,excluded:a.excluded+b.excluded,returned:candidates.length,
   missingCount:Math.max(0,a.requestedResultCount*(a.market==='both'?2:1)-candidates.length),candidates,
   failures:[...a.failures,...b.failures].slice(0,200),exclusionCounts,durationMs:a.durationMs+b.durationMs,
-  ...(a.vosa||b.vosa?{vosa:mergeVosaSummaries(a.vosa,b.vosa)}:{})};
+  ...(sa||sb?{shara:mergeSharaSummaries(sa,sb)}:{}),vosa:undefined};
 }
