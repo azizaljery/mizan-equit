@@ -1,0 +1,67 @@
+name: Diagnose Worker error 1102 (read-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/diagnose-1102.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Worker analytics (status / CPU) for the last 24h
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out; : > out/diag.log
+          from="$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)"; to="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          q="query { viewer { accounts(filter:{accountTag:\"$CLOUDFLARE_ACCOUNT_ID\"}) { workersInvocationsAdaptive(limit:100, filter:{scriptName:\"mizan-aziz\", datetime_geq:\"$from\", datetime_leq:\"$to\"}) { dimensions { status } sum { requests errors subrequests } quantiles { cpuTimeP50 cpuTimeP99 wallTimeP50 wallTimeP99 } } } } }"
+          echo "== analytics window $from .. $to" >> out/diag.log
+          curl -sS -m 60 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' \
+            -d "$(jq -cn --arg q "$q" '{query:$q}')" https://api.cloudflare.com/client/v4/graphql >> out/diag.log 2>&1 || echo "analytics call failed" >> out/diag.log
+          echo >> out/diag.log
+
+      - name: Controlled live probes (US, horizon 5) by batch size
+        shell: bash
+        run: |
+          set -uo pipefail
+          base="https://mizan-aziz.aljeryabod.workers.dev"
+          probe() { # label, json symbols array
+            local label="$1" syms="$2" t0 t1 code
+            t0=$(date +%s.%N)
+            code="$(curl -sS -m 170 -o out/r.json -w '%{http_code}' -H 'Content-Type: application/json' \
+              -d "{\"market\":\"us\",\"horizonSessions\":5,\"resultCount\":5,\"scanLimit\":5,\"symbols\":$syms}" "$base/api/screener" 2>>out/diag.log || echo 000)"
+            t1=$(date +%s.%N)
+            echo "[$label] symbols=$syms http=$code wall=$(printf '%.1f' "$(echo "$t1 - $t0" | bc)")s bytes=$(wc -c < out/r.json) $(jq -c '{scanned,analyzed,failed,durationMs}' out/r.json 2>/dev/null || head -c 120 out/r.json)" | tee -a out/diag.log
+          }
+          echo "== probes" >> out/diag.log
+          for s in AAPL MSFT NVDA JPM XOM; do probe "N=1" "[\"$s\"]"; done
+          probe "N=2" '["AAPL","MSFT"]'
+          probe "N=2" '["NVDA","JPM"]'
+          probe "N=5" '["AAPL","MSFT","NVDA","JPM","XOM"]'
+          probe "N=5-repeat" '["AAPL","MSFT","NVDA","JPM","XOM"]'
+          probe "N=3" '["AAPL","MSFT","NVDA"]'
+          probe "N=4" '["AAPL","MSFT","NVDA","JPM"]'
+
+      - name: Publish log to repo
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          [ -f out/diag.log ] || echo "(no log)" > out/diag.log
+          b64="$(base64 -w0 out/diag.log)"
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/diag1102-${{ github.run_id }}-${{ github.run_attempt }}.log" \
+            -f message="ci diagnostics: 1102 probe run ${{ github.run_id }}" -f content="${b64}" -f branch="${{ github.ref_name }}" \
+            || echo "WARN: failed to publish log" >&2
