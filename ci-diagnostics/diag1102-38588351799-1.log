@@ -1,0 +1,21 @@
+== analytics (last 24h)
+{"data":null,"errors":[{"message":"failed to recognize JSON request: 'invalid character 'C' looking for beginning of value'","path":null,"extensions":{"timestamp":"2026-10-14T15:19:58.726808592Z","ray_id":"a4a790bfad97d133-SEA"}}]}
+== SEC companyfacts: raw bytes vs parsed heap (node v22.23.3)
+cf-0000019617.json raw_MB=7.98 parsed_heap_MB=13.4 ratio=1.7x
+cf-0000034088.json raw_MB=3.12 parsed_heap_MB=5.2 ratio=1.7x
+cf-0000320193.json raw_MB=3.79 parsed_heap_MB=6.3 ratio=1.7x
+cf-0000789019.json raw_MB=4.88 parsed_heap_MB=8.1 ratio=1.7x
+cf-0001045810.json raw_MB=4.09 parsed_heap_MB=6.8 ratio=1.7x
+TOTAL heapUsed_MB after keeping all parsed: 47.8 (Worker isolate limit: 128 MB)
+== probes
+[N=1] symbols=["AAPL"] http=200 wall=3.8s bytes=809 {"scanned":1,"analyzed":1,"failed":0,"durationMs":3320}
+[N=1] symbols=["MSFT"] http=200 wall=4.1s bytes=809 {"scanned":1,"analyzed":1,"failed":0,"durationMs":3608}
+[N=1] symbols=["NVDA"] http=200 wall=3.5s bytes=809 {"scanned":1,"analyzed":1,"failed":0,"durationMs":3190}
+[N=1] symbols=["JPM"] http=200 wall=3.7s bytes=808 {"scanned":1,"analyzed":1,"failed":0,"durationMs":3387}
+[N=1] symbols=["XOM"] http=200 wall=2.9s bytes=808 {"scanned":1,"analyzed":1,"failed":0,"durationMs":2482}
+[N=2] symbols=["AAPL","MSFT"] http=200 wall=6.5s bytes=905 {"scanned":2,"analyzed":2,"failed":0,"durationMs":6100}
+[N=2] symbols=["NVDA","JPM"] http=503 wall=1.2s bytes=17 error code: 1102
+[N=5] symbols=["AAPL","MSFT","NVDA","JPM","XOM"] http=503 wall=9.3s bytes=17 error code: 1102
+[N=5-repeat] symbols=["AAPL","MSFT","NVDA","JPM","XOM"] http=503 wall=0.5s bytes=17 error code: 1102
+[N=3] symbols=["AAPL","MSFT","NVDA"] http=503 wall=0.3s bytes=17 error code: 1102
+[N=4] symbols=["AAPL","MSFT","NVDA","JPM"] http=503 wall=0.3s bytes=17 error code: 1102
