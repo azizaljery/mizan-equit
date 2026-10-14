@@ -1,0 +1,71 @@
+name: Fetch research prices (read-only data for offline experiments)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/fetch-research-prices.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download daily prices from Yahoo chart API
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p data log
+          cat > fetch.mjs <<'NODE'
+          import fs from 'node:fs';
+          const sa = ['2222','1120','2010','7010','1180','1211','2380','4030','1150','2020','1010','1060','1140','2350','4002','4190','4003','5110','2082','4013','2280','2290','1050','1030','1020','4200','4300','4001','2060','3030','2310','4263','4260','1303','1304','2050','4061','6010','7020','4005'].map(s=>s+'.SR');
+          const us = ['AAPL','MSFT','AMZN','GOOGL','META','NVDA','JPM','V','JNJ','WMT','PG','XOM','HD','KO','PEP','MRK','CVX','ABBV','COST','MCD','CSCO','ORCL','CRM','ACN','NKE','TMO','DHR','LIN','TXN','HON','UNP','UPS','LOW','IBM','CAT','GE','MMM','AMGN','BA','INTC'];
+          const log = [];
+          async function one(symbol) {
+            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=7y&events=split`;
+            for (let attempt = 0; attempt < 3; attempt++) {
+              try {
+                const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36', 'Accept': 'application/json' } });
+                if (!r.ok) { log.push(`${symbol} http ${r.status} attempt ${attempt}`); await new Promise(s => setTimeout(s, 1500)); continue; }
+                const j = await r.json(); const res = j?.chart?.result?.[0];
+                const ts = res?.timestamp, q = res?.indicators?.quote?.[0];
+                if (!ts || !q) { log.push(`${symbol} no-series`); return; }
+                const rows = [];
+                for (let i = 0; i < ts.length; i++) {
+                  const o = q.open?.[i], h = q.high?.[i], l = q.low?.[i], c = q.close?.[i], v = q.volume?.[i];
+                  if ([o,h,l,c,v].every(x => typeof x === 'number' && Number.isFinite(x)) && o > 0 && c > 0) rows.push([new Date(ts[i]*1000).toISOString().slice(0,10), +o.toFixed(4), +h.toFixed(4), +l.toFixed(4), +c.toFixed(4), v]);
+                }
+                const splits = Object.keys(res?.events?.splits || {}).length;
+                fs.writeFileSync(`data/${symbol}.json`, JSON.stringify({ symbol, currency: res.meta?.currency, tz: res.meta?.exchangeTimezoneName, splitsInRange: splits, rows }));
+                log.push(`${symbol} ok rows=${rows.length} first=${rows[0]?.[0]} last=${rows.at(-1)?.[0]} splits=${splits}`); return;
+              } catch (e) { log.push(`${symbol} error ${e.message}`); }
+            }
+          }
+          for (const s of [...sa, ...us]) { await one(s); await new Promise(r => setTimeout(r, 400)); }
+          fs.writeFileSync('log/fetch.log', log.join('\n'));
+          console.log(log.join('\n'));
+          NODE
+          node fetch.mjs
+          ls data | wc -l; du -sh data
+
+      - name: Commit data to branch research-data
+        shell: bash
+        run: |
+          set -uo pipefail
+          git config user.name "ci"; git config user.email "ci@users.noreply.github.com"
+          git checkout --orphan research-data-tmp
+          git rm -rf --cached . >/dev/null 2>&1 || true
+          mkdir -p stage/research-data && cp -r data stage/research-data/prices && cp log/fetch.log stage/research-data/fetch.log
+          find . -maxdepth 1 ! -name '.git' ! -name 'stage' ! -name '.' -exec rm -rf {} + 2>/dev/null || true
+          cp -r stage/research-data ./research-data && rm -rf stage
+          git add research-data
+          git commit -q -m "research data: daily prices $(date -u +%F)"
+          git push -f origin HEAD:research-data
