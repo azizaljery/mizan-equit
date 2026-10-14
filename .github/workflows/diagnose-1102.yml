@@ -14,9 +14,9 @@ permissions:
 jobs:
   diagnose:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
     steps:
-      - name: Worker analytics (status / CPU) for the last 24h
+      - name: Worker settings (CPU limit / usage model), plan and analytics — read-only API calls
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -24,45 +24,31 @@ jobs:
         run: |
           set -uo pipefail
           mkdir -p out; : > out/diag.log
-          python3 - <<'PY' > out/q.json
-          import json, os, datetime
-          now = datetime.datetime.now(datetime.timezone.utc)
-          fmt = lambda d: d.strftime("%Y-%m-%dT%H:%M:%SZ")
-          acc = os.environ["CLOUDFLARE_ACCOUNT_ID"]
+          cat > out/api.py <<'PY'
+          import json, os, sys, datetime, urllib.request, urllib.error
+          tok, acc = os.environ["CLOUDFLARE_API_TOKEN"], os.environ["CLOUDFLARE_ACCOUNT_ID"]
+          def call(label, url, body=None):
+              req = urllib.request.Request(url, data=json.dumps(body).encode() if body else None,
+                                           headers={"Authorization": "Bearer " + tok, "Content-Type": "application/json"})
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as r: txt = r.read().decode()[:3000]; code = r.status
+              except urllib.error.HTTPError as e: txt = e.read().decode()[:1500]; code = e.code
+              except Exception as e: txt, code = repr(e), 0
+              print("== %s -> http=%s\n%s\n" % (label, code, txt))
+          base = "https://api.cloudflare.com/client/v4/accounts/" + acc
+          call("script settings", base + "/workers/scripts/mizan-aziz/settings")
+          call("script-settings", base + "/workers/scripts/mizan-aziz/script-settings")
+          call("account subscriptions", base + "/subscriptions")
+          call("workers account settings", base + "/workers/account-settings")
+          now = datetime.datetime.now(datetime.timezone.utc); f = lambda d: d.strftime("%Y-%m-%dT%H:%M:%SZ")
           q = ('query { viewer { accounts(filter:{accountTag:"%s"}) { workersInvocationsAdaptive(limit:100, filter:{scriptName:"mizan-aziz", datetime_geq:"%s", datetime_leq:"%s"}) '
-               '{ dimensions { status } sum { requests errors subrequests } quantiles { cpuTimeP50 cpuTimeP99 wallTimeP50 wallTimeP99 } } } } }') % (acc, fmt(now - datetime.timedelta(hours=24)), fmt(now))
-          print(json.dumps({"query": q}))
+               '{ dimensions { status } sum { requests errors subrequests } quantiles { cpuTimeP50 cpuTimeP99 wallTimeP50 wallTimeP99 } } } } }') % (acc, f(now - datetime.timedelta(hours=24)), f(now))
+          call("analytics 24h", "https://api.cloudflare.com/client/v4/graphql", {"query": q})
           PY
-          echo "== analytics request body (first 200 bytes): $(head -c 200 out/q.json)" >> out/diag.log
-          echo "== analytics (last 24h)" >> out/diag.log
-          curl -sS -m 60 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' --data @out/q.json \
-            https://api.cloudflare.com/client/v4/graphql >> out/diag.log 2>&1 || echo "analytics call failed" >> out/diag.log
-          echo >> out/diag.log
+          python3 out/api.py >> out/diag.log 2>&1
+          rm -f out/api.py
 
-      - name: Real SEC companyfacts size and parsed heap (memory hypothesis)
-        shell: bash
-        run: |
-          set -uo pipefail
-          mkdir -p out
-          echo "== SEC companyfacts: raw bytes vs parsed heap (node $(node -v))" >> out/diag.log
-          ua="Mizan equity research https://mizan-equity.aljeryabod.chatgpt.site"
-          for cik in 0000320193 0000789019 0001045810 0000019617 0000034088; do
-            curl -sS -m 60 -A "$ua" -H 'Accept: application/json' -o out/cf-$cik.json "https://data.sec.gov/api/xbrl/companyfacts/CIK$cik.json" 2>>out/diag.log || echo "fetch $cik failed" >> out/diag.log
-            sleep 1
-          done
-          node --expose-gc -e '
-            const fs=require("fs");let keep=[];
-            for(const f of fs.readdirSync("out").filter(x=>x.startsWith("cf-"))){
-              const raw=fs.readFileSync("out/"+f,"utf8");if(raw.length<1000){console.log(f,"unusable",raw.slice(0,80));continue}
-              global.gc();const before=process.memoryUsage().heapUsed;const obj=JSON.parse(raw);keep.push(obj);global.gc();
-              const after=process.memoryUsage().heapUsed;
-              console.log(f,"raw_MB="+(raw.length/1e6).toFixed(2),"parsed_heap_MB="+((after-before)/1e6).toFixed(1),"ratio="+(((after-before))/raw.length).toFixed(1)+"x");
-            }
-            global.gc();console.log("TOTAL heapUsed_MB after keeping all parsed:",(process.memoryUsage().heapUsed/1e6).toFixed(1),"(Worker isolate limit: 128 MB)");
-          ' >> out/diag.log 2>&1
-          rm -f out/cf-*.json out/q.json
-
-      - name: Controlled live probes (US, horizon 5) by batch size, with wrangler tail
+      - name: Probes with wrangler tail (N=1 vs N=2) to record outcome and CPU time
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -73,26 +59,22 @@ jobs:
           TAILPID=$!
           sleep 25
           base="https://mizan-aziz.aljeryabod.workers.dev"
-          probe() { # label, json symbols array
-            local label="$1" syms="$2" t0 t1 code
-            t0=$(date +%s.%N)
+          probe() {
+            local label="$1" market="$2" syms="$3" code
             code="$(curl -sS -m 170 -o out/r.json -w '%{http_code}' -H 'Content-Type: application/json' \
-              -d "{\"market\":\"us\",\"horizonSessions\":5,\"resultCount\":5,\"scanLimit\":5,\"symbols\":$syms}" "$base/api/screener" 2>>out/diag.log || echo 000)"
-            t1=$(date +%s.%N)
-            echo "[$label] symbols=$syms http=$code wall=$(printf '%.1f' "$(echo "$t1 - $t0" | bc)")s bytes=$(wc -c < out/r.json) $(jq -c '{scanned,analyzed,failed,durationMs}' out/r.json 2>/dev/null || head -c 120 out/r.json)" | tee -a out/diag.log
+              -d "{\"market\":\"$market\",\"horizonSessions\":5,\"resultCount\":5,\"scanLimit\":5,\"symbols\":$syms}" "$base/api/screener" 2>>out/diag.log || echo 000)"
+            echo "[$label] $market $syms http=$code $(head -c 90 out/r.json | tr -d '\n')" | tee -a out/diag.log
           }
           echo "== probes" >> out/diag.log
-          for s in AAPL MSFT NVDA JPM XOM; do probe "N=1" "[\"$s\"]"; done
-          probe "N=2" '["AAPL","MSFT"]'
-          probe "N=2" '["NVDA","JPM"]'
-          probe "N=5" '["AAPL","MSFT","NVDA","JPM","XOM"]'
-          probe "N=5-repeat" '["AAPL","MSFT","NVDA","JPM","XOM"]'
-          probe "N=3" '["AAPL","MSFT","NVDA"]'
-          probe "N=4" '["AAPL","MSFT","NVDA","JPM"]'
+          probe "US N=1" us '["AAPL"]'
+          probe "US N=2" us '["AAPL","MSFT"]'
+          probe "US N=2" us '["NVDA","JPM"]'
+          probe "SA N=1" sa '["2222.SR"]'
+          probe "SA N=2" sa '["2222.SR","1120.SR"]'
+          probe "SA N=5" sa '["2222.SR","1120.SR","2010.SR","7010.SR","1180.SR"]'
           sleep 10; kill $TAILPID 2>/dev/null || true
-          echo "== tail stderr: $(head -c 400 out/tail.err)" >> out/diag.log
-          echo "== tail events (outcome / cpuTime / wallTime per invocation):" >> out/diag.log
-          jq -c 'select(.outcome!=null) | {outcome, cpuTime, wallTime, url: .event.request.url, status: .event.response.status, exceptions: (.exceptions|map(.message)|.[0:2]), logs: (.logs|map(.message|tostring|.[0:160])|.[0:3])}' out/tail.jsonl >> out/diag.log 2>&1 || echo "no tail events" >> out/diag.log
+          echo "== tail events" >> out/diag.log
+          jq -c 'select(.outcome!=null) | {outcome, cpuTime, wallTime, status: .event.response.status, exceptions: (.exceptions|map(.message)|.[0:1])}' out/tail.jsonl >> out/diag.log 2>&1 || echo "no tail events" >> out/diag.log
 
       - name: Publish log to repo
         if: ${{ always() }}
