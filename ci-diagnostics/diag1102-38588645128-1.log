@@ -1,0 +1,35 @@
+== analytics request body (first 200 bytes): {"query": "query { viewer { accounts(filter:{accountTag:\"ee2a2be6c276b93b997874cb2a98ded2\"}) { workersInvocationsAdaptive(limit:100, filter:{scriptName:\"mizan-aziz\", datetime_geq:\"2026-10-13T15:2
+== analytics (last 24h)
+{"data":null,"errors":[{"message":"failed to recognize JSON request: 'invalid character 'C' looking for beginning of value'","path":null,"extensions":{"timestamp":"2026-10-14T15:21:54.854211246Z","ray_id":"a4a79394a925e587-SEA"}}]}
+== SEC companyfacts: raw bytes vs parsed heap (node v22.23.3)
+cf-0000019617.json raw_MB=7.98 parsed_heap_MB=13.4 ratio=1.7x
+cf-0000034088.json raw_MB=3.12 parsed_heap_MB=5.2 ratio=1.7x
+cf-0000320193.json raw_MB=3.79 parsed_heap_MB=6.3 ratio=1.7x
+cf-0000789019.json raw_MB=4.88 parsed_heap_MB=8.1 ratio=1.7x
+cf-0001045810.json raw_MB=4.09 parsed_heap_MB=6.8 ratio=1.7x
+TOTAL heapUsed_MB after keeping all parsed: 47.8 (Worker isolate limit: 128 MB)
+== probes
+[N=1] symbols=["AAPL"] http=200 wall=4.4s bytes=809 {"scanned":1,"analyzed":1,"failed":0,"durationMs":3748}
+[N=1] symbols=["MSFT"] http=200 wall=5.5s bytes=809 {"scanned":1,"analyzed":1,"failed":0,"durationMs":4379}
+[N=1] symbols=["NVDA"] http=200 wall=4.7s bytes=809 {"scanned":1,"analyzed":1,"failed":0,"durationMs":4168}
+[N=1] symbols=["JPM"] http=200 wall=4.5s bytes=808 {"scanned":1,"analyzed":1,"failed":0,"durationMs":3883}
+[N=1] symbols=["XOM"] http=200 wall=4.9s bytes=808 {"scanned":1,"analyzed":1,"failed":0,"durationMs":4431}
+[N=2] symbols=["AAPL","MSFT"] http=503 wall=0.8s bytes=17 error code: 1102
+[N=2] symbols=["NVDA","JPM"] http=200 wall=7.9s bytes=904 {"scanned":2,"analyzed":2,"failed":0,"durationMs":7469}
+[N=5] symbols=["AAPL","MSFT","NVDA","JPM","XOM"] http=503 wall=0.3s bytes=17 error code: 1102
+[N=5-repeat] symbols=["AAPL","MSFT","NVDA","JPM","XOM"] http=503 wall=0.3s bytes=17 error code: 1102
+[N=3] symbols=["AAPL","MSFT","NVDA"] http=503 wall=9.1s bytes=17 error code: 1102
+[N=4] symbols=["AAPL","MSFT","NVDA","JPM"] http=503 wall=0.3s bytes=17 error code: 1102
+== tail stderr: 
+== tail events (outcome / cpuTime / wallTime per invocation):
+{"outcome":"ok","cpuTime":524,"wallTime":4027,"url":"https://mizan-aziz.aljeryabod.workers.dev/api/screener","status":200,"exceptions":[],"logs":["[\"Mizan data source failed\",{\"source\":\"www.saudiexchange.sa\",\"reason\":\"تعذر الوصول إلى المصدر (403).\"}]"]}
+{"outcome":"ok","cpuTime":1365,"wallTime":5023,"url":"https://mizan-aziz.aljeryabod.workers.dev/api/screener","status":200,"exceptions":[],"logs":["[\"Mizan data source failed\",{\"source\":\"www.saudiexchange.sa\",\"reason\":\"تعذر الوصول إلى المصدر (403).\"}]","[\"Mizan data source failed\",{\"source\":\"www.sec.gov\",\"reason\":\"استجابة المصدر أكبر من الحد.\"}]","[\"Mizan data source failed\",{\"source\":\"www.sec.gov\",\"reason\":\"استجابة المصدر أكبر من الحد.\"}]"]}
+{"outcome":"ok","cpuTime":597,"wallTime":4388,"url":"https://mizan-aziz.aljeryabod.workers.dev/api/screener","status":200,"exceptions":[],"logs":["[\"Mizan data source failed\",{\"source\":\"www.saudiexchange.sa\",\"reason\":\"تعذر الوصول إلى المصدر (403).\"}]"]}
+{"outcome":"ok","cpuTime":718,"wallTime":4148,"url":"https://mizan-aziz.aljeryabod.workers.dev/api/screener","status":200,"exceptions":[],"logs":["[\"Mizan data source failed\",{\"source\":\"www.saudiexchange.sa\",\"reason\":\"تعذر الوصول إلى المصدر (403).\"}]","[\"Mizan data source failed\",{\"source\":\"data.sec.gov\",\"reason\":\"استجابة المصدر أكبر من الحد.\"}]","[\"Mizan data source failed\",{\"source\":\"www.sec.gov\",\"reason\":\"استجابة المصدر أكبر من الحد.\"}]"]}
+{"outcome":"ok","cpuTime":588,"wallTime":4705,"url":"https://mizan-aziz.aljeryabod.workers.dev/api/screener","status":200,"exceptions":[],"logs":["[\"Mizan data source failed\",{\"source\":\"www.saudiexchange.sa\",\"reason\":\"تعذر الوصول إلى المصدر (403).\"}]"]}
+{"outcome":"exceededCpu","cpuTime":75,"wallTime":657,"url":"https://mizan-aziz.aljeryabod.workers.dev/api/screener","status":503,"exceptions":["Worker exceeded CPU time limit."],"logs":["[\"Mizan data source failed\",{\"source\":\"www.saudiexchange.sa\",\"reason\":\"تعذر الوصول إلى المصدر (403).\"}]"]}
+{"outcome":"ok","cpuTime":1219,"wallTime":7737,"url":"https://mizan-aziz.aljeryabod.workers.dev/api/screener","status":200,"exceptions":[],"logs":["[\"Mizan data source failed\",{\"source\":\"www.saudiexchange.sa\",\"reason\":\"تعذر الوصول إلى المصدر (403).\"}]","[\"Mizan data source failed\",{\"source\":\"www.saudiexchange.sa\",\"reason\":\"تعذر الوصول إلى المصدر (403).\"}]","[\"Mizan data source failed\",{\"source\":\"data.sec.gov\",\"reason\":\"استجابة المصدر أكبر من الحد.\"}]"]}
+{"outcome":"exceededCpu","cpuTime":10,"wallTime":159,"url":"https://mizan-aziz.aljeryabod.workers.dev/api/screener","status":503,"exceptions":["Worker exceeded CPU time limit."],"logs":[]}
+{"outcome":"exceededCpu","cpuTime":10,"wallTime":150,"url":"https://mizan-aziz.aljeryabod.workers.dev/api/screener","status":503,"exceptions":["Worker exceeded CPU time limit."],"logs":[]}
+{"outcome":"exceededCpu","cpuTime":1422,"wallTime":9020,"url":"https://mizan-aziz.aljeryabod.workers.dev/api/screener","status":503,"exceptions":["Worker exceeded CPU time limit."],"logs":["[\"Mizan data source failed\",{\"source\":\"www.saudiexchange.sa\",\"reason\":\"تعذر الوصول إلى المصدر (403).\"}]","[\"Mizan data source failed\",{\"source\":\"www.saudiexchange.sa\",\"reason\":\"تعذر الوصول إلى المصدر (403).\"}]","[\"Mizan data source failed\",{\"source\":\"www.sec.gov\",\"reason\":\"استجابة المصدر أكبر من الحد.\"}]"]}
+{"outcome":"exceededCpu","cpuTime":10,"wallTime":162,"url":"https://mizan-aziz.aljeryabod.workers.dev/api/screener","status":503,"exceptions":["Worker exceeded CPU time limit."],"logs":[]}
