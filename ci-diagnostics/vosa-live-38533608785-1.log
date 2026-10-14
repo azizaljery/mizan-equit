@@ -1,0 +1,14 @@
+=== market=sa horizon=63 ===
+http=200 bytes=1207
+{"scanned":5,"analyzed":5,"eligible":0,"failed":0,"excluded":5,"returned":0,"exclusionCounts":{"not_rising":5},"modelVersion":"mizan-scenarios-7-a3434e85","failures":[],"candidates":[],"vosa":{"version":"vosa-screener-1","mode":"shadow","provisionalThresholds":true,"evaluated":5,"parityPass":0,"marketPass":0,"marketKill":0,"marketSuspend":0,"byGate":{},"wouldRemoveSymbols":[],"verdicts":[{"symbol":"1010.SR","parity":"KILL","parityRule":"not_rising","market":"NOT_RUN","marketRules":[]},{"symbol":"1020.SR","parity":"KILL","parityRule":"not_rising","market":"NOT_RUN","marketRules":[]},{"symbol":"1030.SR","parity":"KILL","parityRule":"not_rising","market":"NOT_RUN","marketRules":[]},{"symbol":"1050.SR","parity":"KILL","parityRule":"not_rising","market":"NOT_RUN","marketRules":[]},{"symbol":"1060.SR","parity":"KILL","parityRule":"not_rising","market":"NOT_RUN","marketRules":[]}]}}
+=== market=us horizon=63 ===
+http=503 bytes=17
+jq: parse error: Invalid numeric literal at line 1, column 6
+error code: 1102
+=== market=sa horizon=5 ===
+http=200 bytes=1238
+{"scanned":5,"analyzed":5,"eligible":0,"failed":0,"excluded":5,"returned":0,"exclusionCounts":{"model_unavailable":1,"not_rising":4},"modelVersion":"mizan-scenarios-7-a3434e85","failures":[],"candidates":[],"vosa":{"version":"vosa-screener-1","mode":"shadow","provisionalThresholds":true,"evaluated":5,"parityPass":0,"marketPass":0,"marketKill":0,"marketSuspend":0,"byGate":{},"wouldRemoveSymbols":[],"verdicts":[{"symbol":"1010.SR","parity":"SUSPEND","parityRule":"model_unavailable","market":"NOT_RUN","marketRules":[]},{"symbol":"1020.SR","parity":"KILL","parityRule":"not_rising","market":"NOT_RUN","marketRules":[]},{"symbol":"1030.SR","parity":"KILL","parityRule":"not_rising","market":"NOT_RUN","marketRules":[]},{"symbol":"1050.SR","parity":"KILL","parityRule":"not_rising","market":"NOT_RUN","marketRules":[]},{"symbol":"1060.SR","parity":"KILL","parityRule":"not_rising","market":"NOT_RUN","marketRules":[]}]}}
+=== market=us horizon=5 ===
+http=503 bytes=17
+jq: parse error: Invalid numeric literal at line 1, column 6
+error code: 1102
