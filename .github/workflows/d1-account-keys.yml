@@ -1,0 +1,47 @@
+name: D1 account-key census (read-only, counts only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/d1-account-keys.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Count rows per account key (key prefixes truncated to 6 chars; no data values)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          node --input-type=module <<'NODE' > out/census.json
+          const acct=process.env.CLOUDFLARE_ACCOUNT_ID,tok=process.env.CLOUDFLARE_API_TOKEN;
+          const base=`https://api.cloudflare.com/client/v4/accounts/${acct}`;
+          const out={at:new Date().toISOString()};
+          const call=async(path,opt={})=>{const r=await fetch(base+path,{...opt,headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},signal:AbortSignal.timeout(25000)});const j=await r.json().catch(()=>({}));return j};
+          try{
+            const dbs=await call('/d1/database?name=mizan-equity-db');const db=dbs.result?.find(x=>x.name==='mizan-equity-db');
+            if(!db)throw new Error('no-db');
+            const q=async(sql)=>{const j=await call(`/d1/database/${db.uuid}/query`,{method:'POST',body:JSON.stringify({sql})});return j.success?(j.result?.[0]?.results??[]):{error:(j.errors||[]).map(e=>e.code)}};
+            out.market_watch=await q("SELECT substr(account_key,1,6) k,COUNT(*) n FROM customer_market_watch GROUP BY account_key ORDER BY n DESC LIMIT 10");
+            out.forecast_records_by_class=await q("SELECT COALESCE(json_extract(data,'$.recordClass'),'(none)') cls,CASE WHEN json_extract(data,'$.accountKey') IS NULL THEN 'no-account' ELSE 'has-account' END acc,COUNT(*) n FROM forecast_records GROUP BY 1,2 ORDER BY n DESC LIMIT 12");
+            out.forecast_records_by_account=await q("SELECT substr(json_extract(data,'$.accountKey'),1,6) k,COUNT(*) n FROM forecast_records WHERE json_extract(data,'$.accountKey') IS NOT NULL GROUP BY 1 ORDER BY n DESC LIMIT 10");
+            out.forecast_tests_by_account=await q("SELECT substr(json_extract(data,'$.accountKey'),1,6) k,COUNT(*) n FROM forecast_tests GROUP BY 1 ORDER BY n DESC LIMIT 10");
+          }catch(e){out.error=String(e.message||e).slice(0,60)}
+          console.log(JSON.stringify(out,null,1));
+          NODE
+          cat out/census.json
+          b64="$(base64 -w0 out/census.json)"
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/d1-account-keys-${{ github.run_id }}.json" \
+            -f message="ci diagnostics: D1 account key census ${{ github.run_id }}" -f content="${b64}" -f branch="${{ github.ref_name }}" || echo "WARN publish failed" >&2
