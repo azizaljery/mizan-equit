@@ -1,0 +1,73 @@
+name: Screenshots old vs new site (read-only, public pages, no login)
+
+# Loads public pages on both sites in a headless browser and publishes JPEG screenshots + console/page errors + failed requests to ci-diagnostics/.
+# No credentials, no clicks that write data, no analysis requests are triggered by this job beyond what the pages do on load.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/shots-old-new.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Playwright
+        run: |
+          mkdir -p $RUNNER_TEMP/pw && cd $RUNNER_TEMP/pw && npm init -y >/dev/null && npm i playwright@1.49.1 --no-audit --no-fund >/dev/null && npx playwright install --with-deps chromium >/dev/null 2>&1; echo "PW_ROOT=$RUNNER_TEMP/pw" >> $GITHUB_ENV
+      - name: Capture
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p shots
+          cat > $RUNNER_TEMP/shoot.cjs <<'NODE'
+          const {createRequire}=require('node:module');const path=require('node:path');const fs=require('node:fs');
+          const {chromium}=createRequire(path.join(process.env.PW_ROOT,'package.json'))('playwright');
+          const sites={old:'https://mizan-equity.aljeryabod.workers.dev',new:'https://mizan-aziz.aljeryabod.workers.dev'};
+          const pages=[['home','/'],['screener','/screener'],['gold','/gold'],['accuracy','/accuracy'],['tests','/tests'],['manual','/manual']];
+          const views=[['tablet',{width:1180,height:820}],['phone',{width:390,height:844}]];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});const report=[];
+            for(const [vn,vp] of views){
+              for(const [label,base] of Object.entries(sites)){
+                const ctx=await browser.newContext({viewport:vp,locale:'ar-SA',deviceScaleFactor:1});
+                for(const [pn,p] of pages){
+                  const page=await ctx.newPage();const errs=[],bad=[];
+                  page.on('pageerror',e=>errs.push(String(e.message).slice(0,160)));
+                  page.on('console',m=>{if(m.type()==='error')errs.push('console:'+m.text().slice(0,160))});
+                  page.on('response',r=>{if(r.status()>=400)bad.push(r.status()+' '+new URL(r.url()).pathname)});
+                  let status=null,final=null;
+                  try{const r=await page.goto(base+p,{waitUntil:'networkidle',timeout:45000});status=r&&r.status();final=new URL(page.url()).pathname+(new URL(page.url()).host===new URL(base).host?'':' @'+new URL(page.url()).host);}catch(e){errs.push('goto:'+String(e.message).slice(0,100));}
+                  await page.waitForTimeout(1500);
+                  const m=await page.evaluate(()=>({scrollW:document.documentElement.scrollWidth,clientW:document.documentElement.clientWidth,h:document.documentElement.scrollHeight,dir:document.documentElement.dir||getComputedStyle(document.body).direction,title:document.title,textLen:document.body.innerText.length})).catch(()=>null);
+                  await page.screenshot({path:`shots/${label}-${vn}-${pn}.jpg`,type:'jpeg',quality:55,fullPage:true,clip:undefined}).catch(e=>errs.push('shot:'+String(e.message).slice(0,80)));
+                  report.push({site:label,view:vn,page:pn,status,final,metrics:m,errors:errs.slice(0,6),badResponses:bad.slice(0,8)});
+                  await page.close();
+                }
+                await ctx.close();
+              }
+            }
+            await browser.close();
+            fs.writeFileSync('shots/report.json',JSON.stringify(report,null,1));
+          })();
+          NODE
+          node $RUNNER_TEMP/shoot.cjs; echo "exit=$?"; ls -la shots | head -40
+      - name: Publish to repo
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          d="ci-diagnostics/shots-${{ github.run_id }}"
+          mkdir -p "$d" && cp shots/* "$d"/
+          git config user.name ci; git config user.email ci@users.noreply.github.com
+          git add "$d" && git commit -q -m "ci diagnostics: screenshots old vs new (run ${{ github.run_id }})"
+          for i in 1 2 3; do git pull -q --rebase origin "${{ github.ref_name }}" && git push -q origin "HEAD:${{ github.ref_name }}" && break; sleep $((i*4)); done
