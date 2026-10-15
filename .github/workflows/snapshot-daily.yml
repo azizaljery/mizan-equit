@@ -1,0 +1,144 @@
+name: Snapshot daily (point-in-time instrument collector, research only)
+
+# Research-only collector. Completely separate from production: it reads Yahoo's public chart API, never touches the
+# Cloudflare Worker / D1 / mizan-v45, and publishes ONLY to the orphan branch `research-snapshots` (append-only files).
+#
+# Schedule choice: 22:37 UTC, Monday-Friday.
+#  - US regular session closes at 21:00 UTC in winter (EST) and 20:00 UTC in summer (EDT): 22:37 leaves 1-2.5 h for the
+#    daily bar and its volume to settle.
+#  - Tadawul closes 15:00 Riyadh = 12:00 UTC; its trading week is Sunday-Thursday, so the Sunday bar is collected by the
+#    Monday run (the collector asks for the bars since the last stored session; retrieved_at records when it was known).
+#  - 37 minutes past the hour avoids the congested :00/:30 slots of GitHub's scheduler.
+#  - It stays on the same UTC calendar date even if GitHub delays the job by an hour or more.
+# NOTE: GitHub runs `schedule` triggers only from the repository's DEFAULT branch.
+on:
+  schedule:
+    - cron: "37 22 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish the snapshot to branch research-snapshots (false = dry run: nothing is pushed, the file is attached to the run as an artifact)"
+        type: boolean
+        default: true
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/snapshot-daily.yml"
+
+permissions:
+  contents: write
+
+# Two runs must never overlap (they would race on the chain head). Never cancel a run that is publishing.
+concurrency:
+  group: snapshot-daily
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      # scheduled runs always publish; manual runs publish unless the input says false; a push (editing this file) is a dry run
+      PUBLISH: ${{ (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.publish)) && 'true' || 'false' }}
+    steps:
+      - name: Checkout collector code (always from the working branch, so this file can also live on the default branch where the schedule fires)
+        uses: actions/checkout@v4
+        with:
+          ref: mizan-aziz-deploy
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Prepare state directory from branch research-snapshots (creates the orphan branch on first run)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "ci"; git config user.email "ci@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin research-snapshots >/dev/null 2>&1; then
+            git fetch --no-tags origin +refs/heads/research-snapshots:refs/remotes/origin/research-snapshots
+            git worktree add -B research-snapshots snap-state origin/research-snapshots
+            echo "state: existing branch research-snapshots at $(git -C snap-state rev-parse --short HEAD)"
+          else
+            git worktree add --detach snap-state HEAD
+            git -C snap-state checkout --orphan research-snapshots
+            git -C snap-state rm -rf --quiet . || true
+            echo "state: branch research-snapshots does not exist yet - starting a new orphan branch"
+          fi
+
+      - name: Verify the existing chain before collecting (fails loudly)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node research/snapshot/collect.cjs verify --dir snap-state
+
+      - name: Collect snapshot (individual symbol failures are recorded, not fatal)
+        id: collect
+        shell: bash
+        run: |
+          set +e
+          node research/snapshot/collect.cjs run --dir snap-state
+          code=$?
+          set -e
+          case "$code" in
+            0) echo "outcome=written" >> "$GITHUB_OUTPUT" ;;
+            3) echo "outcome=already_collected" >> "$GITHUB_OUTPUT"
+               echo "::notice title=snapshot-daily::A snapshot for today's UTC date already exists - refused (append-only). Nothing fetched, nothing changed." ;;
+            4) echo "::error title=snapshot-daily::No symbol returned a parseable response (systemic outage or block). Nothing was written; today stays collectable."
+               exit 1 ;;
+            2) echo "::error title=snapshot-daily::CHAIN VERIFICATION FAILED."
+               exit 2 ;;
+            *) echo "::error title=snapshot-daily::collector failed (exit $code)"
+               exit "$code" ;;
+          esac
+
+      - name: Verify the chain again after writing (fails loudly)
+        if: steps.collect.outputs.outcome == 'written'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node research/snapshot/collect.cjs verify --dir snap-state | tee verify.log
+          {
+            echo "### Snapshot ${{ steps.collect.outputs.snapshot_date }}"
+            echo ""
+            echo "- seq: ${{ steps.collect.outputs.seq }}"
+            echo "- status: ${{ steps.collect.outputs.status }} (ok ${{ steps.collect.outputs.ok }}/${{ steps.collect.outputs.universe }}, failed ${{ steps.collect.outputs.failed }}, quarantined ${{ steps.collect.outputs.quarantined }})"
+            echo "- chain head: \`${{ steps.collect.outputs.chain_hash }}\`"
+            echo "- publish: ${PUBLISH}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Dry run - publish the throwaway snapshot to branch research-snapshots-dryrun (force-updated; never the real branch)
+        if: steps.collect.outputs.outcome == 'written' && env.PUBLISH != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd snap-state
+          git add snapshots
+          git commit -q -m "dry-run snapshot (throwaway, not part of the chain): ${{ steps.collect.outputs.snapshot_date }}"
+          git push --force origin HEAD:refs/heads/research-snapshots-dryrun
+
+      - name: Commit and push to branch research-snapshots
+        if: steps.collect.outputs.outcome == 'written' && env.PUBLISH == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd snap-state
+          git add snapshots
+          git commit -q -m "snapshot: ${{ steps.collect.outputs.snapshot_date }} seq=${{ steps.collect.outputs.seq }} ok=${{ steps.collect.outputs.ok }}/${{ steps.collect.outputs.universe }} head=${{ steps.collect.outputs.chain_hash }}"
+          for attempt in 1 2 3; do
+            if git ls-remote --exit-code --heads origin research-snapshots >/dev/null 2>&1; then
+              git pull --rebase origin research-snapshots
+              # a rebase that pulled in other commits would break the chain: re-verify before pushing
+              node ../research/snapshot/collect.cjs verify --dir .
+            fi
+            if git push origin HEAD:research-snapshots; then
+              echo "pushed: $(git rev-parse --short HEAD)"
+              exit 0
+            fi
+            echo "push attempt $attempt failed - retrying"
+            sleep $((attempt * 5))
+          done
+          echo "::error title=snapshot-daily::could not push to research-snapshots after 3 attempts"
+          exit 1
