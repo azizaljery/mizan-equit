@@ -109,16 +109,15 @@ jobs:
             echo "- publish: ${PUBLISH}"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Dry run - keep the new snapshot as a run artifact (not pushed)
+      - name: Dry run - publish the throwaway snapshot to branch research-snapshots-dryrun (force-updated; never the real branch)
         if: steps.collect.outputs.outcome == 'written' && env.PUBLISH != 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: snapshot-dry-run
-          path: |
-            snap-state/${{ steps.collect.outputs.snapshot_file }}
-            snap-state/snapshots/chain.jsonl
-            snap-state/snapshots/HEAD.json
-          retention-days: 14
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd snap-state
+          git add snapshots
+          git commit -q -m "dry-run snapshot (throwaway, not part of the chain): ${{ steps.collect.outputs.snapshot_date }}"
+          git push --force origin HEAD:refs/heads/research-snapshots-dryrun
 
       - name: Commit and push to branch research-snapshots
         if: steps.collect.outputs.outcome == 'written' && env.PUBLISH == 'true'
