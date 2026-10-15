@@ -1,0 +1,70 @@
+name: Probe delisted-symbol data availability (read-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/probe-delisted.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Query Yahoo chart API for delisted / merged tickers
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          cat > probe.mjs <<'NODE'
+          // Known delisted / acquired / bankrupt names. Goal: learn whether Yahoo still serves their history
+          // (needed to reduce survivorship bias in negative-exclusion research). Nothing is written except a summary log.
+          const groups = {
+            us_failed_or_bankrupt: ['SIVB','FRC','SBNY','BBBY','RAD','WE','SVB','CS','LUMN'],
+            us_acquired: ['TWTR','ATVI','CTXS','SGEN','SPLK','VMW','WORK','NLSN','XLNX','CERN','ANSS','JNPR','HES','PXD'],
+            sa_merged_or_delisted: ['1090.SR','1040.SR','1020.SR','4004.SR','2030.SR','4291.SR','2230.SR','3010.SR'],
+          };
+          const out = [];
+          for (const [group, syms] of Object.entries(groups)) for (const symbol of syms) {
+            let line = `${group} ${symbol} `;
+            for (let attempt = 0; attempt < 3; attempt++) {
+              try {
+                const r = await fetch(`https://query${attempt % 2 ? 1 : 2}.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=max&events=div%2Csplit`, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36', 'Accept': 'application/json' } });
+                const text = await r.text();
+                if (r.status === 429) { await new Promise(s => setTimeout(s, 5000 * (attempt + 1))); line = `${group} ${symbol} `; continue; }
+                let j = null; try { j = JSON.parse(text); } catch {}
+                const res = j?.chart?.result?.[0];
+                if (res?.timestamp?.length) {
+                  const ts = res.timestamp, adj = res.indicators?.adjclose?.[0]?.adjclose;
+                  line += `http=${r.status} rows=${ts.length} first=${new Date(ts[0] * 1000).toISOString().slice(0, 10)} last=${new Date(ts.at(-1) * 1000).toISOString().slice(0, 10)} adjclose=${adj ? 'yes' : 'no'} name=${(res.meta?.longName || res.meta?.shortName || '').slice(0, 40)}`;
+                } else line += `http=${r.status} no-data (${(j?.chart?.error?.description || text.slice(0, 80)).replace(/\s+/g, ' ').slice(0, 90)})`;
+                break;
+              } catch (e) { line += `error ${e.message.slice(0, 60)}`; }
+            }
+            out.push(line); console.log(line);
+            await new Promise(s => setTimeout(s, 1500));
+          }
+          const withData = out.filter(l => / rows=\d+/.test(l)).length;
+          out.push(`SUMMARY: ${withData}/${out.length} symbols returned history`);
+          console.log(out.at(-1));
+          (await import('node:fs')).writeFileSync('out/probe.log', out.join('\n'));
+          NODE
+          node probe.mjs
+
+      - name: Publish log to repo
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          [ -f out/probe.log ] || echo "(no log)" > out/probe.log
+          b64="$(base64 -w0 out/probe.log)"
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/delisted-probe-${{ github.run_id }}-${{ github.run_attempt }}.log" \
+            -f message="ci diagnostics: delisted probe run ${{ github.run_id }}" -f content="${b64}" -f branch="${{ github.ref_name }}" \
+            || echo "WARN: failed to publish log" >&2
