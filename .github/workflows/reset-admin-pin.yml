@@ -1,0 +1,80 @@
+name: Reset admin PIN (owner request; sets the Worker secret directly)
+
+# Owner-requested credential reset. Input is a PBKDF2 hash only (never the PIN itself).
+# Effects: (1) sets Worker secret ADMIN_PASSWORD_HASH on `mizan-aziz`, (2) clears the admin login lockout counter and any admin session in D1.
+# Output: only booleans/statuses. No hash, token or PIN is printed or published.
+on:
+  workflow_dispatch:
+    inputs:
+      hash:
+        description: "PBKDF2 hash in the form <32 hex>:<64 hex>"
+        required: true
+        type: string
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/reset-admin-pin.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reset-admin-pin
+  cancel-in-progress: false
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Apply (no-op on push; runs only with an input hash)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NEW_HASH: ${{ inputs.hash }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          echo "::add-mask::${NEW_HASH:-}"
+          node --input-type=module <<'NODE' > out/result.json
+          const account=process.env.CLOUDFLARE_ACCOUNT_ID,token=process.env.CLOUDFLARE_API_TOKEN,hash=process.env.NEW_HASH||'';
+          const base=`https://api.cloudflare.com/client/v4/accounts/${account}`;
+          const r={at:new Date().toISOString(),mode:hash?'apply':'noop-push'};
+          const call=async(method,path,body)=>{
+            const res=await fetch(base+path,{method,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(25000)});
+            let j={};try{j=await res.json()}catch{}
+            return {http:res.status,success:!!j.success,result:j.result,errors:(j.errors||[]).map(e=>e.code)};
+          };
+          try{
+            if(!hash){r.note='no hash input: nothing changed';}
+            else{
+              if(!/^[a-f0-9]{32}:[a-f0-9]{64}$/.test(hash))throw new Error('bad-hash-format');
+              if(!/^[a-f0-9]{32}$/i.test(account||'')||!token)throw new Error('missing-cloudflare-config');
+              // 1) Worker secret
+              const s=await call('PUT','/workers/scripts/mizan-aziz/secrets',{name:'ADMIN_PASSWORD_HASH',text:hash,type:'secret_text'});
+              r.secret_put={http:s.http,success:s.success,errors:s.errors};
+              const l=await call('GET','/workers/scripts/mizan-aziz/secrets');
+              r.secret_present=Array.isArray(l.result)&&l.result.some(x=>x.name==='ADMIN_PASSWORD_HASH');
+              r.secrets_listed=Array.isArray(l.result)?l.result.map(x=>x.name).sort():null;
+              // 2) D1 lockout reset
+              const dbs=await call('GET','/d1/database?name=mizan-equity-db');
+              const db=Array.isArray(dbs.result)?dbs.result.find(x=>x.name==='mizan-equity-db'):null;
+              r.d1_found=!!db;
+              if(db){
+                const q=await call('POST',`/d1/database/${db.uuid}/query`,{sql:"UPDATE admin_access SET attempts=0,window_started=0,session_hash='',expires_at=0 WHERE id=1"});
+                r.lock_reset={http:q.http,success:q.success,errors:q.errors};
+                const c=await call('POST',`/d1/database/${db.uuid}/query`,{sql:"SELECT attempts,expires_at FROM admin_access WHERE id=1"});
+                r.admin_access_row=c.result?.[0]?.results??null;
+              }
+            }
+          }catch(e){r.error=String(e&&e.message||e).slice(0,80);}
+          console.log(JSON.stringify(r,null,2));
+          NODE
+          cat out/result.json
+          b64="$(base64 -w0 out/result.json)"
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/reset-admin-pin-${{ github.run_id }}-${{ github.run_attempt }}.json" \
+            -f message="ci diagnostics: reset-admin-pin run ${{ github.run_id }} (no secrets)" -f content="${b64}" -f branch="${{ github.ref_name }}" \
+            || echo "WARN: failed to publish result" >&2

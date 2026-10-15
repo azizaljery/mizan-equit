@@ -109,6 +109,7 @@ jobs:
             -f branch="${{ github.ref_name }}" \
             || echo "WARN: failed to publish diagnostics log" >&2
 
+      # ADMIN_PASSWORD_HASH is intentionally NOT synced here: it is managed only by the `reset-admin-pin` workflow so a deploy can never overwrite it.
       - name: Sync secrets (owner-provided keys and generated hashes)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -119,7 +120,6 @@ jobs:
           GOLDAPI_KEY: ${{ secrets.MIZAN_AZIZ_GOLDAPI_KEY }}
           METALS_DEV_API_KEY: ${{ secrets.MIZAN_AZIZ_METALS_DEV_API_KEY }}
           TWELVE_DATA_API_KEY: ${{ secrets.MIZAN_AZIZ_TWELVE_DATA_API_KEY }}
-          ADMIN_PASSWORD_HASH: ${{ secrets.MIZAN_AZIZ_ADMIN_PASSWORD_HASH }}
           RECOMMENDATION_INITIAL_HASH: ${{ secrets.MIZAN_AZIZ_RECOMMENDATION_HASH }}
           MIZAN_PROVIDER_VAULT_KEY: ${{ secrets.MIZAN_AZIZ_VAULT_KEY }}
           RECOMMENDATION_OWNER_EMAIL: ${{ secrets.MIZAN_AZIZ_OWNER_EMAIL }}
@@ -134,7 +134,7 @@ jobs:
           const names=[
             'OPENAI_API_KEY','ANTHROPIC_API_KEY','DEEPSEEK_API_KEY',
             'GOLDAPI_KEY','METALS_DEV_API_KEY','TWELVE_DATA_API_KEY',
-            'ADMIN_PASSWORD_HASH','RECOMMENDATION_INITIAL_HASH',
+            'RECOMMENDATION_INITIAL_HASH',
             'MIZAN_PROVIDER_VAULT_KEY','RECOMMENDATION_OWNER_EMAIL'
           ];
           const data={};
