@@ -1,0 +1,70 @@
+name: Compare old (mizan-equity) vs new (mizan-aziz) Worker output and config (read-only)
+
+# Read-only. Public analysis endpoints are called on both sites with the same symbols; Worker configs are compared by NAMES only
+# (secret/binding names, compat date, usage model, cron schedules). No secret values, tokens or account data are read or published.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/compare-old-new.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Compare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          node --input-type=module <<'NODE' > out/compare.json
+          const acct=process.env.CLOUDFLARE_ACCOUNT_ID,tok=process.env.CLOUDFLARE_API_TOKEN;
+          const out={at:new Date().toISOString(),config:{},live:{}};
+          const cf=async(path)=>{try{const r=await fetch(`https://api.cloudflare.com/client/v4/accounts/${acct}${path}`,{headers:{Authorization:'Bearer '+tok},signal:AbortSignal.timeout(25000)});const j=await r.json().catch(()=>({}));return {http:r.status,success:!!j.success,result:j.result}}catch(e){return {http:0,success:false,result:null}}};
+          for(const name of ['mizan-equity','mizan-aziz']){
+            const s=await cf(`/workers/scripts/${name}/settings`),sec=await cf(`/workers/scripts/${name}/secrets`),sch=await cf(`/workers/scripts/${name}/schedules`);
+            const r=s.result||{};
+            out.config[name]={settings_http:s.http,compatibility_date:r.compatibility_date??null,compatibility_flags:r.compatibility_flags??null,usage_model:r.usage_model??null,limits:r.limits??null,
+              binding_names:Array.isArray(r.bindings)?r.bindings.map(b=>b.type+':'+b.name).sort():null,
+              secret_names:Array.isArray(sec.result)?sec.result.map(x=>x.name).sort():null,
+              crons:Array.isArray(sch.result?.schedules)?sch.result.schedules.map(x=>x.cron):null};
+          }
+          const shape=(v,d=0)=>{
+            if(v===null)return null;
+            if(Array.isArray(v))return {array:v.length,first:d<2&&v.length?shape(v[0],d+1):undefined};
+            if(typeof v==='object'){const o={};for(const k of Object.keys(v).slice(0,60))o[k]=d<2?shape(v[k],d+1):typeof v[k];return o;}
+            if(typeof v==='string')return v.length>70?v.slice(0,70)+'…':v;
+            return v;
+          };
+          const sites={old:'https://mizan-equity.aljeryabod.workers.dev',new:'https://mizan-aziz.aljeryabod.workers.dev'};
+          for(const symbol of ['2222.SR','1120.SR','AAPL','MSFT']){
+            out.live[symbol]={};
+            for(const [label,base] of Object.entries(sites)){
+              const rec={};
+              for(const [kind,url,init] of [['analyze',`${base}/api/company/analyze`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({symbol})}],['quote',`${base}/api/company/quote?symbol=${encodeURIComponent(symbol)}`,{}]]){
+                const t0=Date.now();
+                try{
+                  const r=await fetch(url,{...init,redirect:'manual',signal:AbortSignal.timeout(120000)});
+                  const text=await r.text();let j=null;try{j=JSON.parse(text)}catch{}
+                  rec[kind]={http:r.status,ms:Date.now()-t0,bytes:text.length,json:j!==null,shape:j?shape(j):text.slice(0,120)};
+                }catch(e){rec[kind]={http:0,ms:Date.now()-t0,error:String(e&&e.name||e).slice(0,40)};}
+              }
+              out.live[symbol][label]=rec;
+            }
+          }
+          console.log(JSON.stringify(out,null,1));
+          NODE
+          wc -c out/compare.json
+          b64="$(base64 -w0 out/compare.json)"
+          GH_TOKEN="${{ github.token }}" gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/compare-old-new-${{ github.run_id }}-${{ github.run_attempt }}.json" \
+            -f message="ci diagnostics: compare old/new run ${{ github.run_id }}" -f content="${b64}" -f branch="${{ github.ref_name }}" \
+            || echo "WARN: failed to publish result" >&2
