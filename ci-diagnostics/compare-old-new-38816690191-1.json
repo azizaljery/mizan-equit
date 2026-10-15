@@ -1,0 +1,1267 @@
+{
+ "at": "2026-10-15T22:22:49.705Z",
+ "config": {
+  "mizan-equity": {
+   "settings_http": 200,
+   "compatibility_date": "2026-05-15",
+   "compatibility_flags": [
+    "nodejs_compat"
+   ],
+   "usage_model": "standard",
+   "limits": null,
+   "binding_names": [
+    "d1:DB",
+    "plain_text:MIZAN_ANTHROPIC_MODEL",
+    "plain_text:MIZAN_BACKGROUND_CRON_ENABLED",
+    "plain_text:MIZAN_DEEPSEEK_MODEL",
+    "plain_text:MIZAN_OPENAI_MODEL",
+    "secret_text:MIZAN_INTERNAL_AUTOMATION_TOKEN",
+    "secret_text:OPENAI_API_KEY",
+    "secret_text:SAHMK_API_KEY",
+    "secret_text:TWELVE_DATA_API_KEY"
+   ],
+   "secret_names": [
+    "MIZAN_INTERNAL_AUTOMATION_TOKEN",
+    "OPENAI_API_KEY",
+    "SAHMK_API_KEY",
+    "TWELVE_DATA_API_KEY"
+   ],
+   "crons": []
+  },
+  "mizan-aziz": {
+   "settings_http": 200,
+   "compatibility_date": "2026-05-15",
+   "compatibility_flags": [
+    "nodejs_compat"
+   ],
+   "usage_model": "standard",
+   "limits": null,
+   "binding_names": [
+    "d1:DB",
+    "plain_text:ACCESS_AUD",
+    "plain_text:ACCESS_TEAM_DOMAIN",
+    "plain_text:MIZAN_ANTHROPIC_MODEL",
+    "plain_text:MIZAN_BACKGROUND_CRON_ENABLED",
+    "plain_text:MIZAN_DEEPSEEK_MODEL",
+    "plain_text:MIZAN_OPENAI_MODEL",
+    "secret_text:ADMIN_PASSWORD_HASH",
+    "secret_text:ANTHROPIC_API_KEY",
+    "secret_text:DEEPSEEK_API_KEY",
+    "secret_text:MIZAN_PROVIDER_VAULT_KEY",
+    "secret_text:OPENAI_API_KEY",
+    "secret_text:RECOMMENDATION_INITIAL_HASH",
+    "secret_text:RECOMMENDATION_OWNER_EMAIL"
+   ],
+   "secret_names": [
+    "ADMIN_PASSWORD_HASH",
+    "ANTHROPIC_API_KEY",
+    "DEEPSEEK_API_KEY",
+    "MIZAN_PROVIDER_VAULT_KEY",
+    "OPENAI_API_KEY",
+    "RECOMMENDATION_INITIAL_HASH",
+    "RECOMMENDATION_OWNER_EMAIL"
+   ],
+   "crons": [
+    "0 3 * * *",
+    "0 */6 * * *",
+    "*/5 * * * *"
+   ]
+  }
+ },
+ "live": {
+  "2222.SR": {
+   "old": {
+    "analyze": {
+     "http": 200,
+     "ms": 9387,
+     "bytes": 397040,
+     "json": true,
+     "shape": {
+      "sourceLayer": {
+       "observations": {
+        "array": 6
+       },
+       "attempts": {
+        "array": 10
+       }
+      },
+      "priceCoverage": "",
+      "priceAdjustment": "",
+      "priceSourceId": "yahoo",
+      "company": {
+       "symbol": "2222.SR",
+       "name": "شركة الزيت العربية السعودية",
+       "nameEn": "Saudi Arabian Oil Co.",
+       "exchange": "تداول السعودية",
+       "sector": "",
+       "industry": "",
+       "isin": "SA14TG012N13",
+       "marketType": "M",
+       "source": "https://www.saudiexchange.sa/tadawul.eportal.theme.helper/ThemeSearchU…",
+       "directoryDate": "2026-09-06",
+       "instrument": "EQUITY"
+      },
+      "asOf": "2026-10-15",
+      "retrievedAt": "2026-10-15T22:22:53.920Z",
+      "context": {
+       "market": {
+        "symbol": "string",
+        "name": "string",
+        "prices": "object",
+        "source": "string"
+       },
+       "sector": null
+      },
+      "regulatory": null,
+      "liveQuote": {
+       "changePct": null,
+       "symbol": "2222.SR",
+       "price": 25.28,
+       "currency": "SAR",
+       "quoteTime": "2026-10-15T12:19:57.000Z",
+       "retrievedAt": "2026-10-15T22:22:53.920Z",
+       "isOpen": false,
+       "sessionKnown": true,
+       "sessionEnd": 1792065600000,
+       "delayed": true,
+       "ageSeconds": 36176,
+       "priceKind": "unverified-session",
+       "delayAccepted": null,
+       "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+       "feedDelayMinutes": null,
+       "source": "https://finance.yahoo.com/quote/2222.SR/"
+      },
+      "corporateActions": {
+       "array": 21,
+       "first": {
+        "kind": "string",
+        "date": "string",
+        "detail": "string"
+       }
+      },
+      "prices": {
+       "array": 1246,
+       "first": {
+        "date": "string",
+        "open": "number",
+        "high": "number",
+        "low": "number",
+        "close": "number",
+        "volume": "number"
+       }
+      },
+      "priceSource": "https://finance.yahoo.com/quote/2222.SR/",
+      "quoteTime": "2026-10-15T12:19:57.000Z",
+      "currency": "SAR",
+      "facts": {
+       "array": 246,
+       "first": {
+        "key": "string",
+        "value": "number",
+        "date": "string",
+        "period": "string",
+        "currency": "string",
+        "source": "string"
+       }
+      },
+      "official": null,
+      "news": {
+       "array": 0
+      },
+      "peers": {
+       "array": 1,
+       "first": {
+        "pb": "number",
+        "ps": "number",
+        "company": "object",
+        "pe": "number",
+        "source": "string"
+       }
+      },
+      "checks": {
+       "array": 6,
+       "first": {
+        "name": "string",
+        "url": "string",
+        "state": "string",
+        "detail": "string"
+       }
+      },
+      "warnings": {
+       "array": 3,
+       "first": "البيانات من مصادر عامة؛ توافرها وتأخرها يختلفان بحسب السوق."
+      },
+      "mode": "current",
+      "research": {
+       "id": "21260c75-2c54-4cb4-9c59-5b939b4756d6",
+       "asset": "2222.SR",
+       "createdAt": "2026-10-15T22:22:54.028Z",
+       "missing": {
+        "array": 1
+       },
+       "attempts": {
+        "array": 5
+       },
+       "evidence": {
+        "array": 246
+       },
+       "cacheHit": false,
+       "status": "partial",
+       "limits": {
+        "searches": "number",
+        "reads": "number",
+        "monthlyCap": "number"
+       },
+       "recorded": true
+      },
+      "changes": {
+       "state": "available",
+       "previousAt": "2026-10-08T15:16:11.153Z",
+       "currentAt": "2026-10-15T22:22:59.456Z",
+       "previousConclusion": "مراقبة مشروطة — القرار لم يكتمل",
+       "currentConclusion": "مراقبة مشروطة — القرار لم يكتمل",
+       "confidenceBefore": {
+        "array": 6
+       },
+       "confidenceAfter": {
+        "array": 6
+       },
+       "rows": {
+        "array": 6
+       }
+      },
+      "forecast": {
+       "createdAt": "2026-10-15T22:22:59.456Z",
+       "version": "mizan-scenarios-7-a3434e85",
+       "settingsUsed": {
+        "weights": "object",
+        "maxSigma": "number",
+        "minConfidence": "string",
+        "periods": "object"
+       },
+       "price": 25.3799991607666,
+       "currency": "SAR",
+       "priceTime": "2026-10-14",
+       "retrievedAt": "2026-10-15T22:22:53.920Z",
+       "rows": {
+        "array": 6
+       },
+       "factors": {
+        "array": 12
+       },
+       "dataQuality": "جيدة",
+       "dataWarnings": {
+        "array": 3
+       },
+       "dailyScope": "اليومي: الجلسة التالية، وليس توصية تنفيذ داخل الدقيقة. السعر قد يتأخر …",
+       "method": "نموذج سيناريو متعدد العوامل؛ اليومي للجلسة التالية بميل محدود بربع الت…",
+       "snapshotId": "8c75c70d-4383-4df5-9344-7ab71e7f141c",
+       "recorded": true
+      }
+     }
+    },
+    "quote": {
+     "http": 200,
+     "ms": 464,
+     "bytes": 462,
+     "json": true,
+     "shape": {
+      "changePct": -0.3940110323088941,
+      "symbol": "2222.SR",
+      "price": 25.28,
+      "currency": "SAR",
+      "quoteTime": "2026-10-15T12:19:57.000Z",
+      "retrievedAt": "2026-10-15T22:23:01.371Z",
+      "isOpen": false,
+      "sessionKnown": true,
+      "sessionEnd": 1792065600000,
+      "delayed": true,
+      "ageSeconds": 36184,
+      "priceKind": "unverified-session",
+      "delayAccepted": null,
+      "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+      "feedDelayMinutes": null,
+      "source": "https://finance.yahoo.com/quote/2222.SR/"
+     }
+    }
+   },
+   "new": {
+    "analyze": {
+     "http": 200,
+     "ms": 4922,
+     "bytes": 397964,
+     "json": true,
+     "shape": {
+      "sourceLayer": {
+       "observations": {
+        "array": 6
+       },
+       "attempts": {
+        "array": 10
+       }
+      },
+      "priceCoverage": "",
+      "priceAdjustment": "",
+      "priceSourceId": "yahoo",
+      "company": {
+       "symbol": "2222.SR",
+       "name": "شركة الزيت العربية السعودية",
+       "nameEn": "Saudi Arabian Oil Co.",
+       "exchange": "تداول السعودية",
+       "sector": "",
+       "industry": "",
+       "isin": "SA14TG012N13",
+       "marketType": "M",
+       "source": "https://www.saudiexchange.sa/tadawul.eportal.theme.helper/ThemeSearchU…",
+       "directoryDate": "2026-09-06",
+       "instrument": "EQUITY"
+      },
+      "asOf": "2026-10-15",
+      "retrievedAt": "2026-10-15T22:23:03.543Z",
+      "context": {
+       "market": {
+        "symbol": "string",
+        "name": "string",
+        "prices": "object",
+        "source": "string"
+       },
+       "sector": null
+      },
+      "regulatory": null,
+      "liveQuote": {
+       "changePct": null,
+       "symbol": "2222.SR",
+       "price": 25.28,
+       "currency": "SAR",
+       "quoteTime": "2026-10-15T12:19:57.000Z",
+       "retrievedAt": "2026-10-15T22:23:03.543Z",
+       "isOpen": false,
+       "sessionKnown": true,
+       "sessionEnd": 1792065600000,
+       "delayed": true,
+       "ageSeconds": 36186,
+       "priceKind": "unverified-session",
+       "delayAccepted": null,
+       "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+       "feedDelayMinutes": null,
+       "source": "https://finance.yahoo.com/quote/2222.SR/"
+      },
+      "corporateActions": {
+       "array": 21,
+       "first": {
+        "kind": "string",
+        "date": "string",
+        "detail": "string"
+       }
+      },
+      "prices": {
+       "array": 1246,
+       "first": {
+        "date": "string",
+        "open": "number",
+        "high": "number",
+        "low": "number",
+        "close": "number",
+        "volume": "number"
+       }
+      },
+      "priceSource": "https://finance.yahoo.com/quote/2222.SR/",
+      "quoteTime": "2026-10-15T12:19:57.000Z",
+      "currency": "SAR",
+      "facts": {
+       "array": 246,
+       "first": {
+        "key": "string",
+        "value": "number",
+        "date": "string",
+        "period": "string",
+        "currency": "string",
+        "source": "string"
+       }
+      },
+      "official": null,
+      "news": {
+       "array": 0
+      },
+      "peers": {
+       "array": 1,
+       "first": {
+        "pb": "number",
+        "ps": "number",
+        "company": "object",
+        "pe": "number",
+        "source": "string"
+       }
+      },
+      "checks": {
+       "array": 6,
+       "first": {
+        "name": "string",
+        "url": "string",
+        "state": "string",
+        "detail": "string"
+       }
+      },
+      "warnings": {
+       "array": 3,
+       "first": "البيانات من مصادر عامة؛ توافرها وتأخرها يختلفان بحسب السوق."
+      },
+      "mode": "current",
+      "research": {
+       "id": "74e54369-f908-465c-92db-fd5163a3d19d",
+       "asset": "2222.SR",
+       "createdAt": "2026-10-15T22:23:03.655Z",
+       "missing": {
+        "array": 1
+       },
+       "attempts": {
+        "array": 2
+       },
+       "evidence": {
+        "array": 246
+       },
+       "cacheHit": true,
+       "status": "partial",
+       "limits": {
+        "searches": "number",
+        "reads": "number",
+        "monthlyCap": "number"
+       },
+       "recorded": true
+      },
+      "changes": {
+       "state": "available",
+       "previousAt": "2026-10-15T22:22:59.456Z",
+       "currentAt": "2026-10-15T22:23:04.305Z",
+       "previousConclusion": "مراقبة مشروطة — القرار لم يكتمل",
+       "currentConclusion": "مراقبة مشروطة — القرار لم يكتمل",
+       "confidenceBefore": {
+        "array": 6
+       },
+       "confidenceAfter": {
+        "array": 6
+       },
+       "rows": {
+        "array": 0
+       }
+      },
+      "forecast": {
+       "createdAt": "2026-10-15T22:23:04.305Z",
+       "version": "mizan-scenarios-7-a3434e85",
+       "settingsUsed": {
+        "weights": "object",
+        "maxSigma": "number",
+        "minConfidence": "string",
+        "periods": "object"
+       },
+       "price": 25.3799991607666,
+       "currency": "SAR",
+       "priceTime": "2026-10-14",
+       "retrievedAt": "2026-10-15T22:23:03.543Z",
+       "rows": {
+        "array": 6
+       },
+       "factors": {
+        "array": 12
+       },
+       "dataQuality": "جيدة",
+       "dataWarnings": {
+        "array": 3
+       },
+       "dailyScope": "اليومي: الجلسة التالية، وليس توصية تنفيذ داخل الدقيقة. السعر قد يتأخر …",
+       "method": "نموذج سيناريو متعدد العوامل؛ اليومي للجلسة التالية بميل محدود بربع الت…",
+       "snapshotId": "f2eb163f-7a45-49c9-bbb6-e6282bfacc96",
+       "recorded": true
+      }
+     }
+    },
+    "quote": {
+     "http": 200,
+     "ms": 519,
+     "bytes": 462,
+     "json": true,
+     "shape": {
+      "changePct": -0.3940110323088941,
+      "symbol": "2222.SR",
+      "price": 25.28,
+      "currency": "SAR",
+      "quoteTime": "2026-10-15T12:19:57.000Z",
+      "retrievedAt": "2026-10-15T22:23:06.799Z",
+      "isOpen": false,
+      "sessionKnown": true,
+      "sessionEnd": 1792065600000,
+      "delayed": true,
+      "ageSeconds": 36189,
+      "priceKind": "unverified-session",
+      "delayAccepted": null,
+      "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+      "feedDelayMinutes": null,
+      "source": "https://finance.yahoo.com/quote/2222.SR/"
+     }
+    }
+   }
+  },
+  "1120.SR": {
+   "old": {
+    "analyze": {
+     "http": 200,
+     "ms": 8013,
+     "bytes": 331620,
+     "json": true,
+     "shape": {
+      "sourceLayer": {
+       "observations": {
+        "array": 6
+       },
+       "attempts": {
+        "array": 6
+       }
+      },
+      "priceCoverage": "",
+      "priceAdjustment": "",
+      "priceSourceId": "yahoo",
+      "company": {
+       "symbol": "1120.SR",
+       "name": "مصرف الراجحي",
+       "nameEn": "Al Rajhi Bank",
+       "exchange": "تداول السعودية",
+       "sector": "",
+       "industry": "",
+       "isin": "SA0007879113",
+       "marketType": "M",
+       "source": "https://www.saudiexchange.sa/tadawul.eportal.theme.helper/ThemeSearchU…",
+       "directoryDate": "2026-09-06",
+       "instrument": "EQUITY"
+      },
+      "asOf": "2026-10-15",
+      "retrievedAt": "2026-10-15T22:23:08.204Z",
+      "context": {
+       "market": {
+        "symbol": "string",
+        "name": "string",
+        "prices": "object",
+        "source": "string"
+       },
+       "sector": null
+      },
+      "regulatory": null,
+      "liveQuote": {
+       "changePct": null,
+       "symbol": "1120.SR",
+       "price": 61,
+       "currency": "SAR",
+       "quoteTime": "2026-10-15T12:19:40.000Z",
+       "retrievedAt": "2026-10-15T22:23:08.204Z",
+       "isOpen": false,
+       "sessionKnown": true,
+       "sessionEnd": 1792065600000,
+       "delayed": true,
+       "ageSeconds": 36208,
+       "priceKind": "unverified-session",
+       "delayAccepted": null,
+       "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+       "feedDelayMinutes": null,
+       "source": "https://finance.yahoo.com/quote/1120.SR/"
+      },
+      "corporateActions": {
+       "array": 10,
+       "first": {
+        "kind": "string",
+        "date": "string",
+        "detail": "string"
+       }
+      },
+      "prices": {
+       "array": 1246,
+       "first": {
+        "date": "string",
+        "open": "number",
+        "high": "number",
+        "low": "number",
+        "close": "number",
+        "volume": "number"
+       }
+      },
+      "priceSource": "https://finance.yahoo.com/quote/1120.SR/",
+      "quoteTime": "2026-10-15T12:19:40.000Z",
+      "currency": "SAR",
+      "facts": {
+       "array": 161,
+       "first": {
+        "key": "string",
+        "value": "number",
+        "date": "string",
+        "period": "string",
+        "currency": "string",
+        "source": "string"
+       }
+      },
+      "official": null,
+      "news": {
+       "array": 0
+      },
+      "peers": {
+       "array": 0
+      },
+      "checks": {
+       "array": 6,
+       "first": {
+        "name": "string",
+        "url": "string",
+        "state": "string",
+        "detail": "string"
+       }
+      },
+      "warnings": {
+       "array": 3,
+       "first": "البيانات من مصادر عامة؛ توافرها وتأخرها يختلفان بحسب السوق."
+      },
+      "mode": "current",
+      "research": {
+       "id": "50c2fb6e-9f4e-4578-becf-6a4040200fed",
+       "asset": "1120.SR",
+       "createdAt": "2026-10-15T22:23:08.312Z",
+       "missing": {
+        "array": 1
+       },
+       "attempts": {
+        "array": 5
+       },
+       "evidence": {
+        "array": 161
+       },
+       "cacheHit": false,
+       "status": "partial",
+       "limits": {
+        "searches": "number",
+        "reads": "number",
+        "monthlyCap": "number"
+       },
+       "recorded": true
+      },
+      "changes": {
+       "state": "available",
+       "previousAt": "2026-10-06T15:16:08.933Z",
+       "currentAt": "2026-10-15T22:23:13.213Z",
+       "previousConclusion": "التحليل غير مكتمل",
+       "currentConclusion": "التحليل غير مكتمل",
+       "confidenceBefore": {
+        "array": 6
+       },
+       "confidenceAfter": {
+        "array": 6
+       },
+       "rows": {
+        "array": 6
+       }
+      },
+      "forecast": {
+       "createdAt": "2026-10-15T22:23:13.213Z",
+       "version": "mizan-scenarios-7-a3434e85",
+       "settingsUsed": {
+        "weights": "object",
+        "maxSigma": "number",
+        "minConfidence": "string",
+        "periods": "object"
+       },
+       "price": 60.849998474121094,
+       "currency": "SAR",
+       "priceTime": "2026-10-14",
+       "retrievedAt": "2026-10-15T22:23:08.204Z",
+       "rows": {
+        "array": 6
+       },
+       "factors": {
+        "array": 12
+       },
+       "dataQuality": "جيدة",
+       "dataWarnings": {
+        "array": 3
+       },
+       "dailyScope": "اليومي: الجلسة التالية، وليس توصية تنفيذ داخل الدقيقة. السعر قد يتأخر …",
+       "method": "نموذج سيناريو متعدد العوامل؛ اليومي للجلسة التالية بميل محدود بربع الت…",
+       "snapshotId": "47b569a5-4a2b-4bab-882f-a8ee4f80520f",
+       "recorded": true
+      }
+     }
+    },
+    "quote": {
+     "http": 200,
+     "ms": 479,
+     "bytes": 459,
+     "json": true,
+     "shape": {
+      "changePct": 0.24650780608053147,
+      "symbol": "1120.SR",
+      "price": 61,
+      "currency": "SAR",
+      "quoteTime": "2026-10-15T12:19:40.000Z",
+      "retrievedAt": "2026-10-15T22:23:15.301Z",
+      "isOpen": false,
+      "sessionKnown": true,
+      "sessionEnd": 1792065600000,
+      "delayed": true,
+      "ageSeconds": 36215,
+      "priceKind": "unverified-session",
+      "delayAccepted": null,
+      "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+      "feedDelayMinutes": null,
+      "source": "https://finance.yahoo.com/quote/1120.SR/"
+     }
+    }
+   },
+   "new": {
+    "analyze": {
+     "http": 200,
+     "ms": 3811,
+     "bytes": 332639,
+     "json": true,
+     "shape": {
+      "sourceLayer": {
+       "observations": {
+        "array": 6
+       },
+       "attempts": {
+        "array": 6
+       }
+      },
+      "priceCoverage": "",
+      "priceAdjustment": "",
+      "priceSourceId": "yahoo",
+      "company": {
+       "symbol": "1120.SR",
+       "name": "مصرف الراجحي",
+       "nameEn": "Al Rajhi Bank",
+       "exchange": "تداول السعودية",
+       "sector": "",
+       "industry": "",
+       "isin": "SA0007879113",
+       "marketType": "M",
+       "source": "https://www.saudiexchange.sa/tadawul.eportal.theme.helper/ThemeSearchU…",
+       "directoryDate": "2026-09-06",
+       "instrument": "EQUITY"
+      },
+      "asOf": "2026-10-15",
+      "retrievedAt": "2026-10-15T22:23:16.870Z",
+      "context": {
+       "market": {
+        "symbol": "string",
+        "name": "string",
+        "prices": "object",
+        "source": "string"
+       },
+       "sector": null
+      },
+      "regulatory": null,
+      "liveQuote": {
+       "changePct": null,
+       "symbol": "1120.SR",
+       "price": 61,
+       "currency": "SAR",
+       "quoteTime": "2026-10-15T12:19:40.000Z",
+       "retrievedAt": "2026-10-15T22:23:16.870Z",
+       "isOpen": false,
+       "sessionKnown": true,
+       "sessionEnd": 1792065600000,
+       "delayed": true,
+       "ageSeconds": 36216,
+       "priceKind": "unverified-session",
+       "delayAccepted": null,
+       "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+       "feedDelayMinutes": null,
+       "source": "https://finance.yahoo.com/quote/1120.SR/"
+      },
+      "corporateActions": {
+       "array": 10,
+       "first": {
+        "kind": "string",
+        "date": "string",
+        "detail": "string"
+       }
+      },
+      "prices": {
+       "array": 1246,
+       "first": {
+        "date": "string",
+        "open": "number",
+        "high": "number",
+        "low": "number",
+        "close": "number",
+        "volume": "number"
+       }
+      },
+      "priceSource": "https://finance.yahoo.com/quote/1120.SR/",
+      "quoteTime": "2026-10-15T12:19:40.000Z",
+      "currency": "SAR",
+      "facts": {
+       "array": 161,
+       "first": {
+        "key": "string",
+        "value": "number",
+        "date": "string",
+        "period": "string",
+        "currency": "string",
+        "source": "string"
+       }
+      },
+      "official": null,
+      "news": {
+       "array": 0
+      },
+      "peers": {
+       "array": 0
+      },
+      "checks": {
+       "array": 6,
+       "first": {
+        "name": "string",
+        "url": "string",
+        "state": "string",
+        "detail": "string"
+       }
+      },
+      "warnings": {
+       "array": 3,
+       "first": "البيانات من مصادر عامة؛ توافرها وتأخرها يختلفان بحسب السوق."
+      },
+      "mode": "current",
+      "research": {
+       "id": "93f1f63d-103a-4eac-8e3d-cd3c1056b408",
+       "asset": "1120.SR",
+       "createdAt": "2026-10-15T22:23:16.989Z",
+       "missing": {
+        "array": 1
+       },
+       "attempts": {
+        "array": 2
+       },
+       "evidence": {
+        "array": 161
+       },
+       "cacheHit": true,
+       "status": "partial",
+       "limits": {
+        "searches": "number",
+        "reads": "number",
+        "monthlyCap": "number"
+       },
+       "recorded": true
+      },
+      "changes": {
+       "state": "available",
+       "previousAt": "2026-10-15T22:23:13.213Z",
+       "currentAt": "2026-10-15T22:23:17.491Z",
+       "previousConclusion": "التحليل غير مكتمل",
+       "currentConclusion": "التحليل غير مكتمل",
+       "confidenceBefore": {
+        "array": 6
+       },
+       "confidenceAfter": {
+        "array": 6
+       },
+       "rows": {
+        "array": 0
+       }
+      },
+      "forecast": {
+       "createdAt": "2026-10-15T22:23:17.491Z",
+       "version": "mizan-scenarios-7-a3434e85",
+       "settingsUsed": {
+        "weights": "object",
+        "maxSigma": "number",
+        "minConfidence": "string",
+        "periods": "object"
+       },
+       "price": 60.849998474121094,
+       "currency": "SAR",
+       "priceTime": "2026-10-14",
+       "retrievedAt": "2026-10-15T22:23:16.870Z",
+       "rows": {
+        "array": 6
+       },
+       "factors": {
+        "array": 12
+       },
+       "dataQuality": "جيدة",
+       "dataWarnings": {
+        "array": 3
+       },
+       "dailyScope": "اليومي: الجلسة التالية، وليس توصية تنفيذ داخل الدقيقة. السعر قد يتأخر …",
+       "method": "نموذج سيناريو متعدد العوامل؛ اليومي للجلسة التالية بميل محدود بربع الت…",
+       "snapshotId": "a5702dd3-fae7-490d-b152-c6ec1cdaaa89",
+       "recorded": true
+      }
+     }
+    },
+    "quote": {
+     "http": 200,
+     "ms": 527,
+     "bytes": 459,
+     "json": true,
+     "shape": {
+      "changePct": 0.24650780608053147,
+      "symbol": "1120.SR",
+      "price": 61,
+      "currency": "SAR",
+      "quoteTime": "2026-10-15T12:19:40.000Z",
+      "retrievedAt": "2026-10-15T22:23:19.644Z",
+      "isOpen": false,
+      "sessionKnown": true,
+      "sessionEnd": 1792065600000,
+      "delayed": true,
+      "ageSeconds": 36219,
+      "priceKind": "unverified-session",
+      "delayAccepted": null,
+      "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+      "feedDelayMinutes": null,
+      "source": "https://finance.yahoo.com/quote/1120.SR/"
+     }
+    }
+   }
+  },
+  "AAPL": {
+   "old": {
+    "analyze": {
+     "http": 503,
+     "ms": 11201,
+     "bytes": 4698,
+     "json": false,
+     "shape": "<!DOCTYPE html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 7]>    <html class"
+    },
+    "quote": {
+     "http": 200,
+     "ms": 579,
+     "bytes": 453,
+     "json": true,
+     "shape": {
+      "changePct": -0.2799160251924393,
+      "symbol": "AAPL",
+      "price": 342,
+      "currency": "USD",
+      "quoteTime": "2026-10-15T20:00:01.000Z",
+      "retrievedAt": "2026-10-15T22:23:31.416Z",
+      "isOpen": false,
+      "sessionKnown": true,
+      "sessionEnd": 1792094400000,
+      "delayed": true,
+      "ageSeconds": 8610,
+      "priceKind": "unverified-session",
+      "delayAccepted": null,
+      "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+      "feedDelayMinutes": null,
+      "source": "https://finance.yahoo.com/quote/AAPL/"
+     }
+    }
+   },
+   "new": {
+    "analyze": {
+     "http": 200,
+     "ms": 11997,
+     "bytes": 1487783,
+     "json": true,
+     "shape": {
+      "sourceLayer": {
+       "observations": {
+        "array": 7
+       },
+       "attempts": {
+        "array": 16
+       }
+      },
+      "priceCoverage": "",
+      "priceAdjustment": "",
+      "priceSourceId": "yahoo",
+      "company": {
+       "symbol": "AAPL",
+       "name": "Apple Inc.",
+       "exchange": "NASDAQ",
+       "sector": "Technology",
+       "industry": "Consumer Electronics",
+       "instrument": "EQUITY",
+       "source": "https://finance.yahoo.com/quote/AAPL/"
+      },
+      "asOf": "2026-10-15",
+      "retrievedAt": "2026-10-15T22:23:34.831Z",
+      "context": {
+       "market": {
+        "symbol": "string",
+        "name": "string",
+        "prices": "object",
+        "source": "string"
+       },
+       "sector": {
+        "symbol": "string",
+        "name": "string",
+        "prices": "object",
+        "source": "string"
+       }
+      },
+      "regulatory": {
+       "facts": {
+        "array": 909
+       },
+       "news": {
+        "array": 8
+       },
+       "documents": {
+        "array": 2
+       },
+       "registrantName": "Apple Inc.",
+       "eventDocuments": {
+        "array": 0
+       },
+       "filings": {
+        "array": 2
+       },
+       "source": "https://www.sec.gov/edgar/browse/?CIK=0000320193"
+      },
+      "liveQuote": {
+       "changePct": null,
+       "symbol": "AAPL",
+       "price": 342,
+       "currency": "USD",
+       "quoteTime": "2026-10-15T20:00:01.000Z",
+       "retrievedAt": "2026-10-15T22:23:34.831Z",
+       "isOpen": false,
+       "sessionKnown": true,
+       "sessionEnd": 1792094400000,
+       "delayed": true,
+       "ageSeconds": 8613,
+       "priceKind": "unverified-session",
+       "delayAccepted": null,
+       "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+       "feedDelayMinutes": null,
+       "source": "https://finance.yahoo.com/quote/AAPL/"
+      },
+      "corporateActions": {
+       "array": 20,
+       "first": {
+        "kind": "string",
+        "date": "string",
+        "detail": "string"
+       }
+      },
+      "prices": {
+       "array": 1254,
+       "first": {
+        "date": "string",
+        "open": "number",
+        "high": "number",
+        "low": "number",
+        "close": "number",
+        "volume": "number"
+       }
+      },
+      "priceSource": "https://finance.yahoo.com/quote/AAPL/",
+      "quoteTime": "2026-10-15T20:00:01.000Z",
+      "currency": "USD",
+      "facts": {
+       "array": 1155,
+       "first": {
+        "key": "string",
+        "value": "number",
+        "date": "string",
+        "period": "string",
+        "currency": "string",
+        "source": "string"
+       }
+      },
+      "official": null,
+      "news": {
+       "array": 12,
+       "first": {
+        "title": "string",
+        "date": "string",
+        "kind": "string",
+        "lineage": "string",
+        "url": "string"
+       }
+      },
+      "peers": {
+       "array": 2,
+       "first": {
+        "pb": "object",
+        "ps": "number",
+        "company": "object",
+        "pe": "number",
+        "source": "string"
+       }
+      },
+      "checks": {
+       "array": 8,
+       "first": {
+        "name": "string",
+        "url": "string",
+        "state": "string",
+        "detail": "string"
+       }
+      },
+      "warnings": {
+       "array": 3,
+       "first": "البيانات من مصادر عامة؛ توافرها وتأخرها يختلفان بحسب السوق."
+      },
+      "mode": "current",
+      "research": {
+       "id": "45d2eac4-b68d-430c-81e0-fb32bae13e19",
+       "asset": "AAPL",
+       "createdAt": "2026-10-15T22:23:34.953Z",
+       "missing": {
+        "array": 1
+       },
+       "attempts": {
+        "array": 2
+       },
+       "evidence": {
+        "array": 1133
+       },
+       "cacheHit": true,
+       "status": "supplemented",
+       "limits": {
+        "searches": "number",
+        "reads": "number",
+        "monthlyCap": "number"
+       },
+       "recorded": true
+      },
+      "changes": {
+       "state": "available",
+       "previousAt": "2026-09-27T20:39:08.891Z",
+       "currentAt": "2026-10-15T22:23:36.352Z",
+       "previousConclusion": "مراقبة مشروطة — القرار لم يكتمل",
+       "currentConclusion": "مراقبة مشروطة — القرار لم يكتمل",
+       "confidenceBefore": {
+        "array": 6
+       },
+       "confidenceAfter": {
+        "array": 6
+       },
+       "rows": {
+        "array": 6
+       }
+      },
+      "forecast": {
+       "createdAt": "2026-10-15T22:23:36.352Z",
+       "version": "mizan-scenarios-7-a3434e85",
+       "settingsUsed": {
+        "weights": "object",
+        "maxSigma": "number",
+        "minConfidence": "string",
+        "periods": "object"
+       },
+       "price": 342,
+       "currency": "USD",
+       "priceTime": "2026-10-15",
+       "retrievedAt": "2026-10-15T22:23:34.831Z",
+       "rows": {
+        "array": 6
+       },
+       "factors": {
+        "array": 12
+       },
+       "dataQuality": "جيدة",
+       "dataWarnings": {
+        "array": 2
+       },
+       "dailyScope": "اليومي: الجلسة التالية، وليس توصية تنفيذ داخل الدقيقة. السعر قد يتأخر …",
+       "method": "نموذج سيناريو متعدد العوامل؛ اليومي للجلسة التالية بميل محدود بربع الت…",
+       "snapshotId": "8d963131-ec2f-45df-a651-a3278807561e",
+       "recorded": true
+      }
+     }
+    },
+    "quote": {
+     "http": 200,
+     "ms": 433,
+     "bytes": 453,
+     "json": true,
+     "shape": {
+      "changePct": -0.2799160251924393,
+      "symbol": "AAPL",
+      "price": 342,
+      "currency": "USD",
+      "quoteTime": "2026-10-15T20:00:01.000Z",
+      "retrievedAt": "2026-10-15T22:23:43.837Z",
+      "isOpen": false,
+      "sessionKnown": true,
+      "sessionEnd": 1792094400000,
+      "delayed": true,
+      "ageSeconds": 8622,
+      "priceKind": "unverified-session",
+      "delayAccepted": null,
+      "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+      "feedDelayMinutes": null,
+      "source": "https://finance.yahoo.com/quote/AAPL/"
+     }
+    }
+   }
+  },
+  "MSFT": {
+   "old": {
+    "analyze": {
+     "http": 503,
+     "ms": 9655,
+     "bytes": 4698,
+     "json": false,
+     "shape": "<!DOCTYPE html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 7]>    <html class"
+    },
+    "quote": {
+     "http": 200,
+     "ms": 586,
+     "bytes": 455,
+     "json": true,
+     "shape": {
+      "changePct": 1.0774044857501552,
+      "symbol": "MSFT",
+      "price": 539.44,
+      "currency": "USD",
+      "quoteTime": "2026-10-15T20:00:01.000Z",
+      "retrievedAt": "2026-10-15T22:23:54.070Z",
+      "isOpen": false,
+      "sessionKnown": true,
+      "sessionEnd": 1792094400000,
+      "delayed": true,
+      "ageSeconds": 8633,
+      "priceKind": "unverified-session",
+      "delayAccepted": null,
+      "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+      "feedDelayMinutes": null,
+      "source": "https://finance.yahoo.com/quote/MSFT/"
+     }
+    }
+   },
+   "new": {
+    "analyze": {
+     "http": 503,
+     "ms": 2310,
+     "bytes": 4692,
+     "json": false,
+     "shape": "<!DOCTYPE html>\n<!--[if lt IE 7]> <html class=\"no-js ie6 oldie\" lang=\"en-US\"> <![endif]-->\n<!--[if IE 7]>    <html class"
+    },
+    "quote": {
+     "http": 200,
+     "ms": 780,
+     "bytes": 455,
+     "json": true,
+     "shape": {
+      "changePct": 1.0774044857501552,
+      "symbol": "MSFT",
+      "price": 539.44,
+      "currency": "USD",
+      "quoteTime": "2026-10-15T20:00:01.000Z",
+      "retrievedAt": "2026-10-15T22:23:57.169Z",
+      "isOpen": false,
+      "sessionKnown": true,
+      "sessionEnd": 1792094400000,
+      "delayed": true,
+      "ageSeconds": 8636,
+      "priceKind": "unverified-session",
+      "delayAccepted": null,
+      "coverage": "تغطية التغذية غير متحققة؛ لا يفترض أن الحجم مجمّع لكل السوق",
+      "feedDelayMinutes": null,
+      "source": "https://finance.yahoo.com/quote/MSFT/"
+     }
+    }
+   }
+  }
+ }
+}
