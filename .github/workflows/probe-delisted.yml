@@ -56,6 +56,19 @@ jobs:
           NODE
           node probe.mjs
 
+      - name: Probe alternative free sources (Stooq) for the same delisted names
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          : > out/stooq.log
+          for s in twtr.us atvi.us sivb.us frc.us ctxs.us sgen.us splk.us xlnx.us pxd.us aapl.us 1090.sr; do
+            code="$(curl -sS -m 30 -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0' -o out/s.csv -w '%{http_code}' "https://stooq.com/q/d/l/?s=$s&i=d" 2>>out/stooq.log || echo 000)"
+            echo "stooq $s http=$code lines=$(wc -l < out/s.csv) first=$(sed -n 2p out/s.csv | cut -c1-40) last=$(tail -1 out/s.csv | cut -c1-40) head=$(head -c 60 out/s.csv | tr '\n' ' ')" >> out/stooq.log
+            sleep 1
+          done
+          cat out/stooq.log >> out/probe.log
+
       - name: Publish log to repo
         if: ${{ always() }}
         env:
