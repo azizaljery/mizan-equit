@@ -13,6 +13,7 @@ type IdentityEnv = { ACCESS_TEAM_DOMAIN?: string; ACCESS_AUD?: string };
 const IDENTITY_HEADERS = [
   'cf-access-authenticated-user-email',
   'oai-authenticated-user-email',
+  'oai-authenticated-user-id',
   'oai-authenticated-user-full-name',
   'oai-authenticated-user-full-name-encoding',
 ];
@@ -43,7 +44,14 @@ async function signingKeys(team: string): Promise<Jwk[]> {
   return certCache.keys;
 }
 
-export async function verifiedOwnerEmail(request: Request, env: IdentityEnv): Promise<string | null> {
+type VerifiedOwner = { email: string; id: string };
+
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function verifiedOwner(request: Request, env: IdentityEnv): Promise<VerifiedOwner | null> {
   const team = (env.ACCESS_TEAM_DOMAIN || '').trim();
   const aud = (env.ACCESS_AUD || '').trim();
   if (!team || !aud) return null;
@@ -70,19 +78,29 @@ export async function verifiedOwnerEmail(request: Request, env: IdentityEnv): Pr
     if (claims.iss !== `https://${team}` || !audiences.includes(aud)) return null;
     if (typeof claims.exp !== 'number' || claims.exp <= now) return null;
     if (typeof claims.nbf === 'number' && claims.nbf > now + 60) return null;
-    return typeof claims.email === 'string' && claims.email ? claims.email.trim().toLowerCase() : null;
+    if (typeof claims.email !== 'string' || !claims.email) return null;
+    const email = claims.email.trim().toLowerCase();
+    if (!email) return null;
+    // Stable opaque account key from verified claims only: the JWT subject, else a hash of the verified email.
+    const id = typeof claims.sub === 'string' && claims.sub ? claims.sub : await sha256Hex(email);
+    return { email, id };
   } catch {
     return null;
   }
 }
 
+export async function verifiedOwnerEmail(request: Request, env: IdentityEnv): Promise<string | null> {
+  return (await verifiedOwner(request, env))?.email ?? null;
+}
+
 export async function withVerifiedIdentity(request: Request, env: IdentityEnv): Promise<Request> {
   const headers = new Headers(request.headers);
   for (const name of IDENTITY_HEADERS) headers.delete(name);
-  const email = await verifiedOwnerEmail(request, env);
-  if (email) {
-    headers.set('cf-access-authenticated-user-email', email);
-    headers.set('oai-authenticated-user-email', email);
+  const owner = await verifiedOwner(request, env);
+  if (owner) {
+    headers.set('cf-access-authenticated-user-email', owner.email);
+    headers.set('oai-authenticated-user-email', owner.email);
+    headers.set('oai-authenticated-user-id', owner.id);
   }
   return new Request(request, { headers });
 }

@@ -4,6 +4,7 @@ import {Scale,Globe2} from 'lucide-react';
 import {HORIZONS} from '@/lib/forecast-horizons';
 import {mergeScreenerResults,type ScreenerResult,type ScreenerMarket} from '@/lib/screener-policy';
 import type {ScreenerPlan} from '@/lib/screener';
+import {fetchWithRetry,type FetchRetryOptions} from '@/lib/fetch-retry';
 const fmt=(v:number|null|undefined,d=2)=>typeof v!=='number'||!Number.isFinite(v)?'—':new Intl.NumberFormat('en-US',{maximumFractionDigits:d}).format(v);
 const stamp=(s:string)=>/^\d{4}-\d{2}-\d{2}$/.test(s)?s+' (إغلاق يومي)':s&&Number.isFinite(Date.parse(s))?new Date(s).toLocaleString('ar-SA'):'غير متاح';
 const reasons:Record<string,string>={model_unavailable:'المحرك امتنع عن إصدار التوقع',not_rising:'الاتجاه ليس صاعدًا',low_or_unknown_confidence:'الثقة منخفضة أو غير متحققة',invalid_range:'النطاق غير صالح',invalid_positive_target:'السعر المركزي أو التغير غير صالح',target_outside_range:'السعر المركزي خارج النطاق',inconsistent_target:'التغير لا يطابق السعر المركزي',missing_price_provenance:'وقت السعر أو عملته غير متحقق'};
@@ -11,7 +12,7 @@ type Handle={runId:string;runToken:string};
 type ArchiveView={runId:string;status:string;createdAt:string;nominatedAt:string|null;fingerprint:string|null;integrity:boolean|null;frozen:{result:ScreenerResult}|null;
  byMarket:{market:string;selected:number;complete:number;pending:number;excluded:number;performance:{independent:number;directionAccuracy:number|null;meanPriceError:number|null;rangeCoverage:number|null}}[];
  picks:{id:string;symbol:string;market:string;rank:number;issuedAt:string;priceTime:string;referencePrice:number;predictedPrice:number;estimatedEndAt:string|null;evaluationState:string;actualChangePct:number|null;outcome:{actualDate?:string;actualPrice?:number;directionCorrect?:boolean;rangeHit?:boolean;reason?:string}|null}[];pendingNote:string};
-async function loadJSON(url:string,init?:RequestInit){const res=await fetch(url,init),data=await res.json().catch(()=>({error:'تعذر قراءة استجابة الخادم.'}));if(!res.ok)throw Error(data.error||'تعذر الاتصال.');return data;}
+async function loadJSON(url:string,init?:RequestInit,retry?:FetchRetryOptions){let res:Response;try{res=retry?await fetchWithRetry(url,init,retry):await fetch(url,init);}catch(e){if(retry&&!retry.signal?.aborted)throw Error('تعذر الاتصال بالخادم بعد إعادة المحاولة.');throw e;}const data=await res.json().catch(()=>({error:'تعذر قراءة استجابة الخادم.'}));if(!res.ok)throw Error(data.error||'تعذر الاتصال.');return data;}
 export default function ScreenerPage(){
  const [market,setMarket]=useState<ScreenerMarket>('sa'),[horizon,setHorizon]=useState(5),[resultCount,setResultCount]=useState(5),[scanLimit,setScanLimit]=useState(200);
  const [loading,setLoading]=useState(false),[phase,setPhase]=useState(''),[plan,setPlan]=useState<ScreenerPlan|null>(null),[result,setResult]=useState<ScreenerResult|null>(null),[error,setError]=useState<string|null>(null);
@@ -25,12 +26,14 @@ export default function ScreenerPage(){
   const control=new AbortController();controller.current=control;
   setLoading(true);setError(null);setResult(null);setPlan(null);setArchive(null);setArchiveError('');setPhase('جارٍ إنشاء خطة مسح وأرشيف دائم');
   const input={market,horizonSessions:horizon,resultCount,scanLimit};
-  const post=(body:unknown)=>loadJSON('/api/screener',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:control.signal});
+  // archive-batch/complete are replay-safe (batches are stored server-side), so transient 502/503/504 and network errors are retried.
+  // `plan` creates a new archive row on every call (not idempotent), so it is never retried automatically.
+  const post=(body:{action?:string}&Record<string,unknown>)=>loadJSON('/api/screener',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:control.signal},body.action==='plan'?undefined:{signal:control.signal,onRetry:e=>setPhase(`تعذّر الاتصال مؤقتًا، تُعاد المحاولة (${e.attempt}/${e.maxRetries})…`)});
+  let combined:ScreenerResult|null=null,total=0;
   try{
-   const p:ScreenerPlan&Handle=await post({...input,action:'plan',archive:true});setPlan(p);
+   const p:ScreenerPlan&Handle=await post({...input,action:'plan',archive:true});setPlan(p);total=p.symbols.length;
    activeArchive.current={runId:p.runId,runToken:p.runToken};
    try{sessionStorage.setItem('mizan-screener-archive',JSON.stringify(activeArchive.current));}catch{}
-   let combined:ScreenerResult|null=null;
    for(let offset=0;offset<p.symbols.length;offset+=p.batchSize){
     if(control.signal.aborted)break;
     setPhase(`جارٍ الفحص والحفظ: ${offset} من ${p.symbols.length}`);
@@ -42,7 +45,7 @@ export default function ScreenerPage(){
    const saved:ArchiveView=await post({action:'complete',runId:p.runId,runToken:p.runToken});setArchive(saved);
    if(saved.frozen)setResult(saved.frozen.result);
    setPhase('اكتمل المسح وحُفظ الترشيح الأصلي للمقارنة المستقبلية');
-  }catch(e){if(control.signal.aborted)setPhase('أُوقف المسح؛ النتائج جزئية وليست قائمة نهائية.');else{setError(e instanceof Error?e.message:'فشل الفرز أو الحفظ.');setPhase('لم يكتمل المسح أو الأرشيف؛ لا يُعرض كاختبار مكتمل.');}}
+  }catch(e){if(control.signal.aborted)setPhase('أُوقف المسح؛ النتائج جزئية وليست قائمة نهائية.');else{setError(e instanceof Error?e.message:'فشل الفرز أو الحفظ.');const done=combined?.scanned??0;setPhase(done>0&&done>=total?'اكتمل فحص جميع الأسهم لكن تعذر اعتماد الأرشيف؛ النتائج المعروضة غير نهائية.':done>0?`توقف المسح بعد فحص ${done} من ${total} سهمًا؛ بقي ${Math.max(0,total-done)} دون فحص. النتائج المعروضة جزئية وليست قائمة ترشيح نهائية، ولم يُعتمد الأرشيف.`:'لم يكتمل المسح أو الأرشيف؛ لا يُعرض كاختبار مكتمل.');}}
   finally{setLoading(false);controller.current=null;}
  }
  return <>
