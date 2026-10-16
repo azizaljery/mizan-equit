@@ -1,0 +1,78 @@
+name: Probe mizan-aziz after Workers Paid upgrade (1102 check)
+
+# Measures whether CPU-limit failures (1102 / exceededCpu) stopped after the owner upgraded to Workers Paid.
+# 1) Cloudflare API: subscription names (plan check), worker settings (usage_model, limits) — names/values only, no secrets.
+# 2) GraphQL analytics: hourly invocation counts by status for mizan-aziz over the last 48h (before vs after upgrade).
+# 3) Live: sequential POST /api/company/analyze on a fixed symbol list. NOTE: analyze records its result in production D1
+#    (normal forecast rows), as every user analysis does.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/probe-after-paid.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Probe
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          node --input-type=module <<'NODE' > out/probe.json
+          const acct=process.env.CLOUDFLARE_ACCOUNT_ID,tok=process.env.CLOUDFLARE_API_TOKEN;
+          const H={Authorization:'Bearer '+tok,'content-type':'application/json'};
+          const out={at:new Date().toISOString(),plan:{},settings:{},analytics:{},live:[]};
+          const cf=async(path)=>{try{const r=await fetch(`https://api.cloudflare.com/client/v4${path}`,{headers:H,signal:AbortSignal.timeout(25000)});const j=await r.json().catch(()=>({}));return {http:r.status,success:!!j.success,result:j.result,errors:(j.errors||[]).map(e=>e.code+':'+String(e.message).slice(0,80))}}catch(e){return {http:0,success:false,result:null,errors:[String(e).slice(0,80)]}}};
+          const subs=await cf(`/accounts/${acct}/subscriptions`);
+          out.plan={http:subs.http,success:subs.success,errors:subs.errors,
+            items:Array.isArray(subs.result)?subs.result.map(s=>({product:s.rate_plan?.public_name||s.rate_plan?.id||s.product?.name||null,state:s.state||null,frequency:s.frequency||null})):null};
+          const st=await cf(`/accounts/${acct}/workers/scripts/mizan-aziz/settings`);
+          out.settings={http:st.http,usage_model:st.result?.usage_model??null,limits:st.result?.limits??null};
+          const sch=await cf(`/accounts/${acct}/workers/scripts/mizan-aziz/schedules`);
+          out.settings.crons=Array.isArray(sch.result?.schedules)?sch.result.schedules.map(x=>x.cron):null;
+          // GraphQL analytics
+          const end=new Date(),start=new Date(end.getTime()-48*3600e3);
+          const q=`query($a:String!,$s:Time!,$e:Time!){viewer{accounts(filter:{accountTag:$a}){workersInvocationsAdaptive(limit:2000,filter:{scriptName:"mizan-aziz",datetime_geq:$s,datetime_leq:$e},orderBy:[datetimeHour_ASC]){sum{requests errors subrequests}quantiles{cpuTimeP50 cpuTimeP99}dimensions{datetimeHour status}}}}}`;
+          try{
+            const r=await fetch('https://api.cloudflare.com/client/v4/graphql',{method:'POST',headers:H,body:JSON.stringify({query:q,variables:{a:acct,s:start.toISOString(),e:end.toISOString()}}),signal:AbortSignal.timeout(30000)});
+            const j=await r.json().catch(()=>({}));
+            const rows=j?.data?.viewer?.accounts?.[0]?.workersInvocationsAdaptive||null;
+            out.analytics={http:r.status,errors:(j.errors||[]).map(e=>String(e.message).slice(0,120)),
+              rows:rows?rows.map(x=>({hour:x.dimensions.datetimeHour,status:x.dimensions.status,requests:x.sum.requests,errors:x.sum.errors,cpuP50_us:x.quantiles?.cpuTimeP50,cpuP99_us:x.quantiles?.cpuTimeP99})):null};
+          }catch(e){out.analytics={error:String(e).slice(0,120)};}
+          // Live probe
+          const base='https://mizan-aziz.aljeryabod.workers.dev';
+          const symbols=['AAPL','MSFT','NVDA','AMZN','GOOGL','META','TSLA','JPM','XOM','KO','2222.SR','1120.SR'];
+          for(const symbol of symbols){
+            const t0=Date.now();const rec={symbol};
+            try{
+              const r=await fetch(`${base}/api/company/analyze`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({symbol}),redirect:'manual',signal:AbortSignal.timeout(150000)});
+              const text=await r.text();let j=null;try{j=JSON.parse(text)}catch{}
+              rec.http=r.status;rec.ms=Date.now()-t0;rec.bytes=text.length;rec.json=j!==null;
+              const m=text.match(/error code:\s*(\d{4})/i)||text.match(/Error\s*(\d{4})/);rec.cf_error=m?m[1]:null;
+              rec.cf_ray=r.headers.get('cf-ray');
+              if(j){rec.error=j.error?String(j.error).slice(0,140):null;rec.has_forecast=!!(j.forecast||j.scenarios||j.analysis||j.result);rec.keys=Object.keys(j).slice(0,20);}
+              else rec.snippet=text.slice(0,140);
+            }catch(e){rec.http=0;rec.ms=Date.now()-t0;rec.error=String(e&&e.name||e).slice(0,60);}
+            out.live.push(rec);
+            await new Promise(r=>setTimeout(r,3000));
+          }
+          out.summary={total:out.live.length,ok200:out.live.filter(x=>x.http===200).length,http5xx:out.live.filter(x=>x.http>=500).length,cf1102:out.live.filter(x=>x.cf_error==='1102').length};
+          console.log(JSON.stringify(out,null,1));
+          NODE
+          wc -c out/probe.json
+          b64="$(base64 -w0 out/probe.json)"
+          GH_TOKEN="${{ github.token }}" gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/probe-after-paid-${{ github.run_id }}-${{ github.run_attempt }}.json" \
+            -f message="ci diagnostics: probe after paid run ${{ github.run_id }}" -f content="${b64}" -f branch="${{ github.ref_name }}" \
+            || echo "WARN: failed to publish result" >&2
