@@ -31,6 +31,8 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           LIVE: ${{ github.event.inputs.live || '1' }}
+          RID: ${{ github.run_id }}
+          REF: ${{ github.ref_name }}
         shell: bash
         run: |
           set -uo pipefail
@@ -79,7 +81,7 @@ jobs:
           console.log(JSON.stringify(out,null,1));
           NODE
           wc -c out/probe.json
-          b64="$(base64 -w0 out/probe.json)"
-          GH_TOKEN="${{ github.token }}" gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/probe-after-paid-${{ github.run_id }}-${{ github.run_attempt }}.json" \
-            -f message="ci diagnostics: probe after paid run ${{ github.run_id }}" -f content="${b64}" -f branch="${{ github.ref_name }}" \
+          # Body via file: a large base64 string exceeds the per-argument size limit (MAX_ARG_STRLEN).
+          node -e 'const fs=require("fs");fs.writeFileSync("out/body.json",JSON.stringify({message:"ci diagnostics: probe after paid run "+process.env.RID,branch:process.env.REF,content:fs.readFileSync("out/probe.json").toString("base64")}))'
+          GH_TOKEN="${{ github.token }}" gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/probe-after-paid-${{ github.run_id }}-${{ github.run_attempt }}.json" --input out/body.json >/dev/null \
             || echo "WARN: failed to publish result" >&2
