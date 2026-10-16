@@ -18,6 +18,9 @@ const localBindingConfig = {
   // Cutover done: crons now run here; they were cleared on the old mizan-equity worker.
   triggers: { crons: [EVALUATE_DUE_CRON, ACCURACY_SAMPLE_CRON, SCREENER_FOLLOWUP_CRON] },
   compatibility_flags: ["nodejs_compat"],
+  // Workers Paid (owner upgraded 2026-10-16): explicit CPU limit per invocation = Paid default 30 s.
+  // Deploy is rejected by Cloudflare on the Free plan, so a successful deploy also confirms the plan.
+  limits: { cpu_ms: 30000 },
   vars: {
     MIZAN_BACKGROUND_CRON_ENABLED: "true",
     ACCESS_TEAM_DOMAIN: "solitary-frost-7b9b.cloudflareaccess.com",
