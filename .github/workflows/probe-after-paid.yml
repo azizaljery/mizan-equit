@@ -7,6 +7,11 @@ name: Probe mizan-aziz after Workers Paid upgrade (1102 check)
 #    (normal forecast rows), as every user analysis does.
 on:
   workflow_dispatch:
+    inputs:
+      live:
+        description: 'Run live analyze calls (1) or analytics only (0)'
+        required: false
+        default: '1'
   push:
     branches:
       - mizan-aziz-deploy
@@ -25,6 +30,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          LIVE: ${{ github.event.inputs.live || '1' }}
         shell: bash
         run: |
           set -uo pipefail
@@ -42,19 +48,19 @@ jobs:
           const sch=await cf(`/accounts/${acct}/workers/scripts/mizan-aziz/schedules`);
           out.settings.crons=Array.isArray(sch.result?.schedules)?sch.result.schedules.map(x=>x.cron):null;
           // GraphQL analytics
-          const end=new Date(),start=new Date(end.getTime()-48*3600e3);
-          const q=`query($a:String!,$s:Time!,$e:Time!){viewer{accounts(filter:{accountTag:$a}){workersInvocationsAdaptive(limit:2000,filter:{scriptName:"mizan-aziz",datetime_geq:$s,datetime_leq:$e},orderBy:[datetimeHour_ASC]){sum{requests errors subrequests}quantiles{cpuTimeP50 cpuTimeP99}dimensions{datetimeHour status}}}}}`;
+          const end=new Date(),start=new Date(end.getTime()-(process.env.LIVE==='0'?6:48)*3600e3);
+          const q=`query($a:String!,$s:Time!,$e:Time!){viewer{accounts(filter:{accountTag:$a}){workersInvocationsAdaptive(limit:2000,filter:{scriptName:"mizan-aziz",datetime_geq:$s,datetime_leq:$e},orderBy:[datetimeFiveMinutes_ASC]){sum{requests errors subrequests}quantiles{cpuTimeP50 cpuTimeP99 wallTimeP99}dimensions{datetimeHour:datetimeFiveMinutes status}}}}}`;
           try{
             const r=await fetch('https://api.cloudflare.com/client/v4/graphql',{method:'POST',headers:H,body:JSON.stringify({query:q,variables:{a:acct,s:start.toISOString(),e:end.toISOString()}}),signal:AbortSignal.timeout(30000)});
             const j=await r.json().catch(()=>({}));
             const rows=j?.data?.viewer?.accounts?.[0]?.workersInvocationsAdaptive||null;
             out.analytics={http:r.status,errors:(j.errors||[]).map(e=>String(e.message).slice(0,120)),
-              rows:rows?rows.map(x=>({hour:x.dimensions.datetimeHour,status:x.dimensions.status,requests:x.sum.requests,errors:x.sum.errors,cpuP50_us:x.quantiles?.cpuTimeP50,cpuP99_us:x.quantiles?.cpuTimeP99})):null};
+              rows:rows?rows.map(x=>({hour:x.dimensions.datetimeHour,status:x.dimensions.status,requests:x.sum.requests,errors:x.sum.errors,cpuP50_us:x.quantiles?.cpuTimeP50,cpuP99_us:x.quantiles?.cpuTimeP99,wallP99_us:x.quantiles?.wallTimeP99})):null};
           }catch(e){out.analytics={error:String(e).slice(0,120)};}
           // Live probe
           try{const h=await fetch('https://mizan-aziz.aljeryabod.workers.dev/',{redirect:'manual',signal:AbortSignal.timeout(30000)});const tx=await h.text();out.home={http:h.status,bytes:tx.length};}catch(e){out.home={error:String(e).slice(0,60)};}
           const base='https://mizan-aziz.aljeryabod.workers.dev';
-          const symbols=['2222.SR','MSFT','NVDA','1120.SR','KO','AMZN'];
+          const symbols=process.env.LIVE==='0'?[]:['2222.SR','MSFT','NVDA','1120.SR','KO','AMZN'];
           for(const symbol of symbols){
             const t0=Date.now();const rec={symbol};
             try{
