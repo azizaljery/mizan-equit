@@ -1,0 +1,17 @@
+{
+  "kind": "sanitized-canonical-baseline-test-result",
+  "baselineCommit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+  "canonicalSourceDirectory": "/tmp/mizan-v45-canonical-18ba8f39-20261003T223500Z/mizan-v45",
+  "sourceParityManifest": "/tmp/mizan-v45-canonical-18ba8f39-20261003T223500Z/source-parity.ndjson",
+  "sourceParityManifestSha256": "5fdf6dd6273c7765252495f6f960f74ad82592e619f583a24bd4d5bec03923bb",
+  "command": "npm test",
+  "workingTree": "/tmp/P2-TRUST-LOCAL-FORECAST-2026-10-03-V1/runtime/mizan-v45",
+  "networkPolicy": "global fetch denied except 127.0.0.1/localhost/[::1] for test-owned ephemeral servers; other hosts rejected",
+  "environment": {"node": "v24.19.0", "database": "Node in-memory SQLite fixtures", "dependencies": "existing node_modules reused; exact package-lock Git blob match verified"},
+  "result": {"exitCode": 0, "tests": 212, "passed": 211, "failed": 0, "skipped": 1, "durationMs": 5919.986201},
+  "skippedTest": {"name": "Current Saudi and US behavior matches the actual pre-change module with identical inputs and a fixed clock", "reason": "test declares skip: !process.env.MIZAN_LIVE_BASELINE_MODULE; the optional pre-change comparison module was not supplied in this isolated package"},
+  "sanitizedTapLog": "/tmp/P2-TRUST-LOCAL-FORECAST-2026-10-03-V1/canonical-npm-test.sanitized.tap",
+  "sanitizedTapLogSha256": "62bc99dbd16f385627e11298fdf7dd64e8ab4d40cb26a114ced677f8c65527a4",
+  "rawCredentialBearingOutputRetained": false,
+  "productionBindingUsed": false
+}

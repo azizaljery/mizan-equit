@@ -1,0 +1,33 @@
+{
+  "kind": "v2.1-restore-review-evidence-index",
+  "date": "2026-10-04",
+  "archive_file": "stock-v21-restore-review-evidence-20261004.tar.gz",
+  "archive_size_bytes": 367942,
+  "archive_sha256": "0d2aa995ea4c88306d9472f90bcd68f429a356c1a83910165f3d479e7bba0cc0",
+  "staging_directory": "stock-v21-restore-review-evidence-20261004",
+  "payload_file_count": 32,
+  "manifest_file": "stock-v21-restore-review-evidence-20261004/MANIFEST.json",
+  "manifest_size_bytes": 9074,
+  "manifest_sha256": "5b5e55db9ef4b2a85dd28ae5a61a27614c4742d17e848ec558e2a9cc163acc33",
+  "independent_review_sha256": "8bcb4c6f39cffa79e82d1d762aac180a285ebe16face2d78091107755fcee1dd",
+  "expected_independent_review_sha256": "8bcb4c6f39cffa79e82d1d762aac180a285ebe16face2d78091107755fcee1dd",
+  "review_packet_sha256": "75faed7744fc383e825acc8bc1fc3bb0961b11a5ef02ba8534ad762bfd2b899b",
+  "status": "Local atomic repair mechanics demonstrated on synthetic D1; rollout NOT_READY / HOLD.",
+  "unverified_gaps": [
+    "Actual application and scheduled writer quiescence plus durable resume hash enforcement",
+    "Eligible screener forecast append and archive sealing"
+  ],
+  "preserved_earlier_attempts": [
+    "two-table fixture failed at missing forecast_outcomes",
+    "earlier full-schema fixture failed Saudi after-close timing condition"
+  ],
+  "excluded": [
+    "raw databases",
+    "Wrangler/.wrangler runtime state",
+    "raw logs",
+    "dependencies",
+    "unrelated intermediates",
+    "credential/session/PIN-bearing content"
+  ],
+  "secret_scan": "No known token, credential, session, or PIN value patterns found in included text."
+}

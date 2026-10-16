@@ -1,0 +1,36 @@
+flowchart TD
+
+    A[D1 Source Record]
+
+    B[Create Export Contract]
+
+    C[Build Transfer Batch]
+
+    D[Compute Source Hash]
+
+    E[Write To D2]
+
+    F[Read Back Verification]
+
+    G[Compute Destination Hash]
+
+    H{Hashes Equal?}
+
+    I[Mark Verified]
+
+    J[Quarantine Batch]
+
+    K[Human Review]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+
+    H -->|YES| I
+    H -->|NO| J
+
+    J --> K

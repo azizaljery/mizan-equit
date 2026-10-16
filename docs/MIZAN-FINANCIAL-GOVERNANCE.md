@@ -1,5 +1,14 @@
 # حوكمة التعافي والاستقرار — MIZAN_FINANCIAL
 
+> CURRENT DECISION — 2026-10-03: Phase 1 is CLOSED. E-001, E-002, E-003 and E-004 are PASS under APPROVED_WITH_DOCUMENTED_LIMITATIONS, following the owner's written approval at 2026-10-03T22:01:25Z. The closure package was merged in commit 18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241.
+>
+> Authoritative decision: [Final human review](phase1/e004-human-review-signoff.md), [current review and evidence](phase1/E004-current-review-2026-10-03.md), [closure matrix](phase1/closure-matrix.md). Limitations in those records remain binding, including source-built rehearsal rather than execution of the saved provider archive, empty production tables, D1 check limits, and no future retention/RPO/RTO guarantee.
+>
+> Current next phase: [Phase 2 — Trust, P2-01 through P2-10](phase2/PHASE-2-REQUIREMENTS.md). Phase 3 Intelligence remains locked until Phase 2 is closed. Earlier phase numbering, freeze conditions, pending checkboxes and NO-GO statuses below are historical, superseded snapshots, not current instructions or an instruction to rerun Phase 1.
+
+## Historical snapshot — superseded by the decision above
+
+
 الحالة المعتمدة من المالك في 28 سبتمبر 2026، بتوقيت السعودية.
 
 Project: MIZAN_FINANCIAL
@@ -50,7 +59,7 @@ AZIZ وMizan Score وResponse Dynamics والنماذج والنظريات وا�
 - [لوحة التنفيذ](MIZAN-FINANCIAL-EXECUTION-BOARD.json)
 - [قائمة المهام وشروط الإغلاق](MIZAN-FINANCIAL-RECOVERY-STABILIZATION.md)
 
-هذا السجل هو المرجع الأحدث للأولوية والتجميد وقفل المراحل؛ تبقى متطلبات قائمة التنفيذ قائمة.
+كان هذا السجل مرجع الأولوية والتجميد وقت إعداده؛ حلّ محله القرار الحالي وروابطه أعلاه.
 
 ## تحديث اعتماد إغلاق المرحلة الأولى — 2026-09-28
 

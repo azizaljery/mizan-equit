@@ -1,0 +1,314 @@
+{
+  "evidenceId": "EVD-TRUST-P2-05-US",
+  "requirementId": "P2-05",
+  "scope": "US market identity/source/period validation at one representative session date for AAPL plus a secondary MSFT sample; no investment advice.",
+  "status": "PARTIAL_WITH_UNRESOLVED_VOLUME_MISMATCH",
+  "humanReview": "PENDING",
+  "baseline": {
+    "repo": "azizaljery/mizan-equit",
+    "commit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+    "sourceParityManifestSha256": "5fdf6dd6273c7765252495f6f960f74ad82592e619f583a24bd4d5bec03923bb",
+    "sourceCheckout": "/tmp/mizan-v45-canonical-18ba8f39-20261003T223500Z/mizan-v45"
+  },
+  "retrievedAtUtc": "2026-10-03T22:51:27.079Z",
+  "asOfDate": "2026-09-10",
+  "marketTimeZone": "America/New_York (Nasdaq states regular-market hours are in Eastern Time; app metadata exchange timezone is America/New_York)",
+  "interval": "1d; raw per-session OHLCV. App request window is five years ending at as-of date; official comparison is for this one date only.",
+  "appMethod": {
+    "module": "mizan-v45/lib/market-data.ts",
+    "functions": "upstream(url,true,0) then canonical parseChart(data, asOf); no configuredReader, DB, live application endpoint, source telemetry, or analysis write was used.",
+    "fieldMapping": "symbol/meta.symbol; company/meta.longName plus static Saudi directory; exchange/meta.exchangeName/fullExchangeName; currency/meta.currency; date from timestamp plus meta.gmtoffset; OHLCV from indicators.quote[0] (open/high/low/close/volume); historical price parser reads close, not adjclose.",
+    "rounding": "Compare prices at published two-decimal precision; retain binary floats unchanged in normalized-app-results.json. Volume compared as exact integer shares."
+  },
+  "officialSources": [
+    {
+      "publisher": "Nasdaq",
+      "sourceUrl": "https://www.nasdaq.com/market-activity/stocks/aapl/historical?page=2&rows_per_page=10&timeline=m1",
+      "sourceName": "AAPL Historical Quotes, 1M window page 2",
+      "sourceAsOf": "Historical row date 09/10/2026; page summary banner separately read “Data as of Oct 1, 2026” while table also showed 10/02/2026. The comparison anchors only on explicit historical row date 09/10/2026, not the banner.",
+      "retrieval": "Directly inspected official Nasdaq page in cloud browser on 2026-10-03.",
+      "quoteExcerpts": [
+        "Apple Inc. Common Stock (AAPL) Historical Quotes",
+        "Date; Close/Last; Volume; Open; High; Low"
+      ]
+    },
+    {
+      "publisher": "SEC / Apple Inc.",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/R1.htm",
+      "sourceName": "Apple Inc. 2025 Form 10-K XBRL cover",
+      "sourceAsOf": "FY ended 2025-09-27; filed 2025-10-31",
+      "quoteExcerpts": [
+        "Entity Registrant Name: Apple Inc.",
+        "Trading Symbol: AAPL",
+        "Security Exchange Name: NASDAQ"
+      ]
+    },
+    {
+      "publisher": "Nasdaq",
+      "sourceUrl": "https://www.nasdaq.com/market-activity/stock-market-holiday-schedule",
+      "sourceName": "US & Nordic Stock Market Schedule",
+      "sourceAsOf": "retrieved 2026-10-03",
+      "quoteExcerpts": [
+        "Opens: 9:30 am Eastern Time Zone; Closes: 4:00 pm Eastern Time Zone"
+      ]
+    },
+    {
+      "publisher": "Apple Investor Relations",
+      "sourceUrl": "https://investor.apple.com/investor-relations/faq/default.aspx",
+      "sourceName": "Apple Investor Relations FAQ",
+      "sourceAsOf": "retrieved 2026-10-03",
+      "quoteExcerpts": [
+        "traded on The Nasdaq Stock Market LLC under the ticker symbol AAPL",
+        "stock has split five times since the IPO"
+      ]
+    },
+    {
+      "publisher": "Nasdaq",
+      "sourceUrl": "https://www.nasdaq.com/market-activity/stocks/msft/historical?page=2&rows_per_page=10&timeline=m1",
+      "sourceName": "MSFT Historical Quotes, 1M window page 2",
+      "sourceAsOf": "Historical row date 09/10/2026; page summary banner separately read “Data as of Oct 1, 2026” while table also showed 10/02/2026. The comparison anchors only on explicit historical row date 09/10/2026, not the banner.",
+      "retrieval": "Directly inspected official Nasdaq page in cloud browser on 2026-10-03.",
+      "quoteExcerpts": [
+        "Microsoft Corporation Common Stock (MSFT) Historical Quotes",
+        "Date; Close/Last; Volume; Open; High; Low"
+      ]
+    },
+    {
+      "publisher": "SEC / Microsoft Corporation",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm",
+      "sourceName": "Microsoft Corporation 2025 Form 10-K",
+      "sourceAsOf": "FY ended 2025-06-30; filed 2025-07-30",
+      "quoteExcerpts": [
+        "Trading Symbol: MSFT",
+        "Name of exchange: Nasdaq"
+      ]
+    }
+  ],
+  "corporateActionDisclosure": {
+    "appBehavior": "Canonical parseChart reads quote.close/volume and event records; it does not read adjclose. AAPL raw chart window has dividend events; no split is in this app query window beginning 2021-09-10. Apple IR says the last stock split was 4-for-1 on 2020-08-28, outside the sample window. MSFT raw chart window contains dividend events; Nasdaq reports last Microsoft split in February 2003 (secondary Nasdaq article, not used to determine sample prices). Values are point-in-time daily OHLCV, not total return.",
+    "officialContext": "Nasdaq historical quotes page presents daily Close/Last and Volume rows. No independent full five-year window was compared."
+  },
+  "samples": [
+    {
+      "symbol": "AAPL",
+      "appMeta": {
+        "symbol": "AAPL",
+        "longName": "Apple Inc.",
+        "shortName": "Apple Inc.",
+        "currency": "USD",
+        "exchangeName": "NMS",
+        "fullExchangeName": "NasdaqGS",
+        "instrumentType": "EQUITY",
+        "exchangeTimezoneName": "America/New_York",
+        "gmtoffset": -14400,
+        "dataGranularity": "1d"
+      },
+      "officialIdentity": {
+        "name": "Apple Inc.",
+        "symbol": "AAPL",
+        "exchange": "The Nasdaq Stock Market LLC / Nasdaq"
+      },
+      "officialHistoricalRow": {
+        "name": "Apple Inc.",
+        "symbol": "AAPL",
+        "exchange": "The Nasdaq Stock Market LLC / Nasdaq",
+        "currency": "USD",
+        "date": "2026-09-10",
+        "open": 316.67,
+        "high": 326.74,
+        "low": 316.51,
+        "close": 326.57,
+        "volume": 70011910
+      },
+      "fields": {
+        "symbol": {
+          "app": "AAPL",
+          "official": "AAPL",
+          "status": "PASS"
+        },
+        "name": {
+          "app": "Apple Inc.",
+          "official": "Apple Inc.",
+          "status": "PASS"
+        },
+        "exchange_market": {
+          "app": "NasdaqGS",
+          "official": "The Nasdaq Stock Market LLC / Nasdaq",
+          "status": "PASS"
+        },
+        "currency": {
+          "app": "USD",
+          "official": "USD",
+          "status": "PASS",
+          "officialBasis": "Nasdaq table prices carry a $ prefix; SEC confirms US Nasdaq-listed common stock."
+        },
+        "date_period": {
+          "app": "2026-09-10",
+          "official": "2026-09-10",
+          "status": "PASS"
+        },
+        "open": {
+          "appRaw": 316.6700134277344,
+          "appPublishedPrecision": 316.67,
+          "official": 316.67,
+          "status": "PASS"
+        },
+        "high": {
+          "appRaw": 326.739990234375,
+          "appPublishedPrecision": 326.74,
+          "official": 326.74,
+          "status": "PASS"
+        },
+        "low": {
+          "appRaw": 316.510009765625,
+          "appPublishedPrecision": 316.51,
+          "official": 316.51,
+          "status": "PASS"
+        },
+        "close": {
+          "appRaw": 326.57000732421875,
+          "appPublishedPrecision": 326.57,
+          "official": 326.57,
+          "status": "PASS"
+        },
+        "volume": {
+          "appShares": 70011900,
+          "officialShares": 70011910,
+          "differenceAppMinusOfficial": -10,
+          "status": "MISMATCH",
+          "disposition": "UNRESOLVED_SOURCE_VARIANCE"
+        }
+      },
+      "appRawResponseSha256": "34561f15b904a86d63d1a3184c6a4381ed637cc7c0812dc7d8eaabfd1317ceca",
+      "appNormalizedPriceRow": {
+        "date": "2026-09-10",
+        "open": 316.6700134277344,
+        "high": 326.739990234375,
+        "low": 316.510009765625,
+        "close": 326.57000732421875,
+        "volume": 70011900
+      },
+      "appCoverage": {
+        "interval": "1d",
+        "count": 1255,
+        "firstDate": "2021-09-10",
+        "lastDate": "2026-09-10"
+      }
+    },
+    {
+      "symbol": "MSFT",
+      "appMeta": {
+        "symbol": "MSFT",
+        "longName": "Microsoft Corporation",
+        "shortName": "Microsoft Corporation",
+        "currency": "USD",
+        "exchangeName": "NMS",
+        "fullExchangeName": "NasdaqGS",
+        "instrumentType": "EQUITY",
+        "exchangeTimezoneName": "America/New_York",
+        "gmtoffset": -14400,
+        "dataGranularity": "1d"
+      },
+      "officialIdentity": {
+        "name": "Microsoft Corporation",
+        "symbol": "MSFT",
+        "exchange": "Nasdaq"
+      },
+      "officialHistoricalRow": {
+        "name": "Microsoft Corporation",
+        "symbol": "MSFT",
+        "exchange": "Nasdaq",
+        "currency": "USD",
+        "date": "2026-09-10",
+        "open": 488.32,
+        "high": 494.52,
+        "low": 486.0,
+        "close": 492.44,
+        "volume": 16038810
+      },
+      "fields": {
+        "symbol": {
+          "app": "MSFT",
+          "official": "MSFT",
+          "status": "PASS"
+        },
+        "name": {
+          "app": "Microsoft Corporation",
+          "official": "Microsoft Corporation",
+          "status": "PASS"
+        },
+        "exchange_market": {
+          "app": "NasdaqGS",
+          "official": "Nasdaq",
+          "status": "PASS"
+        },
+        "currency": {
+          "app": "USD",
+          "official": "USD",
+          "status": "PASS",
+          "officialBasis": "Nasdaq table prices carry a $ prefix; SEC confirms US Nasdaq-listed common stock."
+        },
+        "date_period": {
+          "app": "2026-09-10",
+          "official": "2026-09-10",
+          "status": "PASS"
+        },
+        "open": {
+          "appRaw": 488.32000732421875,
+          "appPublishedPrecision": 488.32,
+          "official": 488.32,
+          "status": "PASS"
+        },
+        "high": {
+          "appRaw": 494.5199890136719,
+          "appPublishedPrecision": 494.52,
+          "official": 494.52,
+          "status": "PASS"
+        },
+        "low": {
+          "appRaw": 486,
+          "appPublishedPrecision": 486,
+          "official": 486.0,
+          "status": "PASS"
+        },
+        "close": {
+          "appRaw": 492.44000244140625,
+          "appPublishedPrecision": 492.44,
+          "official": 492.44,
+          "status": "PASS"
+        },
+        "volume": {
+          "appShares": 16038800,
+          "officialShares": 16038810,
+          "differenceAppMinusOfficial": -10,
+          "status": "MISMATCH",
+          "disposition": "UNRESOLVED_SOURCE_VARIANCE"
+        }
+      },
+      "appRawResponseSha256": "49a5ea66b74db781cad1e4a7b25da08e5977427844395ed95644e607aeef1d7a",
+      "appNormalizedPriceRow": {
+        "date": "2026-09-10",
+        "open": 488.32000732421875,
+        "high": 494.5199890136719,
+        "low": 486,
+        "close": 492.44000244140625,
+        "volume": 16038800
+      },
+      "appCoverage": {
+        "interval": "1d",
+        "count": 1255,
+        "firstDate": "2021-09-10",
+        "lastDate": "2026-09-10"
+      }
+    }
+  ],
+  "coverage": {
+    "sampleDate": "verified for both selected companies",
+    "officialFullWindow": "NOT_COMPARABLE / NOT VERIFIED; only 2026-09-10 rows compared to canonical five-year query-window result.",
+    "missingSampleRows": [],
+    "limits": [
+      "Nasdaq summary banner date lagged the table’s newest row by one calendar date; sample uses explicit row date, not banner.",
+      "Nasdaq displayed volume differs from Yahoo chart volume by 10 shares for both AAPL and MSFT; unresolved source variance; no source preference or correction inferred."
+    ]
+  }
+}

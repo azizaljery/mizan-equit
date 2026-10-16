@@ -1,0 +1,64 @@
+{
+  "evidenceId": "EVD-TRUST-P2-01-CURRENT-D1-IDENTITY",
+  "requirementId": "P2-01",
+  "recordedAt": "2026-10-03T23:10:00Z",
+  "observationDate": "2026-10-03",
+  "status": "CURRENT_D1_PROVIDER_IDENTITY_VERIFIED; D2_DISCOVERY_RECORDED",
+  "source": {
+    "type": "Owner-controlled provider UI metadata, visually inspected by root",
+    "exactCaptureTimeRecorded": false,
+    "imageOrScreenshotIncluded": false,
+    "sourceFileIdStored": false
+  },
+  "currentProviderDatabase": {
+    "provider": "Cloudflare D1",
+    "name": "mizan-equity-db",
+    "uuid": "e95b74e8-81d6-4beb-8ea2-ad59c863d21d",
+    "region": "EEUR",
+    "displayedSize": "86.63 MB",
+    "tableCount": 42,
+    "identityState": "CURRENT_OWNER_UI_OBSERVATION",
+    "matchesHistoricalProviderIdentity": true
+  },
+  "siteBindingObservedSeparately": {
+    "siteProjectId": "appgprj_6a9bd7353ed4819193fcd5363ed1d38f",
+    "selectedBindingName": "DB",
+    "source": "Read-only Sites database overview",
+    "providerDatabaseUuidDirectlyLinkedToBindingInThisCapture": false,
+    "tableCountReturnedByOverview": 42,
+    "note": "The Sites overview independently showed the live binding name and tables; it did not expose the provider database UUID, and this observation did not newly prove the binding-to-UUID mapping."
+  },
+  "scopeAndLimitations": {
+    "noDatabaseRowsReadForThisObservation": true,
+    "noDatabaseWrites": true,
+    "noProductionMutation": true,
+    "credentialsIncluded": false,
+    "secretsIncluded": false,
+    "emailDataIncluded": false,
+    "userRecordDataIncluded": false,
+    "imagesIncluded": false,
+    "p2_01RemainingGate": "Discovery questions on the D2 initiative: purpose, role/data boundaries and justification. D2 provider/resource identity is not selected because implementation is not approved; this is not a missing UUID lookup.",
+    "p2_01StatusAfterDecision": "PARTIAL_PENDING_D2_DISCOVERY; the D1 identity is verified and no physical D2 identity is selected or required during discovery.",
+    "d2InitiativeStatus": "DISCOVERY; role UNKNOWN; no provider selected; no D1-to-D2 migration approved.",
+    "previousD2IdentityQuestion": "Resolved at the initiative level by the owner decision. Discovery questions remain about why D2 is needed and what data belongs there; they do not request credentials or a physical identity.",
+    "d2DiscoveryRecord": "docs/phase2/D2-DISCOVERY.md",
+    "d2DocumentationApproved": true,
+    "d2ImplementationOrProvisioningApproved": false,
+    "d2DataTransferApproved": false
+  },
+  "ownerDecision": {
+    "messageId": "Sentinel_69aaeee0fbf881918a5b3a3a06dc50a3",
+    "timestamp": "2026-10-03T23:16:54Z",
+    "ownerText": "اعتمد الان خطة دي ١ ودي٢ واضف كل ماهنا لدييك",
+    "disposition": {
+      "d1": "ACTIVE current operational Source of Truth and permanent site memory",
+      "d2": "New initiative under DISCOVERY; role UNKNOWN; implementation/provisioning NOT APPROVED; not a D1 replacement"
+    },
+    "documentationApproval": {
+      "messageId": "Sentinel_044d17e6fc408191b486b16e4be652d1",
+      "timestamp": "2026-10-03T23:36:12Z",
+      "ownerText": "اعتمد ذلك",
+      "scope": "D2 design/discovery documentation adopted; D2 creation and data transfer remain gated."
+    }
+  }
+}
