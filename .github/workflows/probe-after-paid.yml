@@ -62,7 +62,7 @@ jobs:
           // Live probe
           try{const h=await fetch('https://mizan-aziz.aljeryabod.workers.dev/',{redirect:'manual',signal:AbortSignal.timeout(30000)});const tx=await h.text();out.home={http:h.status,bytes:tx.length};}catch(e){out.home={error:String(e).slice(0,60)};}
           const base='https://mizan-aziz.aljeryabod.workers.dev';
-          const symbols=process.env.LIVE==='0'?[]:['2222.SR','MSFT','NVDA','1120.SR','KO','AMZN'];
+          const symbols=process.env.LIVE==='0'?[]:['2222.SR','1120.SR','4009.SR','MSFT'];
           for(const symbol of symbols){
             const t0=Date.now();const rec={symbol};
             try{
@@ -71,7 +71,7 @@ jobs:
               rec.http=r.status;rec.ms=Date.now()-t0;rec.bytes=text.length;rec.json=j!==null;
               const m=text.match(/error code:\s*(\d{4})/i)||text.match(/Error\s*(\d{4})/);rec.cf_error=m?m[1]:null;
               rec.cf_ray=r.headers.get('cf-ray');
-              if(j){rec.error=j.error?String(j.error).slice(0,140):null;rec.has_forecast=!!(j.forecast||j.scenarios||j.analysis||j.result);rec.keys=Object.keys(j).slice(0,20);}
+              if(j){rec.error=j.error?String(j.error).slice(0,140):null;rec.has_forecast=!!(j.forecast||j.scenarios||j.analysis||j.result);rec.keys=Object.keys(j).slice(0,20);rec.ctxMarket=j.context?.market?{symbol:j.context.market.symbol,name:String(j.context.market.name||'').slice(0,120),sessions:j.context.market.prices?.length??0,last:j.context.market.prices?.at(-1)?.date??null}:null;}
               else {const t=text.match(/<title>([^<]*)<\/title>/i);rec.title=t?t[1].trim().slice(0,160):null;const plain=text.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();rec.text=plain.slice(0,600);const c=plain.match(/Error\s*(?:code)?\s*:?\s*(\d{3,4})/i);if(c&&!rec.cf_error)rec.cf_error=c[1];}
             }catch(e){rec.http=0;rec.ms=Date.now()-t0;rec.error=String(e&&e.name||e).slice(0,60);}
             out.live.push(rec);
