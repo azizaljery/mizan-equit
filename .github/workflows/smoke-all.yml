@@ -35,7 +35,7 @@ jobs:
           const {chromium}=createRequire(path.join(process.env.PW_ROOT,'package.json'))('playwright');
           const base='https://mizan-aziz.aljeryabod.workers.dev';
           const out={at:new Date().toISOString(),pages:[],apis:[]};
-          const pages=['/','/accuracy','/accuracy-sample','/admin/verify','/aziz','/gold','/manual','/screener','/screener/operations','/tests','/does-not-exist-404'];
+          const pages=['/','/picks','/accuracy','/accuracy-sample','/admin/verify','/aziz','/gold','/manual','/screener','/screener/operations','/tests','/does-not-exist-404'];
           const browser=await chromium.launch({headless:true});
           for(const p of pages){
             const ctx=await browser.newContext({locale:'ar-SA'});const page=await ctx.newPage();
@@ -54,7 +54,7 @@ jobs:
             out.pages.push(rec);await ctx.close();
           }
           await browser.close();
-          const apis=['/api/site-settings','/api/company/search?q=aramco','/api/company/search?q=AAPL','/api/company/quote?symbol=2222.SR','/api/company/quote?symbol=AAPL',...['2222.SR','MSFT'].flatMap(x=>['1m','5m','60m','1d'].map(i=>`/api/company/chart?symbol=${x}&interval=${i}`)),'/api/temporal?symbol=2222.SR&date=2026-09-01',
+          const apis=[...['sa','us'].flatMap(m=>[1,5,21].map(h=>`/api/picks?market=${m}&horizon=${h}&count=3`)),'/api/site-settings','/api/company/search?q=aramco','/api/company/search?q=AAPL','/api/company/quote?symbol=2222.SR','/api/company/quote?symbol=AAPL',...['2222.SR','MSFT'].flatMap(x=>['1m','5m','60m','1d'].map(i=>`/api/company/chart?symbol=${x}&interval=${i}`)),'/api/temporal?symbol=2222.SR&date=2026-09-01',
             '/api/gold/quote','/api/gold/fx','/api/gold/chart','/api/accuracy-sample','/api/backtest','/api/research','/api/temporal','/api/market-watch','/api/forecast-tests',
             '/api/aziz/company?symbol=2222.SR','/api/aziz/monitor','/api/aziz/readiness','/api/research/export',
             '/api/admin/backtest/aggregate','/api/admin/backtest/export','/api/admin/council','/api/admin/dashboard','/api/admin/heartbeat','/api/admin/retention','/api/admin/run-background','/api/admin/screener-history','/api/admin/screener-operations','/api/admin/signin','/api/admin/state','/api/admin/verify','/api/admin/jobs/evaluate-due'];
@@ -63,7 +63,7 @@ jobs:
             try{const r=await fetch(base+a,{redirect:'manual',signal:AbortSignal.timeout(60000)});const tx=await r.text();
               rec.http=r.status;rec.ms=Date.now()-t0;rec.ct=(r.headers.get('content-type')||'').slice(0,40);rec.bytes=tx.length;rec.loc=r.headers.get('location')?.slice(0,80)||null;
               let j=null;try{j=JSON.parse(tx)}catch{}
-              rec.body=j?JSON.stringify(j).slice(0,220):tx.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').slice(0,160);
+              rec.body=j?JSON.stringify(j).slice(0,a.startsWith('/api/picks')?3000:220):tx.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').slice(0,160);
             }catch(e){rec.http=0;rec.ms=Date.now()-t0;rec.error=String(e.name||e).slice(0,60);}
             out.apis.push(rec);
           }
