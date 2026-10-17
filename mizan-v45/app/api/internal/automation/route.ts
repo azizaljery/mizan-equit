@@ -7,29 +7,33 @@ import {runResolutionCycle} from '@/worker/scheduled';
 import {runCouncil,councilStatus,summarizeCouncil} from '@/lib/agents/council';
 import {councilFollowupTask} from '@/lib/agents/followup-work';
 import {readScreenerOperations} from '@/lib/screener-operations';
+import {adminSession} from '@/lib/admin-access';
+import {decideAutomationAuth,ownerSessionActionAllowed,type AutomationAuthMode} from '@/lib/admin-tools-client';
 import {acceptFollowupProof,runScreenerFollowup,runScreenerFollowupStep,startScreenerFollowupAcceptance,readScreenerFollowupAcceptance} from '@/worker/screener-followup';
 
 const headers={'Cache-Control':'no-store, private'};
-async function equalSecret(a:string,b:string){
-  if(!a||!b)return false;
-  const enc=new TextEncoder(),[x,y]=await Promise.all([
-    crypto.subtle.digest('SHA-256',enc.encode(a)),
-    crypto.subtle.digest('SHA-256',enc.encode(b)),
-  ]);
-  const aa=new Uint8Array(x),bb=new Uint8Array(y);let diff=aa.length^bb.length;
-  for(let i=0;i<Math.min(aa.length,bb.length);i++)diff|=aa[i]^bb[i];
-  return diff===0;
-}
+// Two independent ways in, decided by a pure, tested function (lib/admin-tools-client.ts):
+// 1) the deployment bearer token (constant-time compare; unchanged behaviour), or
+// 2) the owner's admin UI via /api/admin/tools/automation (Cloudflare Access path):
+//    verified owner identity + valid D1 admin session + exact same-origin POST, and only
+//    for the bounded actions in OWNER_SESSION_AUTOMATION_ACTIONS.
+const decisions=new WeakMap<Request,AutomationAuthMode>();
 async function authorized(req:Request){
-  const runtime=env as any,expected=String(runtime.MIZAN_INTERNAL_AUTOMATION_TOKEN||'');
-  const supplied=req.headers.get('authorization')?.match(/^Bearer ([A-Za-z0-9_-]{32,256})$/)?.[1]||'';
-  return equalSecret(supplied,expected);
+  const runtime=env as any;
+  const mode=await decideAutomationAuth(req,{
+    expectedToken:String(runtime.MIZAN_INTERNAL_AUTOMATION_TOKEN||''),
+    ownerEmail:String(runtime.RECOMMENDATION_OWNER_EMAIL||''),
+    hasAdminSession:()=>adminSession(runtime.DB,req),
+  });
+  if(mode)decisions.set(req,mode);
+  return mode!==null;
 }
 export async function POST(req:Request){
   if(!await authorized(req))return Response.json({error:'غير مصرح.'},{status:401,headers});
   try{
     const raw=await req.text();if(raw.length>10000)throw new Error('request-too-large');
     const body=raw?JSON.parse(raw):{},runtime=env as any,action=String(body?.action||'');
+    if(decisions.get(req)==='owner-session'&&!ownerSessionActionAllowed(action))return Response.json({error:'هذا الإجراء غير متاح من واجهة الإدارة؛ يبقى للمهام المجدولة أو رمز النشر.'},{status:403,headers});
     if(action==='daily-archive-status')return Response.json(await readDailyArchiveStatus(runtime.DB),{headers});
     if(action==='status')return Response.json(await councilStatus(runtime.DB,runtime),{headers});
     if(action==='screener-operations')return Response.json(await readScreenerOperations(runtime.DB),{headers});
