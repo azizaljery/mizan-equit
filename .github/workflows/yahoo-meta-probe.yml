@@ -29,9 +29,10 @@ jobs:
           node --input-type=module <<'NODE' > out/meta.json
           const out={at:new Date().toISOString(),rows:[]};
           const url=(s,a,b)=>{const p1=Math.floor(Date.parse(a+'T00:00:00Z')/1000),p2=Math.floor(Date.parse(b+'T00:00:00Z')/1000)+86400;return `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(s)}?interval=1d&period1=${p1}&period2=${p2}&events=splits%2Cdiv`;};
-          for(const s of ['^TASI.SR','^GSPC','2222.SR','2002.SR','3001.SR','9505.SR','9503.SR','4009.SR']){
-            const rec={symbol:s};
-            try{const r=await fetch(url(s,'2026-08-24','2026-10-15'),{headers:{'user-agent':'Mozilla/5.0'},signal:AbortSignal.timeout(20000)});rec.http=r.status;const j=await r.json().catch(()=>null);
+          const variants=[['period','^TASI.SR',null],['range1y','^TASI.SR','https://query1.finance.yahoo.com/v8/finance/chart/%5ETASI.SR?interval=1d&range=1y'],['range6mo','^TASI.SR','https://query1.finance.yahoo.com/v8/finance/chart/%5ETASI.SR?interval=1d&range=6mo'],['q2-period','^TASI.SR','Q2'],['period-noevents','^TASI.SR','NOEV']];
+          for(const [label,s,custom] of variants){
+            const rec={symbol:s,label};let u=url(s,'2026-08-24','2026-10-15');if(custom==='Q2')u=u.replace('query1','query2');else if(custom==='NOEV')u=u.replace('&events=splits%2Cdiv','');else if(custom)u=custom;
+            try{const r=await fetch(u,{headers:{'user-agent':'Mozilla/5.0'},signal:AbortSignal.timeout(20000)});rec.http=r.status;const j=await r.json().catch(()=>null);
               const res=j?.chart?.result?.[0];rec.error=j?.chart?.error?.description||null;
               if(res){const m=res.meta;rec.meta={symbol:m.symbol,instrumentType:m.instrumentType,currency:m.currency,exchangeName:m.exchangeName,fullExchangeName:m.fullExchangeName,dataGranularity:m.dataGranularity};rec.points=res.timestamp?.length||0;rec.first=res.timestamp?new Date(res.timestamp[0]*1000).toISOString().slice(0,10):null;rec.last=res.timestamp?new Date(res.timestamp.at(-1)*1000).toISOString().slice(0,10):null;}
             }catch(e){rec.error=String(e).slice(0,100);}
