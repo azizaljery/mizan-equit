@@ -188,3 +188,17 @@ body .card,body .panel{position:relative;background:var(--surface);border:1px so
 .sign-in-inline .secondary-btn{min-height:38px;padding:6px 14px;font-size:.9rem}
 .sign-in-inline>span{flex:1 1 12rem;min-width:0}
 .sign-in-inline{margin-block:8px}
+
+/* ===== توصيات الشركات (company picks) ===== */
+.company-picks .panel-head h2{display:flex;align-items:center;gap:.5rem}
+.company-picks .picks-controls{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin:.75rem 0}
+.company-picks .picks-list{list-style:none;padding:0;margin:.75rem 0;display:grid;gap:.75rem}
+.company-picks .pick-card{display:flex;gap:.9rem;align-items:flex-start;border:1px solid var(--border);border-radius:var(--radius-lg,.75rem);padding:.9rem 1rem;background:var(--card)}
+.company-picks .pick-rank{flex:0 0 2.2rem;height:2.2rem;border-radius:999px;display:grid;place-items:center;font-weight:700;background:var(--primary);color:var(--primary-foreground)}
+.company-picks .pick-body{flex:1;min-width:0}
+.company-picks .pick-body h3{margin:0 0 .35rem;font-size:1.05rem}
+.company-picks .pick-figures{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.92rem}
+.company-picks .pick-change{font-weight:700;color:#0f7a43}
+.company-picks .pick-meta{display:flex;flex-wrap:wrap;gap:.35rem .8rem;align-items:center;margin-top:.45rem}
+.company-picks .picks-foot{font-size:.85rem}
+@media (max-width:640px){.company-picks .pick-card{padding:.75rem}.company-picks .picks-controls .market-select{flex:1 1 45%}}
