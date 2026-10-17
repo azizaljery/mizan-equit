@@ -42,6 +42,9 @@ jobs:
             job_last_keys:"SELECT id, updated_at, json_extract(data,'$.status') status FROM research_state WHERE id LIKE 'job:%last%' OR id LIKE '%:last' ORDER BY updated_at DESC LIMIT 20",
             sizes:"SELECT (SELECT COUNT(*) FROM analysis_snapshots) snapshots,(SELECT COUNT(*) FROM forecast_records) forecasts,(SELECT COUNT(*) FROM forecast_outcomes) outcomes,(SELECT COUNT(*) FROM research_state) state_rows",
             indexes:"SELECT name, tbl_name FROM sqlite_master WHERE type='index' AND tbl_name IN ('analysis_snapshots','forecast_records','forecast_outcomes','accuracy_rows') ORDER BY tbl_name",
+            accuracy_rows_detail:"SELECT id, run_id, state, error, updated_at, substr(outcome,1,300) outcome, json_extract(company,'$.symbol') symbol FROM accuracy_rows ORDER BY updated_at DESC LIMIT 25",
+            accuracy_runs_all:"SELECT id, created_at, json_extract(data,'$.market') m, json_extract(data,'$.date') d, json_extract(data,'$.sessions') s FROM accuracy_runs ORDER BY created_at DESC LIMIT 10",
+            acceptance_full:"SELECT substr(data,1,3000) d FROM research_state WHERE id='job:screener-followup:last'",
             council_running:"SELECT COUNT(*) n FROM sqlite_master WHERE name='council_runs'",
           };
           for(const [k,sql] of Object.entries(Q)){try{out[k]=await q(sql);}catch(e){out[k]={error:String(e).slice(0,120)};}}
