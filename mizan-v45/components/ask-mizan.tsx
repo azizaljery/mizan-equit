@@ -1,4 +1,5 @@
 'use client';
+import {ScanProgress} from './scan-progress';
 import {asksAboutGold} from '@/lib/gold-core';
 import {QuietNote} from './quiet-note';
 import {SectionHeading} from './managed-sections';
@@ -38,7 +39,7 @@ export function AskMizan({onAnalyze}:{onAnalyze:(c:Company)=>unknown}){
   finally{if(controller.current===c)setBusy(false);}
  }
  return <section className="panel ask-panel"><SectionHeading as="h2">اسأل ميزان</SectionHeading><QuietNote label="كيف يعمل اسأل ميزان؟"><p>{description}</p></QuietNote>{!settings.askEnabled&&<p className="warning-box">اسأل ميزان متوقف من الإدارة.</p>}{settings.questions.length>0&&<div className="ask-actions">{settings.questions.map(q=><button className="link-btn" key={q} onClick={()=>setQuestion(q)}>{q}</button>)}</div>}<form className="ask-form" onSubmit={e=>{e.preventDefault();void run()}}><label htmlFor="mizan-question">اكتب سؤالك أو طلب المقارنة</label><textarea id="mizan-question" className="ask-question" aria-label="سؤالك لميزان" dir="rtl" value={question} maxLength={500} required onChange={e=>setQuestion(e.target.value)}/><div className="ask-actions"><button className="secondary-btn" disabled={busy||!settings.askEnabled}>ابحث وحلّل</button>{busy?<button type="button" className="link-btn" onClick={()=>controller.current?.abort()}>إيقاف المسح</button>:scan&&!scan.complete&&scan.question===question&&<button className="secondary-btn" type="button" onClick={()=>void run(true)}>استكمال المسح</button>}</div></form>
- <p role="status" aria-live="polite">{status}</p><p>{understood}</p>{scan&&<><progress className="scan-progress" value={scan.offset} max={scan.total||1}/><p className="scan-meta">فُحصت {scan.offset} من {scan.total} ورقة · مؤهلة حسابيًا {scan.eligible} · مستبعدة أو ناقصة {scan.failed}.</p></>}
+ <p role="status" aria-live="polite">{status}</p><p>{understood}</p>{scan&&<><ScanProgress label="تقدم الفحص" value={scan.offset} max={scan.total||1}/><p className="scan-meta">فُحصت {scan.offset} من {scan.total} ورقة · مؤهلة حسابيًا {scan.eligible} · مستبعدة أو ناقصة {scan.failed}.</p></>}
  <details><summary>معايير الترتيب وحدود التغطية</summary><p>{criteria}</p><p>تُرتب الأوراق التي تجتاز كفاية البيانات والمرشحات فقط. لا تكون «الأفضل في السوق» قبل اكتمال المسح، وتُظهر النتائج الجزئية نطاق الفحص. قد يتضمن الدليل أوراقًا قديمة، ولا يشمل OTC الأمريكي. الأخبار المعروضة ليست تقويمًا كاملًا؛ لا يصنف النظام التوافق الشرعي دون مصدر حديث.</p></details>
  {scan?.complete&&!scan.best.length&&<p className="warning-box">لم توجد نتائج تستوفي التحقق والمرشحات في هذا المسح. راجع أسباب الاستبعاد؛ لا يعني ذلك عدم وجود شركات في السوق.</p>}
  {scan?.best.map((r,i)=><details className="scan-row" key={r.company.symbol}><summary>{i+1}. {r.company.name} · <b dir="ltr">{r.company.symbol}</b> · درجة المقارنة {r.score===null?'محجوبة':r.score+'/100'}</summary>

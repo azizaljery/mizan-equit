@@ -1,4 +1,5 @@
 'use client';
+import {ReportSkeleton} from '@/components/report-skeleton';
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {readCompanyDeepLink,type CompanyDeepLink} from '@/lib/company-deep-link';
 import {isGoldQuery} from '@/lib/gold-core';
@@ -101,7 +102,7 @@ export default function Home(){
  {searchMeta&&<details><summary>ⓘ معلومات دليل الشركات</summary><div className="notice"><div><strong>دليل البحث: {searchMeta.directory.count.toLocaleString('en-US')} ورقة مالية · بتاريخ {searchMeta.directory.date}</strong><p>{searchMeta.directory.scope} ظهور الورقة في الدليل لا يضمن توافر أسعارها أو تحليلها.</p><a href={searchMeta.directory.source} target="_blank" rel="noreferrer">مصدر الدليل</a></div></div></details>}
  {searchMeta&&!busy&&!selected&&!r&&<p role="status" aria-live="polite">{searchMeta.total?`عرض ${searchMeta.offset+1}–${searchMeta.offset+candidates.length} من ${searchMeta.total.toLocaleString('en-US')} نتيجة`:'لا توجد نتيجة مطابقة في الدليل. جرّب الاسم الإنجليزي أو رمز التداول.'}</p>}
  {searchNotice&&<div className="notice" role="status">{searchNotice}<button className="link-btn" onClick={()=>setMarket('us')}>البحث في السوق الأمريكي</button></div>}
- {busy&&<div className="loading-state" role="status" aria-live="polite"><Loader2 className="spin" size={21}/><div><strong>{busy}</strong><p>قد تستغرق المصادر عدة ثوانٍ. لن نملأ النواقص بأرقام افتراضية.</p></div><button onClick={cancel} className="link-btn">إلغاء</button></div>}
+ {busy&&<div className="loading-state" role="status" aria-live="polite"><Loader2 className="spin" size={21}/><div><strong>{busy}</strong><p>قد تستغرق المصادر عدة ثوانٍ. لن نملأ النواقص بأرقام افتراضية.</p></div><button onClick={cancel} className="link-btn">إلغاء</button></div>}{busy&&!report&&<ReportSkeleton/>}
  {selected&&!r&&<section className="panel" aria-label="الشركة التي تم العثور عليها"><h2>تم العثور على {selected.name}</h2><p><b dir="ltr">{selected.symbol}</b> · {selected.exchange}</p>{selected.directoryDate&&<p className="reference">هوية الشركة من نسخة دليل الشركات بتاريخ {selected.directoryDate}؛ حالة الإدراج الحالية والأسعار تُتحقق بصورة مستقلة.</p>}{!busy&&error&&<><p>تعذر إكمال جلب بيانات التحليل؛ لم تُحتسب درجة أو توصية من بيانات ناقصة.</p><button className="secondary-btn" onClick={()=>void analyzeCompany(selected)}>إعادة جلب البيانات</button> <a href={selected.source} target="_blank" rel="noreferrer">مصدر هوية الشركة</a></>}</section>}
 
  {selected&&!r&&!busy&&error&&<><UnavailableForecasts reason={error}/><PrivateRecommendation key={selected.symbol} symbol={selected.symbol}/></>}
