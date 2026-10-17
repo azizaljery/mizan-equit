@@ -50,7 +50,7 @@ jobs:
           const sch=await cf(`/accounts/${acct}/workers/scripts/mizan-aziz/schedules`);
           out.settings.crons=Array.isArray(sch.result?.schedules)?sch.result.schedules.map(x=>x.cron):null;
           // GraphQL analytics
-          const end=new Date(),start=new Date(end.getTime()-(process.env.LIVE==='0'?6:48)*3600e3);
+          const end=new Date(),start=new Date(end.getTime()-(process.env.LIVE==='0'?26:48)*3600e3);
           const q=`query($a:String!,$s:Time!,$e:Time!){viewer{accounts(filter:{accountTag:$a}){workersInvocationsAdaptive(limit:2000,filter:{scriptName:"mizan-aziz",datetime_geq:$s,datetime_leq:$e},orderBy:[datetimeFiveMinutes_ASC]){sum{requests errors subrequests}quantiles{cpuTimeP50 cpuTimeP99 wallTimeP99}dimensions{datetimeHour:datetimeFiveMinutes status}}}}}`;
           try{
             const r=await fetch('https://api.cloudflare.com/client/v4/graphql',{method:'POST',headers:H,body:JSON.stringify({query:q,variables:{a:acct,s:start.toISOString(),e:end.toISOString()}}),signal:AbortSignal.timeout(30000)});
