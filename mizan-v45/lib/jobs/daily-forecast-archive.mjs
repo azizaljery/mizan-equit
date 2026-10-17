@@ -5,6 +5,7 @@ export const DAILY_ARCHIVE_TARGET=30;
 export const DAILY_ARCHIVE_HORIZONS=[1,5,21,252];
 const MAX_ATTEMPTS=3;
 const PREFIX='job:daily-forecast:';
+const errorText=e=>(e instanceof Error?e.message:String(e)).slice(0,200);
 export function marketClock(market,now=Date.now()){
  if(!['sa','us'].includes(market))throw Error('invalid-market');
  const zone=market==='sa'?'Asia/Riyadh':'America/New_York';
@@ -93,6 +94,9 @@ export async function runDailyArchive(db,deps,controller){
     else if(item.attempts>=MAX_ATTEMPTS){item.state='failed';}
     else{
      stage='fetch-company';result.symbolsAttempted++;
+     // Count the attempt durably BEFORE fetching: an invocation killed mid-fetch (CPU/wall limit)
+     // never reaches catch, so counting only there let one symbol kill every later run.
+     item.attempts++;await saveState(db,planId,plan,deps.now());
      // Fetch has no writes; timing out cannot leave a late journal write running.
      const report=await deps.fetch(item.symbol,settings);
      stage='validate-session';
@@ -101,13 +105,15 @@ export async function runDailyArchive(db,deps,controller){
       const benchmark=report.context?.market;
       if((market==='sa'?['^TASI.SR','TADAWUL-CALENDAR']:['SPY']).includes(benchmark?.symbol)&&benchmark.prices?.at(-1)?.date===clock.date)throw Error('instrument-session-unavailable');
       plan.nextCheckAt=new Date(deps.now()+30*60000).toISOString();
+      // The fetch completed; missing session evidence is a wait, not a failed attempt (unchanged policy).
+      item.attempts--;
       item.lastReason='current-session-price-or-benchmark-unavailable';
       await saveState(db,planId,plan,deps.now());state('waiting-for-session-evidence');continue;
      }
      // Never cross a market date or outlive the original lock while persisting.
      if(marketClock(market,deps.now()).date!==clock.date||deps.now()-start>150000)throw Error('batch-window-expired');
      if(!await deps.owns(token))throw Error('lease-lost');
-     stage='persist-forecast';item.attempts++;
+     stage='persist-forecast';
      report.dailyArchive={key,version:DAILY_ARCHIVE_VERSION,market,sessionDate:clock.date,selectedAt:plan.createdAt,
       observedThrough:report.prices.at(-1).date,availableAt:report.retrievedAt,source:report.priceSource,priceBasis:report.priceAdjustment||null};
      const projection=await deps.record(claimedJournal(db,key,report.dailyArchive,deps.now()),report,archiveSettings);
@@ -117,20 +123,21 @@ export async function runDailyArchive(db,deps,controller){
      result.analysesRecorded++;result.forecastRowsSaved+=verified.savedHorizons.length;
      result.availableForecastRows+=verified.availableHorizons.length;
     }
-   }catch{
-    if(stage!=='persist-forecast'&&stage!=='recover')item.attempts++;
+   }catch(error){
+    // attempts was already incremented (and persisted) before the fetch.
+    console.error('[mizan-daily-archive]',stage,item.symbol,errorText(error));
     item.errors.push({at:new Date(deps.now()).toISOString(),stage});
     if(item.attempts>=MAX_ATTEMPTS&&stage!=='persist-forecast'&&stage!=='recover')item.state='failed';
     result.errors.push({symbol:item.symbol,stage,error:'لم يتأكد الحفظ؛ تبقى الشركة نفسها في العينة.'});result.status='partial';
    }
    await saveState(db,planId,plan,deps.now());state('active');
   }
- }catch{result.status='failed';result.errors.push({symbol:'*',stage:'daily-plan',error:'تعذر إكمال الدورة أو حفظ حالتها.'});}
+ }catch(error){console.error('[mizan-daily-archive]','daily-plan','*',errorText(error));result.status='failed';result.errors.push({symbol:'*',stage:'daily-plan',error:'تعذر إكمال الدورة أو حفظ حالتها.'});}
  finally{
   result.finishedAt=new Date(deps.now()).toISOString();
   try{result.stateSaved=true;await saveState(db,'job:forecast-seed:last',result,deps.now());
    if(result.triggeredBy==='cron')await saveState(db,'job:daily-forecast:last-cron',result,deps.now());
-  }catch{result.stateSaved=false;result.status='failed';}
+  }catch(error){console.error('[mizan-daily-archive]','save-state','*',errorText(error));result.stateSaved=false;result.status='failed';}
   await deps.release(token);
  }
  return result;

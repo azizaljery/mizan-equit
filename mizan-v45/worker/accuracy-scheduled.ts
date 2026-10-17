@@ -45,7 +45,8 @@ async function saveAccuracyRun(db: any, summary: AccuracyScheduleSummary) {
     const ids = summary.triggeredBy === 'cron' ? [ACCURACY_SAMPLE_STATE_ID, ACCURACY_SAMPLE_CRON_STATE_ID] : [ACCURACY_SAMPLE_STATE_ID];
     await db.batch(ids.map((id: string) => db.prepare('INSERT INTO research_state(id,data,updated_at) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data,updated_at=excluded.updated_at')
       .bind(id, JSON.stringify(summary), summary.finishedAt)));
-  } catch {
+  } catch (error) {
+    console.error('[mizan-cron] accuracy-sample', 'save-run', (error instanceof Error ? error.message : String(error)).slice(0, 200));
     summary.stateSaved = false;
     if (summary.status !== 'failed') summary.status = 'partial';
     summary.errors.push({context: '', error: 'تعذر حفظ سجل التشغيل؛ لا يؤثر ذلك في النتائج التي حُفظت بالفعل.'});
@@ -108,7 +109,8 @@ export async function runAccuracySampleCycle(
         // processAccuracyRow لا تُلقي استثناءً أبداً على فشل شبكي — تكتب state='failed'
         // داخل الصف وتُعيد النتيجة بنجاح دوماً. عدّ "لم يُرمَ استثناء" كنجاح كان يُخفي
         // فشلاً حقيقياً بالكامل خلف rowsFailed=0 دوماً؛ نفحص حالة الصف نفسه بعد المحاولة.
-        const result = await processAccuracyRow(db, row.run_id, row.id, action, read, now);
+        // Per-row clock: leases are computed from `now`; one cycle-start value would make later rows' leases already partly expired.
+        const result = await processAccuracyRow(db, row.run_id, row.id, action, read, Date.now());
         const updated = (result?.rows ?? []).find((r: any) => r.id === row.id);
         if (updated?.state === 'failed') { summary.rowsFailed++; summary.errors.push({context: row.id, error: String(updated.error || 'فشل تقدّم الصف.').slice(0, 200)}); }
         else summary.rowsAdvanced++;
@@ -117,7 +119,8 @@ export async function runAccuracySampleCycle(
       }
     }
     if (summary.rowsFailed) summary.status = 'partial';
-  } catch {
+  } catch (error) {
+    console.error('[mizan-cron] accuracy-sample', 'cycle', (error instanceof Error ? error.message : String(error)).slice(0, 200));
     summary.status = 'failed';
     summary.fatalError = 'تعذر قراءة قاعدة البيانات أو إعدادات دورة العينة.';
     summary.errors.push({context: '*', error: summary.fatalError});

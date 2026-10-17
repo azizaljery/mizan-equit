@@ -54,3 +54,25 @@ test('configuration changes cannot silently resume an old cohort',async()=>{
  const f=fixture(),p=await executeFollowupStep(config,null,f.deps,1);
  await assert.rejects(()=>executeFollowupStep({...config,horizonSessions:21},p,f.deps,1),/followup-state-mismatch/);
 });
+test('a batch whose invocation is killed is counted before it runs and fails the market after 3 attempts',async()=>{
+ const {MAX_BATCH_ATTEMPTS}=await import('../lib/screener-followup-step-core.ts');assert.equal(MAX_BATCH_ATTEMPTS,3);
+ const f=fixture();
+ const working=f.deps.batch;let p=await executeFollowupStep(config,null,f.deps,2);// sa0, us0 done
+ f.deps.batch=async(id,index)=>id==='run-sa'?new Promise(()=>{}):working(id,index);// sa1 kills the invocation
+ for(let i=1;i<=3;i++){
+  executeFollowupStep(config,p,f.deps,1);await new Promise(r=>setTimeout(r,5));
+  p=f.saves.at(-1);assert.equal(p.markets.sa.attemptBatch,1);assert.equal(p.markets.sa.batchAttempts,i,'attempt persisted before batch');assert.equal(p.markets.sa.nextBatch,1);
+ }
+ const saTries=f.batches.filter(([id])=>id==='run-sa').length;
+ p=await executeFollowupStep(config,p,f.deps,1);
+ assert.equal(p.markets.sa.state,'failed');assert.equal(p.markets.sa.lastError,'batch-attempts-exhausted');assert.equal(p.markets.us.nextBatch,2,'other market keeps going');
+ for(let i=0;i<10&&p.status!=='failed';i++)p=await executeFollowupStep(config,p,f.deps,2);
+ assert.equal(f.batches.filter(([id])=>id==='run-sa').length,saTries,'no 4th try');
+ assert.equal(p.markets.us.state,'complete');assert.equal(p.status,'failed');assert.ok(p.finishedAt);
+ const again=await executeFollowupStep(config,p,f.deps,1);assert.equal(again.status,'failed');
+});
+test('a successful batch resets the attempt counter',async()=>{
+ const opts={failOnce:true,didFail:false},f=fixture(opts);let p=await executeFollowupStep(config,null,f.deps,3);
+ assert.equal(p.markets.sa.batchAttempts,1);assert.equal(p.markets.sa.attemptBatch,1);
+ p=await executeFollowupStep(config,p,f.deps,2);assert.equal(p.markets.sa.batchAttempts,0);assert.equal(p.markets.sa.attemptBatch,2);assert.equal(p.markets.sa.state,'scanning');
+});

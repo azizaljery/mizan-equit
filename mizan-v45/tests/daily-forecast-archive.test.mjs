@@ -71,3 +71,18 @@ test('closed sessions and lost lease never write forecasts',async()=>{
  const f=fixture();f.setNow('2026-09-26T20:45Z');await f.run();assert.equal(f.sql.prepare('SELECT count(*) AS n FROM forecast_records').get().n,0);
  f.setNow('2026-09-28T20:45Z');f.deps.owns=async()=>false;await f.run();assert.equal(f.sql.prepare('SELECT count(*) AS n FROM forecast_records').get().n,0);
 });
+test('an invocation killed during fetch still counts the attempt, so one symbol cannot kill every run',async()=>{
+ const f=fixture();f.settings.enabledMarkets=['us'];f.deps.universe=()=>[{symbol:'us1'}];
+ const planOf=()=>JSON.parse(f.sql.prepare("SELECT data FROM research_state WHERE id='job:daily-forecast:us:2026-09-28'").get().data);
+ // A hung fetch models the Worker being killed mid-fetch: catch/finally never run.
+ let fetches=0;f.deps.fetch=async()=>{fetches++;return new Promise(()=>{});};
+ for(let i=1;i<=3;i++){f.run();await new Promise(r=>setTimeout(r,5));assert.equal(planOf().items[0].attempts,i,'attempt '+i+' persisted before fetch');}
+ const result=await f.run();
+ assert.equal(fetches,3,'no 4th fetch');assert.equal(planOf().items[0].state,'failed');assert.equal(planOf().items[0].attempts,3);assert.equal(result.markets.us.state,'active');
+});
+test('waiting for session evidence is not counted as a failed attempt',async()=>{
+ const f=fixture();f.settings.enabledMarkets=['us'];f.deps.universe=()=>[{symbol:'us1'}];const fetch=f.deps.fetch;
+ f.deps.fetch=async s=>{const r=await fetch(s);r.context.market.prices[0].date='2026-09-25';return r};
+ await f.run();const p=JSON.parse(f.sql.prepare("SELECT data FROM research_state WHERE id='job:daily-forecast:us:2026-09-28'").get().data);
+ assert.equal(p.items[0].attempts,0);assert.equal(p.items[0].state,'pending');assert.ok(p.nextCheckAt);
+});

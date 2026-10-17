@@ -9,6 +9,10 @@ const BATCHES=[
  ['aziz-sa-2082','aziz-sa-4013','aziz-us-jpm','aziz-us-jnj'],
 ] as const;
 
+/** Twelve Data request bound; four symbols per batch keep one request well inside Worker limits. */
+const FETCH_TIMEOUT_MS=15000;
+/** An import still 'running' after this was killed mid-request (no UPDATE ran). */
+const STALE_RUN_MS=10*60*1000;
 type AzizSymbol={id:string;market:'sa'|'us';symbol:string;provider_symbol:string};
 type TwelveBar={datetime?:string;open?:string;high?:string;low?:string;close?:string;volume?:string};
 
@@ -22,7 +26,7 @@ async function importOne(DB:any,runId:string,item:AzizSymbol,key:string){
  const query=new URLSearchParams({symbol:item.provider_symbol,interval:'1day',start_date:isoDayBeforeYears(5),outputsize:'1400',apikey:key});
  if(item.market==='sa')query.set('exchange','XSAU');
  const endpoint='https://api.twelvedata.com/time_series?'+query.toString();
- const response=await fetch(endpoint,{headers:{Accept:'application/json'}});
+ const response=await fetch(endpoint,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(FETCH_TIMEOUT_MS)});
  const raw=await response.text();
  const datasetId=crypto.randomUUID();
  let payload:any={};try{payload=JSON.parse(raw);}catch{}
@@ -56,9 +60,12 @@ export async function POST(req:Request){
   const items=ids.map(id=>byId.get(id)).filter(Boolean) as AzizSymbol[];
   if(items.length!==ids.length)throw Error('تعذر العثور على قائمة عزيز المعتمدة لهذه الدفعة.');
   const runId=crypto.randomUUID(),startedAt=new Date().toISOString();
+  // Close rows left 'running' by killed requests so status pages do not show them as in progress forever.
+  await DB.prepare("UPDATE aziz_import_runs SET status='failed',finished_at=?,result_json=? WHERE status='running' AND started_at<?")
+   .bind(startedAt,JSON.stringify({error:'انقطع الاستيراد قبل اكتماله؛ لم يُسجل له نتيجة.',staleMarkedAt:startedAt}),new Date(Date.now()-STALE_RUN_MS).toISOString()).run();
   await DB.prepare('INSERT INTO aziz_import_runs(id,started_at,requested_batch,status,provider,requested_symbols_json,created_at) VALUES(?,?,?,?,?,?,?)').bind(runId,startedAt,batch,'running','twelve_data',JSON.stringify(items.map(x=>x.symbol)),startedAt).run();
   const results:any[]=[],errors:any[]=[];
-  for(const item of items){try{results.push(await importOne(DB,runId,item,key));}catch(error){errors.push({symbol:item.symbol,error:error instanceof Error?error.message:'تعذر الاستيراد'});}}
+  for(const item of items){try{results.push(await importOne(DB,runId,item,key));}catch(error){errors.push({symbol:item.symbol,error:error instanceof Error&&error.name==='TimeoutError'?'انتهت مهلة جلب '+item.symbol+' من Twelve Data.':error instanceof Error?error.message:'تعذر الاستيراد'});}}
   const finishedAt=new Date().toISOString(),status=errors.length?(results.length?'completed_with_errors':'failed'):'completed';
   const summary={runId,batch,provider:'twelve_data',results,errors,events:'لم يُستورد بعد؛ جدول الأحداث مستقل ولا تُنسب له أوقات توافر غير موثقة.',sahmkConfigured:!!String(runtime.SAHMK_API_KEY||'').trim()};
   await DB.prepare('UPDATE aziz_import_runs SET finished_at=?,status=?,result_json=? WHERE id=?').bind(finishedAt,status,JSON.stringify(summary),runId).run();

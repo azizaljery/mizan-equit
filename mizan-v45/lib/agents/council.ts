@@ -8,6 +8,13 @@ export type CouncilRuntime={
 };
 const LOCK_ID='cron:mizan-council:v2';
 const LOCK_MS=20*60*1000;
+/** A run still 'running' after the lease length was killed mid-flight (no finally ran). */
+export const COUNCIL_STALE_MS=LOCK_MS;
+const STALE_ERROR='انقطعت دورة المجلس قبل اكتمالها (انتهت مهلة التشغيل)؛ لا يوجد اعتماد أو إجراء تلقائي.';
+export function effectiveCouncilStatus(status:unknown,updatedAt:unknown,now=Date.now()){
+  const at=typeof updatedAt==='string'?Date.parse(updatedAt):NaN;
+  return status==='running'&&(!Number.isFinite(at)||now-at>COUNCIL_STALE_MS)?'failed':status;
+}
 async function safeAll(db:any,sql:string,bindings:unknown[]=[]){
   const q=db.prepare(sql);const result=bindings.length?await q.bind(...bindings).all():await q.all();
   if(result?.success===false||!Array.isArray(result?.results))throw new Error('database-read-failed');
@@ -77,6 +84,12 @@ export async function runCouncil(db:any,runtime:CouncilRuntime,options:{task:str
   const token=await tryAcquireLock(db,LOCK_ID,LOCK_MS);
   if(!token)return {version:COUNCIL_VERSION,id:null,status:'locked',executionStatus:'locked',providerPolicy:COUNCIL_POLICY,stateSaved:false,humanDecisionRequired:true};
   try{
+    // We hold the lease: any row still 'running' past the lease length belongs to a killed invocation.
+    try{
+      const staleAt=new Date(Date.now()-COUNCIL_STALE_MS).toISOString(),markedAt=new Date().toISOString();
+      await db.prepare(`UPDATE council_runs SET status='failed',updated_at=?,data=json_set(CASE WHEN json_valid(data) THEN data ELSE '{}' END,'$.status','failed','$.executionStatus','failed','$.error',?,'$.updatedAt',?)
+        WHERE status='running' AND updated_at<?`).bind(markedAt,STALE_ERROR,markedAt,staleAt).run();
+    }catch(error){console.error('[mizan-council]','mark-stale',(error instanceof Error?error.message:String(error)).slice(0,200));}
     if(requestKey){
       const existing=await safeFirst(db,'SELECT data FROM council_runs WHERE id=?',[id]);
       if(existing?.data)return {...JSON.parse(existing.data),reused:true,stateSaved:true};
@@ -117,7 +130,10 @@ export async function runCouncil(db:any,runtime:CouncilRuntime,options:{task:str
 export async function councilStatus(db:any,runtime:CouncilRuntime){
   const latest=await safeFirst(db,'SELECT id,created_at,updated_at,trigger,status,data FROM council_runs ORDER BY created_at DESC LIMIT 1');
   let summary=null;
-  if(latest){try{summary=summarizeCouncil({...JSON.parse(latest.data),id:latest.id,createdAt:latest.created_at,updatedAt:latest.updated_at,status:latest.status,stateSaved:true});}
+  if(latest){try{
+    const status=effectiveCouncilStatus(latest.status,latest.updated_at),data=JSON.parse(latest.data);
+    const stale=status!==latest.status?{executionStatus:'failed',error:STALE_ERROR}:{};
+    summary=summarizeCouncil({...data,...stale,id:latest.id,createdAt:latest.created_at,updatedAt:latest.updated_at,status,stateSaved:true});}
     catch{summary={id:latest.id,status:'invalid'};}}
   return {version:COUNCIL_VERSION,providerPolicy:COUNCIL_POLICY,providers:providerPresence(runtime as unknown as Record<string,unknown>),latest:summary,roles:['coordinator','data-center','quant','rd-manager','developer','security-reviewer']};
 }

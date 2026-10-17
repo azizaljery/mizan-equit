@@ -27,7 +27,7 @@ export function summarizeSelectedForecasts(rows:any[],summarize:(rows:any[])=>an
  const cells=new Map<string,any[]>();
  for(const row of unique.values()){
   const key=JSON.stringify([row.market,row.horizon,row.model,row.evaluationPolicy||'legacy-unverified']);
-  cells.set(key,[...(cells.get(key)||[]),row]);
+  const cell=cells.get(key);if(cell)cell.push(row);else cells.set(key,[row]);
  }
  return {memberships:rows.length,uniqueForecasts:unique.size,duplicateMemberships:rows.length-invalid-unique.size,invalidRows:invalid,
   cells:[...cells.entries()].map(([key,items])=>{

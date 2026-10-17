@@ -15,6 +15,7 @@ const FETCH_TIMEOUT_MS = 60 * 1000; // fetchCompany only, not D1 writes.
 const SYMBOL_LOCK_MS = 90 * 1000;
 const RUN_BUDGET_MS = 10 * 60 * 1000; // Do not outlive the global lease on large limits.
 export const RESOLUTION_CRON = EVALUATE_DUE_CRON;
+const errorText = (e: unknown) => (e instanceof Error ? e.message : String(e)).slice(0, 200);
 
 export type ScheduledRunSummary = {
   runId: string; startedAt: string; finishedAt: string; durationMs: number; limit: number;
@@ -33,7 +34,7 @@ export type ScheduledRunSummary = {
 export async function checkResolutionIntegrity(db: any): Promise<ScheduledRunSummary['integrity']> {
   const count = async (sql: string) => {
     try { const row = await db.prepare(sql).first(); return typeof row?.n === 'number' && Number.isInteger(row.n) && row.n >= 0 ? row.n : -1; }
-    catch { return -1; }
+    catch (error) { console.error('[mizan-cron] integrity-check', sql.slice(0, 60), errorText(error)); return -1; }
   };
   return {
     outcomesDuplicates: await count('SELECT COUNT(*) n FROM (SELECT id FROM forecast_outcomes GROUP BY id HAVING COUNT(*)>1)'),
@@ -62,7 +63,7 @@ export async function tryAcquireLock(db: any, id: string, ms: number): Promise<s
 
 export async function releaseLock(db: any, id: string, token: string) {
   try { await db.prepare('DELETE FROM research_locks WHERE id=? AND token=?').bind(id, token).run(); }
-  catch { /* Lease expires; never delete a successor's lease. */ }
+  catch (error) { console.error('[mizan-cron] release-lock', id, errorText(error)); /* Lease expires; never delete a successor's lease. */ }
 }
 
 async function saveLastRun(db: any, summary: ScheduledRunSummary) {
@@ -73,7 +74,8 @@ async function saveLastRun(db: any, summary: ScheduledRunSummary) {
     const ids=summary.triggeredBy==='cron'?[STATE_ID,EVALUATE_DUE_CRON_STATE_ID]:[STATE_ID];
     await db.batch(ids.map(id=>db.prepare('INSERT INTO research_state(id,data,updated_at) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data,updated_at=excluded.updated_at')
       .bind(id, JSON.stringify(summary), summary.finishedAt)));
-  } catch {
+  } catch (error) {
+    console.error('[mizan-cron] evaluate-due', 'save-last-run', errorText(error));
     summary.stateSaved = false;
     if (summary.status !== 'failed') summary.status = 'partial';
     summary.errors.push({symbol: '', error: 'تعذر حفظ سجل التشغيل؛ لا يؤثر ذلك في النتائج التي حُفظت بالفعل.'});
@@ -151,6 +153,7 @@ export async function runResolutionCycle(db: any, options: {limit: number; trigg
         if (count > 0) { summary.symbolsResolved++; summary.evaluationsSaved += count; }
         else { summary.symbolsSkipped++; fail('لم تصل بيانات كافية لإتمام تقييم جديد؛ تبقى التوقعات محفوظة.'); }
       } catch (error) {
+        console.error('[mizan-cron] evaluate-due', 'symbol', symbol, errorText(error));
         summary.symbolsFailed++;
         // Earlier per-forecast transactions may already be committed. Report them
         // even when a later forecast of this symbol fails; never undo their history.
@@ -160,7 +163,8 @@ export async function runResolutionCycle(db: any, options: {limit: number; trigg
       } finally { if (token) await releaseLock(db, symId, token); }
     }
     if (summary.symbolsFailed || summary.symbolsSkipped) summary.status = 'partial';
-  } catch {
+  } catch (error) {
+    console.error('[mizan-cron] evaluate-due', 'cycle', errorText(error));
     summary.status = 'failed';
     summary.fatalError = 'تعذر قراءة قاعدة البيانات أو إعدادات دورة التقييم.';
     summary.errors.push({symbol: '*', error: summary.fatalError});

@@ -48,9 +48,9 @@ export async function runScreenerFollowupStep(db:any,options:{trigger:'cron'|'ma
   }else{
    const active=await read(db,ACTIVE_ID),p=active?.data as any;
    const age=p?.startedAt?Date.now()-Date.parse(p.startedAt):Infinity;
-   if(p&&p.version===FOLLOWUP_STEP_VERSION&&sameConfig(p.config,config)&&p.status!=='completed'&&age<=ACTIVE_MAX_AGE){
+   if(p&&p.version===FOLLOWUP_STEP_VERSION&&sameConfig(p.config,config)&&p.status!=='completed'&&p.status!=='failed'&&age<=ACTIVE_MAX_AGE){
     key=String(p.cycleKey);previous=p;
-   }else if(p&&p.version===FOLLOWUP_STEP_VERSION&&sameConfig(p.config,config)&&p.status==='completed'&&Number.isFinite(Date.parse(p.finishedAt))&&Date.now()-Date.parse(p.startedAt)<config.intervalHours*3600000){
+   }else if(p&&p.version===FOLLOWUP_STEP_VERSION&&sameConfig(p.config,config)&&(p.status==='completed'||p.status==='failed')&&Number.isFinite(Date.parse(p.finishedAt))&&Date.now()-Date.parse(p.startedAt)<config.intervalHours*3600000){
     return {...p,reused:true,stateSaved:true};
    }else{
     key=`screener:followup:step:cron:${now}`;previous=null;
@@ -95,7 +95,10 @@ async function advanceAcceptance(db:any,scheduledTime:number){
  if(result.status==='completed'){
   const ids=['sa','us'].map(m=>(result.markets as any)?.[m]?.runId).filter(Boolean);
   try{const proof=await acceptFollowupProof(db,ids,acceptance.config,true);Object.assign(record,{state:'accepted',proof,error:null,completedAt:new Date().toISOString()});}
-  catch{Object.assign(record,{state:'failed',error:'cohort-acceptance-gate-failed',completedAt:new Date().toISOString()});}
+  catch(error){console.error('[mizan-screener-followup]','acceptance-gate',acceptance.id,(error instanceof Error?error.message:String(error)).slice(0,200));Object.assign(record,{state:'failed',error:'cohort-acceptance-gate-failed',completedAt:new Date().toISOString()});}
+ }else if(result.status==='failed'){
+  // A market batch exhausted its attempts (see MAX_BATCH_ATTEMPTS); the cohort cannot be sealed.
+  Object.assign(record,{state:'failed',error:'cohort-batch-attempts-exhausted',completedAt:new Date().toISOString()});
  }
  await write(db,FOLLOWUP_ACCEPTANCE_ID,record);
  return {status:result.status,acceptanceState:record.state,stateSaved:result.stateSaved,progress:summary,proof:record.proof??null};

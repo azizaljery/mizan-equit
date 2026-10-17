@@ -19,6 +19,11 @@ const IDENTITY_HEADERS = [
 ];
 
 let certCache: { team: string; keys: Jwk[]; at: number } | null = null;
+/** Last forced refresh per team (successful or not), so an unknown kid cannot trigger a fetch per request. */
+let lastForcedRefresh: { team: string; at: number } | null = null;
+const CERT_TTL_MS = 3_600_000;
+const CERT_FETCH_TIMEOUT_MS = 3_000;
+const CERT_REFRESH_MIN_INTERVAL_MS = 60_000;
 
 function b64urlToBytes(value: string): Uint8Array {
   const pad = '='.repeat((4 - (value.length % 4)) % 4);
@@ -35,13 +40,30 @@ function readCookie(header: string | null, name: string): string | null {
   return null;
 }
 
-async function signingKeys(team: string): Promise<Jwk[]> {
-  if (certCache && certCache.team === team && Date.now() - certCache.at < 3_600_000) return certCache.keys;
-  const response = await fetch(`https://${team}/cdn-cgi/access/certs`);
+async function fetchSigningKeys(team: string): Promise<Jwk[]> {
+  // Bounded: a hung Access endpoint must not hold every request open.
+  const response = await fetch(`https://${team}/cdn-cgi/access/certs`, { signal: AbortSignal.timeout(CERT_FETCH_TIMEOUT_MS) });
   if (!response.ok) throw new Error('access certs unavailable');
   const body = (await response.json()) as { keys?: Jwk[] };
   certCache = { team, keys: body.keys || [], at: Date.now() };
   return certCache.keys;
+}
+
+async function signingKeys(team: string): Promise<Jwk[]> {
+  if (certCache && certCache.team === team && Date.now() - certCache.at < CERT_TTL_MS) return certCache.keys;
+  return fetchSigningKeys(team);
+}
+
+/** Key rotation: an unknown kid refetches the certs once, at most once per minute per team. */
+async function signingKeyFor(team: string, kid: unknown): Promise<Jwk | undefined> {
+  const found = (await signingKeys(team)).find((k) => k.kid === kid);
+  if (found) return found;
+  const now = Date.now();
+  const cachedAt = certCache && certCache.team === team ? certCache.at : 0;
+  const forcedAt = lastForcedRefresh && lastForcedRefresh.team === team ? lastForcedRefresh.at : 0;
+  if (now - Math.max(cachedAt, forcedAt) < CERT_REFRESH_MIN_INTERVAL_MS) return undefined;
+  lastForcedRefresh = { team, at: now };
+  return (await fetchSigningKeys(team)).find((k) => k.kid === kid);
 }
 
 type VerifiedOwner = { email: string; id: string };
@@ -62,7 +84,7 @@ async function verifiedOwner(request: Request, env: IdentityEnv): Promise<Verifi
   try {
     const header = JSON.parse(new TextDecoder().decode(b64urlToBytes(parts[0])));
     if (header.alg !== 'RS256') return null;
-    const jwk = (await signingKeys(team)).find((k) => k.kid === header.kid);
+    const jwk = await signingKeyFor(team, header.kid);
     if (!jwk) return null;
     const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
     const valid = await crypto.subtle.verify(

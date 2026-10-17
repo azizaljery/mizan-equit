@@ -9,6 +9,9 @@ import {eligibleUSCompanies} from '@/lib/us-directory';
 import {eligibleSaudiCompanies} from '@/lib/saudi-directory';
 import {searchSaudiPage} from '@/lib/saudi-directory';
 export async function POST(req:Request){try{
+ // Compare mode runs up to 8 full analyses; refuse cross-site browser calls (Origin is always sent on POST).
+ const origin=req.headers.get('origin');
+ if(origin!==null&&origin!==new URL(req.url).origin)return Response.json({error:'طلب غير مسموح من مصدر آخر.'},{status:403,headers:{'Cache-Control':'no-store'}});
  const raw=await req.text();if(raw.length>1800)throw Error('الطلب أكبر من الحد.');const b=JSON.parse(raw);
  if(typeof b.question!=='string')throw Error('اكتب طلبك.');
  const settings=await readSettings((env as any).DB),intent=parseAskIntent(b.question,settings),{q,market,mode,horizon,compare,limit}=intent;

@@ -38,6 +38,10 @@ interface ExecutionContext {
 
 const worker = {
   async scheduled(controller: {cron: string; scheduledTime: number}, env: Env, ctx: ExecutionContext) {
+    // Every handler checks controller.cron (and, for MAINTENANCE_SLOT_CRON, the UTC hour) and returns at
+    // once unless it owns this trigger, so each invocation runs exactly ONE heavy job within its CPU budget:
+    //   '0 */6'   resolution · '0 3' accuracy sample · '*/5' daily archive · '2,7,...,57' screener followup
+    //   MAINTENANCE_SLOT_CRON: market collection (00/06/12/18:30), market watch (01/07/13/19:30), council (04:30).
     ctx.waitUntil(scheduledResolution(controller, env));
     ctx.waitUntil(scheduledAccuracySample(controller, env));
     ctx.waitUntil(scheduledMarketWatch(controller, env));

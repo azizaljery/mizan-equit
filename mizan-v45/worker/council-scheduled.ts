@@ -1,9 +1,10 @@
-import {ACCURACY_SAMPLE_CRON} from '../lib/jobs/accuracy-schedule';
+import {MAINTENANCE_SLOT_CRON,slotJob} from '../lib/jobs/cron-slots';
 import {runCouncil,summarizeCouncil} from '../lib/agents/council';
 import {councilFollowupTask} from '../lib/agents/followup-work';
-export const COUNCIL_CRON=ACCURACY_SAMPLE_CRON;
+// Own invocation (was shared with the 03:00 accuracy sample): MAINTENANCE_SLOT_CRON at 04:30 UTC.
+export const COUNCIL_CRON=MAINTENANCE_SLOT_CRON;
 export async function scheduledCouncil(controller:{cron:string;scheduledTime:number},runtime:any){
-  if(runtime.MIZAN_BACKGROUND_CRON_ENABLED!=='true'||controller.cron!==COUNCIL_CRON)return;
+  if(runtime.MIZAN_BACKGROUND_CRON_ENABLED!=='true'||controller.cron!==COUNCIL_CRON||slotJob(controller)!=='council')return;
   const requestKey=`cron:${controller.scheduledTime}`;
   const work=await councilFollowupTask(runtime.DB,requestKey,'راجع جودة المصادر، اكتمال مسوح السوقين، الأرشيف والنتائج الناضجة، ثم قدم إصلاحات محدودة واختبارات قبول. لا تنفذ Merge أو Deploy.');
   // runCouncil owns the shared lease for cron, manual and deployment calls.

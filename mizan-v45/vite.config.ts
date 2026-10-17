@@ -2,6 +2,8 @@ import vinext from "vinext";
 import { EVALUATE_DUE_CRON } from "./lib/jobs/schedule";
 import { ACCURACY_SAMPLE_CRON } from "./lib/jobs/accuracy-schedule";
 import { SCREENER_FOLLOWUP_CRON } from "./lib/jobs/screener-followup-schedule";
+import { DAILY_ARCHIVE_CRON } from "./lib/jobs/daily-forecast-archive.mjs";
+import { MAINTENANCE_SLOT_CRON } from "./lib/jobs/cron-slots";
 import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
 import { sites } from "./build/sites-vite-plugin";
@@ -16,7 +18,8 @@ const localBindingConfig = {
   name: "mizan-aziz",
   main: "./worker/index.ts",
   // Cutover done: crons now run here; they were cleared on the old mizan-equity worker.
-  triggers: { crons: [EVALUATE_DUE_CRON, ACCURACY_SAMPLE_CRON, SCREENER_FOLLOWUP_CRON] },
+  // One heavy job per cron invocation (shared CPU budget per invocation). 5 triggers total.
+  triggers: { crons: [EVALUATE_DUE_CRON, ACCURACY_SAMPLE_CRON, DAILY_ARCHIVE_CRON, SCREENER_FOLLOWUP_CRON, MAINTENANCE_SLOT_CRON] },
   compatibility_flags: ["nodejs_compat"],
   // Workers Paid (owner upgraded 2026-10-16): explicit CPU limit per invocation = Paid default 30 s.
   // Deploy is rejected by Cloudflare on the Free plan, so a successful deploy also confirms the plan.

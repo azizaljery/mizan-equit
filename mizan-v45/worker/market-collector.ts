@@ -4,13 +4,14 @@ import { readSettings } from '../lib/site-settings';
 import { eligibleSaudiCompanies } from '../lib/saudi-directory';
 import { eligibleUSCompanies } from '../lib/us-directory';
 import { recordAnalysis } from '../lib/forecast-journal';
-import { EVALUATE_DUE_CRON } from '../lib/jobs/schedule';
+import { MAINTENANCE_SLOT_CRON, slotJob } from '../lib/jobs/cron-slots';
 import {DAILY_ARCHIVE_CRON,runDailyArchive} from '../lib/jobs/daily-forecast-archive.mjs';
 import { tryAcquireLock, releaseLock, withResolutionTimeout } from './scheduled';
 import { pickRoundRobin } from '../lib/jobs/round-robin';
 import { assertCurrentInstrument, listingRestriction, LISTING_POLICY } from '../lib/listing-lifecycle';
 
-export const MARKET_COLLECTION_CRON = EVALUATE_DUE_CRON;
+// Own invocation: MAINTENANCE_SLOT_CRON at 00/06/12/18:30 UTC (see lib/jobs/cron-slots.ts).
+export const MARKET_COLLECTION_CRON = MAINTENANCE_SLOT_CRON;
 export const FORECAST_SEED_CRON = DAILY_ARCHIVE_CRON;
 export const MARKET_COLLECTION_STATE_ID = 'job:market-collector:last';
 export const FORECAST_SEED_STATE_ID = 'job:forecast-seed:last';
@@ -18,7 +19,8 @@ const MARKET_ROTATION_ID = 'job:market-collector:rotation';
 const MARKET_LOCK_ID = 'cron:market-collector:v1';
 const FORECAST_LOCK_ID = 'cron:forecast-seed:v1';
 const MARKET_LOCK_MS = 12 * 60 * 1000;
-const FORECAST_LOCK_MS = 20 * 60 * 1000;
+// 5-minute cron; runDailyArchive caps work at 150 s, so a killed run must not block ~4 later runs.
+const FORECAST_LOCK_MS = 3 * 60 * 1000;
 const QUOTES_PER_MARKET = 6;
 
 type Market = 'sa' | 'us';
@@ -47,7 +49,7 @@ async function readRotation(db:any,id:string):Promise<Rotation>{
       sa:Number.isSafeInteger(parsed?.sa)&&parsed.sa>=0?parsed.sa:0,
       us:Number.isSafeInteger(parsed?.us)&&parsed.us>=0?parsed.us:0,
     };
-  }catch{return {sa:0,us:0};}
+  }catch(error){console.error('[mizan-data-center] market-collection','read-rotation',id,(error instanceof Error?error.message:String(error)).slice(0,200));return {sa:0,us:0};}
 }
 async function writeState(db:any,id:string,data:unknown,at:string){
   await db.prepare('INSERT INTO research_state(id,data,updated_at) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data,updated_at=excluded.updated_at')
@@ -99,14 +101,16 @@ export async function runMarketCollectionCycle(db:any,controller:{cron:string;sc
           const result=await db.prepare('INSERT OR IGNORE INTO market_observations(id,symbol,market,observed_at,source,data) VALUES(?,?,?,?,?,?)')
             .bind(crypto.randomUUID(),company.symbol,market,observedAt,q.source,JSON.stringify(data)).run();
           if(changeCount(result)>0){summary.observationsSaved++;summary.markets[market].saved++;}
-        }catch{
+        }catch(error){
+          console.error('[mizan-data-center] market-collection',stage,company.symbol,(error instanceof Error?error.message:String(error)).slice(0,200));
           if(summary.errors.length<20)summary.errors.push({symbol:company.symbol,stage,error:'تعذر جلب سعر موثوق أو حفظه في هذه الدورة.'});
         }
       }
     }
     await writeState(db,MARKET_ROTATION_ID,next,new Date().toISOString());
     if(summary.errors.length)summary.status='partial';
-  }catch{
+  }catch(error){
+    console.error('[mizan-data-center] market-collection','cycle','*',(error instanceof Error?error.message:String(error)).slice(0,200));
     summary.status='failed';
     summary.errors.push({symbol:'*',error:'تعذر تشغيل جامع بيانات السوق.'});
   }finally{
@@ -114,7 +118,7 @@ export async function runMarketCollectionCycle(db:any,controller:{cron:string;sc
     summary.durationMs=Date.parse(summary.finishedAt)-Date.parse(summary.startedAt);
     if(token||summary.status==='failed'){
       try{await writeState(db,MARKET_COLLECTION_STATE_ID,{...summary,stateSaved:true},summary.finishedAt);summary.stateSaved=true;}
-      catch{summary.stateSaved=false;if(summary.status!=='failed')summary.status='partial';}
+      catch(error){console.error('[mizan-data-center] market-collection','save-state','*',(error instanceof Error?error.message:String(error)).slice(0,200));summary.stateSaved=false;if(summary.status!=='failed')summary.status='partial';}
     }
     if(token)await releaseLock(db,MARKET_LOCK_ID,token);
   }
@@ -136,7 +140,7 @@ export async function runForecastSeedCycle(db:any,controller:{cron:string;schedu
  },controller);
 }
 export async function scheduledMarketCollection(controller:{cron:string;scheduledTime:number},runtime:{DB:any;MIZAN_BACKGROUND_CRON_ENABLED?:string}){
-  if(runtime.MIZAN_BACKGROUND_CRON_ENABLED!=='true'||controller.cron!==MARKET_COLLECTION_CRON)return;
+  if(runtime.MIZAN_BACKGROUND_CRON_ENABLED!=='true'||controller.cron!==MARKET_COLLECTION_CRON||slotJob(controller)!=='market-collection')return;
   const result=await runMarketCollectionCycle(runtime.DB,controller);
   console.log('[mizan-data-center] market-collection',JSON.stringify(result));
   if(result.status==='failed'||!result.stateSaved&&result.status!=='locked')throw new Error('Market collection failed; inspect owner-only state.');

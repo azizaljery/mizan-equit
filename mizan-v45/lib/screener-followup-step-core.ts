@@ -1,14 +1,19 @@
 import {validateFollowupConfig,type FollowupConfig} from './screener-operations-core';
 
 export const FOLLOWUP_STEP_VERSION='screener-followup-step-v3';
+/** A batch whose invocation is killed (CPU/wall limit) never reaches catch; the attempt is
+ * persisted BEFORE deps.batch so the same batch cannot kill every later invocation forever. */
+export const MAX_BATCH_ATTEMPTS=3;
 export type StepMarketState={
- state:'pending'|'scanning'|'retryable'|'complete';
+ state:'pending'|'scanning'|'retryable'|'complete'|'failed';
  runId:string|null;planned:number;batchSize:number;nextBatch:number;
  scanned:number;analyzed:number;failed:number;eligible:number;
  selected?:number;fingerprint?:string;lastError?:string;
+ /** Attempts already started for batch `attemptBatch` (persisted before each try). */
+ attemptBatch?:number;batchAttempts?:number;
 };
 export type StepProgress={
- version:string;status:'running'|'partial'|'completed';startedAt:string;updatedAt:string;finishedAt:string|null;
+ version:string;status:'running'|'partial'|'completed'|'failed';startedAt:string;updatedAt:string;finishedAt:string|null;
  config:FollowupConfig;markets:{sa:StepMarketState;us:StepMarketState};nextMarket:'sa'|'us';stateSaved:boolean;
 };
 export type StepDeps={
@@ -32,12 +37,12 @@ export async function executeFollowupStep(config:FollowupConfig,previous:unknown
  if(previous==null)progress={version:FOLLOWUP_STEP_VERSION,status:'running',startedAt:new Date(now).toISOString(),updatedAt:new Date(now).toISOString(),finishedAt:null,config:clone(config),markets:{sa:freshMarket(),us:freshMarket()},nextMarket:'sa',stateSaved:false};
  else if(validPrevious(previous,config))progress=clone(previous);
  else throw Error('followup-state-mismatch');
- if(progress.status==='completed')return {...progress,stateSaved:true};
+ if(progress.status==='completed'||progress.status==='failed')return {...progress,stateSaved:true};
  const save=async()=>{progress.updatedAt=new Date(deps.now()).toISOString();await deps.save(clone({...progress,stateSaved:true}));progress.stateSaved=true;};
  const hadError=new Set<'sa'|'us'>();
  for(const market of ['sa','us'] as const){
   const m=progress.markets[market];
-  if(m.state==='complete')continue;
+  if(m.state==='complete'||m.state==='failed')continue;
   if(m.state==='retryable')m.state='scanning';
   if(!m.runId){
    try{
@@ -58,11 +63,20 @@ export async function executeFollowupStep(config:FollowupConfig,previous:unknown
   }
   if(!market)break;
   const m=progress.markets[market],expected=Math.ceil(m.planned/m.batchSize);
+  const attempts=m.attemptBatch===m.nextBatch?(m.batchAttempts??0):0;
+  if(attempts>=MAX_BATCH_ATTEMPTS){
+   // Server batches are strictly ordered, so a poisoned batch cannot be skipped; close this
+   // market's cohort as failed (honestly, unsealed) and let the other market continue.
+   m.state='failed';m.lastError='batch-attempts-exhausted';hadError.add(market);progress.nextMarket=market==='sa'?'us':'sa';
+   await save();continue;
+  }
+  m.attemptBatch=m.nextBatch;m.batchAttempts=attempts+1;
+  await save();
   try{
    const b=await deps.batch(m.runId!,m.nextBatch);
    const expectedScanned=Math.min(m.batchSize,m.planned-m.scanned);
    if(!['scanned','analyzed','failed','eligible'].every(k=>Number.isInteger(b?.[k])&&b[k]>=0)||b.scanned!==expectedScanned||b.analyzed+b.failed!==b.scanned||b.eligible>b.analyzed)throw Error('invalid-batch-counters');
-   m.scanned+=b.scanned;m.analyzed+=b.analyzed;m.failed+=b.failed;m.eligible+=b.eligible;m.nextBatch++;m.lastError=undefined;
+   m.scanned+=b.scanned;m.analyzed+=b.analyzed;m.failed+=b.failed;m.eligible+=b.eligible;m.nextBatch++;m.lastError=undefined;m.batchAttempts=0;m.attemptBatch=m.nextBatch;
    if(m.nextBatch===expected){
     const end=await deps.finish(m.runId!);
     if(end?.status!=='complete'||end?.integrity!==true)throw Error('unsealed-server-archive');
@@ -73,8 +87,9 @@ export async function executeFollowupStep(config:FollowupConfig,previous:unknown
   await save();
  }
  const complete=Object.values(progress.markets).every(m=>m.state==='complete');
- progress.status=complete?'completed':hadError.size?'partial':'running';
- if(complete)progress.finishedAt=new Date(deps.now()).toISOString();
+ const terminal=Object.values(progress.markets).every(m=>m.state==='complete'||m.state==='failed');
+ progress.status=complete?'completed':terminal?'failed':hadError.size?'partial':'running';
+ if(terminal)progress.finishedAt=new Date(deps.now()).toISOString();
  await save();
  return progress;
 }
