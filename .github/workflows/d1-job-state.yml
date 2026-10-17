@@ -1,0 +1,52 @@
+name: D1 job-state census (read-only SELECTs)
+
+# Read-only evidence for background-job health: daily archive plans, seed result, locks, accuracy rows by state,
+# screener follow-up state, table sizes. Only SELECT statements; values truncated; no secrets.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/d1-job-state.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Query
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          RID: ${{ github.run_id }}
+          REF: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          node --input-type=module <<'NODE' > out/state.json
+          const acct=process.env.CLOUDFLARE_ACCOUNT_ID,tok=process.env.CLOUDFLARE_API_TOKEN,DB='e95b74e8-81d6-4beb-8ea2-ad59c863d21d';
+          const q=async(sql)=>{if(!/^\s*SELECT/i.test(sql))throw Error('select only');const r=await fetch(`https://api.cloudflare.com/client/v4/accounts/${acct}/d1/database/${DB}/query`,{method:'POST',headers:{Authorization:'Bearer '+tok,'content-type':'application/json'},body:JSON.stringify({sql}),signal:AbortSignal.timeout(30000)});const j=await r.json().catch(()=>({}));return j.success?j.result?.[0]?.results:{http:r.status,errors:(j.errors||[]).map(e=>String(e.message).slice(0,160))};};
+          const out={at:new Date().toISOString()};
+          const Q={
+            seed_last:"SELECT updated_at, substr(data,1,1500) d FROM research_state WHERE id='job:forecast-seed:last'",
+            daily_plans:"SELECT id, updated_at, json_extract(data,'$.nextCheckAt') nextCheckAt, (SELECT json_group_array(json_object('s',json_extract(v.value,'$.symbol'),'st',json_extract(v.value,'$.state'),'a',json_extract(v.value,'$.attempts'),'e',json_array_length(json_extract(v.value,'$.errors')),'last',json_extract(v.value,'$.errors[#-1].stage'))) FROM json_each(json_extract(data,'$.items')) v) items FROM research_state WHERE id LIKE 'job:daily-forecast:%' ORDER BY updated_at DESC LIMIT 6",
+            locks:"SELECT id, until_ms, datetime(until_ms/1000,'unixepoch') until_utc FROM research_locks ORDER BY until_ms DESC LIMIT 30",
+            accuracy_rows_by_state:"SELECT state, COUNT(*) n, MIN(updated_at) oldest, MAX(updated_at) newest FROM accuracy_rows GROUP BY state",
+            accuracy_runs_recent:"SELECT * FROM accuracy_runs ORDER BY rowid DESC LIMIT 5",
+            followup_keys:"SELECT id, updated_at, substr(data,1,600) d FROM research_state WHERE id LIKE '%followup%' ORDER BY updated_at DESC LIMIT 8",
+            job_last_keys:"SELECT id, updated_at, json_extract(data,'$.status') status FROM research_state WHERE id LIKE 'job:%last%' OR id LIKE '%:last' ORDER BY updated_at DESC LIMIT 20",
+            sizes:"SELECT (SELECT COUNT(*) FROM analysis_snapshots) snapshots,(SELECT COUNT(*) FROM forecast_records) forecasts,(SELECT COUNT(*) FROM forecast_outcomes) outcomes,(SELECT COUNT(*) FROM research_state) state_rows",
+            indexes:"SELECT name, tbl_name FROM sqlite_master WHERE type='index' AND tbl_name IN ('analysis_snapshots','forecast_records','forecast_outcomes','accuracy_rows') ORDER BY tbl_name",
+            council_running:"SELECT COUNT(*) n FROM sqlite_master WHERE name='council_runs'",
+          };
+          for(const [k,sql] of Object.entries(Q)){try{out[k]=await q(sql);}catch(e){out[k]={error:String(e).slice(0,120)};}}
+          console.log(JSON.stringify(out,null,1));
+          NODE
+          node -e 'const fs=require("fs");fs.writeFileSync("out/body.json",JSON.stringify({message:"ci diagnostics: d1 job state "+process.env.RID,branch:process.env.REF,content:fs.readFileSync("out/state.json").toString("base64")}))'
+          GH_TOKEN="${{ github.token }}" gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/d1-job-state-${{ github.run_id }}-${{ github.run_attempt }}.json" --input out/body.json >/dev/null \
+            || echo "WARN: failed to publish result" >&2
