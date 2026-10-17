@@ -83,7 +83,7 @@ export async function runScreener(db:any,input:ScreenerRequest,capture?:(evidenc
  const exclusionCounts:Record<string,number>={};for(const c of rows){const reason=candidateExclusion(c);if(reason)exclusionCounts[reason]=(exclusionCounts[reason]||0)+1;}
  // SHARA gate layer: parity + provisional market gates. Shadow by default (removed is empty); a SHARA failure never blocks screening.
  let shara:SharaScreenerSummary|undefined,sharaRemoved=new Set<string>();
- try{const v=await evaluateScreenerShara(outcomes.flatMap(o=>o.ok?[{candidate:o.candidate,report:o.report}]:[]));shara=v.summary;sharaRemoved=v.removed;}catch{/* shadow layer must not affect the scan */}
+ try{const v=await evaluateScreenerShara(outcomes.flatMap(o=>o.ok?[{candidate:o.candidate,report:o.report}]:[]));shara=v.summary;sharaRemoved=v.removed;}catch(e){/* shadow layer must not affect the scan; failure is logged, never silent */console.error('shara-shadow-failed',e instanceof Error?e.message.slice(0,300):String(e).slice(0,300));}
  if(sharaRemoved.size)exclusionCounts.shara_market_gate=rows.filter(c=>sharaRemoved.has(c.symbol)&&!candidateExclusion(c)).length;
  const {candidates,eligible}=selectScreenerCandidates(sharaRemoved.size?rows.filter(c=>!sharaRemoved.has(c.symbol)):rows,req.resultCount,req.market);
  const result:ScreenerResult={market:req.market,horizonSessions:req.horizonSessions,horizonName:req.horizonName,
