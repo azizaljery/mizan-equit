@@ -45,6 +45,11 @@ jobs:
             accuracy_rows_detail:"SELECT id, run_id, state, error, updated_at, substr(outcome,1,300) outcome, json_extract(company,'$.symbol') symbol FROM accuracy_rows ORDER BY updated_at DESC LIMIT 25",
             accuracy_runs_all:"SELECT id, created_at, json_extract(data,'$.market') m, json_extract(data,'$.date') d, json_extract(data,'$.sessions') s FROM accuracy_runs ORDER BY created_at DESC LIMIT 10",
             acceptance_full:"SELECT substr(data,1,3000) d FROM research_state WHERE id='job:screener-followup:last'",
+            outcomes_by_market_month:"SELECT f.market, substr(json_extract(o.data,'$.actualDate'),1,7) month, COUNT(*) n FROM forecast_outcomes o JOIN forecast_records f ON f.id=o.id GROUP BY 1,2 ORDER BY 2,1",
+            records_by_market_month:"SELECT market, substr(created_at,1,7) month, COUNT(*) n, SUM(CASE WHEN id IN (SELECT id FROM forecast_outcomes) THEN 1 ELSE 0 END) evaluated FROM forecast_records GROUP BY 1,2 ORDER BY 2,1",
+            sa_due_unevaluated:"SELECT COUNT(*) n FROM forecast_records f WHERE f.market='sa' AND f.id NOT IN (SELECT id FROM forecast_outcomes) AND date(f.created_at, '+'||(f.horizon*2+3)||' days') < date('now')",
+            us_due_unevaluated:"SELECT COUNT(*) n FROM forecast_records f WHERE f.market='us' AND f.id NOT IN (SELECT id FROM forecast_outcomes) AND date(f.created_at, '+'||(f.horizon*2+3)||' days') < date('now')",
+            last_sa_outcome:"SELECT MAX(json_extract(o.data,'$.actualDate')) d FROM forecast_outcomes o JOIN forecast_records f ON f.id=o.id WHERE f.market='sa'",
             council_running:"SELECT COUNT(*) n FROM sqlite_master WHERE name='council_runs'",
           };
           for(const [k,sql] of Object.entries(Q)){try{out[k]=await q(sql);}catch(e){out[k]={error:String(e).slice(0,120)};}}
