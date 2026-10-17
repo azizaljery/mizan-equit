@@ -1,7 +1,8 @@
 'use client';
 import {useMemo,useRef,useState} from 'react';
-import {Scale,Upload,ChartCandlestick,FileText,SlidersHorizontal,ArrowUpRight,Info,ShieldCheck,CheckCircle2,TriangleAlert,Download,Plus,RotateCcw,BookOpen,Search,Clock,Calculator,Target,Activity,Building2,FileCheck2,ChevronLeft,Loader2,LockKeyhole,Check} from 'lucide-react';
+import {Upload,ChartCandlestick,FileText,SlidersHorizontal,ArrowUpRight,Info,ShieldCheck,CheckCircle2,TriangleAlert,Download,Plus,RotateCcw,BookOpen,Search,Clock,Calculator,Target,Activity,Building2,FileCheck2,ChevronLeft,Loader2,LockKeyhole,Check} from 'lucide-react';
 import {Button} from '@/components/ui/button';
+import {SiteHeader} from '@/components/site/site-header';
 import {Input} from '@/components/ui/input';
 import {Checkbox} from '@/components/ui/checkbox';
 import {Tabs,TabsList,TabsTrigger,TabsContent} from '@/components/ui/tabs';
@@ -87,7 +88,7 @@ export default function Home(){
  const onEvent=(key:keyof Events,v:boolean)=>{setEvents(p=>({...p,[key]:v}));setChecks(p=>({...p,events:false}))};
  const eventRows:[keyof Events,string][]=[['goingConcern','شك جوهري في الاستمرارية أو تعثر مؤكد'],['suspended','تعليق تداول قائم'],['adverseAudit','رأي مراجع سلبي أو امتناع عن إبداء الرأي'],['qualifiedAudit','رأي مراجع متحفظ'],['upcoming','حدث جوهري متوقع خلال 14 يومًا']];
  return <>
- <header className="topbar"><div className="brand"><div className="brand-icon"><Scale size={27}/></div><div><div className="brand-name">ميزان</div><div className="brand-caption">تحليل مخاطر الأسهم</div></div></div><div className="top-meta"><span>السعودية والأسواق العالمية</span><span className="key"><LockKeyhole size={14}/> قراءة الملفات على جهازك</span><span>الإصدار الأول</span></div></header>
+ <SiteHeader current="/manual" caption="تحليل مخاطر الأسهم" meta={<><span>السعودية والأسواق العالمية</span><span className="key"><LockKeyhole size={14} aria-hidden="true"/> قراءة الملفات على جهازك</span><span>الإصدار الأول</span></>}/>
  <main className="workspace"><div className="report-header"><h1>ميزان | تقرير خطر الدخول</h1><p>{meta.name} · {meta.symbol} · تاريخ التقييم {meta.asOf}{demo?' · مثال افتراضي':''}</p></div>
  <div className="toolbar"><div><p className="eyebrow">مساحة التحليل / {mode==='trader'?'المضارب':'المساهم'}</p><h1>{meta.name||'تحليل شركة جديدة'}</h1>{meta.symbol&&<p className="muted"><span dir="ltr">{meta.symbol}</span> · {meta.market==='sa'?'السوق السعودي':meta.market==='us'?'السوق الأمريكي':'سوق عالمي'} · {meta.currency}</p>}</div><div className="actions"><Button variant="outline" className="btn btn-white" onClick={()=>openEditor()}><SlidersHorizontal size={16}/> البيانات والشروط</Button><Button className="btn" onClick={()=>financialRef.current?.click()} disabled={!!busy}><Upload size={16}/> ملف الشركة</Button><Button variant="outline" className="btn btn-white" onClick={saveReport} disabled={!meta.name}><Download size={16}/> حفظ التحليل</Button><Button variant="ghost" className="btn" onClick={reset} title="بدء تحليل جديد"><Plus size={18}/> جديد</Button></div></div>
  {demo&&<div className="notice demo"><Info size={18}/><div><strong>مثال افتراضي بالكامل.</strong> الشركة والقوائم والأسعار والمراجع الشرعية مصطنعة لشرح البرنامج. استيراد ملفك يبدأ تحليلًا منفصلًا عن المثال.</div></div>}

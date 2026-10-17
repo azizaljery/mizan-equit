@@ -1,4 +1,5 @@
 'use client';
+import {Notice} from './site/notice';
 import {SectionHeading} from './managed-sections';
 import {useMemo} from 'react';
 import type {MarketReport} from '@/lib/market-data';
@@ -35,7 +36,7 @@ export function Forecasts({report,quote=null,data}:{report?:MarketReport|null;qu
  return <section className="panel forecast-panel" aria-label="التوقعات المستقبلية"><SectionHeading as="h3">التوقعات المستقبلية</SectionHeading>
  <p className="reference">السعر المرجعي {fmt(result.price)} {result.currency} · وقت السعر {result.priceTime||'غير متاح'} · جودة البيانات {result.dataQuality||'غير متحققة'}</p>
  <p className="reference">اليومي للجلسة التالية · قد يتأخر السعر حتى 15 دقيقة</p>
- {(result.dataWarnings||[]).filter((s:string)=>/متعارض|قديم جدًا|غير صالحة/.test(s)).map((s:string)=><p role="alert" className="notice error" key={s}>{s}</p>)}
+ {(result.dataWarnings||[]).filter((s:string)=>/متعارض|قديم جدًا|غير صالحة/.test(s)).map((s:string)=><Notice key={s}>{s}</Notice>)}
  <div className="forecast-grid">{rows.map((row:any)=><article className="forecast-card" key={row.sessions}>
  <h4><span className={`forecast-status-dot forecast-status-${forecastStatus(row).tone}`} title={forecastStatus(row).label} aria-label={forecastStatus(row).label}/>{row.period}</h4>{row.id&&(result as any).recorded&&<a href={'/tests?forecast='+encodeURIComponent(row.id)}>اختبر هذا التوقع</a>}
  <dl>

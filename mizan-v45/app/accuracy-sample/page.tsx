@@ -1,2 +1,3 @@
 import {AccuracySample} from '@/components/accuracy-sample';
-export default function SamplePage(){return <main className="workspace"><nav className="ask-actions"><a className="source-link" href="/">تحليل الشركات</a><a className="source-link" href="/accuracy">دقة التوقعات المسجلة</a></nav><AccuracySample/></main>;}
+import {SiteHeader} from '@/components/site/site-header';
+export default function SamplePage(){return <><SiteHeader current="/accuracy-sample"/><main className="workspace"><nav className="ask-actions" aria-label="صفحات مرتبطة"><a className="source-link" href="/accuracy">دقة التوقعات المسجلة</a></nav><AccuracySample/></main></>;}

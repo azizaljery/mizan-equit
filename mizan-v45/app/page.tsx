@@ -1,5 +1,7 @@
 'use client';
 import {ReportSkeleton} from '@/components/report-skeleton';
+import {SiteHeader} from '@/components/site/site-header';
+import {Notice} from '@/components/site/notice';
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {readCompanyDeepLink,type CompanyDeepLink} from '@/lib/company-deep-link';
 import {isGoldQuery} from '@/lib/gold-core';
@@ -89,10 +91,10 @@ export default function Home(){
  async function importFile(file:File){setUploadError('');setUploadBusy('قراءة الملف…');setAttachment(null);try{setAttachment(await readAttachment(file,setUploadBusy))}catch(e){setUploadError(e instanceof Error?e.message:'تعذرت قراءة الملف.')}finally{setUploadBusy('');if(upload.current)upload.current.value=''}}
 
  const a=analysis,r=report;
- return <><header className="topbar"><a className="brand" href="/" aria-label="ميزان الرئيسية"><span className="brand-icon"><Scale size={28}/></span><span><span className="brand-name">ميزان</span><span className="brand-caption">وضوح يسبق القرار</span></span></a><a className="source-link" href="/gold">ميزان الذهب</a><a className="source-link" href="/screener">فرز الأسهم</a><a className="source-link" href="/aziz">خوارزمية عزيز</a><a className="source-link" href="/accuracy">دقة ميزان</a><span className="top-meta"><Globe2 size={16}/> السعودية · أمريكا · الأسواق العالمية</span></header>
+ return <><SiteHeader current="/" meta={<><Globe2 size={16} aria-hidden="true"/> السعودية · أمريكا · الأسواق العالمية</>}/>
  <main className={`auto-workspace ${r?'has-result':''}`}>
  <CustomerMarketWatch company={selected ? {symbol:selected.symbol,name:selected.name,exchange:selected.exchange} : null}/>
- {error&&<p role="alert" className="notice error">{error}</p>}
+ {error&&<Notice>{error}</Notice>}
  <ManagedSections scope="home"><ManagedSection sectionKey="search">
  <section className="search-hero"><SectionHeading as="h1">ابحث عن الشركة</SectionHeading><details><summary>ⓘ طريقة البحث</summary><p id="search-instructions">اختر السوق، واكتب الرمز أو الاسم، ثم اضغط «ابدأ البحث والتحليل» أو Enter.</p></details>
  <div className="search-start-label"><span>ابدأ البحث من هنا</span><ArrowLeft size={18}/></div>
@@ -113,7 +115,7 @@ export default function Home(){
  <ManagedSection sectionKey="company">{r&&a&&<AnalysisHelpProvider report={r}><section className="result" aria-label="نتيجة التحليل">
  <div className="stock-header"><div className="stock-title-group"><div><div className="eyebrow"><b className="stock-symbol-badge" dir="ltr">{r.company.symbol}</b> · {r.company.exchange} {r.company.instrument==='ETF'?'· صندوق ETF':''}</div><h2 className="stock-primary-name">{r.company.name}</h2><p className="stock-secondary-name">{r.company.sector||r.company.industry||'لم يتحقق وصف القطاع من المصدر'}</p></div></div><LivePrice key={r.company.symbol} symbol={r.company.symbol} initialPrice={a.price} initialTime={r.quoteTime||r.prices.at(-1)?.date||''} currency={r.currency} onUpdate={setLiveQuote}/></div>
  <div className="result-controls"><div className="mode-switch" aria-label="غرض التحليل"><button aria-pressed={mode==='trader'} onClick={()=>setMode('trader')}>للمضاربة</button><button aria-pressed={mode==='investor'} onClick={()=>setMode('investor')}>للاستثمار</button></div><div className="actions">{canShowCompany('chart')&&<button className="subtle-button" onClick={()=>revealElement(document.getElementById('company-chart'))}><ChartNoAxesCombined size={16}/> عرض الشارت</button>}{canShowCompany('paper')&&<button className="subtle-button" onClick={()=>setPaperIntent(value=>value+1)}>شراء وهمي</button>}<button className="subtle-button" onClick={()=>void analyzeCompany(r.company)}><RefreshCw size={15}/> تحديث</button>{canShowCompany('conclusion')&&<button className="subtle-button" onClick={()=>revealElement(document.getElementById('report-download'))}><Download size={15}/> تحميل</button>}</div></div>
- {a.sourceComparisons.some(v=>v.conflict)&&<p role="alert" className="notice error">تعارض بيانات بين المصادر؛ راجع المقارنة قبل اعتماد النتيجة.</p>}
+ {a.sourceComparisons.some(v=>v.conflict)&&<Notice>تعارض بيانات بين المصادر؛ راجع المقارنة قبل اعتماد النتيجة.</Notice>}
  <ManagedSections scope="company">
  <ManagedSection sectionKey="decision"><DecisionRoom report={r} analysis={a}/></ManagedSection>
  <ManagedSection sectionKey="changes"><AnalysisChanges report={r}/></ManagedSection>
