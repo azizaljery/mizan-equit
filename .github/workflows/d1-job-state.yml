@@ -50,6 +50,7 @@ jobs:
             sa_due_unevaluated:"SELECT COUNT(*) n FROM forecast_records f WHERE f.market='sa' AND f.id NOT IN (SELECT id FROM forecast_outcomes) AND date(f.created_at, '+'||(f.horizon*2+3)||' days') < date('now')",
             us_due_unevaluated:"SELECT COUNT(*) n FROM forecast_records f WHERE f.market='us' AND f.id NOT IN (SELECT id FROM forecast_outcomes) AND date(f.created_at, '+'||(f.horizon*2+3)||' days') < date('now')",
             last_sa_outcome:"SELECT MAX(json_extract(o.data,'$.actualDate')) d FROM forecast_outcomes o JOIN forecast_records f ON f.id=o.id WHERE f.market='sa'",
+            due_by_market_horizon:"SELECT f.market, f.horizon, COUNT(*) due, SUM(CASE WHEN o.id IS NOT NULL THEN 1 ELSE 0 END) evaluated FROM forecast_records f LEFT JOIN forecast_outcomes o ON o.id=f.id WHERE date(f.created_at, '+'||(f.horizon*2+3)||' days') < date('now') GROUP BY 1,2 ORDER BY 1,2",
             council_running:"SELECT COUNT(*) n FROM sqlite_master WHERE name='council_runs'",
           };
           for(const [k,sql] of Object.entries(Q)){try{out[k]=await q(sql);}catch(e){out[k]={error:String(e).slice(0,120)};}}
