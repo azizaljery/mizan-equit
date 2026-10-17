@@ -54,7 +54,7 @@ jobs:
             out.pages.push(rec);await ctx.close();
           }
           await browser.close();
-          const apis=['/api/site-settings','/api/company/search?q=aramco','/api/company/search?q=AAPL','/api/company/quote?symbol=2222.SR','/api/company/quote?symbol=AAPL','/api/company/chart?symbol=2222.SR','/api/company/chart?symbol=MSFT',
+          const apis=['/api/site-settings','/api/company/search?q=aramco','/api/company/search?q=AAPL','/api/company/quote?symbol=2222.SR','/api/company/quote?symbol=AAPL',...['2222.SR','MSFT'].flatMap(x=>['1m','5m','60m','1d'].map(i=>`/api/company/chart?symbol=${x}&interval=${i}`)),'/api/temporal?symbol=2222.SR&date=2026-09-01',
             '/api/gold/quote','/api/gold/fx','/api/gold/chart','/api/accuracy-sample','/api/backtest','/api/research','/api/temporal','/api/market-watch','/api/forecast-tests',
             '/api/aziz/company?symbol=2222.SR','/api/aziz/monitor','/api/aziz/readiness','/api/research/export',
             '/api/admin/backtest/aggregate','/api/admin/backtest/export','/api/admin/council','/api/admin/dashboard','/api/admin/heartbeat','/api/admin/retention','/api/admin/run-background','/api/admin/screener-history','/api/admin/screener-operations','/api/admin/signin','/api/admin/state','/api/admin/verify','/api/admin/jobs/evaluate-due'];
