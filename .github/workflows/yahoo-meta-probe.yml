@@ -1,0 +1,43 @@
+name: Yahoo chart meta probe (read-only, diagnostics)
+
+# Fetches public Yahoo chart metadata for index/benchmark symbols used by the accuracy sample to diagnose
+# why ^TASI.SR session dates are unavailable. No secrets; no writes except the result file.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/yahoo-meta-probe.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Probe
+        env:
+          RID: ${{ github.run_id }}
+          REF: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          node --input-type=module <<'NODE' > out/meta.json
+          const out={at:new Date().toISOString(),rows:[]};
+          const url=(s,a,b)=>{const p1=Math.floor(Date.parse(a+'T00:00:00Z')/1000),p2=Math.floor(Date.parse(b+'T00:00:00Z')/1000)+86400;return `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(s)}?interval=1d&period1=${p1}&period2=${p2}&events=splits%2Cdiv`;};
+          for(const s of ['^TASI.SR','^GSPC','2222.SR','2002.SR','3001.SR','9505.SR','9503.SR','4009.SR']){
+            const rec={symbol:s};
+            try{const r=await fetch(url(s,'2026-08-24','2026-10-15'),{headers:{'user-agent':'Mozilla/5.0'},signal:AbortSignal.timeout(20000)});rec.http=r.status;const j=await r.json().catch(()=>null);
+              const res=j?.chart?.result?.[0];rec.error=j?.chart?.error?.description||null;
+              if(res){const m=res.meta;rec.meta={symbol:m.symbol,instrumentType:m.instrumentType,currency:m.currency,exchangeName:m.exchangeName,fullExchangeName:m.fullExchangeName,dataGranularity:m.dataGranularity};rec.points=res.timestamp?.length||0;rec.first=res.timestamp?new Date(res.timestamp[0]*1000).toISOString().slice(0,10):null;rec.last=res.timestamp?new Date(res.timestamp.at(-1)*1000).toISOString().slice(0,10):null;}
+            }catch(e){rec.error=String(e).slice(0,100);}
+            out.rows.push(rec);
+          }
+          console.log(JSON.stringify(out,null,1));
+          NODE
+          node -e 'const fs=require("fs");fs.writeFileSync("out/body.json",JSON.stringify({message:"ci diagnostics: yahoo meta "+process.env.RID,branch:process.env.REF,content:fs.readFileSync("out/meta.json").toString("base64")}))'
+          GH_TOKEN="${{ github.token }}" gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/yahoo-meta-${{ github.run_id }}-${{ github.run_attempt }}.json" --input out/body.json >/dev/null || echo "WARN: publish failed" >&2
