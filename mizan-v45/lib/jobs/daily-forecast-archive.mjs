@@ -31,9 +31,10 @@ export function dailyCounts(plan){
 }
 export function currentSessionEvidence(report,market,date,now){
  const price=report.prices?.at(-1),benchmark=report.context?.market;
- const expected=market==='sa'?'^TASI.SR':'SPY';
+ // TADAWUL-CALENDAR = dated session bars of liquid large caps, used when the provider's ^TASI.SR history is a single point.
+ const expected=market==='sa'?['^TASI.SR','TADAWUL-CALENDAR']:['SPY'];
  // No holiday list is guessed: require actual dated bars for both instrument and index.
- if(benchmark?.symbol!==expected||benchmark.prices?.at(-1)?.date!==date||price?.date!==date||!(price.close>0))return false;
+ if(!expected.includes(benchmark?.symbol)||benchmark.prices?.at(-1)?.date!==date||price?.date!==date||!(price.close>0))return false;
  const fetched=Date.parse(report.retrievedAt);
  return Number.isFinite(fetched)&&fetched<=now+60000&&now-fetched<30*60000;
 }
@@ -98,7 +99,7 @@ export async function runDailyArchive(db,deps,controller){
      if(report.company?.symbol!==item.symbol)throw Error('identity-mismatch');
      if(!currentSessionEvidence(report,market,clock.date,deps.now())){
       const benchmark=report.context?.market;
-      if(benchmark?.symbol===(market==='sa'?'^TASI.SR':'SPY')&&benchmark.prices?.at(-1)?.date===clock.date)throw Error('instrument-session-unavailable');
+      if((market==='sa'?['^TASI.SR','TADAWUL-CALENDAR']:['SPY']).includes(benchmark?.symbol)&&benchmark.prices?.at(-1)?.date===clock.date)throw Error('instrument-session-unavailable');
       plan.nextCheckAt=new Date(deps.now()+30*60000).toISOString();
       item.lastReason='current-session-price-or-benchmark-unavailable';
       await saveState(db,planId,plan,deps.now());state('waiting-for-session-evidence');continue;

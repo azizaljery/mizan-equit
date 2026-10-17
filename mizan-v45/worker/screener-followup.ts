@@ -78,9 +78,17 @@ export async function startScreenerFollowupAcceptance(db:any,input:unknown,relea
  const record={version:FOLLOWUP_ACCEPTANCE_VERSION,id:crypto.randomUUID(),state:'running',release,config,requestedAt:now,updatedAt:now,activateOnComplete:true,progress:null,proof:null,error:null};
  await write(db,FOLLOWUP_ACCEPTANCE_ID,record);return {...record,reused:false};
 }
+export const ACCEPTANCE_MAX_AGE_MS=72*3600*1000;
 async function advanceAcceptance(db:any,scheduledTime:number){
  const acceptance=await readScreenerFollowupAcceptance(db);
  if(!acceptance||acceptance.version!==FOLLOWUP_ACCEPTANCE_VERSION||acceptance.state!=='running')return {status:'disabled',acceptanceState:acceptance?.state??'none'};
+ // Its cohort runs expire on the server after SERVER_MAX_RUN_AGE (36 h); past that every step fails with
+ // batch-or-seal-failed and the 5-minute cron retried forever (observed: running since 2026-09-27). Close it honestly.
+ if(Date.now()-Date.parse(acceptance.requestedAt)>ACCEPTANCE_MAX_AGE_MS){
+  const record={...acceptance,state:'failed',error:'acceptance-run-expired',updatedAt:new Date().toISOString(),completedAt:new Date().toISOString(),lastScheduledTime:scheduledTime};
+  await write(db,FOLLOWUP_ACCEPTANCE_ID,record);
+  return {status:'failed',acceptanceState:'failed',stateSaved:true,progress:acceptance.progress??null,proof:null};
+ }
  const result=await runScreenerFollowupStep(db,{trigger:'manual',requestKey:'acceptance.'+acceptance.id,config:acceptance.config});
  const summary={version:result.version,status:result.status,stateSaved:result.stateSaved,markets:Object.fromEntries(['sa','us'].map(m=>[m,{state:result.markets?.[m]?.state??null,runId:result.markets?.[m]?.runId??null,planned:result.markets?.[m]?.planned??0,scanned:result.markets?.[m]?.scanned??0,analyzed:result.markets?.[m]?.analyzed??0,failed:result.markets?.[m]?.failed??0,nextBatch:result.markets?.[m]?.nextBatch??0,fingerprint:result.markets?.[m]?.fingerprint??null}]))};
  const record:any={...acceptance,updatedAt:new Date().toISOString(),lastScheduledTime:scheduledTime,progress:summary};

@@ -86,6 +86,24 @@ async function historySeries(symbol:string,start:string,end:string,read:typeof u
  return {prices,currency:parsed.meta.currency as string,source:data._mizanSource||quoteURL(symbol),corporateActions:parsed.corporateActions.filter(a=>a.date>=start&&a.date<=end),retrievedAt:new Date().toISOString()};
 }
 
+const SA_CALENDAR_PROXIES=['2222.SR','1120.SR','2010.SR'];
+/** Tadawul session calendar when the provider's ^TASI.SR history is degenerate (single point, verified 2026-10-17):
+ *  union of trading dates of liquid large caps. Only the dates are consumed (session counting), never returns. */
+async function saudiCalendarSeries(start:string,end:string,read:typeof upstream){
+ const got=await Promise.allSettled(SA_CALENDAR_PROXIES.map(s=>historySeries(s,start,end,read)));
+ const byDate=new Map<string,Price>();
+ for(const g of got)if(g.status==='fulfilled')for(const p of g.value.prices)if(!byDate.has(p.date))byDate.set(p.date,p);
+ if(!byDate.size)throw Error('تعذر بناء تقويم جلسات تداول من الشركات المرجعية.');
+ return {prices:[...byDate.values()].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0),currency:'SAR',source:quoteURL('^TASI.SR'),corporateActions:[],retrievedAt:new Date().toISOString(),calendar:'TADAWUL-CALENDAR'};
+}
+/** Market reference for a window: the index when its history covers the window, otherwise (Saudi only) the calendar. */
+async function marketSeries(symbol:string,start:string,end:string,read:typeof upstream,minSessions:number){
+ const index=await historySeries(symbol,start,end,read,true).catch((e:unknown)=>e instanceof Error?e:Error(String(e)));
+ if(!(index instanceof Error)&&index.prices.length>=minSessions)return index;
+ if(symbol!=='^TASI.SR'){if(index instanceof Error)throw index;return index;}
+ return saudiCalendarSeries(start,end,read);
+}
+
 /** Financial observations must have actually been stored before the cutoff, including publication dates. */
 export async function pastFinancialInputs(db:any,symbol:string,date:string){
  const cutoff=date+'T23:59:59.999Z',r=await db.prepare("SELECT created_at,data FROM analysis_snapshots WHERE symbol=? AND created_at<=? ORDER BY created_at DESC LIMIT 1").bind(symbol,cutoff).first();
@@ -135,7 +153,7 @@ export async function processAccuracyRow(db:any,runId:string,rowId:string,action
  try{
   if(action==='forecast'){
    const start=isoDay(Date.parse(run.date)-5*366*day),symbol=company.symbol.endsWith('.SR')?'^TASI.SR':'^GSPC';
-   const parts=await Promise.allSettled([historySeries(company.symbol,start,run.date,read),historySeries(symbol,start,run.date,read,true),pastFinancialInputs(db,company.symbol,run.date)]);
+   const parts=await Promise.allSettled([historySeries(company.symbol,start,run.date,read),marketSeries(symbol,start,run.date,read,20),pastFinancialInputs(db,company.symbol,run.date)]);
    if(parts[0].status==='rejected')throw parts[0].reason;
    const market=parts[1].status==='fulfilled'?{symbol,name:company.symbol.endsWith('.SR')?'تاسي':'S&P 500',prices:parts[1].value.prices,source:parts[1].value.source}:null;
    const archive=parts[2].status==='fulfilled'?parts[2].value:null,report=historicalReport(company,run.date,parts[0].value,market,archive),settings=validateSettings(run.settings);
@@ -146,13 +164,19 @@ export async function processAccuracyRow(db:any,runId:string,rowId:string,action
   }else{
    const saved=parse(claimed.forecast),end=isoDay(Math.min(Date.parse(lastCompleteDay(now)),Date.parse(saved.anchorDate)+(run.sessions*2+40)*day));
    const marketSymbol=row.symbol.endsWith('.SR')?'^TASI.SR':'^GSPC';
-   const results=await Promise.allSettled([historySeries(row.symbol,saved.anchorDate,end,read),historySeries(marketSymbol,saved.anchorDate,end,read,true)]);
+   const results=await Promise.allSettled([historySeries(row.symbol,saved.anchorDate,end,read),marketSeries(marketSymbol,saved.anchorDate,end,read,0)]);
    if(results[0].status==='rejected')throw results[0].reason;
+   // Degenerate index history (fewer dated bars than the company in the same window) → Saudi session calendar.
+   if(marketSymbol==='^TASI.SR'&&(results[1].status==='rejected'||results[1].value.prices.length<results[0].value.prices.length))results[1]=await Promise.allSettled([saudiCalendarSeries(saved.anchorDate,end,read)]).then(x=>x[0]);
    const series={...results[0].value,sessionDates:results[1].status==='fulfilled'?results[1].value.prices.map(p=>p.date):null};
    const outcome=evaluateSampleOutcome(saved,series,run.sessions);stage=outcome.state;
    await db.prepare('UPDATE accuracy_rows SET outcome=?,state=?,error=\'\',updated_at=? WHERE id=? AND lease_token=?').bind(JSON.stringify({...outcome,evaluatedAt:new Date(now).toISOString()}),stage,new Date(now).toISOString(),row.id,lease).run();
   }
- }catch(e){await db.prepare('UPDATE accuracy_rows SET state=\'failed\',error=?,updated_at=? WHERE id=? AND lease_token=?').bind(failure(e),new Date(now).toISOString(),row.id,lease).run();}
+ }catch(e){
+  // The provider has no data at all for this symbol (404, e.g. delisted/merged): terminal, otherwise one dead row
+  // keeps the sample "pending" forever and the daily cron never creates a new sample.
+  const msg=failure(e),terminal=/\(404\)/.test(msg);
+  await db.prepare('UPDATE accuracy_rows SET state=?,error=?,updated_at=? WHERE id=? AND lease_token=?').bind(terminal?'unavailable':'failed',msg,new Date(now).toISOString(),row.id,lease).run();}
  finally{await db.prepare('UPDATE accuracy_rows SET lease_token=\'\',lease_until=0 WHERE id=? AND lease_token=?').bind(row.id,lease).run();}
  return getAccuracyRun(db,runId);
 }

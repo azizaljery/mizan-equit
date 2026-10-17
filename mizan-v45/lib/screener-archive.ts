@@ -7,7 +7,9 @@ import {issuedScreenerSnapshot,archiveFingerprint,SCREENER_ARCHIVE_VERSION,type 
 import {performanceStats} from './forecast-journal';
 import {forecastMetrics} from './forecast-metrics';
 import {tryAcquireLock,releaseLock} from '../worker/scheduled';
-const MAX_RUN_AGE=2*60*60*1000,SERVER_MAX_RUN_AGE=36*60*60*1000,LEASE_MS=10*60*1000;
+const MAX_RUN_AGE=2*60*60*1000,SERVER_MAX_RUN_AGE=36*60*60*1000,LEASE_MS=3*60*1000; // batchSize 1: one symbol (~10–20 s wall). A killed batch never releases its lease, so the
+// lease is how long a scan stays blocked; a duplicate batch is still rejected by the (run_id,batch_index) insert.
+
 export const SERVER_ARCHIVE_OWNER='server-followup-v2';
 const safeId=(id:unknown)=>typeof id==='string'&&/^[a-f0-9-]{36}$/.test(id);
 async function all(db:any,sql:string,values:unknown[]=[]){const r=await db.prepare(sql).bind(...values).all();if(r.success===false||!Array.isArray(r.results))throw Error('archive-read-failed');return r.results;}

@@ -279,7 +279,27 @@ async function getContext(company:Company,asOf:string,read:typeof upstream=upstr
  const symbols:[string,string][]=sa?[['^TASI.SR','تاسي']]:us?[['SPY','SPY — مرجع الأسهم الأمريكية الكبيرة']]:[];
  if(us&&sectorProxies[company.sector])symbols.push([sectorProxies[company.sector],`${company.sector} — صندوق قطاعي أمريكي`]);
  const r=await Promise.allSettled(symbols.map(async ([symbol,name])=>{const d=await read(dailyChartURL(symbol,asOf,historical,'2y'),true,300000);const p=chartInWindow(d,asOf,historical,'2y',true);if(p.meta.symbol!==symbol)throw Error('مرجع غير مطابق.');if(historical&&p.prices.length<2)throw Error('لا توجد جلسات كافية للمرجع عند تاريخ القطع.');return {symbol,name,prices:p.prices,source:historical?(d._mizanSource||quoteURL(symbol)):quoteURL(symbol)}}));
- return {market:r[0]?.status==='fulfilled'?r[0].value:null,sector:r[1]?.status==='fulfilled'?r[1].value:null};
+ let market=r[0]?.status==='fulfilled'?r[0].value:null;
+ // Yahoo currently returns a single point for ^TASI.SR whatever the range (verified 2026-10-17). The market reference
+ // is used as the Tadawul SESSION CALENDAR (forecast evaluation counts sessions on it), so a 1-point series froze every
+ // Saudi forecast with horizon>1. Fallback: union of session dates of liquid large caps, clearly labelled as a calendar.
+ if(sa&&(!market||market.prices.length<SA_CALENDAR_MIN_SESSIONS)){
+  const cal=await saudiSessionCalendar(asOf,read,historical);
+  if(cal)market=cal;
+ }
+ return {market,sector:r[1]?.status==='fulfilled'?r[1].value:null};
+}
+export const SA_CALENDAR_MIN_SESSIONS=20;
+export const SA_CALENDAR_PROXIES=['2222.SR','1120.SR','2010.SR'] as const;
+/** Tadawul session calendar from liquid large caps (union of trading dates). Closes are the first proxy's when present;
+ *  consumers of the market reference use its dates, never its returns. */
+export async function saudiSessionCalendar(asOf:string,read:typeof upstream=upstream,historical=false):Promise<Benchmark|null>{
+ const got=await Promise.allSettled(SA_CALENDAR_PROXIES.map(async symbol=>{const d=await read(dailyChartURL(symbol,asOf,historical,'2y'),true,300000);const p=chartInWindow(d,asOf,historical,'2y');if(p.meta.symbol!==symbol)throw Error('مرجع غير مطابق.');return p.prices as Price[];}));
+ const byDate=new Map<string,Price>();
+ for(const g of got)if(g.status==='fulfilled')for(const p of g.value)if(!byDate.has(p.date))byDate.set(p.date,p);
+ if(byDate.size<SA_CALENDAR_MIN_SESSIONS)return null;
+ const used=SA_CALENDAR_PROXIES.filter((_,i)=>got[i].status==='fulfilled');
+ return {symbol:'TADAWUL-CALENDAR',name:'تقويم جلسات تداول (بديل: بيانات تاسي التاريخية غير متاحة من المزود؛ تواريخ جلسات '+used.join('، ')+')',prices:[...byDate.values()].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0),source:quoteURL('^TASI.SR')};
 }
 export async function fetchCompany(symbol:string,read:typeof upstream & {sourceAttempts?:FetchAttempt[]}=upstream,allowPartial=false,asOfOverride?:string):Promise<MarketReport>{
  if(!validSymbol(symbol))throw new Error('رمز التداول غير صالح.');
