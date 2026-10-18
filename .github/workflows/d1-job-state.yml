@@ -57,6 +57,9 @@ jobs:
             sa_h5_due_sample:"SELECT f.symbol, f.created_at, json_extract(f.data,'$.anchorDate') anchor, json_extract(f.data,'$.evaluationPolicy') pol, json_extract(f.data,'$.window.estimatedEndAt') endAt FROM forecast_records f LEFT JOIN forecast_outcomes o ON o.id=f.id WHERE f.market='sa' AND f.horizon=5 AND o.id IS NULL AND date(f.created_at,'+13 days')<date('now') ORDER BY f.created_at LIMIT 12",
             backlog_symbols:"SELECT f.market, COUNT(DISTINCT f.symbol) symbols, COUNT(*) forecasts FROM forecast_records f LEFT JOIN forecast_outcomes o ON o.id=f.id WHERE o.id IS NULL AND f.available=1 AND date(f.created_at,'+'||(f.horizon*2+3)||' days')<date('now') AND f.horizon<=21 GROUP BY 1",
             new_symbols_per_day:"SELECT substr(created_at,1,10) d, market, COUNT(DISTINCT symbol) n FROM forecast_records WHERE created_at>=datetime('now','-6 days') GROUP BY 1,2 ORDER BY 1,2",
+            daily_pick_tables:"SELECT type,name FROM sqlite_master WHERE name LIKE 'daily_pick%' OR (type='trigger' AND sql LIKE '%daily_pick%') ORDER BY type,name",
+            daily_picks_summary:"SELECT market, horizon, pick_date, COUNT(*) n, SUM(in_top) top, SUM(CASE WHEN outcome_state!='pending' THEN 1 ELSE 0 END) done FROM daily_picks GROUP BY 1,2,3 ORDER BY 3 DESC LIMIT 12",
+            daily_picks_last:"SELECT updated_at, substr(data,1,1500) d FROM research_state WHERE id='job:daily-picks:last'",
             council_running:"SELECT COUNT(*) n FROM sqlite_master WHERE name='council_runs'",
           };
           for(const [k,sql] of Object.entries(Q)){try{out[k]=await q(sql);}catch(e){out[k]={error:String(e).slice(0,120)};}}
