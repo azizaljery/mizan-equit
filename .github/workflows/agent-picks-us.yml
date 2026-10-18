@@ -15,7 +15,7 @@ name: Agent picks - US (40, live forecasts recorded)
 # push (editing this file) = DRY RUN with 3 stocks, artifact only (it still records those 3 analyses in D1).
 on:
   schedule:
-    - cron: "0 14 * * 1-5"
+    - cron: "45 14 * * 1-5"
   workflow_dispatch:
     inputs:
       count:
