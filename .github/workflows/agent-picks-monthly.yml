@@ -1,0 +1,90 @@
+name: Agent picks - monthly review
+
+# Writes research/agent-picks/reports/monthly-<YYYY-MM>.md for the PREVIOUS calendar month: cumulative stats, stability by
+# week, failure analysis (largest misses, 'غير متاح' reasons, failed analyze calls) and a "proposed experiments" section
+# that ONLY lists candidate hypotheses for future frozen protocols. Reads the repo only (no network); changes nothing else.
+#
+# Schedule: 1st of every month 18:00 UTC = 21:00 Riyadh. GitHub runs `schedule` only from the DEFAULT branch: merge to `main`.
+# push (editing this file) = DRY RUN: report for the previous month as an artifact only.
+on:
+  schedule:
+    - cron: "0 18 1 * *"
+  workflow_dispatch:
+    inputs:
+      month:
+        description: "Month to review (YYYY-MM); empty = previous month"
+        required: false
+        default: ""
+      publish:
+        description: "Commit the report to mizan-aziz-deploy (false = artifact only)"
+        type: boolean
+        default: true
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/agent-picks-monthly.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agent-picks-monthly
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PUBLISH: ${{ (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.publish)) && 'true' || 'false' }}
+      MONTH: ${{ inputs.month || '' }}
+    steps:
+      - name: Checkout working branch
+        uses: actions/checkout@v4
+        with:
+          ref: mizan-aziz-deploy
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Unit tests (offline)
+        run: node --test research/tests/agent-picks.test.mjs
+
+      - name: Monthly report
+        id: rep
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$PUBLISH" = "true" ]; then DIR=research/agent-picks; else DIR="$RUNNER_TEMP/agent-picks"; mkdir -p "$DIR"; cp -r research/agent-picks/. "$DIR"/ 2>/dev/null || true; fi
+          mkdir -p "$DIR"
+          echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+          if [ -n "$MONTH" ]; then node research/experiments/agent-picks-monthly.mjs --dir="$DIR" --month="$MONTH"; else node research/experiments/agent-picks-monthly.mjs --dir="$DIR"; fi
+          { echo "### Agent picks - monthly"; echo "- report: \`$(grep '^report=' "$GITHUB_OUTPUT" | tail -1 | cut -d= -f2-)\`"; echo "- publish: $PUBLISH"; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload report as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-picks-monthly-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.rep.outputs.dir }}/reports
+          if-no-files-found: warn
+
+      - name: Commit and push to mizan-aziz-deploy
+        if: env.PUBLISH == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898232+github-actions[bot]@users.noreply.github.com"
+          git add research/agent-picks/reports
+          if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
+          git commit -q -m "agent-picks: monthly ${{ steps.rep.outputs.report }} (run ${{ github.run_id }})"
+          for i in 1 2 3 4 5; do
+            if git pull -q --rebase origin mizan-aziz-deploy && git push -q origin HEAD:mizan-aziz-deploy; then echo "pushed $(git rev-parse --short HEAD)"; exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            echo "push attempt $i failed - retrying"; sleep $((i*5))
+          done
+          echo "::error title=agent-picks-monthly::could not push after 5 attempts"; exit 1
