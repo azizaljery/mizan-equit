@@ -1,0 +1,89 @@
+name: Agent picks - weekly evaluation and report
+
+# Matures recorded agent-picks forecasts (Yahoo daily closes on the market calendar: SA = union of 2222.SR/1120.SR/2010.SR,
+# US = SPY), appends outcomes to research/agent-picks/outcomes/<market>.json (existing entries are never modified) and writes
+# research/agent-picks/reports/weekly-<ISO week>.md (Arabic, RTL). Descriptive only: no conclusion before n_eff >= 60.
+#
+# Schedule: Friday 18:00 UTC = 21:00 Riyadh (Tadawul week closed on Thursday; US Friday session still open, so only
+# targets before today are evaluated). GitHub runs `schedule` only from the DEFAULT branch: merge this file to `main` too.
+# push (editing this file) = DRY RUN: evaluation + report computed on a copy, artifact only, nothing committed.
+on:
+  schedule:
+    - cron: "0 18 * * 5"
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Commit outcomes and report to mizan-aziz-deploy (false = artifact only)"
+        type: boolean
+        default: true
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/agent-picks-weekly.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agent-picks-weekly
+  cancel-in-progress: false
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PUBLISH: ${{ (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.publish)) && 'true' || 'false' }}
+    steps:
+      - name: Checkout working branch
+        uses: actions/checkout@v4
+        with:
+          ref: mizan-aziz-deploy
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Unit tests (offline)
+        run: node --test research/tests/agent-picks.test.mjs
+
+      - name: Evaluate matured forecasts and write weekly report
+        id: eval
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$PUBLISH" = "true" ]; then DIR=research/agent-picks; else DIR="$RUNNER_TEMP/agent-picks"; mkdir -p "$DIR"; cp -r research/agent-picks/. "$DIR"/ 2>/dev/null || true; fi
+          mkdir -p "$DIR"
+          echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+          node research/experiments/agent-picks-evaluate.mjs --dir="$DIR"
+          { echo "### Agent picks - weekly"; echo "- report: \`$(grep '^report=' "$GITHUB_OUTPUT" | tail -1 | cut -d= -f2-)\`"; echo "- outcomes added: $(grep '^added=' "$GITHUB_OUTPUT" | tail -1 | cut -d= -f2-)"; echo "- publish: $PUBLISH"; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload outcomes and report as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-picks-weekly-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ steps.eval.outputs.dir }}/outcomes
+            ${{ steps.eval.outputs.dir }}/reports
+          if-no-files-found: warn
+
+      - name: Commit and push to mizan-aziz-deploy
+        if: env.PUBLISH == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898232+github-actions[bot]@users.noreply.github.com"
+          # only outcomes/ and reports/ are written by this job; -A on the parent avoids failing when outcomes/ does not exist yet
+          git add -A research/agent-picks
+          if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
+          git commit -q -m "agent-picks: weekly ${{ steps.eval.outputs.report }} outcomes+${{ steps.eval.outputs.added }} (run ${{ github.run_id }})"
+          for i in 1 2 3 4 5; do
+            if git pull -q --rebase origin mizan-aziz-deploy && git push -q origin HEAD:mizan-aziz-deploy; then echo "pushed $(git rev-parse --short HEAD)"; exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            echo "push attempt $i failed - retrying"; sleep $((i*5))
+          done
+          echo "::error title=agent-picks-weekly::could not push after 5 attempts"; exit 1
