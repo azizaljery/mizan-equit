@@ -1,0 +1,117 @@
+name: Agent picks - US (40, live forecasts recorded)
+
+# Every US weekday evening (Riyadh time): rank the frozen 40-stock US universe (mizan-v45/lib/daily-picks-universe.ts) by
+# mom126_5 (ranks stored), call the live POST /api/company/analyze for all 40 (sequential, >= 2 s apart, 150 s timeout,
+# up to 2 retries on 5xx) and store horizons 1/5/21 in research/agent-picks/us/<UTC date>.json on branch mizan-aziz-deploy.
+# Each analyze call ALSO records the forecast in production D1 (intended). No secret is needed.
+# Status: EXPLORATORY descriptive record - not the DIR-0002 ledger, no claim (research/REGISTRY.md).
+#
+# Schedule: 14:00 UTC = 17:00 Riyadh, Monday-Friday. US regular session opens 09:30 New York = 13:30 UTC under EDT
+# (summer) but 14:30 UTC under EST (from the first Sunday of November to the second Sunday of March): in winter this run
+# is BEFORE the open and the reference price is the previous close (recorded as such via priceTime). To stay after the
+# open all year, change the cron to "45 14 * * 1-5" (17:45 Riyadh). US holidays are not skipped (no reliable signal
+# before the open); such runs are recorded with sessionToday=false.
+# GitHub runs `schedule` only from the DEFAULT branch: this file must also be merged to `main`.
+# push (editing this file) = DRY RUN with 3 stocks, artifact only (it still records those 3 analyses in D1).
+on:
+  schedule:
+    - cron: "0 14 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      count:
+        description: "Number of US stocks (40 = whole universe)"
+        required: false
+        default: "40"
+      publish:
+        description: "Commit the run file to mizan-aziz-deploy (false = artifact only; analyze still records in D1)"
+        type: boolean
+        default: true
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/agent-picks-us.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agent-picks-us
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PUBLISH: ${{ (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.publish)) && 'true' || 'false' }}
+      COUNT: ${{ github.event_name == 'push' && '3' || inputs.count || '40' }}
+    steps:
+      - name: Checkout working branch (also when this file runs from main on schedule)
+        uses: actions/checkout@v4
+        with:
+          ref: mizan-aziz-deploy
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Unit tests (offline)
+        run: node --test research/tests/agent-picks.test.mjs
+
+      - name: Run (rank by momentum, analyze live, write append-only file)
+        id: run
+        shell: bash
+        run: |
+          set +e
+          if [ "$PUBLISH" = "true" ]; then OUT=research/agent-picks; else OUT="$RUNNER_TEMP/agent-picks"; fi
+          echo "out=$OUT" >> "$GITHUB_OUTPUT"
+          node research/experiments/agent-picks-run.mjs us "$COUNT" "$OUT" --deadline-min=105 --spacing-ms=3000
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          [ "$code" = "0" ] || [ "$code" = "3" ] || exit "$code"
+          exit 0
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "### Agent picks - US"
+            echo "- outcome: ${{ steps.run.outputs.outcome }}"
+            echo "- file: \`${{ steps.run.outputs.file }}\`"
+            echo "- analyze ok/selected: ${{ steps.run.outputs.ok }}/${{ steps.run.outputs.selected }} (failed ${{ steps.run.outputs.failed }})"
+            echo "- publish: ${PUBLISH} (count ${COUNT})"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload run file as artifact
+        if: always() && steps.run.outputs.file != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-picks-us-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.run.outputs.out }}/${{ steps.run.outputs.file }}
+          if-no-files-found: warn
+
+      - name: Commit and push to mizan-aziz-deploy (append-only file)
+        if: env.PUBLISH == 'true' && steps.run.outputs.file != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898232+github-actions[bot]@users.noreply.github.com"
+          git add research/agent-picks/us
+          if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
+          git commit -q -m "agent-picks: us ${{ steps.run.outputs.outcome }} ${{ steps.run.outputs.file }} ok=${{ steps.run.outputs.ok }}/${{ steps.run.outputs.selected }} (run ${{ github.run_id }})"
+          for i in 1 2 3 4 5; do
+            if git pull -q --rebase origin mizan-aziz-deploy && git push -q origin HEAD:mizan-aziz-deploy; then echo "pushed $(git rev-parse --short HEAD)"; exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            echo "push attempt $i failed - retrying"; sleep $((i*5))
+          done
+          echo "::error title=agent-picks-us::could not push after 5 attempts"; exit 1
+
+      - name: Fail loudly if every analyze call failed (the failure itself was recorded above)
+        if: steps.run.outputs.code == '3'
+        run: |
+          echo "::error title=agent-picks-us::all analyze calls failed"
+          exit 1
