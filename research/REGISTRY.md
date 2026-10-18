@@ -25,7 +25,7 @@
 | INC-1102 | حادثة CPU في الـWorker | **CLOSED (2026-10-17)** | ترقية المالك إلى Workers Paid + `limits.cpu_ms=30000`؛ 24 ساعة: 719 تشغيلاً كلها success، صفر exceededResources. التفاصيل: `research/INCIDENT-1102.md` |
 | ACI-REAL | Nonconformity Buffer + Adaptive Alpha + Coverage | مخطط — **مسار مستقل** بعد الاستبعاد السلبي | لا يُخلط مع تجربة الاستبعاد السلبي ولا مع تغيير الاتجاه؛ كل واحد في تجربة منفصلة |
 | NEGSEL-0002 | استبعاد سلبي بأقل تحيز بقاء ممكن | بروتوكول مجمّد (`PROTOCOL-NEGSEL-0002.md`)؛ **CODE-TESTED** (39 اختباراً) · نتيجة Dev/Validation = **INCONCLUSIVE** (n فعّال 42 < حد قوة 60 وضعه المنفّذ ويحتاج اعتماد المالك)؛ **سقف الحالة: SHADOW-VALIDATED** ما دام الكون بلا مشطوبات. **قرار المالك 2026-10-15:** HOLDOUT SEALED · INCONCLUSIVE · حد 60 مؤقت (حد أدنى تشغيلي) · متابعة الجمع الأمامي · إعادة الاختبار بعد تحقق القوة المحددة مسبقاً (`PROTOCOL-NEGSEL-0002-AMEND-1.md`) | تشغيل Development/Validation فقط؛ الـHoldout (30%) مغلق حتى مراجعة المالك لنتائج المرحلة السابقة واختباراتها. النتيجة غير الحاسمة تُسجَّل INCONCLUSIVE دون تغيير البروتوكول |
-| DIR-0001 | نموذج اتجاه احتمالي (مكوّن عزيز `probability.mjs`) لأفق 5/21 | **بروتوكول مجمّد** (`PROTOCOL-DIR-0001.md`) — ظلّي فقط، سقف الحالة SHADOW-VALIDATED؛ Holdout NEGSEL مختوم | قرار المالك 2026-10-18: الخيار الأول |
+| DIR-0001 | نموذج اتجاه احتمالي (مكوّن عزيز `probability.mjs`) لأفق 5/21 | **REJECTED** (FA-004، 2026-10-18) | الأساسي: lift +3.26 [−0.19, +6.71]، BSS −0.031. `mom126_5` وحده: دلالة أولية داخل عينة التطوير فقط |
 | ARCH-IDENTITY | هوية الورقة المالية وليس الرمز وحده | بند معماري مستقل — تصميم (`DESIGN-INSTRUMENT-SNAPSHOT.md`) | اكتشاف SBNY/BBBY. B ليس حلاً لتحيز البقاء التاريخي؛ بنية تمنع تكراره مستقبلاً |
 
 ## Placeholders — `SOURCE MISSING` (لا تُخترع من الذاكرة)
