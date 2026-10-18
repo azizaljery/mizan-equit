@@ -139,6 +139,7 @@ export {scheduledMarketWatch,MARKET_WATCH_CRON} from '../worker/watchlist-schedu
 export {scheduledMarketCollection,scheduledForecastSeed,MARKET_COLLECTION_CRON,FORECAST_SEED_CRON} from '../worker/market-collector';
 export {scheduledCouncil,COUNCIL_CRON} from '../worker/council-scheduled';
 export {scheduledScreenerFollowup} from '../worker/screener-followup';
+export {scheduledDailyPicks,runDailyPicks,DAILY_PICKS_CRON,DAILY_PICKS_STATE_ID} from '../worker/daily-picks-scheduled';
 export {MAINTENANCE_SLOT_CRON,slotJob} from '../lib/jobs/cron-slots';
 export {DAILY_ARCHIVE_CRON} from '../lib/jobs/daily-forecast-archive.mjs';
 export {SCREENER_FOLLOWUP_CRON} from '../lib/jobs/screener-followup-schedule';

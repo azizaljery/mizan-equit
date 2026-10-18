@@ -243,9 +243,10 @@ test('Each cron invocation starts exactly one heavy job; at most 5 distinct trig
   assert.equal(m.DAILY_ARCHIVE_CRON, '*/5 * * * *'); // scripts/verify-daily-archive.mjs observes this exact string
   assert.notEqual(m.SCREENER_FOLLOWUP_CRON, m.DAILY_ARCHIVE_CRON);
   assert.equal(m.RESOLUTION_CRON, m.EVALUATE_DUE_CRON); assert.equal(m.FORECAST_SEED_CRON, m.DAILY_ARCHIVE_CRON);
-  for (const c of [m.MARKET_COLLECTION_CRON, m.MARKET_WATCH_CRON, m.COUNCIL_CRON]) assert.equal(c, m.MAINTENANCE_SLOT_CRON);
+  for (const c of [m.MARKET_COLLECTION_CRON, m.MARKET_WATCH_CRON, m.COUNCIL_CRON, m.DAILY_PICKS_CRON]) assert.equal(c, m.MAINTENANCE_SLOT_CRON);
+  assert.equal(m.MAINTENANCE_SLOT_CRON, '30 0,1,4,6,7,12,13,18,19,21 * * *');
   const handlers = {resolution: m.scheduledResolution, accuracy: m.scheduledAccuracySample, watch: m.scheduledMarketWatch, collection: m.scheduledMarketCollection,
-    seed: m.scheduledForecastSeed, council: m.scheduledCouncil, screener: m.scheduledScreenerFollowup};
+    seed: m.scheduledForecastSeed, council: m.scheduledCouncil, screener: m.scheduledScreenerFollowup, picks: m.scheduledDailyPicks};
   // A DB that throws on first use: proves a handler started, without network or real work.
   async function started(controller) {
     const names = [];
@@ -265,11 +266,74 @@ test('Each cron invocation starts exactly one heavy job; at most 5 distinct trig
   for (const h of ['00', '06', '12', '18']) assert.deepEqual(await started({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: at(`2026-10-17T${h}:30:00Z`)}), ['collection'], h);
   for (const h of ['01', '07', '13', '19']) assert.deepEqual(await started({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: at(`2026-10-17T${h}:30:00Z`)}), ['watch'], h);
   assert.deepEqual(await started({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: at('2026-10-17T04:30:00Z')}), ['council']);
+  assert.deepEqual(await started({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: at('2026-10-17T21:30:00Z')}), ['picks']);
   assert.deepEqual(await started({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: at('2026-10-17T05:30:00Z')}), []);
   assert.deepEqual(await started({cron: m.MAINTENANCE_SLOT_CRON}), []);
   // Every hour listed in the slot expression maps to a job, and every job hour is listed.
   const hours = m.MAINTENANCE_SLOT_CRON.split(' ')[1].split(',').map(Number);
   for (let h = 0; h < 24; h++) assert.equal(m.slotJob({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: Date.UTC(2026, 9, 17, h, 30)}) !== null, hours.includes(h), String(h));
+});
+
+test('Daily picks ledger: records once per new session, evaluates after h sessions, never duplicates', async () => {
+  const {db, sqlite} = fixture();
+  // Synthetic daily series: Tadawul Sun–Thu, US Mon–Fri, ending at the run's "today"; INTC is down at the provider.
+  let end = '2026-09-18';
+  const hash = s => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 997, 7);
+  const read = async url => {
+    const symbol = decodeURIComponent(new URL(url).pathname.split('/').at(-1));
+    if (symbol === 'INTC') throw Error('provider down');
+    const sa = symbol.endsWith('.SR'), time = [];
+    for (let ms = Date.parse('2025-10-01T00:00:00Z'); ms <= Date.parse(end + 'T00:00:00Z'); ms += 864e5) {
+      const w = new Date(ms).getUTCDay();
+      if (sa ? w !== 5 && w !== 6 : w !== 0 && w !== 6) time.push(ms / 1000 + (sa ? 9 * 3600 : 15 * 3600));
+    }
+    const slope = (hash(symbol) - 498) / 100000, close = time.map((_, i) => 50 * (1 + slope) ** i * (1 + (i % 3) / 200));
+    return {chart: {result: [{meta: {symbol, instrumentType: symbol === 'SPY' ? 'ETF' : 'EQUITY', currency: sa ? 'SAR' : 'USD', exchangeName: sa ? 'SAU' : symbol === 'SPY' ? 'PCX' : 'NMS', gmtoffset: sa ? 10800 : -14400, dataGranularity: '1d'},
+      timestamp: time, indicators: {quote: [{open: close, high: close.map(n => n * 1.01), low: close.map(n => n * 0.99), close, volume: close.map(() => 1000)}]}, events: {}}], error: null}};
+  };
+  sqlite.prepare('INSERT INTO forecast_records VALUES(?,?,?,?,?,?,?,?,?,?,?)').run('fc-2222', 'snap', '2222.SR', '2026-09-17T10:00:00Z', 5, 'm', 'sa', 'x', 'متوسط', 1, JSON.stringify({recordClass: 'prospective-public', predictedPrice: 31.5}));
+  sqlite.prepare('INSERT INTO forecast_records VALUES(?,?,?,?,?,?,?,?,?,?,?)').run('fc-old', 'snap', '1120.SR', '2026-09-03T10:00:00Z', 5, 'm', 'sa', 'x', 'متوسط', 1, JSON.stringify({recordClass: 'prospective-public', predictedPrice: 99}));
+  const err = console.error; console.error = () => {};
+  try {
+    const run = iso => { end = iso.slice(0, 10); return m.runDailyPicks(db, {triggeredBy: 'manual', read, now: Date.parse(iso)}); };
+    const first = await run('2026-09-18T21:30:00Z'); // Friday: Tadawul's latest session is Thursday 17th
+    const byMarket = r => Object.fromEntries(r.markets.map(x => [x.market, x]));
+    let mk = byMarket(first);
+    assert.equal(mk.sa.latestSession, '2026-09-17'); assert.equal(mk.us.latestSession, '2026-09-18');
+    assert.equal(mk.sa.recorded, 'recorded'); assert.equal(mk.us.recorded, 'recorded');
+    assert.equal(mk.sa.rowsInserted, 80); assert.equal(mk.us.rowsInserted, 78); assert.equal(mk.us.excluded, 1);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) n FROM daily_picks').get().n, 158);
+    assert.equal(sqlite.prepare("SELECT COUNT(*) n FROM daily_picks WHERE market='sa' AND horizon=5 AND in_top=1").get().n, 8);
+    assert.equal(sqlite.prepare("SELECT COUNT(*) n FROM daily_picks WHERE market='us' AND horizon=21 AND in_top=1").get().n, 8); // ceil(0.2·39)
+    assert.equal(sqlite.prepare("SELECT mizan_predicted_price p FROM daily_picks WHERE symbol='2222.SR' AND horizon=5").get().p, 31.5);
+    assert.equal(sqlite.prepare("SELECT mizan_predicted_price p FROM daily_picks WHERE symbol='1120.SR' AND horizon=5").get().p, null); // older than 4 days
+    assert.equal(sqlite.prepare("SELECT mizan_predicted_price p FROM daily_picks WHERE symbol='2222.SR' AND horizon=21").get().p, null);
+    assert.match(JSON.parse(sqlite.prepare("SELECT failures_json f FROM daily_pick_runs WHERE market='us'").get().f)[0].reason, /fetch_failed/);
+    assert.equal(first.status, 'partial'); // INTC fetch error is reported
+    // Same day again (or a weekend run): no new session → nothing inserted, nothing evaluated.
+    const again = await run('2026-09-18T21:31:00Z'); mk = byMarket(again);
+    assert.equal(mk.sa.recorded, 'not-new-session'); assert.equal(mk.us.recorded, 'not-new-session');
+    assert.equal(sqlite.prepare('SELECT COUNT(*) n FROM daily_picks').get().n, 158);
+    const saturday = await run('2026-09-19T21:30:00Z'); mk = byMarket(saturday);
+    assert.equal(mk.sa.recorded, 'not-new-session'); assert.equal(mk.us.recorded, 'not-new-session'); assert.equal(mk.sa.fetched, 3); assert.equal(mk.us.fetched, 1);
+    // Sunday: a Tadawul session (recorded), not a US one.
+    mk = byMarket(await run('2026-09-20T21:30:00Z'));
+    assert.equal(mk.sa.recorded, 'recorded'); assert.equal(mk.sa.latestSession, '2026-09-20'); assert.equal(mk.us.recorded, 'not-new-session');
+    // One week later: the 5-session rows of the first day mature (SA: 20,21,22,23,24 → Thu 24th; US: 21..25 → Fri 25th).
+    const later = await run('2026-09-25T21:30:00Z'); mk = byMarket(later);
+    assert.equal(mk.sa.evaluated.complete, 40); assert.equal(mk.us.evaluated.complete, 39);
+    assert.equal(sqlite.prepare("SELECT COUNT(*) n FROM daily_picks WHERE outcome_state='complete'").get().n, 79);
+    assert.deepEqual([...new Set(sqlite.prepare("SELECT target_date t FROM daily_picks WHERE outcome_state='complete' AND market='sa'").all().map(r => r.t))], ['2026-09-24']);
+    assert.deepEqual([...new Set(sqlite.prepare("SELECT target_date t FROM daily_picks WHERE outcome_state='complete' AND market='us'").all().map(r => r.t))], ['2026-09-25']);
+    assert.equal(sqlite.prepare("SELECT COUNT(*) n FROM daily_picks WHERE outcome_state='complete' AND (went_up=1) <> (actual_price>ref_price)").get().n, 0);
+    assert.equal(sqlite.prepare("SELECT COUNT(*) n FROM daily_picks WHERE horizon=21 AND outcome_state<>'pending'").get().n, 0);
+    const saved = JSON.parse(sqlite.prepare("SELECT data FROM research_state WHERE id=?").get(m.DAILY_PICKS_STATE_ID).data);
+    assert.equal(saved.runId, later.runId); assert.equal(saved.modelVersion, 'mom126_5-top20-v1');
+    assert.equal(sqlite.prepare("SELECT COUNT(*) n FROM research_locks WHERE id='cron:daily-picks:v1'").get().n, 0); // lease released
+    // Outcome is final: re-running the same day changes nothing.
+    await run('2026-09-25T21:40:00Z');
+    assert.equal(sqlite.prepare("SELECT COUNT(*) n FROM daily_picks WHERE outcome_state='complete'").get().n, 79);
+  } finally { console.error = err; sqlite.close(); }
 });
 
 test('Manual background run is capped at 5 symbols per HTTP request', async () => {

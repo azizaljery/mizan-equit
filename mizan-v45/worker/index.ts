@@ -7,6 +7,7 @@ import { scheduledMarketWatch } from './watchlist-scheduled';
 import { scheduledMarketCollection, scheduledForecastSeed } from './market-collector';
 import { scheduledCouncil } from './council-scheduled';
 import { scheduledScreenerFollowup } from './screener-followup';
+import { scheduledDailyPicks } from './daily-picks-scheduled';
 import { withVerifiedIdentity } from './owner-identity';
 
 interface Env {
@@ -41,7 +42,8 @@ const worker = {
     // Every handler checks controller.cron (and, for MAINTENANCE_SLOT_CRON, the UTC hour) and returns at
     // once unless it owns this trigger, so each invocation runs exactly ONE heavy job within its CPU budget:
     //   '0 */6'   resolution · '0 3' accuracy sample · '*/5' daily archive · '2,7,...,57' screener followup
-    //   MAINTENANCE_SLOT_CRON: market collection (00/06/12/18:30), market watch (01/07/13/19:30), council (04:30).
+    //   MAINTENANCE_SLOT_CRON: market collection (00/06/12/18:30), market watch (01/07/13/19:30), council (04:30),
+    //   daily picks ledger (21:30, PROTOCOL-DIR-0002).
     ctx.waitUntil(scheduledResolution(controller, env));
     ctx.waitUntil(scheduledAccuracySample(controller, env));
     ctx.waitUntil(scheduledMarketWatch(controller, env));
@@ -49,6 +51,7 @@ const worker = {
     ctx.waitUntil(scheduledForecastSeed(controller, env));
     ctx.waitUntil(scheduledCouncil(controller, env));
     ctx.waitUntil(scheduledScreenerFollowup(controller, env));
+    ctx.waitUntil(scheduledDailyPicks(controller, env));
   },
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);

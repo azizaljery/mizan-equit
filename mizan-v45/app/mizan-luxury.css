@@ -202,3 +202,24 @@ body .card,body .panel{position:relative;background:var(--surface);border:1px so
 .company-picks .pick-meta{display:flex;flex-wrap:wrap;gap:.35rem .8rem;align-items:center;margin-top:.45rem}
 .company-picks .picks-foot{font-size:.85rem}
 @media (max-width:640px){.company-picks .pick-card{padding:.75rem}.company-picks .picks-controls .market-select{flex:1 1 45%}}
+/* «سجل الترشيحات اليومية» — PROTOCOL-DIR-0002 */
+.picks-ledger{margin-top:1.25rem}
+.picks-ledger .ledger-subtitle{font-size:1.05rem;margin:1.1rem 0 .5rem}
+.picks-ledger .ledger-latest{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:1rem}
+.picks-ledger .ledger-latest-market h4{margin:0 0 .4rem;font-size:.98rem}
+.picks-ledger .ledger-stats{border:1px solid var(--border);border-radius:var(--radius-lg,.75rem);padding:.9rem 1rem;background:var(--card);display:grid;gap:.75rem}
+.picks-ledger .ledger-bars{display:grid;gap:.6rem}
+.picks-ledger .ledger-bar-label{display:flex;justify-content:space-between;gap:.5rem;font-size:.9rem}
+.picks-ledger .ledger-bar-track{position:relative;height:.7rem;border-radius:999px;background:var(--muted);overflow:visible}
+.picks-ledger .ledger-bar-fill{height:100%;border-radius:999px;background:var(--primary)}
+.picks-ledger .ledger-bar-target{position:absolute;top:-.25rem;bottom:-.25rem;width:2px;background:#b45309}
+.picks-ledger .ledger-target-note{font-size:.8rem;margin:0}
+.picks-ledger .ledger-figures{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr));gap:.5rem 1rem;margin:0}
+.picks-ledger .ledger-figures div{display:grid;gap:.1rem}
+.picks-ledger .ledger-figures dt{font-size:.8rem;color:var(--muted-foreground)}
+.picks-ledger .ledger-figures dd{margin:0;font-weight:700}
+.picks-ledger .ledger-table{max-width:100%}
+.picks-ledger .ledger-table th,.picks-ledger .ledger-table td{text-align:start}
+.picks-ledger .ledger-rank{display:inline-grid;place-items:center;min-width:1.4rem;height:1.4rem;border-radius:999px;background:var(--muted);font-size:.8rem;font-weight:700}
+.picks-ledger .ledger-up{color:#0f7a43;font-weight:700}
+.picks-ledger .ledger-down{color:#b42318;font-weight:700}

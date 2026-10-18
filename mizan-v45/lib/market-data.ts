@@ -163,12 +163,12 @@ export function factsKnownAsOf(facts:Fact[],asOf:string,options:PitOptions={buff
  return {known,warnings,approximatedCount,excludedCount,totalInput:facts.length,exclusions};
 }
 function factsPublishedBefore(facts:Fact[],asOf:string){return factsKnownAsOf(facts,asOf).known;}
-function dailyChartURL(symbol:string,asOf:string,historical:boolean,range:'5y'|'5d'|'2y',events=false){
+export function dailyChartURL(symbol:string,asOf:string,historical:boolean,range:'5y'|'5d'|'2y'|'1y',events=false){
  const base=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d`;
  if(!historical)return `${base}&range=${range}${events?'&events=splits%2Cdiv':''}`;
  const end=Date.parse(asOf+'T00:00:00Z'),start=new Date(end);
  if(range==='5d')start.setUTCDate(start.getUTCDate()-10);
- else{const month=start.getUTCMonth();start.setUTCFullYear(start.getUTCFullYear()-(range==='5y'?5:2));if(start.getUTCMonth()!==month)start.setUTCDate(0);}
+ else{const month=start.getUTCMonth();start.setUTCFullYear(start.getUTCFullYear()-(range==='5y'?5:range==='1y'?1:2));if(start.getUTCMonth()!==month)start.setUTCDate(0);}
  return `${base}&period1=${Math.floor(start.getTime()/1000)}&period2=${Math.floor(end/1000)+86400}${events?'&events=splits%2Cdiv':''}`;
 }
 function chartInWindow(data:any,asOf:string,historical:boolean,range:'5y'|'5d'|'2y',allowIndex=false){
