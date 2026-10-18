@@ -1,0 +1,151 @@
+name: SHARA backfill fetch (Set A prices, research only)
+
+# Research-only data fetch for SHARA-BACKFILL-0001 (research/SHARA-BACKFILL-0001.md). Reads Yahoo's public chart API, never touches
+# the Cloudflare Worker / D1 / mizan-v45 runtime, needs no secrets, and publishes ONLY to the orphan branch `research-data-bf`.
+# Symbols come from research/experiments/shara-backfill.cjs (SET_A_SYMBOLS) — single source of truth. The job FAILS if any of them
+# belongs to the sealed 80-symbol NEGSEL universe (lib/daily-picks-universe.ts): their post-2024-09-04 rows are a sealed holdout.
+# Range 5y = the same window lib/market-data.ts fetchCompany() requests, so forecasts() sees comparable history.
+# Row format = branch research-data ([date,open,high,low,close,volume], finite, open/close > 0) so negsel-lib loaders work.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/shara-backfill-fetch.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shara-backfill-fetch
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Download and validate daily charts (identity checked like lib/market-identity.ts)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p bf/prices
+          cat > bf-fetch.cjs <<'NODE'
+          const fs = require('fs'), crypto = require('crypto');
+          const B = require('./research/experiments/shara-backfill.cjs');
+          const symbols = B.SET_A_SYMBOLS, sealed = B.sealedUniverse();
+          const bad = symbols.filter((s) => sealed.has(s));
+          if (bad.length) { console.error(`refusing: sealed-universe symbols in Set A: ${bad.join(',')}`); process.exit(3); }
+          // same exchange sets as mizan-v45/lib/market-identity.ts validateMarketIdentity()
+          const US = new Set(['NMS','NGM','NCM','NYQ','NYS','ASE','PCX','BTS','PNK','OTC','OQB','OQX','NASDAQ','NYSE','NYSEARCA','NYSE AMERICAN','BATS']);
+          const SA = new Set(['SAU','SAUDI','TADAWUL']);
+          function identity(meta, symbol) {
+            if (!meta || meta.symbol !== symbol) return `symbol_mismatch:${meta && meta.symbol}`;
+            if (!['EQUITY'].includes(meta.instrumentType)) return `instrument:${meta.instrumentType}`;
+            const ex = String(meta.exchangeName || meta.fullExchangeName || '').trim().toUpperCase();
+            if (symbol.endsWith('.SR')) { if (meta.currency !== 'SAR') return `currency:${meta.currency}`; if (!SA.has(ex)) return `exchange:${ex}`; }
+            else { if (meta.currency !== 'USD') return `currency:${meta.currency}`; if (!US.has(ex)) return `exchange:${ex}`; }
+            return null;
+          }
+          const log = [`# SHARA-BACKFILL-0001 Set A fetch`, `run: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID} attempt ${process.env.GITHUB_RUN_ATTEMPT}`,
+            `source commit: ${process.env.GITHUB_SHA}`, `symbols: ${symbols.join(',')}`, `range: 5y interval: 1d`, ''];
+          const manifest = {experiment: 'SHARA-BACKFILL-0001', set: 'A', sourceCommit: process.env.GITHUB_SHA, runId: process.env.GITHUB_RUN_ID, files: {}};
+          let ok = 0;
+          async function one(symbol) {
+            for (let attempt = 0; attempt < 4; attempt++) {
+              const host = attempt % 2 ? 'query2' : 'query1';
+              const url = `https://${host}.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5y&events=split`;
+              const retrievedAt = new Date().toISOString();
+              try {
+                const r = await fetch(url, {headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36', Accept: 'application/json'}});
+                if (!r.ok) { log.push(`${symbol} http ${r.status} attempt ${attempt} at ${retrievedAt}`); await new Promise((s) => setTimeout(s, 4000 * (attempt + 1))); continue; }
+                const j = await r.json(), res = j?.chart?.result?.[0], meta = res?.meta;
+                const idErr = identity(meta, symbol);
+                if (idErr) { log.push(`${symbol} REJECTED identity ${idErr} at ${retrievedAt}`); return; }
+                const ts = res?.timestamp, q = res?.indicators?.quote?.[0];
+                if (!ts || !q) { log.push(`${symbol} no-series at ${retrievedAt}`); return; }
+                const rows = [];
+                for (let i = 0; i < ts.length; i++) {
+                  const o = q.open?.[i], h = q.high?.[i], l = q.low?.[i], c = q.close?.[i], v = q.volume?.[i];
+                  if ([o, h, l, c, v].every((x) => typeof x === 'number' && Number.isFinite(x)) && o > 0 && c > 0) rows.push([new Date(ts[i] * 1000).toISOString().slice(0, 10), +o.toFixed(4), +h.toFixed(4), +l.toFixed(4), +c.toFixed(4), v]);
+                }
+                const splits = Object.keys(res?.events?.splits || {}).length;
+                const body = JSON.stringify({symbol, currency: meta.currency, tz: meta.exchangeTimezoneName, exchange: meta.exchangeName, instrumentType: meta.instrumentType,
+                  firstTradeDate: meta.firstTradeDate ?? null, splitsInRange: splits, source: url, retrievedAt, rows});
+                fs.writeFileSync(`bf/prices/${symbol}.json`, body);
+                const sha = crypto.createHash('sha256').update(body).digest('hex');
+                manifest.files[`prices/${symbol}.json`] = {sha256: sha, rows: rows.length, first: rows[0]?.[0] ?? null, last: rows.at(-1)?.[0] ?? null, retrievedAt, url};
+                log.push(`${symbol} ok rows=${rows.length} first=${rows[0]?.[0]} last=${rows.at(-1)?.[0]} splits=${splits} exchange=${meta.exchangeName} currency=${meta.currency} retrievedAt=${retrievedAt} sha256=${sha}`);
+                ok++; return;
+              } catch (e) { log.push(`${symbol} error ${e.message} attempt ${attempt} at ${retrievedAt}`); }
+            }
+          }
+          (async () => {
+            for (const s of symbols) { await one(s); await new Promise((r) => setTimeout(r, 1500)); }
+            log.push('', `ok ${ok}/${symbols.length} finished ${new Date().toISOString()}`);
+            fs.writeFileSync('bf/fetch.log', log.join('\n') + '\n');
+            fs.writeFileSync('bf/manifest.json', JSON.stringify(manifest, null, 1) + '\n');
+            console.log(log.join('\n'));
+            if (ok === 0) { console.error('no symbol fetched - nothing will be published'); process.exit(4); }
+          })();
+          NODE
+          node bf-fetch.cjs
+          {
+            echo "### SHARA backfill fetch"
+            echo ""
+            echo '```'
+            tail -n 25 bf/fetch.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Prepare branch research-data-bf (creates the orphan branch on first run)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "ci"; git config user.email "ci@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin research-data-bf >/dev/null 2>&1; then
+            git fetch --no-tags origin +refs/heads/research-data-bf:refs/remotes/origin/research-data-bf
+            git worktree add -B research-data-bf bf-state origin/research-data-bf
+            echo "state: existing branch research-data-bf at $(git -C bf-state rev-parse --short HEAD)"
+          else
+            git worktree add --detach bf-state HEAD
+            git -C bf-state checkout --orphan research-data-bf
+            git -C bf-state rm -rf --quiet . || true
+            echo "state: branch research-data-bf does not exist yet - starting a new orphan branch"
+          fi
+          # same layout as research-data: <root>/research-data-bf/prices/<sym>.json + fetch.log (+ manifest.json)
+          rm -rf bf-state/research-data-bf
+          mkdir -p bf-state/research-data-bf
+          cp -r bf/prices bf/fetch.log bf/manifest.json bf-state/research-data-bf/
+
+      - name: Commit and push to branch research-data-bf (retry with rebase)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd bf-state
+          git add -A research-data-bf
+          if git diff --cached --quiet; then echo "nothing changed"; exit 0; fi
+          git commit -q -m "SHARA-BACKFILL-0001 Set A prices: $(date -u +%FT%TZ) run ${GITHUB_RUN_ID} source ${GITHUB_SHA::12}"
+          for attempt in 1 2 3; do
+            if git ls-remote --exit-code --heads origin research-data-bf >/dev/null 2>&1; then
+              git fetch --no-tags origin +refs/heads/research-data-bf:refs/remotes/origin/research-data-bf
+              git rebase -X theirs origin/research-data-bf || { git rebase --abort; echo "rebase failed"; }
+            fi
+            if git push origin HEAD:research-data-bf; then
+              echo "pushed: $(git rev-parse --short HEAD)"
+              exit 0
+            fi
+            echo "push attempt $attempt failed - retrying"
+            sleep $((attempt * 5))
+          done
+          echo "::error title=shara-backfill-fetch::could not push to research-data-bf after 3 attempts"
+          exit 1
