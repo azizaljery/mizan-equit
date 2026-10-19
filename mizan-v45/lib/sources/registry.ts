@@ -1,4 +1,9 @@
 /** Diagnostic source-pipeline registry. Production company analysis still enters through market-data.ts/configuredReader. */
+/* Audit 2026-10-19: only `yahoo` and `sec` have ENDPOINT_BUILDERS and parsers. The keyed providers below (sahmk,
+ * alpha-vantage, fmp, massive, tiingo, twelvedata, finnhub, eodhd) are inert candidates: no request is ever built for
+ * them, with or without a key. `tadawul` has a parser for the company page but that page refuses automated requests
+ * (HTTP 403 bot protection), see lib/source-blocking.ts. Twelve Data is used only by the Aziz research import route
+ * (TWELVE_DATA_API_KEY) and the gold service; Alpaca by lib/alpaca-data.ts behind its server keys. */
 import type { SourceCandidate, Market, DataType } from './types';
 
 export const SOURCE_REGISTRY: readonly SourceCandidate[] = [

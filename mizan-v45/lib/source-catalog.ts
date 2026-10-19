@@ -62,10 +62,24 @@ export function sourceOperationalState(source:{enabled:boolean;deleted:boolean;a
  let evidence:any=null;try{evidence=JSON.parse(observation?.detail||'null')}catch{}
  const state=probe?.state||observation?.status;
  if(source.deleted)return {label:'متوقف',detail:'حذف قابل للاستعادة؛ السجل التاريخي محفوظ.'};
+ // Refusal by bot protection is reported as such, not as a broken connector; Mizan does not bypass it.
+ if(state==='blocked')return {label:'محجوب من المصدر',detail:evidence?.reason||'المصدر يرفض الطلبات الآلية؛ أُوقفت المحاولات مؤقتًا دون تجاوز الحماية.'};
+ // A review link is never fetched for analysis data, so an unreachable page is not a data failure.
+ if(state==='failed'&&source.adapter==='reference')return {label:'رابط مراجعة لا يفتح آليًا',detail:(probe?.detail||evidence?.reason||'فشل آخر اختبار للرابط.')+' هذا رابط مراجعة لا يُستخدم لجلب البيانات، فلا يؤثر على التحليل.'};
  if(state==='failed')return {label:'متعطل',detail:probe?.detail||evidence?.reason||observation?.detail||'فشل آخر طلب.'};
  if(evidence?.stage==='analysis-used'&&source.enabled)return {label:'يعمل',detail:`استُخدمت بيانات متحقق منها في تحليل ${evidence.symbol} بتاريخ ${evidence.usedAt}.`};
- if(state==='partial'||state==='ok'||state==='delayed')return {label:'جزئي',detail:probe?.detail||'وصل رد من المصدر؛ لم يُثبت بعد استخدام بياناته في تحليل صالح.'};
+ if(state==='delayed')return {label:'يستجيب بسعر متأخر',detail:evidence?.reason||'آخر سعر لحظي وصل أقدم من دقيقة ولم يثبت أنه إغلاق الجلسة؛ يُعرض وقت السعر الحقيقي مع التحليل.'};
+ if(state==='partial'||state==='ok')return {label:'جزئي',detail:probe?.detail||'وصل رد من المصدر؛ لم يُثبت بعد استخدام بياناته في تحليل صالح.'};
  if(source.metadata?.licenseRequired)return {label:'ينتظر ترخيصًا',detail:source.metadata.setup};
  if(source.adapter==='reference')return {label:'مسجل فقط',detail:source.metadata?.setup||'مرجع دون قارئ آلي مفعل.'};
  return {label:'يحتاج إعدادًا',detail:source.enabled?'يلزم اختبار قراءة بيانات صحيحة واستخدامها في التحليل.':'الاتصال متوقف من الإدارة.'};
+}
+/** How Mizan uses a configured source — shown next to its state so a review link is never read as a broken feed. */
+export function sourceUsageLabel(source:{enabled:boolean;deleted:boolean;adapter:string}){
+ if(source.deleted)return 'محذوف — قابل للاستعادة';
+ if(!source.enabled)return 'غير مفعّل';
+ return source.adapter==='builtin'?'مفعّل — اتصال آلي'
+  :source.adapter==='chart-json'?'مفعّل — أسعار JSON آلية'
+  :source.adapter==='alpaca'?'مفعّل — يعمل فقط بعد ضبط مفاتيح Alpaca على الخادم'
+  :'رابط مراجعة — لا يُجلب آليًا';
 }

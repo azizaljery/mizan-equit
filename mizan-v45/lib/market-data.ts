@@ -4,7 +4,7 @@ import type {FetchAttempt} from './sources/types';
 import {finite,parseNumber,parsePrices,today,type Price} from './analysis';
 import saudiDirectory from './data/saudi-directory.json';
 import {parseLiveQuote,type LiveQuote} from './live-quote';
-import {parseSECFacts,parseSECFilings} from './sec-data';
+import {parseSECFacts,parseSECFilings,readSECConcepts,isOversizeError,secConceptURL} from './sec-data';
 import {discoverSECDocuments,discoverSECEventDocuments,readSECInlineDocument} from './sec-documents';
 import {validateMarketIdentity} from './market-identity';
 import {resolveCikDetailed} from './sources/cik';
@@ -255,17 +255,23 @@ export async function getRegulatory(symbol:string,asOf:string,read:typeof upstre
  const resolved=await resolveCikDetailed(symbol,read);
  if(!resolved.ok)throw Error(resolved.reason);
  const {cik}=resolved;
- const results=await Promise.allSettled([read(`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`,true,3600000),read(`https://data.sec.gov/submissions/CIK${cik}.json`,true,300000)]);
+ const results:PromiseSettledResult<any>[]=await Promise.allSettled([read(`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`,true,3600000),read(`https://data.sec.gov/submissions/CIK${cik}.json`,true,300000)]);
+ // Large issuers' companyfacts exceed the read cap; read only the needed tags from the official companyconcept endpoint.
+ let conceptNote='';
+ if(results[0].status==='rejected'&&isOversizeError(results[0].reason)){
+  try{const merged=await readSECConcepts(cik,read);results[0]={status:'fulfilled',value:merged};conceptNote=`ملف companyfacts الكامل أكبر من حد ذاكرة الخادم؛ قُرئت ${Object.keys(merged._mizanConceptUrls).length} بنود من واجهة SEC الرسمية companyconcept (بند لكل طلب)${merged._mizanMissingConcepts.length?'، وبنود غير مفصح عنها لهذه الشركة: '+merged._mizanMissingConcepts.join('، '):''}.`;}
+  catch(e){results[0]={status:'rejected',reason:Error('ملف companyfacts أكبر من الحد، وتعذرت قراءة البنود من companyconcept: '+(e instanceof Error?e.message:'تعذر الجلب.'))};}
+ }
  if(observations){
   for(const [i,type] of ['financials','filings'].entries()){
    const result=results[i],dataType=type as 'financials'|'filings';
-   const url=i===0?`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`:`https://data.sec.gov/submissions/CIK${cik}.json`;
+   const url=i===0?(conceptNote?secConceptURL(cik,'Assets'):`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`):`https://data.sec.gov/submissions/CIK${cik}.json`;
    if(result.status==='fulfilled')observations.push(observeResult(dataType,parseExistingResponse('sec',dataType,result.value,url,{expectedSymbol:symbol,expectedCik:cik,asOf})));
    else observations.push({dataType,state:'failed',provenance:null,quality:{grade:'invalid',score:0,reasons:['تعذر الاتصال بالمصدر.']},reason:result.reason instanceof Error?result.reason.message:'تعذر الاتصال.',fallbackUsed:false});
   }
  }
  const facts=results[0].status==='fulfilled'?parseSECFacts(results[0].value,cik,asOf):[],news=results[1].status==='fulfilled'?parseSECFilings(results[1].value,cik,asOf):[];
- const documents:SourceCheck[]=[];
+ const documents:SourceCheck[]=conceptNote?[{name:'بنود SEC المنظمة — companyconcept',url:secConceptURL(cik,'Assets'),state:'ok',detail:conceptNote}]:[];
  if(results[1].status==='fulfilled')await Promise.all(discoverSECDocuments(results[1].value,cik,asOf).map(async doc=>{
   try{const html=await read(doc.url,false,86400000),extracted=readSECInlineDocument(html,doc,asOf);facts.push(...extracted);documents.push({name:`التقرير الأصلي SEC ${doc.form}`,url:doc.url,state:extracted.length?'ok':'partial',detail:`نُشر ${doc.publishedAt}؛ الفترة ${doc.period}؛ قُرئ المستند الأصلي واستُخرج ${extracted.length} بندًا مطابقًا. وقت الجلب ${new Date().toISOString()}. لا يُعد المستند وواجهة SEC مصدرين مستقلين.`});}
   catch(e){documents.push({name:`التقرير الأصلي SEC ${doc.form}`,url:doc.url,state:'missing',detail:'تعذر جلب أو قراءة المستند الأصلي. '+(e instanceof Error?e.message:'لم يصل سبب مفصل.')+' استمرت قراءة البنود الأخرى المتاحة.'});}

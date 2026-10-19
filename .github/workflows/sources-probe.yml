@@ -1,0 +1,145 @@
+name: Sources probe (read-only reachability of every Mizan data source)
+
+# Requests each data-source endpoint once from a GitHub runner exactly as the mizan-aziz Worker builds it
+# (same URL patterns, same app USER_AGENT constant read from mizan-v45/lib/market-data.ts, redirect:manual, no cookies).
+# Records HTTP status, content-type, size, latency, redirect target and whether the body parses as the app expects.
+# Rules: no browser spoofing, no proxies/mirrors, no retries against bot protection (a 403/challenge is recorded as-is),
+# SEC requests paced >=150 ms apart, no API keys (Twelve Data uses its public documentation key "demo" only).
+# A second step reads D1 source_status/source_health/locks with SELECT statements only.
+# Result: ci-diagnostics/sources-probe-<run>-<attempt>.json on the current branch.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/sources-probe.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout (read source definitions only)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Probe endpoints
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          node --input-type=module <<'NODE' > out/endpoints.json
+          import {readFileSync} from 'node:fs';
+          const src=f=>readFileSync('mizan-v45/'+f,'utf8');
+          const md=src('lib/market-data.ts');
+          const USER_AGENT=md.match(/export const USER_AGENT='([^']+)'/)[1];
+          const saudiBase=md.match(/export const saudiURL=\(symbol:string\)=>'([^']+)'/)[1];
+          const SAUDI_DIRECTORY=md.match(/export const SAUDI_DIRECTORY='([^']+)'/)[1];
+          const saudiURL=s=>saudiBase+encodeURIComponent(s.replace('.SR',''));
+          // Reference / candidate URLs straight from the catalog files (no hand-copied list).
+          const refs=[];
+          for(const m of src('lib/source-catalog.ts').matchAll(/\['([a-z0-9-]+)','([^']*)','(https:\/\/[^']+)','(prices|financials|news|general)','([a-z-]+)'/g))refs.push({id:m[1],name:m[2],url:m[3],kind:m[4],access:m[5],group:'catalog'});
+          for(const m of src('lib/supporting-sources.ts').matchAll(/\{id:'([a-z0-9-]+)',name:'([^']*)',url:'(https:\/\/[^']+)'/g))refs.push({id:m[1],name:m[2],url:m[3],group:'supporting'});
+          const now=Math.floor(Date.now()/1000);
+          const app=[
+            {id:'yahoo',name:'Yahoo chart daily 5y (SA)',url:'https://query1.finance.yahoo.com/v8/finance/chart/2222.SR?interval=1d&range=5y&events=splits%2Cdiv',check:'chart',symbol:'2222.SR'},
+            {id:'yahoo',name:'Yahoo chart daily 5y (US)',url:'https://query1.finance.yahoo.com/v8/finance/chart/AAPL?interval=1d&range=5y&events=splits%2Cdiv',check:'chart',symbol:'AAPL'},
+            {id:'yahoo',name:'Yahoo live quote 1m (SA)',url:'https://query1.finance.yahoo.com/v8/finance/chart/1120.SR?interval=1m&range=1d&includePrePost=false',check:'quote',symbol:'1120.SR'},
+            {id:'yahoo',name:'Yahoo ^TASI.SR 2y',url:'https://query1.finance.yahoo.com/v8/finance/chart/%5ETASI.SR?interval=1d&range=2y',check:'chart',symbol:'^TASI.SR'},
+            {id:'yahoo',name:'Yahoo search/news',url:'https://query1.finance.yahoo.com/v1/finance/search?q=AAPL&quotesCount=0&newsCount=6',check:'search'},
+            {id:'yahoo',name:'Yahoo fundamentals timeseries',url:`https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/AAPL?type=annualTotalRevenue,annualNetIncome&period1=${now-6*366*86400}&period2=${now+86400}`,check:'timeseries'},
+            {id:'tadawul',name:'Tadawul company profile (2222)',url:saudiURL('2222.SR'),json:false,check:'html'},
+            {id:'tadawul',name:'Tadawul company directory servlet',url:SAUDI_DIRECTORY,check:'array'},
+            {id:'sec',name:'SEC company_tickers.json',url:'https://www.sec.gov/files/company_tickers.json',check:'tickers'},
+            {id:'sec',name:'SEC submissions AAPL',url:'https://data.sec.gov/submissions/CIK0000320193.json',check:'cik',cik:'0000320193'},
+            {id:'sec',name:'SEC companyfacts AAPL',url:'https://data.sec.gov/api/xbrl/companyfacts/CIK0000320193.json',check:'cik',cik:'0000320193'},
+            {id:'sec',name:'SEC companyfacts JPM (large issuer)',url:'https://data.sec.gov/api/xbrl/companyfacts/CIK0000019617.json',check:'cik',cik:'0000019617'},
+            {id:'sec',name:'SEC companyfacts BAC (large issuer)',url:'https://data.sec.gov/api/xbrl/companyfacts/CIK0000070858.json',check:'cik',cik:'0000070858'},
+            {id:'sec',name:'SEC companyfacts GE (large issuer)',url:'https://data.sec.gov/api/xbrl/companyfacts/CIK0000040545.json',check:'cik',cik:'0000040545'},
+            {id:'sec',name:'SEC companyconcept JPM Assets (fallback path)',url:'https://data.sec.gov/api/xbrl/companyconcept/CIK0000019617/us-gaap/Assets.json',check:'concept',cik:'0000019617',tag:'Assets'},
+            {id:'sec',name:'SEC companyconcept JPM Revenues (fallback path)',url:'https://data.sec.gov/api/xbrl/companyconcept/CIK0000019617/us-gaap/Revenues.json',check:'concept',cik:'0000019617',tag:'Revenues'},
+            {id:'exchangerate',name:'ExchangeRate-API open endpoint (gold FX)',url:'https://open.er-api.com/v6/latest/USD',check:'er'},
+            {id:'twelvedata',name:'Twelve Data demo key AAPL (US, documentation key)',url:'https://api.twelvedata.com/time_series?symbol=AAPL&interval=1day&outputsize=5&apikey=demo',check:'twelve'},
+            {id:'twelvedata',name:'Twelve Data demo key 2222 XSAU (plan check)',url:'https://api.twelvedata.com/time_series?symbol=2222&exchange=XSAU&interval=1day&outputsize=5&apikey=demo',check:'twelve'},
+          ];
+          const CAP=60*1024*1024;
+          async function probe(t){
+            const started=Date.now(),rec={id:t.id,name:t.name,url:t.url.replace(/apikey=[^&]+/,'apikey=demo')};
+            try{
+              const r=await fetch(t.url,{redirect:'manual',headers:{'User-Agent':USER_AGENT,Accept:t.json===false||t.group?'text/html':'application/json'},signal:AbortSignal.timeout(30000)});
+              rec.status=r.status;rec.contentType=r.headers.get('content-type')||'';rec.location=r.headers.get('location');rec.contentLength=r.headers.get('content-length');
+              rec.server=r.headers.get('server');rec.cfMitigated=r.headers.get('cf-mitigated');
+              const reader=r.body?.getReader();const chunks=[];let size=0,truncated=false;
+              if(reader)for(;;){const v=await reader.read();if(v.done)break;size+=v.value.length;if(size>CAP){truncated=true;await reader.cancel();break;}chunks.push(v.value);}
+              rec.bytes=size;rec.truncated=truncated;rec.over7MB=size>7000000;rec.ms=Date.now()-started;
+              const text=Buffer.concat(chunks.map(c=>Buffer.from(c))).toString('utf8');
+              rec.title=(text.match(/<title[^>]*>([^<]{0,160})/i)?.[1]||'').trim()||null;
+              rec.challenge=/captcha|challenge|access denied|request rejected|incapsula|cf-chl|bot/i.test(text.slice(0,20000))||null;
+              let j=null;if(!truncated)try{j=JSON.parse(text)}catch{}
+              const c=t.check;let ok=null,note='';
+              if(c==='chart'||c==='quote'){const m=j?.chart?.result?.[0]?.meta;ok=!!m&&m.symbol===t.symbol;note=m?`symbol=${m.symbol} type=${m.instrumentType} cur=${m.currency} points=${j.chart.result[0].timestamp?.length??0} last=${m.regularMarketTime?new Date(m.regularMarketTime*1000).toISOString():null} gran=${m.dataGranularity}`:String(j?.chart?.error?.description||'').slice(0,120);}
+              else if(c==='search'){ok=Array.isArray(j?.news);note=`news=${j?.news?.length??'-'}`;}
+              else if(c==='timeseries'){ok=Array.isArray(j?.timeseries?.result);note=`series=${j?.timeseries?.result?.length??'-'}`;}
+              else if(c==='html'){ok=r.status===200&&!rec.challenge&&/companySymbol|2222/.test(text);note=ok?'profile html':'not a usable profile page';}
+              else if(c==='array'){ok=Array.isArray(j)&&j.length>0;note=Array.isArray(j)?`rows=${j.length}`:'not a JSON array';}
+              else if(c==='tickers'){ok=!!j&&typeof j==='object'&&Object.keys(j).length>1000;note=j?`entries=${Object.keys(j).length}`:'';}
+              else if(c==='cik'){ok=!!j&&String(j.cik).padStart(10,'0')===t.cik;note=truncated?'body larger than probe cap':j?`cik=${j.cik} name=${j.entityName||j.name||''}`:'';}
+              else if(c==='concept'){ok=!!j&&String(j.cik).padStart(10,'0')===t.cik&&j.tag===t.tag&&j.taxonomy==='us-gaap';note=j?`units=${Object.keys(j.units||{}).join(',')} records=${Object.values(j.units||{}).reduce((n,a)=>n+(a.length||0),0)}`:'';}
+              else if(c==='er'){ok=j?.result==='success';note=`provider=${j?.provider||''} updated=${j?.time_last_update_utc||''}`;}
+              else if(c==='twelve'){ok=Array.isArray(j?.values)&&j.values.length>0;note=ok?`values=${j.values.length} exchange=${j.meta?.exchange||''}`:String(j?.message||j?.status||'').slice(0,200);}
+              else {ok=r.status>=200&&r.status<300;note=r.status>=300&&r.status<400?'redirect':'';}
+              rec.parsedAsExpected=ok;rec.note=note;
+            }catch(e){rec.ms=Date.now()-started;rec.error=String(e?.name||'')+': '+String(e?.message||e).slice(0,160);}
+            return rec;
+          }
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          const out={at:new Date().toISOString(),userAgent:USER_AGENT,runner:'github-actions ubuntu-latest',endpoints:[],references:[]};
+          for(const t of app){out.endpoints.push(await probe(t));await sleep(t.id==='sec'?400:250);}
+          for(const t of refs){out.references.push({...await probe({...t,check:'ref'}),group:t.group,access:t.access||null});await sleep(250);}
+          out.summary={endpoints:out.endpoints.map(e=>`${e.id} | ${e.status??'ERR'} | ${e.parsedAsExpected===true?'ok':e.parsedAsExpected===false?'unexpected':'-'} | ${e.bytes??0}B | ${e.name}`),
+            referencesReachable:out.references.filter(r=>r.status>=200&&r.status<300).length,referencesRedirect:out.references.filter(r=>r.status>=300&&r.status<400).map(r=>`${r.id} -> ${r.location}`),
+            referencesFailed:out.references.filter(r=>!(r.status>=200&&r.status<400)).map(r=>`${r.id} ${r.status??r.error}`)};
+          console.log(JSON.stringify(out,null,1));
+          NODE
+
+      - name: D1 observed source state (SELECT only)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          node --input-type=module <<'NODE' > out/d1.json
+          const acct=process.env.CLOUDFLARE_ACCOUNT_ID,tok=process.env.CLOUDFLARE_API_TOKEN,DB='e95b74e8-81d6-4beb-8ea2-ad59c863d21d';
+          const q=async(sql)=>{if(!/^\s*SELECT/i.test(sql))throw Error('select only');if(!acct||!tok)return {skipped:'Cloudflare secrets not available'};const r=await fetch(`https://api.cloudflare.com/client/v4/accounts/${acct}/d1/database/${DB}/query`,{method:'POST',headers:{Authorization:'Bearer '+tok,'content-type':'application/json'},body:JSON.stringify({sql}),signal:AbortSignal.timeout(30000)});const j=await r.json().catch(()=>({}));return j.success?j.result?.[0]?.results:{http:r.status,errors:(j.errors||[]).map(e=>String(e.message).slice(0,160))};};
+          const Q={
+            source_status:"SELECT id,status,last_attempt,last_success,substr(detail,1,400) detail FROM source_status ORDER BY id",
+            source_health:"SELECT * FROM source_health ORDER BY source_id",
+            locks:"SELECT id,until_ms,datetime(until_ms/1000,'unixepoch') until_utc FROM research_locks WHERE id LIKE 'sec:%' OR id LIKE 'tavily:%' OR id LIKE '%:blocked'",
+            search_budget:"SELECT id,reserved,reported,updated_at FROM research_budgets ORDER BY id DESC LIMIT 3",
+            gold_status:"SELECT id,substr(data,1,300) d,updated_at FROM gold_state WHERE id LIKE 'status:%'",
+            saved_source_config:"SELECT json_extract(value,'$.sourceConfig') cfg FROM site_settings WHERE id=1",
+          };
+          const out={at:new Date().toISOString()};
+          for(const [k,sql] of Object.entries(Q)){try{out[k]=await q(sql);}catch(e){out[k]={error:String(e).slice(0,120)};}}
+          console.log(JSON.stringify(out,null,1));
+          NODE
+
+      - name: Publish result to repo
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RID: ${{ github.run_id }}
+          RA: ${{ github.run_attempt }}
+          REF: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          node -e 'const fs=require("fs");const rd=f=>{try{return JSON.parse(fs.readFileSync(f,"utf8"))}catch(e){return {error:"missing or invalid "+f}}};const all={run:process.env.RID,attempt:process.env.RA,probe:rd("out/endpoints.json"),d1:rd("out/d1.json")};fs.writeFileSync("out/result.json",JSON.stringify(all,null,1));fs.writeFileSync("out/body.json",JSON.stringify({message:"ci diagnostics: sources probe "+process.env.RID,branch:process.env.REF,content:fs.readFileSync("out/result.json").toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/sources-probe-${RID}-${RA}.json" --input out/body.json >/dev/null \
+            || echo "WARN: failed to publish result" >&2

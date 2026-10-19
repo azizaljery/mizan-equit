@@ -123,6 +123,15 @@ jobs:
           RECOMMENDATION_INITIAL_HASH: ${{ secrets.MIZAN_AZIZ_RECOMMENDATION_HASH }}
           MIZAN_PROVIDER_VAULT_KEY: ${{ secrets.MIZAN_AZIZ_VAULT_KEY }}
           RECOMMENDATION_OWNER_EMAIL: ${{ secrets.MIZAN_AZIZ_OWNER_EMAIL }}
+          # Optional data-source settings (2026-10-19 sources audit). Each is synced only when its GitHub secret exists;
+          # code paths stay inactive until set. Values never enter the repository.
+          SEC_USER_AGENT: ${{ secrets.MIZAN_AZIZ_SEC_USER_AGENT }}
+          TAVILY_API_KEY: ${{ secrets.MIZAN_AZIZ_TAVILY_API_KEY }}
+          ALPACA_API_KEY: ${{ secrets.MIZAN_AZIZ_ALPACA_API_KEY }}
+          ALPACA_API_SECRET: ${{ secrets.MIZAN_AZIZ_ALPACA_API_SECRET }}
+          ALPACA_DATA_FEED: ${{ secrets.MIZAN_AZIZ_ALPACA_DATA_FEED }}
+          ALPACA_DELAY_MINUTES: ${{ secrets.MIZAN_AZIZ_ALPACA_DELAY_MINUTES }}
+          ALPACA_DISPLAY_AUTHORIZED: ${{ secrets.MIZAN_AZIZ_ALPACA_DISPLAY_AUTHORIZED }}
         shell: bash
         run: |
           set -euo pipefail
@@ -135,7 +144,9 @@ jobs:
             'OPENAI_API_KEY','ANTHROPIC_API_KEY','DEEPSEEK_API_KEY',
             'GOLDAPI_KEY','METALS_DEV_API_KEY','TWELVE_DATA_API_KEY',
             'RECOMMENDATION_INITIAL_HASH',
-            'MIZAN_PROVIDER_VAULT_KEY','RECOMMENDATION_OWNER_EMAIL'
+            'MIZAN_PROVIDER_VAULT_KEY','RECOMMENDATION_OWNER_EMAIL',
+            'SEC_USER_AGENT','TAVILY_API_KEY',
+            'ALPACA_API_KEY','ALPACA_API_SECRET','ALPACA_DATA_FEED','ALPACA_DELAY_MINUTES','ALPACA_DISPLAY_AUTHORIZED'
           ];
           const data={};
           for(const name of names) if(process.env[name]) data[name]=process.env[name];

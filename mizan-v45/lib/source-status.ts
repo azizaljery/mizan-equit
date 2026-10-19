@@ -11,6 +11,7 @@ import {env} from 'cloudflare:workers';
 import {readAlpacaBars,type AlpacaConfig} from './alpaca-data';
 import {reserveSecRequest,recordSecCooldown} from './sec-transport';
 import {recordSourceRead} from './source-health';
+import {activeBlock,recordBlock,isRefusal,blockedReason,BLOCKABLE} from './source-blocking';
 export async function recordSourceUse(db:any,report:MarketReport){
  const used=new Map<string,{count:number;url:string}>(),facts=resolveFinancialSources(report).facts;
  for(const fact of facts){const id=automaticSourceId(fact.source);if(id)used.set(id,{count:(used.get(id)?.count||0)+1,url:fact.source});}
@@ -20,22 +21,28 @@ export async function recordSourceUse(db:any,report:MarketReport){
 }
 export async function configuredReader(db:any,settings?:SiteSettings){const s=settings||await readSettings(db);
  const sourceAttempts:FetchAttempt[]=[];
- const track=async(id:string,url:string,job:()=>Promise<any>)=>{
+ const track=async(id:string,url:string,job:()=>Promise<any>,purpose?:'quote')=>{
   const started=Date.now(),now=new Date(started).toISOString();
+  // A source that refused automated requests is paused (no network call) until its pause ends.
+  const blockedUntil=await activeBlock(db,id,started);
+  if(blockedUntil){const reason=blockedReason(id,blockedUntil);sourceAttempts.push({source:id,url,status:'failed',latencyMs:0,error:reason});throw Error(reason);}
   try{
    const result=await job(),latencyMs=Date.now()-started;
-   // Publication dates and dividends are never quote latency.
-   let state=result?._mizanPartial?'partial':'ok';
-   if(result?.chart?.result?.[0]?.meta)try{if(parseLiveQuote(result,result.chart.result[0].meta.symbol).delayed)state='delayed';}catch{}
+   // Only a live-quote read can be "delayed". Daily/historical series and publication dates are never quote latency.
+   let state=result?._mizanPartial?'partial':'ok',reason='قراءة ناجحة؛ يلزم تحقق النوع والهوية قبل اعتماد البيانات.';
+   if(purpose==='quote'&&result?.chart?.result?.[0]?.meta)try{const q=parseLiveQuote(result,result.chart.result[0].meta.symbol);if(q.delayed){state='delayed';reason=`وصل سعر مطابق لكن عمره ${Math.round(q.ageSeconds/60)} دقيقة ولم يثبت أنه سعر إغلاق الجلسة؛ المزود لا يقدم بثًا لحظيًا مضمونًا، ويُعرض وقت السعر الحقيقي مع التحليل.`;}}catch{}
    sourceAttempts.push({source:id,url,status:'ok',latencyMs});
    try{await recordSourceRead(db,id,true,latencyMs,new Date().toISOString());}catch{console.warn('Source telemetry write unavailable');}
    try{await db.prepare("INSERT INTO source_status (id,status,last_attempt,last_success,detail) VALUES (?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET status=excluded.status,last_attempt=excluded.last_attempt,last_success=excluded.last_success,detail=excluded.detail")
-    .bind(id,state,now,now,JSON.stringify({stage:'read',url,latencyMs,reason:'قراءة ناجحة؛ يلزم تحقق النوع والهوية قبل اعتماد البيانات.'})).run()}catch{}
+    .bind(id,state,now,now,JSON.stringify({stage:'read',url,latencyMs,reason})).run()}catch{}
    return result;
   }catch(e){
    const latencyMs=Date.now()-started;
    const reason=e instanceof Error?e.message.slice(0,240):'تعذر جلب المصدر.';
    sourceAttempts.push({source:id,url,status:'failed',latencyMs,error:reason});
+   // A concept the issuer never reported (companyconcept 404) is absence of data, not a source failure.
+   if(id==='sec'&&/\/api\/xbrl\/companyconcept\//.test(url)&&/\(404\)/.test(reason))throw e;
+   if(isRefusal(e)&&BLOCKABLE.has(id)){try{await recordSourceRead(db,id,false,latencyMs,new Date().toISOString());}catch{}const until=await recordBlock(db,id,url);throw Error(blockedReason(id,until));}
    try{await recordSourceRead(db,id,false,latencyMs,new Date().toISOString());}catch{console.warn('Source telemetry write unavailable');}
    try{await db.prepare("INSERT INTO source_status (id,status,last_attempt,last_success,detail) VALUES (?,'failed',?,'',?) ON CONFLICT(id) DO UPDATE SET status='failed',last_attempt=excluded.last_attempt,detail=excluded.detail")
     .bind(id,now,JSON.stringify({stage:'read',url,latencyMs,reason})).run()}catch{}
@@ -57,7 +64,7 @@ export async function configuredReader(db:any,settings?:SiteSettings){const s=se
     let complete=false;
     if(purpose==='quote'){const q=parseLiveQuote(d,symbol);complete=Date.now()-Date.parse(q.quoteTime)<=15*60000;}
     else{const series=parseChart(d,new Date().toISOString().slice(0,10));if(!series.prices.length)throw Error('لا توجد جلسات سعرية صالحة في هذا المصدر.');const age=Date.now()-Date.parse(series.prices.at(-1)!.date+'T00:00:00Z');complete=series.prices.length>=(request.searchParams.get('range')==='5d'?1:20)&&age<=4*86400000;}
-    return {...d,_mizanSourceId:source.id,_mizanSource:source.adapter==='builtin'?undefined:source.adapter==='alpaca'?d._mizanSource:target,_mizanPartial:!complete};});
+    return {...d,_mizanSourceId:source.id,_mizanSource:source.adapter==='builtin'?undefined:source.adapter==='alpaca'?d._mizanSource:target,_mizanPartial:!complete};},purpose);
    if(!result._mizanPartial)return {...result,_mizanFallbackErrors:[...errors]};
    // Retain the highest-priority usable partial source; never manufacture or merge prices.
    if(!partial)partial=result;
@@ -74,5 +81,5 @@ export async function configuredReader(db:any,settings?:SiteSettings){const s=se
    else if(request.searchParams.get('interval')==='1d'&&!parseChart(data,new Date().toISOString().slice(0,10),symbol.startsWith('^')).prices.length)throw Error('المصدر استجاب لكن لم يُرجع جلسات يومية صالحة.');
   }
   return data;
- });
+ },purpose);
  },{sourceAttempts});}
