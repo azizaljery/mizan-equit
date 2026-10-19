@@ -1,0 +1,5374 @@
+{
+ "at": "2026-10-19T07:13:31.557Z",
+ "plan": {
+  "http": 403,
+  "success": false,
+  "errors": [
+   "10000:Authentication error"
+  ],
+  "items": null
+ },
+ "settings": {
+  "http": 200,
+  "usage_model": "standard",
+  "limits": {
+   "cpu_ms": 30000
+  },
+  "secret_names": [
+   "ADMIN_PASSWORD_HASH",
+   "ANTHROPIC_API_KEY",
+   "DEEPSEEK_API_KEY",
+   "MIZAN_PROVIDER_VAULT_KEY",
+   "OPENAI_API_KEY",
+   "RECOMMENDATION_INITIAL_HASH",
+   "RECOMMENDATION_OWNER_EMAIL"
+  ],
+  "crons": [
+   "0 3 * * *",
+   "0 */6 * * *",
+   "2,7,12,17,22,27,32,37,42,47,52,57 * * * *",
+   "30 0,1,4,6,7,12,13,18,19,21 * * *",
+   "*/5 * * * *"
+  ]
+ },
+ "analytics": {
+  "http": 200,
+  "errors": [],
+  "rows": [
+   {
+    "hour": "2026-10-17T07:15:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 25481,
+    "cpuP99_us": 25481,
+    "wallP99_us": 670005
+   },
+   {
+    "hour": "2026-10-17T07:20:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 20836,
+    "cpuP99_us": 20836,
+    "wallP99_us": 664887
+   },
+   {
+    "hour": "2026-10-17T07:25:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 28218,
+    "cpuP99_us": 28218,
+    "wallP99_us": 680922
+   },
+   {
+    "hour": "2026-10-17T07:30:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 21954,
+    "cpuP99_us": 21954,
+    "wallP99_us": 731886
+   },
+   {
+    "hour": "2026-10-17T07:35:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 22244,
+    "cpuP99_us": 22244,
+    "wallP99_us": 746187
+   },
+   {
+    "hour": "2026-10-17T07:40:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 18573,
+    "cpuP99_us": 18573,
+    "wallP99_us": 572762
+   },
+   {
+    "hour": "2026-10-17T07:45:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 26160,
+    "cpuP99_us": 26160,
+    "wallP99_us": 640083
+   },
+   {
+    "hour": "2026-10-17T07:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 27377,
+    "cpuP99_us": 27377,
+    "wallP99_us": 772354
+   },
+   {
+    "hour": "2026-10-17T07:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 26626,
+    "cpuP99_us": 26626,
+    "wallP99_us": 618998
+   },
+   {
+    "hour": "2026-10-17T08:00:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 24630,
+    "cpuP99_us": 24630,
+    "wallP99_us": 662068
+   },
+   {
+    "hour": "2026-10-17T08:05:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 27925,
+    "cpuP99_us": 27925,
+    "wallP99_us": 732314
+   },
+   {
+    "hour": "2026-10-17T08:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 26052,
+    "cpuP99_us": 26052,
+    "wallP99_us": 656649
+   },
+   {
+    "hour": "2026-10-17T08:15:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 27878,
+    "cpuP99_us": 27878,
+    "wallP99_us": 648488
+   },
+   {
+    "hour": "2026-10-17T08:20:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 29383,
+    "cpuP99_us": 29383,
+    "wallP99_us": 702933
+   },
+   {
+    "hour": "2026-10-17T08:25:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 32421,
+    "cpuP99_us": 32421,
+    "wallP99_us": 655278
+   },
+   {
+    "hour": "2026-10-17T08:30:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 24614,
+    "cpuP99_us": 24614,
+    "wallP99_us": 877438
+   },
+   {
+    "hour": "2026-10-17T08:35:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 26223,
+    "cpuP99_us": 26223,
+    "wallP99_us": 709564
+   },
+   {
+    "hour": "2026-10-17T08:40:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 24449,
+    "cpuP99_us": 24449,
+    "wallP99_us": 648171
+   },
+   {
+    "hour": "2026-10-17T08:45:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 27725,
+    "cpuP99_us": 27725,
+    "wallP99_us": 699004
+   },
+   {
+    "hour": "2026-10-17T08:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 18614,
+    "cpuP99_us": 18614,
+    "wallP99_us": 663258
+   },
+   {
+    "hour": "2026-10-17T08:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 25646,
+    "cpuP99_us": 25646,
+    "wallP99_us": 701571
+   },
+   {
+    "hour": "2026-10-17T09:00:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 24347,
+    "cpuP99_us": 24347,
+    "wallP99_us": 654031
+   },
+   {
+    "hour": "2026-10-17T09:05:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 25770,
+    "cpuP99_us": 25770,
+    "wallP99_us": 743440
+   },
+   {
+    "hour": "2026-10-17T09:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 22897,
+    "cpuP99_us": 22897,
+    "wallP99_us": 635479
+   },
+   {
+    "hour": "2026-10-17T09:15:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 23292,
+    "cpuP99_us": 23292,
+    "wallP99_us": 623687
+   },
+   {
+    "hour": "2026-10-17T09:20:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 22423,
+    "cpuP99_us": 22423,
+    "wallP99_us": 651775
+   },
+   {
+    "hour": "2026-10-17T09:25:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 25573,
+    "cpuP99_us": 25573,
+    "wallP99_us": 696819
+   },
+   {
+    "hour": "2026-10-17T09:30:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 25979,
+    "cpuP99_us": 25979,
+    "wallP99_us": 868953
+   },
+   {
+    "hour": "2026-10-17T09:35:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 22171,
+    "cpuP99_us": 22171,
+    "wallP99_us": 733832
+   },
+   {
+    "hour": "2026-10-17T09:40:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 23229,
+    "cpuP99_us": 23229,
+    "wallP99_us": 660604
+   },
+   {
+    "hour": "2026-10-17T09:45:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 26296,
+    "cpuP99_us": 26296,
+    "wallP99_us": 674361
+   },
+   {
+    "hour": "2026-10-17T09:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 25158,
+    "cpuP99_us": 25158,
+    "wallP99_us": 631288
+   },
+   {
+    "hour": "2026-10-17T09:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 27056,
+    "cpuP99_us": 27056,
+    "wallP99_us": 665822
+   },
+   {
+    "hour": "2026-10-17T10:00:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 27284,
+    "cpuP99_us": 27284,
+    "wallP99_us": 714001
+   },
+   {
+    "hour": "2026-10-17T10:05:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 24118,
+    "cpuP99_us": 24118,
+    "wallP99_us": 705584
+   },
+   {
+    "hour": "2026-10-17T10:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 24706,
+    "cpuP99_us": 24706,
+    "wallP99_us": 703514
+   },
+   {
+    "hour": "2026-10-17T10:15:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 26652,
+    "cpuP99_us": 26652,
+    "wallP99_us": 631190
+   },
+   {
+    "hour": "2026-10-17T10:20:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 22914,
+    "cpuP99_us": 22914,
+    "wallP99_us": 702248
+   },
+   {
+    "hour": "2026-10-17T10:25:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 31892,
+    "cpuP99_us": 31892,
+    "wallP99_us": 713587
+   },
+   {
+    "hour": "2026-10-17T10:30:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 26206,
+    "cpuP99_us": 26206,
+    "wallP99_us": 644031
+   },
+   {
+    "hour": "2026-10-17T10:35:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 21492,
+    "cpuP99_us": 21492,
+    "wallP99_us": 623650
+   },
+   {
+    "hour": "2026-10-17T10:40:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 26606,
+    "cpuP99_us": 26606,
+    "wallP99_us": 775651
+   },
+   {
+    "hour": "2026-10-17T10:45:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 22440,
+    "cpuP99_us": 22440,
+    "wallP99_us": 717102
+   },
+   {
+    "hour": "2026-10-17T10:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 27958,
+    "cpuP99_us": 27958,
+    "wallP99_us": 771792
+   },
+   {
+    "hour": "2026-10-17T10:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 23381,
+    "cpuP99_us": 23381,
+    "wallP99_us": 648593
+   },
+   {
+    "hour": "2026-10-17T11:00:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 26135,
+    "cpuP99_us": 26135,
+    "wallP99_us": 684534
+   },
+   {
+    "hour": "2026-10-17T11:05:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 24616,
+    "cpuP99_us": 24616,
+    "wallP99_us": 728788
+   },
+   {
+    "hour": "2026-10-17T11:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 25473,
+    "cpuP99_us": 25473,
+    "wallP99_us": 677919
+   },
+   {
+    "hour": "2026-10-17T11:15:00Z",
+    "status": "success",
+    "requests": 4,
+    "errors": 0,
+    "cpuP50_us": 20860,
+    "cpuP99_us": 86081,
+    "wallP99_us": 656807
+   },
+   {
+    "hour": "2026-10-17T11:20:00Z",
+    "status": "success",
+    "requests": 51,
+    "errors": 0,
+    "cpuP50_us": 4274,
+    "cpuP99_us": 97954,
+    "wallP99_us": 1376053
+   },
+   {
+    "hour": "2026-10-17T11:25:00Z",
+    "status": "success",
+    "requests": 59,
+    "errors": 0,
+    "cpuP50_us": 4936,
+    "cpuP99_us": 54996,
+    "wallP99_us": 1098447
+   },
+   {
+    "hour": "2026-10-17T11:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 37014,
+    "cpuP99_us": 72443,
+    "wallP99_us": 619385
+   },
+   {
+    "hour": "2026-10-17T11:35:00Z",
+    "status": "success",
+    "requests": 5,
+    "errors": 0,
+    "cpuP50_us": 50369,
+    "cpuP99_us": 242299,
+    "wallP99_us": 13738620
+   },
+   {
+    "hour": "2026-10-17T11:40:00Z",
+    "status": "success",
+    "requests": 4,
+    "errors": 0,
+    "cpuP50_us": 147267,
+    "cpuP99_us": 1209310,
+    "wallP99_us": 14049738
+   },
+   {
+    "hour": "2026-10-17T11:45:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 14412,
+    "cpuP99_us": 14412,
+    "wallP99_us": 258563
+   },
+   {
+    "hour": "2026-10-17T11:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10401,
+    "cpuP99_us": 10401,
+    "wallP99_us": 213290
+   },
+   {
+    "hour": "2026-10-17T11:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 13712,
+    "cpuP99_us": 13712,
+    "wallP99_us": 2882929
+   },
+   {
+    "hour": "2026-10-17T12:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 11167,
+    "cpuP99_us": 6205387,
+    "wallP99_us": 32773610
+   },
+   {
+    "hour": "2026-10-17T12:05:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10420,
+    "cpuP99_us": 10420,
+    "wallP99_us": 261427
+   },
+   {
+    "hour": "2026-10-17T12:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 15202,
+    "cpuP99_us": 15202,
+    "wallP99_us": 304357
+   },
+   {
+    "hour": "2026-10-17T12:15:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10139,
+    "cpuP99_us": 10139,
+    "wallP99_us": 304034
+   },
+   {
+    "hour": "2026-10-17T12:20:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 14282,
+    "cpuP99_us": 14282,
+    "wallP99_us": 269774
+   },
+   {
+    "hour": "2026-10-17T12:25:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 9013,
+    "cpuP99_us": 9013,
+    "wallP99_us": 263357
+   },
+   {
+    "hour": "2026-10-17T12:30:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11155,
+    "cpuP99_us": 11155,
+    "wallP99_us": 279098
+   },
+   {
+    "hour": "2026-10-17T12:35:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11386,
+    "cpuP99_us": 11386,
+    "wallP99_us": 378637
+   },
+   {
+    "hour": "2026-10-17T12:40:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11105,
+    "cpuP99_us": 11105,
+    "wallP99_us": 276536
+   },
+   {
+    "hour": "2026-10-17T12:45:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11472,
+    "cpuP99_us": 11472,
+    "wallP99_us": 513984
+   },
+   {
+    "hour": "2026-10-17T12:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10225,
+    "cpuP99_us": 10225,
+    "wallP99_us": 262375
+   },
+   {
+    "hour": "2026-10-17T12:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10634,
+    "cpuP99_us": 10634,
+    "wallP99_us": 367174
+   },
+   {
+    "hour": "2026-10-17T13:00:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 12951,
+    "cpuP99_us": 12951,
+    "wallP99_us": 286371
+   },
+   {
+    "hour": "2026-10-17T13:05:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 12238,
+    "cpuP99_us": 12238,
+    "wallP99_us": 392445
+   },
+   {
+    "hour": "2026-10-17T13:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11415,
+    "cpuP99_us": 11415,
+    "wallP99_us": 258475
+   },
+   {
+    "hour": "2026-10-17T13:15:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 15237,
+    "cpuP99_us": 15237,
+    "wallP99_us": 297554
+   },
+   {
+    "hour": "2026-10-17T13:20:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11783,
+    "cpuP99_us": 11783,
+    "wallP99_us": 276118
+   },
+   {
+    "hour": "2026-10-17T13:25:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10903,
+    "cpuP99_us": 10903,
+    "wallP99_us": 274504
+   },
+   {
+    "hour": "2026-10-17T13:30:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10525,
+    "cpuP99_us": 10525,
+    "wallP99_us": 303529
+   },
+   {
+    "hour": "2026-10-17T13:35:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 15161,
+    "cpuP99_us": 15161,
+    "wallP99_us": 284095
+   },
+   {
+    "hour": "2026-10-17T13:40:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10864,
+    "cpuP99_us": 10864,
+    "wallP99_us": 406374
+   },
+   {
+    "hour": "2026-10-17T13:45:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11289,
+    "cpuP99_us": 11289,
+    "wallP99_us": 267041
+   },
+   {
+    "hour": "2026-10-17T13:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 16263,
+    "cpuP99_us": 16263,
+    "wallP99_us": 302628
+   },
+   {
+    "hour": "2026-10-17T13:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 12176,
+    "cpuP99_us": 12176,
+    "wallP99_us": 578819
+   },
+   {
+    "hour": "2026-10-17T14:00:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 13703,
+    "cpuP99_us": 13703,
+    "wallP99_us": 274927
+   },
+   {
+    "hour": "2026-10-17T14:05:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10204,
+    "cpuP99_us": 10204,
+    "wallP99_us": 278391
+   },
+   {
+    "hour": "2026-10-17T14:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 9051,
+    "cpuP99_us": 9051,
+    "wallP99_us": 297470
+   },
+   {
+    "hour": "2026-10-17T14:15:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11622,
+    "cpuP99_us": 11622,
+    "wallP99_us": 281840
+   },
+   {
+    "hour": "2026-10-17T14:20:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 12381,
+    "cpuP99_us": 12381,
+    "wallP99_us": 286363
+   },
+   {
+    "hour": "2026-10-17T14:25:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 12278,
+    "cpuP99_us": 12278,
+    "wallP99_us": 308210
+   },
+   {
+    "hour": "2026-10-17T14:30:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 12904,
+    "cpuP99_us": 12904,
+    "wallP99_us": 261110
+   },
+   {
+    "hour": "2026-10-17T14:35:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 12403,
+    "cpuP99_us": 12403,
+    "wallP99_us": 287443
+   },
+   {
+    "hour": "2026-10-17T14:40:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 9286,
+    "cpuP99_us": 9286,
+    "wallP99_us": 271822
+   },
+   {
+    "hour": "2026-10-17T14:45:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 12586,
+    "cpuP99_us": 12586,
+    "wallP99_us": 258714
+   },
+   {
+    "hour": "2026-10-17T14:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11794,
+    "cpuP99_us": 11794,
+    "wallP99_us": 258256
+   },
+   {
+    "hour": "2026-10-17T14:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 14661,
+    "cpuP99_us": 14661,
+    "wallP99_us": 309507
+   },
+   {
+    "hour": "2026-10-17T15:00:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11298,
+    "cpuP99_us": 11298,
+    "wallP99_us": 315160
+   },
+   {
+    "hour": "2026-10-17T15:05:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 15528,
+    "cpuP99_us": 15528,
+    "wallP99_us": 363445
+   },
+   {
+    "hour": "2026-10-17T15:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 15797,
+    "cpuP99_us": 15797,
+    "wallP99_us": 331510
+   },
+   {
+    "hour": "2026-10-17T15:15:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11011,
+    "cpuP99_us": 11011,
+    "wallP99_us": 290405
+   },
+   {
+    "hour": "2026-10-17T15:20:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 14722,
+    "cpuP99_us": 14722,
+    "wallP99_us": 298929
+   },
+   {
+    "hour": "2026-10-17T15:25:00Z",
+    "status": "success",
+    "requests": 10,
+    "errors": 0,
+    "cpuP50_us": 13042,
+    "cpuP99_us": 13042,
+    "wallP99_us": 230235
+   },
+   {
+    "hour": "2026-10-17T15:35:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 9008,
+    "cpuP99_us": 9008,
+    "wallP99_us": 266418
+   },
+   {
+    "hour": "2026-10-17T15:40:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 16795,
+    "cpuP99_us": 16795,
+    "wallP99_us": 316521
+   },
+   {
+    "hour": "2026-10-17T15:45:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 13816,
+    "cpuP99_us": 13816,
+    "wallP99_us": 2790413
+   },
+   {
+    "hour": "2026-10-17T15:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10057,
+    "cpuP99_us": 10057,
+    "wallP99_us": 424719
+   },
+   {
+    "hour": "2026-10-17T15:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11158,
+    "cpuP99_us": 11158,
+    "wallP99_us": 261935
+   },
+   {
+    "hour": "2026-10-17T16:00:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 12494,
+    "cpuP99_us": 12494,
+    "wallP99_us": 306638
+   },
+   {
+    "hour": "2026-10-17T16:05:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 9842,
+    "cpuP99_us": 9842,
+    "wallP99_us": 430638
+   },
+   {
+    "hour": "2026-10-17T16:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 9935,
+    "cpuP99_us": 9935,
+    "wallP99_us": 279128
+   },
+   {
+    "hour": "2026-10-17T16:15:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 9114,
+    "cpuP99_us": 9114,
+    "wallP99_us": 261184
+   },
+   {
+    "hour": "2026-10-17T16:20:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 13154,
+    "cpuP99_us": 13154,
+    "wallP99_us": 275991
+   },
+   {
+    "hour": "2026-10-17T16:25:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10999,
+    "cpuP99_us": 10999,
+    "wallP99_us": 281800
+   },
+   {
+    "hour": "2026-10-17T16:30:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10734,
+    "cpuP99_us": 10734,
+    "wallP99_us": 288995
+   },
+   {
+    "hour": "2026-10-17T16:35:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 9890,
+    "cpuP99_us": 9890,
+    "wallP99_us": 335710
+   },
+   {
+    "hour": "2026-10-17T16:40:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 8830,
+    "cpuP99_us": 8830,
+    "wallP99_us": 294238
+   },
+   {
+    "hour": "2026-10-17T16:45:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 12594,
+    "cpuP99_us": 12594,
+    "wallP99_us": 303286
+   },
+   {
+    "hour": "2026-10-17T16:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 13010,
+    "cpuP99_us": 13010,
+    "wallP99_us": 285051
+   },
+   {
+    "hour": "2026-10-17T16:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 12007,
+    "cpuP99_us": 12007,
+    "wallP99_us": 289102
+   },
+   {
+    "hour": "2026-10-17T17:00:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 9321,
+    "cpuP99_us": 9321,
+    "wallP99_us": 337747
+   },
+   {
+    "hour": "2026-10-17T17:05:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 13189,
+    "cpuP99_us": 13189,
+    "wallP99_us": 683341
+   },
+   {
+    "hour": "2026-10-17T17:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 8581,
+    "cpuP99_us": 8581,
+    "wallP99_us": 296520
+   },
+   {
+    "hour": "2026-10-17T17:15:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 13316,
+    "cpuP99_us": 13316,
+    "wallP99_us": 2636960
+   },
+   {
+    "hour": "2026-10-17T17:20:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 12915,
+    "cpuP99_us": 12915,
+    "wallP99_us": 291458
+   },
+   {
+    "hour": "2026-10-17T17:25:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10538,
+    "cpuP99_us": 10538,
+    "wallP99_us": 563625
+   },
+   {
+    "hour": "2026-10-17T17:30:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 13964,
+    "cpuP99_us": 13964,
+    "wallP99_us": 401771
+   },
+   {
+    "hour": "2026-10-17T17:35:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 9434,
+    "cpuP99_us": 9434,
+    "wallP99_us": 295175
+   },
+   {
+    "hour": "2026-10-17T17:40:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 13062,
+    "cpuP99_us": 13062,
+    "wallP99_us": 275880
+   },
+   {
+    "hour": "2026-10-17T17:45:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10788,
+    "cpuP99_us": 10788,
+    "wallP99_us": 274774
+   },
+   {
+    "hour": "2026-10-17T17:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11827,
+    "cpuP99_us": 11827,
+    "wallP99_us": 613622
+   },
+   {
+    "hour": "2026-10-17T17:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11414,
+    "cpuP99_us": 11414,
+    "wallP99_us": 745200
+   },
+   {
+    "hour": "2026-10-17T18:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 12923,
+    "cpuP99_us": 9544239,
+    "wallP99_us": 57203824
+   },
+   {
+    "hour": "2026-10-17T18:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 13835,
+    "cpuP99_us": 13835,
+    "wallP99_us": 403951
+   },
+   {
+    "hour": "2026-10-17T18:15:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 9138,
+    "cpuP99_us": 9138,
+    "wallP99_us": 269463
+   },
+   {
+    "hour": "2026-10-17T18:20:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 13458,
+    "cpuP99_us": 13458,
+    "wallP99_us": 338738
+   },
+   {
+    "hour": "2026-10-17T18:25:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 13233,
+    "cpuP99_us": 13233,
+    "wallP99_us": 316858
+   },
+   {
+    "hour": "2026-10-17T18:35:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 10627,
+    "cpuP99_us": 10627,
+    "wallP99_us": 281306
+   },
+   {
+    "hour": "2026-10-17T18:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 9472,
+    "cpuP99_us": 92320,
+    "wallP99_us": 109351
+   },
+   {
+    "hour": "2026-10-17T18:45:00Z",
+    "status": "success",
+    "requests": 61,
+    "errors": 0,
+    "cpuP50_us": 9171,
+    "cpuP99_us": 89924,
+    "wallP99_us": 1807876
+   },
+   {
+    "hour": "2026-10-17T18:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 18096,
+    "cpuP99_us": 18096,
+    "wallP99_us": 531483
+   },
+   {
+    "hour": "2026-10-17T18:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 18311,
+    "cpuP99_us": 18311,
+    "wallP99_us": 337021
+   },
+   {
+    "hour": "2026-10-17T19:00:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 11564,
+    "cpuP99_us": 11564,
+    "wallP99_us": 284520
+   },
+   {
+    "hour": "2026-10-17T19:05:00Z",
+    "status": "success",
+    "requests": 115,
+    "errors": 0,
+    "cpuP50_us": 7119,
+    "cpuP99_us": 140788,
+    "wallP99_us": 952019
+   },
+   {
+    "hour": "2026-10-17T19:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 14098,
+    "cpuP99_us": 14098,
+    "wallP99_us": 312089
+   },
+   {
+    "hour": "2026-10-17T19:15:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 13527,
+    "cpuP99_us": 14895,
+    "wallP99_us": 1363697
+   },
+   {
+    "hour": "2026-10-17T19:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2234,
+    "cpuP99_us": 15265,
+    "wallP99_us": 1055926
+   },
+   {
+    "hour": "2026-10-17T19:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2013,
+    "cpuP99_us": 14121,
+    "wallP99_us": 1371514
+   },
+   {
+    "hour": "2026-10-17T19:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2705,
+    "cpuP99_us": 5696,
+    "wallP99_us": 1307798
+   },
+   {
+    "hour": "2026-10-17T19:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2379,
+    "cpuP99_us": 14755,
+    "wallP99_us": 1327870
+   },
+   {
+    "hour": "2026-10-17T19:40:00Z",
+    "status": "success",
+    "requests": 68,
+    "errors": 0,
+    "cpuP50_us": 9164,
+    "cpuP99_us": 121546,
+    "wallP99_us": 3287020
+   },
+   {
+    "hour": "2026-10-17T19:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2073,
+    "cpuP99_us": 14583,
+    "wallP99_us": 1223695
+   },
+   {
+    "hour": "2026-10-17T19:50:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 21569,
+    "cpuP99_us": 21569,
+    "wallP99_us": 1128531
+   },
+   {
+    "hour": "2026-10-17T19:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2495,
+    "cpuP99_us": 22828,
+    "wallP99_us": 1735286
+   },
+   {
+    "hour": "2026-10-17T20:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2744,
+    "cpuP99_us": 16686,
+    "wallP99_us": 1710552
+   },
+   {
+    "hour": "2026-10-17T20:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2841,
+    "cpuP99_us": 18268,
+    "wallP99_us": 317491
+   },
+   {
+    "hour": "2026-10-17T20:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3713,
+    "cpuP99_us": 48703,
+    "wallP99_us": 399276
+   },
+   {
+    "hour": "2026-10-17T20:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2483,
+    "cpuP99_us": 31744,
+    "wallP99_us": 391179
+   },
+   {
+    "hour": "2026-10-17T20:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2516,
+    "cpuP99_us": 27199,
+    "wallP99_us": 419419
+   },
+   {
+    "hour": "2026-10-17T20:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2693,
+    "cpuP99_us": 14998,
+    "wallP99_us": 378858
+   },
+   {
+    "hour": "2026-10-17T20:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5940,
+    "cpuP99_us": 20604,
+    "wallP99_us": 284737
+   },
+   {
+    "hour": "2026-10-17T20:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2699,
+    "cpuP99_us": 30058,
+    "wallP99_us": 406391
+   },
+   {
+    "hour": "2026-10-17T20:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3205,
+    "cpuP99_us": 28637,
+    "wallP99_us": 414037
+   },
+   {
+    "hour": "2026-10-17T20:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3166,
+    "cpuP99_us": 37292,
+    "wallP99_us": 304828
+   },
+   {
+    "hour": "2026-10-17T20:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2343,
+    "cpuP99_us": 15309,
+    "wallP99_us": 373532
+   },
+   {
+    "hour": "2026-10-17T20:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3023,
+    "cpuP99_us": 22140,
+    "wallP99_us": 266052
+   },
+   {
+    "hour": "2026-10-17T21:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2076,
+    "cpuP99_us": 24816,
+    "wallP99_us": 382346
+   },
+   {
+    "hour": "2026-10-17T21:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2527,
+    "cpuP99_us": 29857,
+    "wallP99_us": 345020
+   },
+   {
+    "hour": "2026-10-17T21:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 2621,
+    "cpuP99_us": 2621,
+    "wallP99_us": 128728
+   },
+   {
+    "hour": "2026-10-17T21:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2903,
+    "cpuP99_us": 37632,
+    "wallP99_us": 309082
+   },
+   {
+    "hour": "2026-10-17T21:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2814,
+    "cpuP99_us": 18356,
+    "wallP99_us": 467445
+   },
+   {
+    "hour": "2026-10-17T21:25:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 3883,
+    "cpuP99_us": 3883,
+    "wallP99_us": 152154
+   },
+   {
+    "hour": "2026-10-17T21:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3984,
+    "cpuP99_us": 18410,
+    "wallP99_us": 361416
+   },
+   {
+    "hour": "2026-10-17T21:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3230,
+    "cpuP99_us": 16884,
+    "wallP99_us": 400103
+   },
+   {
+    "hour": "2026-10-17T21:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3277,
+    "cpuP99_us": 31847,
+    "wallP99_us": 427257
+   },
+   {
+    "hour": "2026-10-17T21:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2597,
+    "cpuP99_us": 17706,
+    "wallP99_us": 300219
+   },
+   {
+    "hour": "2026-10-17T21:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2222,
+    "cpuP99_us": 15746,
+    "wallP99_us": 262124
+   },
+   {
+    "hour": "2026-10-17T21:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3122,
+    "cpuP99_us": 18665,
+    "wallP99_us": 296166
+   },
+   {
+    "hour": "2026-10-17T22:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2430,
+    "cpuP99_us": 19374,
+    "wallP99_us": 332237
+   },
+   {
+    "hour": "2026-10-17T22:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2723,
+    "cpuP99_us": 19562,
+    "wallP99_us": 444385
+   },
+   {
+    "hour": "2026-10-17T22:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2859,
+    "cpuP99_us": 32197,
+    "wallP99_us": 367357
+   },
+   {
+    "hour": "2026-10-17T22:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2694,
+    "cpuP99_us": 37433,
+    "wallP99_us": 486427
+   },
+   {
+    "hour": "2026-10-17T22:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3846,
+    "cpuP99_us": 19270,
+    "wallP99_us": 414907
+   },
+   {
+    "hour": "2026-10-17T22:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3547,
+    "cpuP99_us": 16766,
+    "wallP99_us": 443308
+   },
+   {
+    "hour": "2026-10-17T22:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2549,
+    "cpuP99_us": 17749,
+    "wallP99_us": 398827
+   },
+   {
+    "hour": "2026-10-17T22:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3473,
+    "cpuP99_us": 22335,
+    "wallP99_us": 451236
+   },
+   {
+    "hour": "2026-10-17T22:40:00Z",
+    "status": "success",
+    "requests": 8,
+    "errors": 0,
+    "cpuP50_us": 153895,
+    "cpuP99_us": 3488963,
+    "wallP99_us": 19078812
+   },
+   {
+    "hour": "2026-10-17T22:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3008,
+    "cpuP99_us": 20013,
+    "wallP99_us": 186604
+   },
+   {
+    "hour": "2026-10-17T22:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3117,
+    "cpuP99_us": 27774,
+    "wallP99_us": 281210
+   },
+   {
+    "hour": "2026-10-17T22:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3327,
+    "cpuP99_us": 20385,
+    "wallP99_us": 347719
+   },
+   {
+    "hour": "2026-10-17T23:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3191,
+    "cpuP99_us": 18061,
+    "wallP99_us": 187904
+   },
+   {
+    "hour": "2026-10-17T23:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3228,
+    "cpuP99_us": 15050,
+    "wallP99_us": 257425
+   },
+   {
+    "hour": "2026-10-17T23:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2607,
+    "cpuP99_us": 21481,
+    "wallP99_us": 260847
+   },
+   {
+    "hour": "2026-10-17T23:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4291,
+    "cpuP99_us": 29375,
+    "wallP99_us": 409621
+   },
+   {
+    "hour": "2026-10-17T23:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2332,
+    "cpuP99_us": 20184,
+    "wallP99_us": 262238
+   },
+   {
+    "hour": "2026-10-17T23:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2182,
+    "cpuP99_us": 17104,
+    "wallP99_us": 192800
+   },
+   {
+    "hour": "2026-10-17T23:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3162,
+    "cpuP99_us": 17141,
+    "wallP99_us": 318131
+   },
+   {
+    "hour": "2026-10-17T23:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 1998,
+    "cpuP99_us": 15456,
+    "wallP99_us": 271649
+   },
+   {
+    "hour": "2026-10-17T23:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2658,
+    "cpuP99_us": 22097,
+    "wallP99_us": 248365
+   },
+   {
+    "hour": "2026-10-17T23:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2271,
+    "cpuP99_us": 20052,
+    "wallP99_us": 266847
+   },
+   {
+    "hour": "2026-10-17T23:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3671,
+    "cpuP99_us": 17972,
+    "wallP99_us": 389783
+   },
+   {
+    "hour": "2026-10-17T23:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2678,
+    "cpuP99_us": 20624,
+    "wallP99_us": 253926
+   },
+   {
+    "hour": "2026-10-18T00:00:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 25995,
+    "cpuP99_us": 5000964,
+    "wallP99_us": 28583820
+   },
+   {
+    "hour": "2026-10-18T00:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2451,
+    "cpuP99_us": 23427,
+    "wallP99_us": 325377
+   },
+   {
+    "hour": "2026-10-18T00:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3030,
+    "cpuP99_us": 18636,
+    "wallP99_us": 246105
+   },
+   {
+    "hour": "2026-10-18T00:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2335,
+    "cpuP99_us": 22086,
+    "wallP99_us": 239368
+   },
+   {
+    "hour": "2026-10-18T00:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2164,
+    "cpuP99_us": 19371,
+    "wallP99_us": 256807
+   },
+   {
+    "hour": "2026-10-18T00:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2819,
+    "cpuP99_us": 16990,
+    "wallP99_us": 260757
+   },
+   {
+    "hour": "2026-10-18T00:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 18239,
+    "cpuP99_us": 71294,
+    "wallP99_us": 2368358
+   },
+   {
+    "hour": "2026-10-18T00:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2054,
+    "cpuP99_us": 21457,
+    "wallP99_us": 251068
+   },
+   {
+    "hour": "2026-10-18T00:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3105,
+    "cpuP99_us": 18449,
+    "wallP99_us": 247204
+   },
+   {
+    "hour": "2026-10-18T00:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2184,
+    "cpuP99_us": 16570,
+    "wallP99_us": 273179
+   },
+   {
+    "hour": "2026-10-18T00:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2340,
+    "cpuP99_us": 20099,
+    "wallP99_us": 253407
+   },
+   {
+    "hour": "2026-10-18T00:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2841,
+    "cpuP99_us": 21165,
+    "wallP99_us": 213146
+   },
+   {
+    "hour": "2026-10-18T01:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3361,
+    "cpuP99_us": 29108,
+    "wallP99_us": 292981
+   },
+   {
+    "hour": "2026-10-18T01:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3286,
+    "cpuP99_us": 14825,
+    "wallP99_us": 271571
+   },
+   {
+    "hour": "2026-10-18T01:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2396,
+    "cpuP99_us": 19470,
+    "wallP99_us": 324723
+   },
+   {
+    "hour": "2026-10-18T01:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2023,
+    "cpuP99_us": 14832,
+    "wallP99_us": 360508
+   },
+   {
+    "hour": "2026-10-18T01:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2238,
+    "cpuP99_us": 20821,
+    "wallP99_us": 198271
+   },
+   {
+    "hour": "2026-10-18T01:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2333,
+    "cpuP99_us": 17864,
+    "wallP99_us": 314715
+   },
+   {
+    "hour": "2026-10-18T01:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 5088,
+    "cpuP99_us": 17901,
+    "wallP99_us": 252956
+   },
+   {
+    "hour": "2026-10-18T01:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3166,
+    "cpuP99_us": 25406,
+    "wallP99_us": 424447
+   },
+   {
+    "hour": "2026-10-18T01:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2778,
+    "cpuP99_us": 18687,
+    "wallP99_us": 310992
+   },
+   {
+    "hour": "2026-10-18T01:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3012,
+    "cpuP99_us": 14506,
+    "wallP99_us": 253918
+   },
+   {
+    "hour": "2026-10-18T01:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2664,
+    "cpuP99_us": 22980,
+    "wallP99_us": 311805
+   },
+   {
+    "hour": "2026-10-18T01:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2219,
+    "cpuP99_us": 27169,
+    "wallP99_us": 304911
+   },
+   {
+    "hour": "2026-10-18T02:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2422,
+    "cpuP99_us": 21234,
+    "wallP99_us": 308881
+   },
+   {
+    "hour": "2026-10-18T02:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2100,
+    "cpuP99_us": 14340,
+    "wallP99_us": 3014126
+   },
+   {
+    "hour": "2026-10-18T02:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2261,
+    "cpuP99_us": 18477,
+    "wallP99_us": 255761
+   },
+   {
+    "hour": "2026-10-18T02:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2596,
+    "cpuP99_us": 27195,
+    "wallP99_us": 290271
+   },
+   {
+    "hour": "2026-10-18T02:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3564,
+    "cpuP99_us": 15288,
+    "wallP99_us": 414730
+   },
+   {
+    "hour": "2026-10-18T02:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2089,
+    "cpuP99_us": 15138,
+    "wallP99_us": 370954
+   },
+   {
+    "hour": "2026-10-18T02:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5505,
+    "cpuP99_us": 40028,
+    "wallP99_us": 935742
+   },
+   {
+    "hour": "2026-10-18T02:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3122,
+    "cpuP99_us": 41284,
+    "wallP99_us": 880319
+   },
+   {
+    "hour": "2026-10-18T02:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2814,
+    "cpuP99_us": 22989,
+    "wallP99_us": 873327
+   },
+   {
+    "hour": "2026-10-18T02:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2687,
+    "cpuP99_us": 32494,
+    "wallP99_us": 901462
+   },
+   {
+    "hour": "2026-10-18T02:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5239,
+    "cpuP99_us": 17757,
+    "wallP99_us": 760521
+   },
+   {
+    "hour": "2026-10-18T02:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4823,
+    "cpuP99_us": 43157,
+    "wallP99_us": 789756
+   },
+   {
+    "hour": "2026-10-18T03:00:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 22461,
+    "cpuP99_us": 961412,
+    "wallP99_us": 34433344
+   },
+   {
+    "hour": "2026-10-18T03:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5161,
+    "cpuP99_us": 54973,
+    "wallP99_us": 942205
+   },
+   {
+    "hour": "2026-10-18T03:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2944,
+    "cpuP99_us": 18932,
+    "wallP99_us": 681007
+   },
+   {
+    "hour": "2026-10-18T03:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2424,
+    "cpuP99_us": 19125,
+    "wallP99_us": 715055
+   },
+   {
+    "hour": "2026-10-18T03:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2299,
+    "cpuP99_us": 18155,
+    "wallP99_us": 755798
+   },
+   {
+    "hour": "2026-10-18T03:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2458,
+    "cpuP99_us": 17333,
+    "wallP99_us": 731147
+   },
+   {
+    "hour": "2026-10-18T03:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2388,
+    "cpuP99_us": 21980,
+    "wallP99_us": 749626
+   },
+   {
+    "hour": "2026-10-18T03:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2819,
+    "cpuP99_us": 30114,
+    "wallP99_us": 736403
+   },
+   {
+    "hour": "2026-10-18T03:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2765,
+    "cpuP99_us": 35323,
+    "wallP99_us": 931364
+   },
+   {
+    "hour": "2026-10-18T03:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2147,
+    "cpuP99_us": 21867,
+    "wallP99_us": 850233
+   },
+   {
+    "hour": "2026-10-18T03:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3537,
+    "cpuP99_us": 18203,
+    "wallP99_us": 697189
+   },
+   {
+    "hour": "2026-10-18T03:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2129,
+    "cpuP99_us": 17961,
+    "wallP99_us": 718705
+   },
+   {
+    "hour": "2026-10-18T04:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3889,
+    "cpuP99_us": 23710,
+    "wallP99_us": 907474
+   },
+   {
+    "hour": "2026-10-18T04:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2547,
+    "cpuP99_us": 29518,
+    "wallP99_us": 775662
+   },
+   {
+    "hour": "2026-10-18T04:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2626,
+    "cpuP99_us": 19314,
+    "wallP99_us": 730380
+   },
+   {
+    "hour": "2026-10-18T04:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4145,
+    "cpuP99_us": 32496,
+    "wallP99_us": 781168
+   },
+   {
+    "hour": "2026-10-18T04:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2704,
+    "cpuP99_us": 17255,
+    "wallP99_us": 737151
+   },
+   {
+    "hour": "2026-10-18T04:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2782,
+    "cpuP99_us": 32960,
+    "wallP99_us": 864977
+   },
+   {
+    "hour": "2026-10-18T04:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 25734,
+    "cpuP99_us": 69101,
+    "wallP99_us": 32701986
+   },
+   {
+    "hour": "2026-10-18T04:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2163,
+    "cpuP99_us": 36413,
+    "wallP99_us": 755060
+   },
+   {
+    "hour": "2026-10-18T04:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2833,
+    "cpuP99_us": 22235,
+    "wallP99_us": 784989
+   },
+   {
+    "hour": "2026-10-18T04:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3433,
+    "cpuP99_us": 42664,
+    "wallP99_us": 900842
+   },
+   {
+    "hour": "2026-10-18T04:50:00Z",
+    "status": "success",
+    "requests": 104,
+    "errors": 0,
+    "cpuP50_us": 80965,
+    "cpuP99_us": 150647,
+    "wallP99_us": 996052
+   },
+   {
+    "hour": "2026-10-18T04:50:00Z",
+    "status": "clientDisconnected",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 67218,
+    "cpuP99_us": 67218,
+    "wallP99_us": 695005
+   },
+   {
+    "hour": "2026-10-18T04:55:00Z",
+    "status": "success",
+    "requests": 118,
+    "errors": 0,
+    "cpuP50_us": 84646,
+    "cpuP99_us": 167877,
+    "wallP99_us": 1017691
+   },
+   {
+    "hour": "2026-10-18T05:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2620,
+    "cpuP99_us": 23453,
+    "wallP99_us": 770005
+   },
+   {
+    "hour": "2026-10-18T05:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2135,
+    "cpuP99_us": 21385,
+    "wallP99_us": 759826
+   },
+   {
+    "hour": "2026-10-18T05:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4106,
+    "cpuP99_us": 25345,
+    "wallP99_us": 749470
+   },
+   {
+    "hour": "2026-10-18T05:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2623,
+    "cpuP99_us": 21221,
+    "wallP99_us": 732197
+   },
+   {
+    "hour": "2026-10-18T05:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2667,
+    "cpuP99_us": 16098,
+    "wallP99_us": 713224
+   },
+   {
+    "hour": "2026-10-18T05:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2396,
+    "cpuP99_us": 17172,
+    "wallP99_us": 924413
+   },
+   {
+    "hour": "2026-10-18T05:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2889,
+    "cpuP99_us": 19900,
+    "wallP99_us": 826051
+   },
+   {
+    "hour": "2026-10-18T05:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2769,
+    "cpuP99_us": 35339,
+    "wallP99_us": 888285
+   },
+   {
+    "hour": "2026-10-18T05:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2553,
+    "cpuP99_us": 22343,
+    "wallP99_us": 774655
+   },
+   {
+    "hour": "2026-10-18T05:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3071,
+    "cpuP99_us": 18926,
+    "wallP99_us": 754669
+   },
+   {
+    "hour": "2026-10-18T05:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2291,
+    "cpuP99_us": 21930,
+    "wallP99_us": 774490
+   },
+   {
+    "hour": "2026-10-18T05:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3437,
+    "cpuP99_us": 15657,
+    "wallP99_us": 819345
+   },
+   {
+    "hour": "2026-10-18T06:00:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 15861,
+    "cpuP99_us": 9374173,
+    "wallP99_us": 101654520
+   },
+   {
+    "hour": "2026-10-18T06:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2048,
+    "cpuP99_us": 16997,
+    "wallP99_us": 934512
+   },
+   {
+    "hour": "2026-10-18T06:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2371,
+    "cpuP99_us": 24695,
+    "wallP99_us": 850605
+   },
+   {
+    "hour": "2026-10-18T06:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2308,
+    "cpuP99_us": 24546,
+    "wallP99_us": 861520
+   },
+   {
+    "hour": "2026-10-18T06:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2308,
+    "cpuP99_us": 22335,
+    "wallP99_us": 780523
+   },
+   {
+    "hour": "2026-10-18T06:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2156,
+    "cpuP99_us": 20604,
+    "wallP99_us": 767806
+   },
+   {
+    "hour": "2026-10-18T06:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 17574,
+    "cpuP99_us": 68958,
+    "wallP99_us": 8233675
+   },
+   {
+    "hour": "2026-10-18T06:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3298,
+    "cpuP99_us": 35997,
+    "wallP99_us": 1044786
+   },
+   {
+    "hour": "2026-10-18T06:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2446,
+    "cpuP99_us": 28506,
+    "wallP99_us": 1017912
+   },
+   {
+    "hour": "2026-10-18T06:45:00Z",
+    "status": "success",
+    "requests": 73,
+    "errors": 0,
+    "cpuP50_us": 5992,
+    "cpuP99_us": 160561,
+    "wallP99_us": 1429822
+   },
+   {
+    "hour": "2026-10-18T06:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2353,
+    "cpuP99_us": 38480,
+    "wallP99_us": 1147361
+   },
+   {
+    "hour": "2026-10-18T06:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2495,
+    "cpuP99_us": 23419,
+    "wallP99_us": 1094606
+   },
+   {
+    "hour": "2026-10-18T07:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3766,
+    "cpuP99_us": 28998,
+    "wallP99_us": 1031885
+   },
+   {
+    "hour": "2026-10-18T07:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3632,
+    "cpuP99_us": 33752,
+    "wallP99_us": 1111838
+   },
+   {
+    "hour": "2026-10-18T07:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4167,
+    "cpuP99_us": 35813,
+    "wallP99_us": 1198931
+   },
+   {
+    "hour": "2026-10-18T07:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4507,
+    "cpuP99_us": 42519,
+    "wallP99_us": 1142456
+   },
+   {
+    "hour": "2026-10-18T07:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2863,
+    "cpuP99_us": 19442,
+    "wallP99_us": 1089935
+   },
+   {
+    "hour": "2026-10-18T07:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5107,
+    "cpuP99_us": 23830,
+    "wallP99_us": 977930
+   },
+   {
+    "hour": "2026-10-18T07:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 10533,
+    "cpuP99_us": 31093,
+    "wallP99_us": 927389
+   },
+   {
+    "hour": "2026-10-18T07:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2616,
+    "cpuP99_us": 31680,
+    "wallP99_us": 944460
+   },
+   {
+    "hour": "2026-10-18T07:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2457,
+    "cpuP99_us": 36523,
+    "wallP99_us": 1202256
+   },
+   {
+    "hour": "2026-10-18T07:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2911,
+    "cpuP99_us": 22322,
+    "wallP99_us": 976440
+   },
+   {
+    "hour": "2026-10-18T07:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3387,
+    "cpuP99_us": 24846,
+    "wallP99_us": 1044955
+   },
+   {
+    "hour": "2026-10-18T07:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2413,
+    "cpuP99_us": 19215,
+    "wallP99_us": 977386
+   },
+   {
+    "hour": "2026-10-18T08:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3579,
+    "cpuP99_us": 16876,
+    "wallP99_us": 969853
+   },
+   {
+    "hour": "2026-10-18T08:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2553,
+    "cpuP99_us": 30806,
+    "wallP99_us": 1138378
+   },
+   {
+    "hour": "2026-10-18T08:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3202,
+    "cpuP99_us": 43495,
+    "wallP99_us": 1195171
+   },
+   {
+    "hour": "2026-10-18T08:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3267,
+    "cpuP99_us": 21727,
+    "wallP99_us": 1226179
+   },
+   {
+    "hour": "2026-10-18T08:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2845,
+    "cpuP99_us": 23866,
+    "wallP99_us": 1168009
+   },
+   {
+    "hour": "2026-10-18T08:25:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 3858,
+    "cpuP99_us": 3858,
+    "wallP99_us": 347977
+   },
+   {
+    "hour": "2026-10-18T08:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4108,
+    "cpuP99_us": 24090,
+    "wallP99_us": 1150574
+   },
+   {
+    "hour": "2026-10-18T08:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2867,
+    "cpuP99_us": 38389,
+    "wallP99_us": 1166804
+   },
+   {
+    "hour": "2026-10-18T08:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5441,
+    "cpuP99_us": 18484,
+    "wallP99_us": 1152988
+   },
+   {
+    "hour": "2026-10-18T08:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2908,
+    "cpuP99_us": 29776,
+    "wallP99_us": 1234830
+   },
+   {
+    "hour": "2026-10-18T08:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4124,
+    "cpuP99_us": 17945,
+    "wallP99_us": 1123978
+   },
+   {
+    "hour": "2026-10-18T08:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4434,
+    "cpuP99_us": 21008,
+    "wallP99_us": 1185938
+   },
+   {
+    "hour": "2026-10-18T09:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 6011,
+    "cpuP99_us": 16361,
+    "wallP99_us": 990826
+   },
+   {
+    "hour": "2026-10-18T09:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4939,
+    "cpuP99_us": 31207,
+    "wallP99_us": 1166253
+   },
+   {
+    "hour": "2026-10-18T09:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5208,
+    "cpuP99_us": 35100,
+    "wallP99_us": 1171580
+   },
+   {
+    "hour": "2026-10-18T09:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4620,
+    "cpuP99_us": 30885,
+    "wallP99_us": 1142304
+   },
+   {
+    "hour": "2026-10-18T09:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2754,
+    "cpuP99_us": 34225,
+    "wallP99_us": 1189753
+   },
+   {
+    "hour": "2026-10-18T09:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3348,
+    "cpuP99_us": 40384,
+    "wallP99_us": 1519156
+   },
+   {
+    "hour": "2026-10-18T09:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2557,
+    "cpuP99_us": 24165,
+    "wallP99_us": 1138367
+   },
+   {
+    "hour": "2026-10-18T09:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3449,
+    "cpuP99_us": 30789,
+    "wallP99_us": 1146888
+   },
+   {
+    "hour": "2026-10-18T09:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3011,
+    "cpuP99_us": 17297,
+    "wallP99_us": 1122602
+   },
+   {
+    "hour": "2026-10-18T09:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2268,
+    "cpuP99_us": 31205,
+    "wallP99_us": 1146559
+   },
+   {
+    "hour": "2026-10-18T09:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2470,
+    "cpuP99_us": 26213,
+    "wallP99_us": 1143829
+   },
+   {
+    "hour": "2026-10-18T09:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3220,
+    "cpuP99_us": 19173,
+    "wallP99_us": 1125136
+   },
+   {
+    "hour": "2026-10-18T10:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2453,
+    "cpuP99_us": 22526,
+    "wallP99_us": 1116731
+   },
+   {
+    "hour": "2026-10-18T10:05:00Z",
+    "status": "success",
+    "requests": 8,
+    "errors": 0,
+    "cpuP50_us": 3067,
+    "cpuP99_us": 69088,
+    "wallP99_us": 1152084
+   },
+   {
+    "hour": "2026-10-18T10:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5033,
+    "cpuP99_us": 34374,
+    "wallP99_us": 1157994
+   },
+   {
+    "hour": "2026-10-18T10:15:00Z",
+    "status": "success",
+    "requests": 25,
+    "errors": 0,
+    "cpuP50_us": 177782,
+    "cpuP99_us": 3003942,
+    "wallP99_us": 20055074
+   },
+   {
+    "hour": "2026-10-18T10:20:00Z",
+    "status": "success",
+    "requests": 5,
+    "errors": 0,
+    "cpuP50_us": 976636,
+    "cpuP99_us": 1013883,
+    "wallP99_us": 7496334
+   },
+   {
+    "hour": "2026-10-18T10:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2690,
+    "cpuP99_us": 18707,
+    "wallP99_us": 1006428
+   },
+   {
+    "hour": "2026-10-18T10:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4232,
+    "cpuP99_us": 14886,
+    "wallP99_us": 985235
+   },
+   {
+    "hour": "2026-10-18T10:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3031,
+    "cpuP99_us": 18117,
+    "wallP99_us": 1051224
+   },
+   {
+    "hour": "2026-10-18T10:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2420,
+    "cpuP99_us": 22661,
+    "wallP99_us": 986734
+   },
+   {
+    "hour": "2026-10-18T10:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2859,
+    "cpuP99_us": 23299,
+    "wallP99_us": 6035226
+   },
+   {
+    "hour": "2026-10-18T10:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2491,
+    "cpuP99_us": 16161,
+    "wallP99_us": 1171627
+   },
+   {
+    "hour": "2026-10-18T10:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2463,
+    "cpuP99_us": 21862,
+    "wallP99_us": 1123402
+   },
+   {
+    "hour": "2026-10-18T11:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4266,
+    "cpuP99_us": 30592,
+    "wallP99_us": 1161960
+   },
+   {
+    "hour": "2026-10-18T11:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2814,
+    "cpuP99_us": 43362,
+    "wallP99_us": 1191980
+   },
+   {
+    "hour": "2026-10-18T11:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3170,
+    "cpuP99_us": 29164,
+    "wallP99_us": 1135157
+   },
+   {
+    "hour": "2026-10-18T11:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3240,
+    "cpuP99_us": 18833,
+    "wallP99_us": 1106325
+   },
+   {
+    "hour": "2026-10-18T11:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2437,
+    "cpuP99_us": 27096,
+    "wallP99_us": 1153466
+   },
+   {
+    "hour": "2026-10-18T11:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4518,
+    "cpuP99_us": 52993,
+    "wallP99_us": 1232076
+   },
+   {
+    "hour": "2026-10-18T11:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3297,
+    "cpuP99_us": 21585,
+    "wallP99_us": 1176008
+   },
+   {
+    "hour": "2026-10-18T11:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2608,
+    "cpuP99_us": 38136,
+    "wallP99_us": 1183921
+   },
+   {
+    "hour": "2026-10-18T11:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2993,
+    "cpuP99_us": 41556,
+    "wallP99_us": 1232965
+   },
+   {
+    "hour": "2026-10-18T11:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2516,
+    "cpuP99_us": 19183,
+    "wallP99_us": 1185635
+   },
+   {
+    "hour": "2026-10-18T11:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3850,
+    "cpuP99_us": 29749,
+    "wallP99_us": 1179104
+   },
+   {
+    "hour": "2026-10-18T11:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2848,
+    "cpuP99_us": 21441,
+    "wallP99_us": 1054124
+   },
+   {
+    "hour": "2026-10-18T12:00:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 24485,
+    "cpuP99_us": 3415166,
+    "wallP99_us": 183232690
+   },
+   {
+    "hour": "2026-10-18T12:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3999,
+    "cpuP99_us": 30825,
+    "wallP99_us": 2090369
+   },
+   {
+    "hour": "2026-10-18T12:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4543,
+    "cpuP99_us": 33481,
+    "wallP99_us": 2122828
+   },
+   {
+    "hour": "2026-10-18T12:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2589,
+    "cpuP99_us": 20217,
+    "wallP99_us": 2032667
+   },
+   {
+    "hour": "2026-10-18T12:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3449,
+    "cpuP99_us": 53711,
+    "wallP99_us": 1261985
+   },
+   {
+    "hour": "2026-10-18T12:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3212,
+    "cpuP99_us": 23950,
+    "wallP99_us": 1209485
+   },
+   {
+    "hour": "2026-10-18T12:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 45291,
+    "cpuP99_us": 78658,
+    "wallP99_us": 15486829
+   },
+   {
+    "hour": "2026-10-18T12:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2284,
+    "cpuP99_us": 25727,
+    "wallP99_us": 1753932
+   },
+   {
+    "hour": "2026-10-18T12:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2427,
+    "cpuP99_us": 23236,
+    "wallP99_us": 1753830
+   },
+   {
+    "hour": "2026-10-18T12:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2719,
+    "cpuP99_us": 210426,
+    "wallP99_us": 10976171
+   },
+   {
+    "hour": "2026-10-18T12:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3213,
+    "cpuP99_us": 187248,
+    "wallP99_us": 10764296
+   },
+   {
+    "hour": "2026-10-18T12:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4681,
+    "cpuP99_us": 282422,
+    "wallP99_us": 7911616
+   },
+   {
+    "hour": "2026-10-18T13:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3573,
+    "cpuP99_us": 192102,
+    "wallP99_us": 9545276
+   },
+   {
+    "hour": "2026-10-18T13:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2565,
+    "cpuP99_us": 267022,
+    "wallP99_us": 4755015
+   },
+   {
+    "hour": "2026-10-18T13:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3223,
+    "cpuP99_us": 189618,
+    "wallP99_us": 10659045
+   },
+   {
+    "hour": "2026-10-18T13:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4352,
+    "cpuP99_us": 211065,
+    "wallP99_us": 8146477
+   },
+   {
+    "hour": "2026-10-18T13:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4072,
+    "cpuP99_us": 277603,
+    "wallP99_us": 11490286
+   },
+   {
+    "hour": "2026-10-18T13:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3567,
+    "cpuP99_us": 225039,
+    "wallP99_us": 9528180
+   },
+   {
+    "hour": "2026-10-18T13:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 6226,
+    "cpuP99_us": 270147,
+    "wallP99_us": 9656042
+   },
+   {
+    "hour": "2026-10-18T13:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3177,
+    "cpuP99_us": 149558,
+    "wallP99_us": 5129650
+   },
+   {
+    "hour": "2026-10-18T13:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3380,
+    "cpuP99_us": 291327,
+    "wallP99_us": 10111849
+   },
+   {
+    "hour": "2026-10-18T13:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2565,
+    "cpuP99_us": 210365,
+    "wallP99_us": 4859830
+   },
+   {
+    "hour": "2026-10-18T13:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3729,
+    "cpuP99_us": 157488,
+    "wallP99_us": 3933639
+   },
+   {
+    "hour": "2026-10-18T13:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4211,
+    "cpuP99_us": 146925,
+    "wallP99_us": 8986588
+   },
+   {
+    "hour": "2026-10-18T14:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2630,
+    "cpuP99_us": 215264,
+    "wallP99_us": 8675322
+   },
+   {
+    "hour": "2026-10-18T14:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5480,
+    "cpuP99_us": 237304,
+    "wallP99_us": 8493014
+   },
+   {
+    "hour": "2026-10-18T14:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4918,
+    "cpuP99_us": 132027,
+    "wallP99_us": 4444806
+   },
+   {
+    "hour": "2026-10-18T14:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2904,
+    "cpuP99_us": 142406,
+    "wallP99_us": 5194727
+   },
+   {
+    "hour": "2026-10-18T14:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2760,
+    "cpuP99_us": 144894,
+    "wallP99_us": 3890973
+   },
+   {
+    "hour": "2026-10-18T14:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 6655,
+    "cpuP99_us": 159027,
+    "wallP99_us": 8222045
+   },
+   {
+    "hour": "2026-10-18T14:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5170,
+    "cpuP99_us": 145175,
+    "wallP99_us": 4412828
+   },
+   {
+    "hour": "2026-10-18T14:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3088,
+    "cpuP99_us": 166073,
+    "wallP99_us": 13982102
+   },
+   {
+    "hour": "2026-10-18T14:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4436,
+    "cpuP99_us": 266399,
+    "wallP99_us": 8072051
+   },
+   {
+    "hour": "2026-10-18T14:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4046,
+    "cpuP99_us": 141073,
+    "wallP99_us": 3984331
+   },
+   {
+    "hour": "2026-10-18T14:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3300,
+    "cpuP99_us": 148004,
+    "wallP99_us": 4134505
+   },
+   {
+    "hour": "2026-10-18T14:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3356,
+    "cpuP99_us": 143647,
+    "wallP99_us": 3775797
+   },
+   {
+    "hour": "2026-10-18T15:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3364,
+    "cpuP99_us": 236300,
+    "wallP99_us": 8919268
+   },
+   {
+    "hour": "2026-10-18T15:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4988,
+    "cpuP99_us": 204490,
+    "wallP99_us": 11294776
+   },
+   {
+    "hour": "2026-10-18T15:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2735,
+    "cpuP99_us": 250898,
+    "wallP99_us": 10514982
+   },
+   {
+    "hour": "2026-10-18T15:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5298,
+    "cpuP99_us": 198582,
+    "wallP99_us": 5946369
+   },
+   {
+    "hour": "2026-10-18T15:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2227,
+    "cpuP99_us": 160689,
+    "wallP99_us": 3906435
+   },
+   {
+    "hour": "2026-10-18T15:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3264,
+    "cpuP99_us": 135072,
+    "wallP99_us": 12422478
+   },
+   {
+    "hour": "2026-10-18T15:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4328,
+    "cpuP99_us": 152249,
+    "wallP99_us": 5315058
+   },
+   {
+    "hour": "2026-10-18T15:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2493,
+    "cpuP99_us": 111326,
+    "wallP99_us": 6701073
+   },
+   {
+    "hour": "2026-10-18T15:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2246,
+    "cpuP99_us": 104606,
+    "wallP99_us": 6895426
+   },
+   {
+    "hour": "2026-10-18T15:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4998,
+    "cpuP99_us": 146331,
+    "wallP99_us": 4812674
+   },
+   {
+    "hour": "2026-10-18T15:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2095,
+    "cpuP99_us": 232373,
+    "wallP99_us": 5574289
+   },
+   {
+    "hour": "2026-10-18T15:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2984,
+    "cpuP99_us": 285091,
+    "wallP99_us": 5195646
+   },
+   {
+    "hour": "2026-10-18T16:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2519,
+    "cpuP99_us": 211317,
+    "wallP99_us": 4650097
+   },
+   {
+    "hour": "2026-10-18T16:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2672,
+    "cpuP99_us": 181340,
+    "wallP99_us": 7922674
+   },
+   {
+    "hour": "2026-10-18T16:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 144566,
+    "cpuP99_us": 144566,
+    "wallP99_us": 7947797
+   },
+   {
+    "hour": "2026-10-18T16:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3032,
+    "cpuP99_us": 132873,
+    "wallP99_us": 4432450
+   },
+   {
+    "hour": "2026-10-18T16:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2499,
+    "cpuP99_us": 115065,
+    "wallP99_us": 5351098
+   },
+   {
+    "hour": "2026-10-18T16:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2169,
+    "cpuP99_us": 183402,
+    "wallP99_us": 4905388
+   },
+   {
+    "hour": "2026-10-18T16:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2767,
+    "cpuP99_us": 125848,
+    "wallP99_us": 5005390
+   },
+   {
+    "hour": "2026-10-18T16:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2598,
+    "cpuP99_us": 125639,
+    "wallP99_us": 4856841
+   },
+   {
+    "hour": "2026-10-18T16:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4716,
+    "cpuP99_us": 101421,
+    "wallP99_us": 6799431
+   },
+   {
+    "hour": "2026-10-18T16:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2115,
+    "cpuP99_us": 115464,
+    "wallP99_us": 5050762
+   },
+   {
+    "hour": "2026-10-18T16:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2306,
+    "cpuP99_us": 159985,
+    "wallP99_us": 4086750
+   },
+   {
+    "hour": "2026-10-18T16:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2825,
+    "cpuP99_us": 158590,
+    "wallP99_us": 3975461
+   },
+   {
+    "hour": "2026-10-18T17:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2202,
+    "cpuP99_us": 94294,
+    "wallP99_us": 6641494
+   },
+   {
+    "hour": "2026-10-18T17:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2674,
+    "cpuP99_us": 104482,
+    "wallP99_us": 6831848
+   },
+   {
+    "hour": "2026-10-18T17:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2448,
+    "cpuP99_us": 138687,
+    "wallP99_us": 4279925
+   },
+   {
+    "hour": "2026-10-18T17:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3085,
+    "cpuP99_us": 101664,
+    "wallP99_us": 7102044
+   },
+   {
+    "hour": "2026-10-18T17:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3648,
+    "cpuP99_us": 169682,
+    "wallP99_us": 5634172
+   },
+   {
+    "hour": "2026-10-18T17:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2339,
+    "cpuP99_us": 94393,
+    "wallP99_us": 7594045
+   },
+   {
+    "hour": "2026-10-18T17:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2079,
+    "cpuP99_us": 102557,
+    "wallP99_us": 7175907
+   },
+   {
+    "hour": "2026-10-18T17:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2868,
+    "cpuP99_us": 14683,
+    "wallP99_us": 2059930
+   },
+   {
+    "hour": "2026-10-18T17:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2386,
+    "cpuP99_us": 26859,
+    "wallP99_us": 1205285
+   },
+   {
+    "hour": "2026-10-18T17:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2397,
+    "cpuP99_us": 34813,
+    "wallP99_us": 1244437
+   },
+   {
+    "hour": "2026-10-18T17:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2115,
+    "cpuP99_us": 28395,
+    "wallP99_us": 1697355
+   },
+   {
+    "hour": "2026-10-18T17:55:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 2148,
+    "cpuP99_us": 2148,
+    "wallP99_us": 568326
+   },
+   {
+    "hour": "2026-10-18T18:00:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 15687,
+    "cpuP99_us": 2795270,
+    "wallP99_us": 101685390
+   },
+   {
+    "hour": "2026-10-18T18:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3424,
+    "cpuP99_us": 23353,
+    "wallP99_us": 1729180
+   },
+   {
+    "hour": "2026-10-18T18:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2119,
+    "cpuP99_us": 23164,
+    "wallP99_us": 1663200
+   },
+   {
+    "hour": "2026-10-18T18:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2440,
+    "cpuP99_us": 16424,
+    "wallP99_us": 2096797
+   },
+   {
+    "hour": "2026-10-18T18:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3501,
+    "cpuP99_us": 18216,
+    "wallP99_us": 1510150
+   },
+   {
+    "hour": "2026-10-18T18:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2171,
+    "cpuP99_us": 20405,
+    "wallP99_us": 1373972
+   },
+   {
+    "hour": "2026-10-18T18:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 25813,
+    "cpuP99_us": 46066,
+    "wallP99_us": 12463485
+   },
+   {
+    "hour": "2026-10-18T18:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3482,
+    "cpuP99_us": 24006,
+    "wallP99_us": 1598069
+   },
+   {
+    "hour": "2026-10-18T18:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3241,
+    "cpuP99_us": 31172,
+    "wallP99_us": 1365989
+   },
+   {
+    "hour": "2026-10-18T18:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 1953,
+    "cpuP99_us": 15372,
+    "wallP99_us": 1742541
+   },
+   {
+    "hour": "2026-10-18T18:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2025,
+    "cpuP99_us": 15267,
+    "wallP99_us": 1986622
+   },
+   {
+    "hour": "2026-10-18T18:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2969,
+    "cpuP99_us": 19088,
+    "wallP99_us": 1692802
+   },
+   {
+    "hour": "2026-10-18T19:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2494,
+    "cpuP99_us": 16133,
+    "wallP99_us": 3428159
+   },
+   {
+    "hour": "2026-10-18T19:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4009,
+    "cpuP99_us": 25481,
+    "wallP99_us": 1796155
+   },
+   {
+    "hour": "2026-10-18T19:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2417,
+    "cpuP99_us": 20887,
+    "wallP99_us": 1768525
+   },
+   {
+    "hour": "2026-10-18T19:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2228,
+    "cpuP99_us": 16579,
+    "wallP99_us": 1665725
+   },
+   {
+    "hour": "2026-10-18T19:20:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 16647,
+    "cpuP99_us": 16647,
+    "wallP99_us": 1711853
+   },
+   {
+    "hour": "2026-10-18T19:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2818,
+    "cpuP99_us": 16160,
+    "wallP99_us": 2129710
+   },
+   {
+    "hour": "2026-10-18T19:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 3673,
+    "cpuP99_us": 32576,
+    "wallP99_us": 1662628
+   },
+   {
+    "hour": "2026-10-18T19:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3096,
+    "cpuP99_us": 19944,
+    "wallP99_us": 1283477
+   },
+   {
+    "hour": "2026-10-18T19:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3012,
+    "cpuP99_us": 19951,
+    "wallP99_us": 1277325
+   },
+   {
+    "hour": "2026-10-18T19:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2368,
+    "cpuP99_us": 28620,
+    "wallP99_us": 1878677
+   },
+   {
+    "hour": "2026-10-18T19:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 1926,
+    "cpuP99_us": 17545,
+    "wallP99_us": 1647145
+   },
+   {
+    "hour": "2026-10-18T19:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3839,
+    "cpuP99_us": 15650,
+    "wallP99_us": 1707361
+   },
+   {
+    "hour": "2026-10-18T20:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4062,
+    "cpuP99_us": 29325,
+    "wallP99_us": 1768765
+   },
+   {
+    "hour": "2026-10-18T20:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4430,
+    "cpuP99_us": 15654,
+    "wallP99_us": 473625
+   },
+   {
+    "hour": "2026-10-18T20:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3633,
+    "cpuP99_us": 39004,
+    "wallP99_us": 432763
+   },
+   {
+    "hour": "2026-10-18T20:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3543,
+    "cpuP99_us": 23485,
+    "wallP99_us": 396806
+   },
+   {
+    "hour": "2026-10-18T20:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4641,
+    "cpuP99_us": 31925,
+    "wallP99_us": 603672
+   },
+   {
+    "hour": "2026-10-18T20:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2555,
+    "cpuP99_us": 54591,
+    "wallP99_us": 543143
+   },
+   {
+    "hour": "2026-10-18T20:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5541,
+    "cpuP99_us": 37783,
+    "wallP99_us": 757543
+   },
+   {
+    "hour": "2026-10-18T20:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2914,
+    "cpuP99_us": 26424,
+    "wallP99_us": 441254
+   },
+   {
+    "hour": "2026-10-18T20:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2595,
+    "cpuP99_us": 34116,
+    "wallP99_us": 526128
+   },
+   {
+    "hour": "2026-10-18T20:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2541,
+    "cpuP99_us": 25529,
+    "wallP99_us": 256364
+   },
+   {
+    "hour": "2026-10-18T20:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3196,
+    "cpuP99_us": 31025,
+    "wallP99_us": 450319
+   },
+   {
+    "hour": "2026-10-18T20:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3907,
+    "cpuP99_us": 32184,
+    "wallP99_us": 449901
+   },
+   {
+    "hour": "2026-10-18T21:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4320,
+    "cpuP99_us": 24616,
+    "wallP99_us": 307334
+   },
+   {
+    "hour": "2026-10-18T21:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4101,
+    "cpuP99_us": 19496,
+    "wallP99_us": 328736
+   },
+   {
+    "hour": "2026-10-18T21:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2710,
+    "cpuP99_us": 35061,
+    "wallP99_us": 374256
+   },
+   {
+    "hour": "2026-10-18T21:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2316,
+    "cpuP99_us": 17998,
+    "wallP99_us": 299899
+   },
+   {
+    "hour": "2026-10-18T21:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3229,
+    "cpuP99_us": 26515,
+    "wallP99_us": 327404
+   },
+   {
+    "hour": "2026-10-18T21:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2691,
+    "cpuP99_us": 31852,
+    "wallP99_us": 445672
+   },
+   {
+    "hour": "2026-10-18T21:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 30649,
+    "cpuP99_us": 827876,
+    "wallP99_us": 4737158
+   },
+   {
+    "hour": "2026-10-18T21:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5572,
+    "cpuP99_us": 15954,
+    "wallP99_us": 410454
+   },
+   {
+    "hour": "2026-10-18T21:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2900,
+    "cpuP99_us": 21020,
+    "wallP99_us": 1085972
+   },
+   {
+    "hour": "2026-10-18T21:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2382,
+    "cpuP99_us": 18935,
+    "wallP99_us": 236520
+   },
+   {
+    "hour": "2026-10-18T21:50:00Z",
+    "status": "success",
+    "requests": 69,
+    "errors": 0,
+    "cpuP50_us": 7487,
+    "cpuP99_us": 133070,
+    "wallP99_us": 1540946
+   },
+   {
+    "hour": "2026-10-18T21:55:00Z",
+    "status": "success",
+    "requests": 69,
+    "errors": 0,
+    "cpuP50_us": 8102,
+    "cpuP99_us": 137535,
+    "wallP99_us": 1699795
+   },
+   {
+    "hour": "2026-10-18T22:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3676,
+    "cpuP99_us": 26279,
+    "wallP99_us": 321952
+   },
+   {
+    "hour": "2026-10-18T22:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3065,
+    "cpuP99_us": 16000,
+    "wallP99_us": 443406
+   },
+   {
+    "hour": "2026-10-18T22:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4532,
+    "cpuP99_us": 28410,
+    "wallP99_us": 464762
+   },
+   {
+    "hour": "2026-10-18T22:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2024,
+    "cpuP99_us": 34270,
+    "wallP99_us": 621776
+   },
+   {
+    "hour": "2026-10-18T22:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2461,
+    "cpuP99_us": 22498,
+    "wallP99_us": 223755
+   },
+   {
+    "hour": "2026-10-18T22:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2361,
+    "cpuP99_us": 28224,
+    "wallP99_us": 352722
+   },
+   {
+    "hour": "2026-10-18T22:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4033,
+    "cpuP99_us": 18704,
+    "wallP99_us": 286781
+   },
+   {
+    "hour": "2026-10-18T22:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2052,
+    "cpuP99_us": 25531,
+    "wallP99_us": 297119
+   },
+   {
+    "hour": "2026-10-18T22:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2968,
+    "cpuP99_us": 23691,
+    "wallP99_us": 363598
+   },
+   {
+    "hour": "2026-10-18T22:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2509,
+    "cpuP99_us": 29207,
+    "wallP99_us": 366451
+   },
+   {
+    "hour": "2026-10-18T22:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2362,
+    "cpuP99_us": 24054,
+    "wallP99_us": 423903
+   },
+   {
+    "hour": "2026-10-18T22:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2607,
+    "cpuP99_us": 25172,
+    "wallP99_us": 431605
+   },
+   {
+    "hour": "2026-10-18T23:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3084,
+    "cpuP99_us": 24917,
+    "wallP99_us": 504895
+   },
+   {
+    "hour": "2026-10-18T23:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2713,
+    "cpuP99_us": 19492,
+    "wallP99_us": 411167
+   },
+   {
+    "hour": "2026-10-18T23:10:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 25327,
+    "cpuP99_us": 86812,
+    "wallP99_us": 477140
+   },
+   {
+    "hour": "2026-10-18T23:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3814,
+    "cpuP99_us": 17166,
+    "wallP99_us": 444998
+   },
+   {
+    "hour": "2026-10-18T23:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2860,
+    "cpuP99_us": 25535,
+    "wallP99_us": 397530
+   },
+   {
+    "hour": "2026-10-18T23:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2411,
+    "cpuP99_us": 22373,
+    "wallP99_us": 192446
+   },
+   {
+    "hour": "2026-10-18T23:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4044,
+    "cpuP99_us": 18301,
+    "wallP99_us": 220096
+   },
+   {
+    "hour": "2026-10-18T23:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4622,
+    "cpuP99_us": 28731,
+    "wallP99_us": 418901
+   },
+   {
+    "hour": "2026-10-18T23:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3130,
+    "cpuP99_us": 15528,
+    "wallP99_us": 387971
+   },
+   {
+    "hour": "2026-10-18T23:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2314,
+    "cpuP99_us": 25602,
+    "wallP99_us": 472873
+   },
+   {
+    "hour": "2026-10-18T23:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2167,
+    "cpuP99_us": 25126,
+    "wallP99_us": 343217
+   },
+   {
+    "hour": "2026-10-18T23:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3493,
+    "cpuP99_us": 15322,
+    "wallP99_us": 277045
+   },
+   {
+    "hour": "2026-10-19T00:00:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 28144,
+    "cpuP99_us": 6110657,
+    "wallP99_us": 34334790
+   },
+   {
+    "hour": "2026-10-19T00:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 1916,
+    "cpuP99_us": 27701,
+    "wallP99_us": 282462
+   },
+   {
+    "hour": "2026-10-19T00:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2125,
+    "cpuP99_us": 15374,
+    "wallP99_us": 192726
+   },
+   {
+    "hour": "2026-10-19T00:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2246,
+    "cpuP99_us": 15338,
+    "wallP99_us": 357167
+   },
+   {
+    "hour": "2026-10-19T00:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3234,
+    "cpuP99_us": 20383,
+    "wallP99_us": 889198
+   },
+   {
+    "hour": "2026-10-19T00:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4329,
+    "cpuP99_us": 15725,
+    "wallP99_us": 200435
+   },
+   {
+    "hour": "2026-10-19T00:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 17125,
+    "cpuP99_us": 72291,
+    "wallP99_us": 2913326
+   },
+   {
+    "hour": "2026-10-19T00:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3501,
+    "cpuP99_us": 17395,
+    "wallP99_us": 342061
+   },
+   {
+    "hour": "2026-10-19T00:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2128,
+    "cpuP99_us": 17488,
+    "wallP99_us": 410467
+   },
+   {
+    "hour": "2026-10-19T00:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2692,
+    "cpuP99_us": 15029,
+    "wallP99_us": 405688
+   },
+   {
+    "hour": "2026-10-19T00:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2955,
+    "cpuP99_us": 29244,
+    "wallP99_us": 276067
+   },
+   {
+    "hour": "2026-10-19T00:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3620,
+    "cpuP99_us": 17317,
+    "wallP99_us": 256202
+   },
+   {
+    "hour": "2026-10-19T01:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4093,
+    "cpuP99_us": 15896,
+    "wallP99_us": 290456
+   },
+   {
+    "hour": "2026-10-19T01:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2181,
+    "cpuP99_us": 15758,
+    "wallP99_us": 555587
+   },
+   {
+    "hour": "2026-10-19T01:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2522,
+    "cpuP99_us": 15281,
+    "wallP99_us": 379494
+   },
+   {
+    "hour": "2026-10-19T01:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2431,
+    "cpuP99_us": 15315,
+    "wallP99_us": 272338
+   },
+   {
+    "hour": "2026-10-19T01:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2260,
+    "cpuP99_us": 17534,
+    "wallP99_us": 208632
+   },
+   {
+    "hour": "2026-10-19T01:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3283,
+    "cpuP99_us": 17436,
+    "wallP99_us": 294723
+   },
+   {
+    "hour": "2026-10-19T01:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 3808,
+    "cpuP99_us": 14254,
+    "wallP99_us": 181880
+   },
+   {
+    "hour": "2026-10-19T01:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3947,
+    "cpuP99_us": 22926,
+    "wallP99_us": 362657
+   },
+   {
+    "hour": "2026-10-19T01:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2412,
+    "cpuP99_us": 21803,
+    "wallP99_us": 388934
+   },
+   {
+    "hour": "2026-10-19T01:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3321,
+    "cpuP99_us": 23871,
+    "wallP99_us": 297079
+   },
+   {
+    "hour": "2026-10-19T01:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2362,
+    "cpuP99_us": 16245,
+    "wallP99_us": 283767
+   },
+   {
+    "hour": "2026-10-19T01:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2907,
+    "cpuP99_us": 25711,
+    "wallP99_us": 291660
+   },
+   {
+    "hour": "2026-10-19T02:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2187,
+    "cpuP99_us": 17232,
+    "wallP99_us": 312965
+   },
+   {
+    "hour": "2026-10-19T02:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2133,
+    "cpuP99_us": 25318,
+    "wallP99_us": 309249
+   },
+   {
+    "hour": "2026-10-19T02:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3381,
+    "cpuP99_us": 19623,
+    "wallP99_us": 211554
+   },
+   {
+    "hour": "2026-10-19T02:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3570,
+    "cpuP99_us": 15716,
+    "wallP99_us": 188217
+   },
+   {
+    "hour": "2026-10-19T02:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2570,
+    "cpuP99_us": 18476,
+    "wallP99_us": 184735
+   },
+   {
+    "hour": "2026-10-19T02:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2539,
+    "cpuP99_us": 17438,
+    "wallP99_us": 244241
+   },
+   {
+    "hour": "2026-10-19T02:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2407,
+    "cpuP99_us": 24939,
+    "wallP99_us": 867544
+   },
+   {
+    "hour": "2026-10-19T02:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2192,
+    "cpuP99_us": 17542,
+    "wallP99_us": 727499
+   },
+   {
+    "hour": "2026-10-19T02:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 6189,
+    "cpuP99_us": 20429,
+    "wallP99_us": 797358
+   },
+   {
+    "hour": "2026-10-19T02:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3170,
+    "cpuP99_us": 18732,
+    "wallP99_us": 879019
+   },
+   {
+    "hour": "2026-10-19T02:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3142,
+    "cpuP99_us": 29991,
+    "wallP99_us": 897028
+   },
+   {
+    "hour": "2026-10-19T02:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4980,
+    "cpuP99_us": 38403,
+    "wallP99_us": 889416
+   },
+   {
+    "hour": "2026-10-19T03:00:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 20672,
+    "cpuP99_us": 719576,
+    "wallP99_us": 32973600
+   },
+   {
+    "hour": "2026-10-19T03:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4790,
+    "cpuP99_us": 34065,
+    "wallP99_us": 863188
+   },
+   {
+    "hour": "2026-10-19T03:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 6493,
+    "cpuP99_us": 36406,
+    "wallP99_us": 881612
+   },
+   {
+    "hour": "2026-10-19T03:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4767,
+    "cpuP99_us": 38768,
+    "wallP99_us": 1039121
+   },
+   {
+    "hour": "2026-10-19T03:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3199,
+    "cpuP99_us": 7545,
+    "wallP99_us": 837957
+   },
+   {
+    "hour": "2026-10-19T03:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2771,
+    "cpuP99_us": 16620,
+    "wallP99_us": 764878
+   },
+   {
+    "hour": "2026-10-19T03:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3082,
+    "cpuP99_us": 23531,
+    "wallP99_us": 741496
+   },
+   {
+    "hour": "2026-10-19T03:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2784,
+    "cpuP99_us": 30726,
+    "wallP99_us": 915320
+   },
+   {
+    "hour": "2026-10-19T03:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2460,
+    "cpuP99_us": 28231,
+    "wallP99_us": 847931
+   },
+   {
+    "hour": "2026-10-19T03:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2603,
+    "cpuP99_us": 53544,
+    "wallP99_us": 832248
+   },
+   {
+    "hour": "2026-10-19T03:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2593,
+    "cpuP99_us": 20825,
+    "wallP99_us": 759995
+   },
+   {
+    "hour": "2026-10-19T03:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3147,
+    "cpuP99_us": 18687,
+    "wallP99_us": 754044
+   },
+   {
+    "hour": "2026-10-19T04:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2527,
+    "cpuP99_us": 52837,
+    "wallP99_us": 1045800
+   },
+   {
+    "hour": "2026-10-19T04:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4164,
+    "cpuP99_us": 40320,
+    "wallP99_us": 1003655
+   },
+   {
+    "hour": "2026-10-19T04:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2454,
+    "cpuP99_us": 22162,
+    "wallP99_us": 876575
+   },
+   {
+    "hour": "2026-10-19T04:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2203,
+    "cpuP99_us": 22670,
+    "wallP99_us": 981116
+   },
+   {
+    "hour": "2026-10-19T04:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2600,
+    "cpuP99_us": 29147,
+    "wallP99_us": 964161
+   },
+   {
+    "hour": "2026-10-19T04:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2990,
+    "cpuP99_us": 17123,
+    "wallP99_us": 929411
+   },
+   {
+    "hour": "2026-10-19T04:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 23196,
+    "cpuP99_us": 64862,
+    "wallP99_us": 35189496
+   },
+   {
+    "hour": "2026-10-19T04:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2601,
+    "cpuP99_us": 20016,
+    "wallP99_us": 850092
+   },
+   {
+    "hour": "2026-10-19T04:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2256,
+    "cpuP99_us": 30213,
+    "wallP99_us": 1070182
+   },
+   {
+    "hour": "2026-10-19T04:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2332,
+    "cpuP99_us": 32322,
+    "wallP99_us": 1048820
+   },
+   {
+    "hour": "2026-10-19T04:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2393,
+    "cpuP99_us": 23533,
+    "wallP99_us": 1062529
+   },
+   {
+    "hour": "2026-10-19T04:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2593,
+    "cpuP99_us": 16178,
+    "wallP99_us": 959566
+   },
+   {
+    "hour": "2026-10-19T05:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2208,
+    "cpuP99_us": 22808,
+    "wallP99_us": 904518
+   },
+   {
+    "hour": "2026-10-19T05:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3387,
+    "cpuP99_us": 21006,
+    "wallP99_us": 873896
+   },
+   {
+    "hour": "2026-10-19T05:10:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2309,
+    "cpuP99_us": 20559,
+    "wallP99_us": 948232
+   },
+   {
+    "hour": "2026-10-19T05:15:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3633,
+    "cpuP99_us": 29800,
+    "wallP99_us": 979166
+   },
+   {
+    "hour": "2026-10-19T05:20:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3177,
+    "cpuP99_us": 17532,
+    "wallP99_us": 941186
+   },
+   {
+    "hour": "2026-10-19T05:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3397,
+    "cpuP99_us": 28744,
+    "wallP99_us": 969719
+   },
+   {
+    "hour": "2026-10-19T05:30:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2362,
+    "cpuP99_us": 16992,
+    "wallP99_us": 1030196
+   },
+   {
+    "hour": "2026-10-19T05:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2180,
+    "cpuP99_us": 18799,
+    "wallP99_us": 1077600
+   },
+   {
+    "hour": "2026-10-19T05:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 4412,
+    "cpuP99_us": 28936,
+    "wallP99_us": 997573
+   },
+   {
+    "hour": "2026-10-19T05:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3219,
+    "cpuP99_us": 22959,
+    "wallP99_us": 892137
+   },
+   {
+    "hour": "2026-10-19T05:50:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2240,
+    "cpuP99_us": 39677,
+    "wallP99_us": 1013433
+   },
+   {
+    "hour": "2026-10-19T05:55:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3155,
+    "cpuP99_us": 20357,
+    "wallP99_us": 1015494
+   },
+   {
+    "hour": "2026-10-19T06:00:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 20394,
+    "cpuP99_us": 4382401,
+    "wallP99_us": 70141280
+   },
+   {
+    "hour": "2026-10-19T06:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2336,
+    "cpuP99_us": 20471,
+    "wallP99_us": 833850
+   },
+   {
+    "hour": "2026-10-19T06:10:00Z",
+    "status": "success",
+    "requests": 26,
+    "errors": 0,
+    "cpuP50_us": 8724,
+    "cpuP99_us": 75994,
+    "wallP99_us": 937826
+   },
+   {
+    "hour": "2026-10-19T06:15:00Z",
+    "status": "success",
+    "requests": 217,
+    "errors": 0,
+    "cpuP50_us": 89599,
+    "cpuP99_us": 149323,
+    "wallP99_us": 1108855
+   },
+   {
+    "hour": "2026-10-19T06:20:00Z",
+    "status": "success",
+    "requests": 145,
+    "errors": 0,
+    "cpuP50_us": 34561,
+    "cpuP99_us": 175996,
+    "wallP99_us": 947627
+   },
+   {
+    "hour": "2026-10-19T06:25:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2502,
+    "cpuP99_us": 23757,
+    "wallP99_us": 1028591
+   },
+   {
+    "hour": "2026-10-19T06:30:00Z",
+    "status": "success",
+    "requests": 3,
+    "errors": 0,
+    "cpuP50_us": 22492,
+    "cpuP99_us": 91547,
+    "wallP99_us": 6445285
+   },
+   {
+    "hour": "2026-10-19T06:35:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5734,
+    "cpuP99_us": 25513,
+    "wallP99_us": 1607742
+   },
+   {
+    "hour": "2026-10-19T06:40:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 2761,
+    "cpuP99_us": 39742,
+    "wallP99_us": 1436459
+   },
+   {
+    "hour": "2026-10-19T06:45:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 5536,
+    "cpuP99_us": 17294,
+    "wallP99_us": 1144535
+   },
+   {
+    "hour": "2026-10-19T06:50:00Z",
+    "status": "success",
+    "requests": 4,
+    "errors": 0,
+    "cpuP50_us": 9285,
+    "cpuP99_us": 59488,
+    "wallP99_us": 1202259
+   },
+   {
+    "hour": "2026-10-19T06:55:00Z",
+    "status": "success",
+    "requests": 4,
+    "errors": 0,
+    "cpuP50_us": 2938,
+    "cpuP99_us": 83265,
+    "wallP99_us": 1240111
+   },
+   {
+    "hour": "2026-10-19T07:00:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3989,
+    "cpuP99_us": 53974,
+    "wallP99_us": 1454184
+   },
+   {
+    "hour": "2026-10-19T07:05:00Z",
+    "status": "success",
+    "requests": 2,
+    "errors": 0,
+    "cpuP50_us": 3665,
+    "cpuP99_us": 49396,
+    "wallP99_us": 1439390
+   },
+   {
+    "hour": "2026-10-19T07:10:00Z",
+    "status": "success",
+    "requests": 1,
+    "errors": 0,
+    "cpuP50_us": 35208,
+    "cpuP99_us": 35208,
+    "wallP99_us": 1336945
+   }
+  ]
+ },
+ "live": [
+  {
+   "symbol": "2222.SR",
+   "http": 200,
+   "ms": 8301,
+   "bytes": 471454,
+   "json": true,
+   "cf_error": null,
+   "cf_ray": "a4cdfb233b4fcc13-IAD",
+   "error": null,
+   "has_forecast": true,
+   "keys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks"
+   ],
+   "ctxMarket": {
+    "symbol": "TADAWUL-CALENDAR",
+    "name": "تقويم جلسات تداول (بديل: بيانات تاسي التاريخية غير متاحة من المزود؛ تواريخ جلسات 2222.SR، 1120.SR، 2010.SR)",
+    "sessions": 498,
+    "last": "2026-10-15"
+   }
+  },
+  {
+   "symbol": "1120.SR",
+   "http": 200,
+   "ms": 5991,
+   "bytes": 406061,
+   "json": true,
+   "cf_error": null,
+   "cf_ray": "a4cdfbd43b13cc13-IAD",
+   "error": null,
+   "has_forecast": true,
+   "keys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks"
+   ],
+   "ctxMarket": {
+    "symbol": "TADAWUL-CALENDAR",
+    "name": "تقويم جلسات تداول (بديل: بيانات تاسي التاريخية غير متاحة من المزود؛ تواريخ جلسات 2222.SR، 1120.SR، 2010.SR)",
+    "sessions": 498,
+    "last": "2026-10-15"
+   }
+  },
+  {
+   "symbol": "4009.SR",
+   "http": 200,
+   "ms": 7888,
+   "bytes": 440667,
+   "json": true,
+   "cf_error": null,
+   "cf_ray": "a4cdfc76be15cc13-IAD",
+   "error": null,
+   "has_forecast": true,
+   "keys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks"
+   ],
+   "ctxMarket": {
+    "symbol": "TADAWUL-CALENDAR",
+    "name": "تقويم جلسات تداول (بديل: بيانات تاسي التاريخية غير متاحة من المزود؛ تواريخ جلسات 2222.SR، 1120.SR، 2010.SR)",
+    "sessions": 498,
+    "last": "2026-10-15"
+   }
+  },
+  {
+   "symbol": "MSFT",
+   "http": 200,
+   "ms": 13144,
+   "bytes": 1484733,
+   "json": true,
+   "cf_error": null,
+   "cf_ray": "a4cdfd252e75cc13-IAD",
+   "error": null,
+   "has_forecast": true,
+   "keys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks"
+   ],
+   "ctxMarket": {
+    "symbol": "SPY",
+    "name": "SPY — مرجع الأسهم الأمريكية الكبيرة",
+    "sessions": 501,
+    "last": "2026-10-16"
+   }
+  }
+ ],
+ "home": {
+  "http": 200,
+  "bytes": 37603
+ },
+ "summary": {
+  "total": 4,
+  "ok200": 4,
+  "http5xx": 0,
+  "cf1102": 0
+ }
+}
