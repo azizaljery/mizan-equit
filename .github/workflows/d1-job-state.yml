@@ -61,6 +61,8 @@ jobs:
             daily_picks_summary:"SELECT market, horizon, pick_date, COUNT(*) n, SUM(in_top) top, SUM(CASE WHEN outcome_state!='pending' THEN 1 ELSE 0 END) done FROM daily_picks GROUP BY 1,2,3 ORDER BY 3 DESC LIMIT 12",
             daily_picks_last:"SELECT updated_at, substr(data,1,1500) d FROM research_state WHERE id='job:daily-picks:last'",
             daily_picks_top:"SELECT market, horizon, pick_date, rank, symbol, round(ref_price,2) ref, round(mom126_5*100,1) mom_pct, round(mizan_predicted_price,2) mizan_pred FROM daily_picks WHERE rank<=3 AND pick_date=(SELECT MAX(pick_date) FROM daily_picks d2 WHERE d2.market=daily_picks.market) ORDER BY market, horizon, rank",
+            source_status:"SELECT id, status, last_attempt, last_success, substr(detail,1,300) detail FROM source_status ORDER BY last_attempt DESC LIMIT 40",
+            source_config:"SELECT json_extract(value,'$.sourceConfig') cfg FROM site_settings WHERE id=1",
             council_running:"SELECT COUNT(*) n FROM sqlite_master WHERE name='council_runs'",
           };
           for(const [k,sql] of Object.entries(Q)){try{out[k]=await q(sql);}catch(e){out[k]={error:String(e).slice(0,120)};}}
