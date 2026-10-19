@@ -10,7 +10,7 @@ const sa:Row[]=[
  ['tadawul','تداول السعودية','https://www.saudiexchange.sa/wps/portal/saudiexchange/trading/market-services/market-information-services/market-data','prices','licensed-api',true,'اختيار تغذية أسعار مرخصة؛ قارئ صفحة الشركة الحالي مستقل عن اشتراك الأسعار.'],
  ['cma','هيئة السوق المالية','https://cma.gov.sa/MediaCenter/NEWS/Pages/default.aspx','news','document',true,'قارئ إعلانات تنظيمية؛ ليست تغذية أسعار.'],
  ['sama','البنك المركزي السعودي','https://www.sama.gov.sa/ar-sa/Statistics/Indices/Pages/default.aspx','general','document',true,'تحديد السلاسل النقدية والمصرفية المناسبة للفترة.'],
- ['gastat','الهيئة العامة للإحصاء','https://www.stats.gov.sa/','general','document',true,'اختبار الوصول وتحديد مجموعة البيانات الاقتصادية.'],
+ ['gastat','الهيئة العامة للإحصاء','https://www.stats.gov.sa/en/','general','document',true,'اختبار الوصول وتحديد مجموعة البيانات الاقتصادية.'],
  ['mof','وزارة المالية','https://www.mof.gov.sa/financialreport/Pages/default.aspx','general','document',true,'قراءة تقارير الميزانية بتاريخ نشرها.'],
  ['datasaudi','DataSaudi','https://datasaudi.sa/ar','general','reference',true,'تحديد مجموعة البيانات وطريقة الوصول المتاحة.'],
  ['ndmc','المركز الوطني لإدارة الدين','https://ndmc.gov.sa/ar/reports-and-statistics','general','document',true,'تقارير التمويل والإصدارات الحكومية؛ ليست أسعار أسهم.'],
@@ -30,7 +30,7 @@ const sa:Row[]=[
 ];
 const us:Row[]=[
  ['sec','SEC — EDGAR','https://www.sec.gov/search-filings/edgar-application-programming-interfaces','financials','public-api',true,'قارئ خادم submissions/companyfacts والمستند الأصلي؛ لا يتطلب مفتاحًا، ويلتزم بسياسة الوصول.'],
- ['nasdaq-data-link','Nasdaq Data Link','https://docs.data.nasdaq.com/','prices','licensed-api',true,'اختيار مجموعة البيانات والمفتاح والتغطية وحقوق العرض.'],
+ ['nasdaq-data-link','Nasdaq Data Link','https://data.nasdaq.com/accesstools','prices','licensed-api',true,'اختيار مجموعة البيانات والمفتاح والتغطية وحقوق العرض.'],
  ['nyse','NYSE','https://www.nyse.com/data-products','prices','licensed-api',true,'اختيار منتج البيانات وترخيصه.'],
  ['cboe','Cboe','https://www.cboe.com/data/market-data-services/us/equities','prices','licensed-api',true,'تحديد تغطية أسواق Cboe؛ ليست تغذية مجمعة مفترضة.'],
  ['finra','FINRA Data','https://www.finra.org/finra-data','general','public-api',true,'تحديد مجموعة بيانات الشفافية؛ ليست تغذية أسعار شاملة.'],
