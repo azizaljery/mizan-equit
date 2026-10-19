@@ -48,6 +48,7 @@ jobs:
           const st=await cf(`/accounts/${acct}/workers/scripts/mizan-aziz/settings`);
           out.settings={http:st.http,usage_model:st.result?.usage_model??null,limits:st.result?.limits??null};
           const sch=await cf(`/accounts/${acct}/workers/scripts/mizan-aziz/schedules`);
+          const sec=await cf(`/accounts/${acct}/workers/scripts/mizan-aziz/secrets`);out.settings.secret_names=Array.isArray(sec.result)?sec.result.map(x=>x.name).sort():null;
           out.settings.crons=Array.isArray(sch.result?.schedules)?sch.result.schedules.map(x=>x.cron):null;
           // GraphQL analytics
           const end=new Date(),start=new Date(end.getTime()-(process.env.LIVE==='0'?26:48)*3600e3);
