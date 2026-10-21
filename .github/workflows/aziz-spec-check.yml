@@ -21,6 +21,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -35,7 +36,6 @@ jobs:
         run: |
           set +e
           npx tsc --noEmit -p . > ../tsc-branch.txt 2>&1; BR=$?
-          git -C .. fetch -q --depth=1 origin ef567e2 2>/dev/null || git -C .. fetch -q origin mizan-aziz-deploy
           mkdir -p /tmp/base && git -C .. archive ef567e2 mizan-v45 | tar -x -C /tmp/base && ln -s "$PWD/node_modules" /tmp/base/mizan-v45/node_modules
           (cd /tmp/base/mizan-v45 && npx tsc --noEmit -p . > /tmp/tsc-base.txt 2>&1); BASE=$?
           node -e 'const fs=require("fs");const b=fs.readFileSync("../tsc-branch.txt","utf8"),a=fs.readFileSync("/tmp/tsc-base.txt","utf8");const errs=t=>t.split("\n").filter(l=>/error TS/.test(l));const A=new Set(errs(a));const nw=errs(b).filter(l=>!A.has(l));const out={branchExit:+process.argv[1],baseExit:+process.argv[2],branchErrors:errs(b).length,baseErrors:errs(a).length,newErrors:nw};fs.writeFileSync("../tsc.json",JSON.stringify(out,null,1));fs.writeFileSync("../body.json",JSON.stringify({message:"ci diagnostics: aziz tsc "+process.env.RID,branch:process.env.REF,content:Buffer.from(JSON.stringify(out,null,1)).toString("base64")}));console.log(JSON.stringify(out,null,1));process.exit(nw.length?1:0)' "$BR" "$BASE"; NEW=$?
