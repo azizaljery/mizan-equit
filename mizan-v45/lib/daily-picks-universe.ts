@@ -21,3 +21,9 @@ export const CURRENCY:Readonly<Record<LedgerMarket,string>>={sa:'SAR',us:'USD'};
 /** Session calendars for target-date resolution (§4): Tadawul proxy calendar (union of liquid large caps, same as
  *  saudiSessionCalendar in lib/market-data.ts; all three are universe members) and SPY for the US. */
 export const US_CALENDAR_SYMBOL='SPY';
+/** Documentation-only labels (additive; not read by the ledger logic). Feature id: mom126_5@ledger-v1.
+ *  Hash = sha256 of the canonical definition string in research/experiments/feature-hash.cjs (see research/FEATURE-DEFINITIONS.md).
+ *  This is NOT the same definition as negsel-lib mom126_5 (= mom126_5@negsel-v1, ln(P[t-5]/P[t-126]), floor(0.2N)). */
+export const FEATURE_DEFINITION='P[t-5]/P[t-131]-1' as const;
+export const SELECTION_RULE='ceil(0.2N)' as const;
+export const FEATURE_DEFINITION_HASH='101667372592882a4074c165e058160b147a902c1880bd8c17fea454b56e0624' as const;

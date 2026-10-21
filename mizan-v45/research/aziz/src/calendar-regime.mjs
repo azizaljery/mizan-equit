@@ -1,17 +1,29 @@
 // Gaussian BOCPD with fixed predictive variance; event multiplier is frozen upstream.
 const finite=(x,name)=>{if(!Number.isFinite(x))throw Error(`invalid ${name}`);return x;};
 const stamp=x=>{const n=Date.parse(x);if(!Number.isFinite(n)||!/(?:Z|[+-]\d\d:\d\d)$/.test(x))throw Error('invalid timestamp');return n;};
-export function calendarHazard(baseHazard,events,asOf,multipliers={},market=null) {
+// Proximity window: an event counts only if asOf <= eventAt <= windowEnd. windowEnd is the
+// forecast targetAt when supplied, otherwise asOf + windowDays. Default 31 calendar days ~= the
+// 21-session target horizon; a far-dated announced event (e.g. 2040) does not move the hazard.
+// Event identity is event.id, else market|type|eventAt; a repeated identity is counted once.
+export const CALENDAR_WINDOW_DAYS=31;
+const eventKey=e=>e.id!=null?`id:${e.id}`:`${e.market}|${e.type}|${stamp(e.eventAt)}`;
+export function calendarHazard(baseHazard,events,asOf,multipliers={},market=null,{targetAt=null,windowDays=CALENDAR_WINDOW_DAYS}={}) {
   if(!(finite(baseHazard,'hazard')>0&&baseHazard<1))throw Error('invalid hazard');
-  const now=stamp(asOf);let multiplier=1,types=[];
+  if(!(Number.isFinite(windowDays)&&windowDays>0))throw Error('invalid calendar window');
+  const now=stamp(asOf),end=targetAt!=null?stamp(targetAt):now+windowDays*864e5;if(!(end>now))throw Error('invalid calendar window');
+  let multiplier=1;const types=[],ids=[],seen=new Map(),skipped={outOfWindow:0,duplicate:0};
   for(const event of events??[]) {
     if(market && event?.market!==market)continue;
     if(!event||stamp(event.announcedAt)>now||stamp(event.availableAt)>now||!event.market||!event.type||!event.timeZone)throw Error('unknown or future event');
-    if(stamp(event.eventAt)<now)continue;
+    const at=stamp(event.eventAt),key=eventKey(event),sig=`${event.market}|${event.type}|${at}`;
+    if(seen.has(key)){if(seen.get(key)!==sig)throw Error('conflicting calendar event id');skipped.duplicate++;continue;}
+    seen.set(key,sig);
+    if(at<now)continue;
+    if(at>end){skipped.outOfWindow++;continue;}
     const m=multipliers[event.type]??1;if(!(finite(m,'multiplier')>=0))throw Error('invalid multiplier');
-    multiplier*=m;types.push(event.type);
+    multiplier*=m;types.push(event.type);ids.push(key);
   }
-  return {hazard:types.length?1-(1-baseHazard)**multiplier:baseHazard,eventTypes:types,usedCalendar:types.length>0};
+  return {hazard:types.length?1-(1-baseHazard)**multiplier:baseHazard,eventTypes:types,eventIds:ids,skipped,windowEnd:new Date(end).toISOString(),usedCalendar:types.length>0};
 }
 const normal=(x,mu,v)=>Math.exp(-.5*(x-mu)**2/v)/Math.sqrt(2*Math.PI*v);
 export function newRegime({baseHazard=.02,priorMean=0,priorVariance=.01,observationVariance=.01,maxRunLength=512}={}) {
@@ -31,13 +43,13 @@ export function updateRegime(state,{returnValue,availableAt,hazard}={}) {
   for(let i=1;i<next.length;i++) {const old=Math.min(i-1,n-1),v=state.variances[old],k=v/(v+state.observationVariance);means[i]=state.means[old]+k*(returnValue-state.means[old]);variances[i]=(1-k)*v;}
   return {...state,probabilities:next,means,variances,lastAvailableAt:availableAt,changeProbability:next[0],predictiveLogDensity:Math.log(z)};
 }
-export function fitCalendarMultipliers(observations,{market,cutoff,eventTypes,grid=[.5,1,2,4],regimeConfig={}}={}) {
+export function fitCalendarMultipliers(observations,{market,cutoff,eventTypes,grid=[.5,1,2,4],regimeConfig={},windowDays=CALENDAR_WINDOW_DAYS}={}) {
   if(!['SA','US'].includes(market)||!Array.isArray(eventTypes)||new Set(eventTypes).size!==eventTypes.length||!grid.includes(1)||grid.some(x=>!Number.isFinite(x)||x<0))throw Error('invalid calendar training policy');
   const limit=stamp(cutoff),rows=observations.filter(r=>r.market===market).sort((a,b)=>stamp(a.availableAt)-stamp(b.availableAt));
   if(rows.length<30||rows.some(r=>stamp(r.availableAt)>limit||stamp(r.asOf)>stamp(r.availableAt)))throw Error('insufficient or future calendar training data');
   const score=multipliers=>{
     let state=newRegime(regimeConfig),logLikelihood=0;
-    for(const r of rows){const {hazard}=calendarHazard(state.baseHazard,r.events,r.asOf,multipliers,market);state=updateRegime(state,{returnValue:r.returnValue,availableAt:r.availableAt,hazard});logLikelihood+=state.predictiveLogDensity;}
+    for(const r of rows){const {hazard}=calendarHazard(state.baseHazard,r.events,r.asOf,multipliers,market,{targetAt:r.targetAt??null,windowDays});state=updateRegime(state,{returnValue:r.returnValue,availableAt:r.availableAt,hazard});logLikelihood+=state.predictiveLogDensity;}
     return logLikelihood;
   };
   const multipliers={};let bestScore=score(multipliers);

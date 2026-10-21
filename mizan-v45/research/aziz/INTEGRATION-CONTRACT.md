@@ -12,9 +12,9 @@
 - `buildBridgeInputs(snapshot,base)` يتحقق من الزمن والهوية وأساس السعر ولا يغير الأصل.
 - `replayKalman(events,asOf,config)` يستخدم الأخطاء المنشورة والناضجة فقط.
 - `fitBridge`, `trainDirection`, `fitProbabilityCalibration`, `calibrateInterval` تبنى على مراحل زمنية منفصلة.
-- `observeMonitor` و`updateAci` يحتاجان تخزين حالة ذريًا ومنع تكرار معرف الحدث؛ الدوال نفسها خالية من الكتابة.
+- `observeMonitor` (التنفيذ الوحيد للمراقب) و`updateAci(state,outcome,asOf)` يحتاجان تخزين حالة ذريًا ومنع تكرار معرف الحدث؛ الدوال نفسها خالية من الكتابة.
 - `assessEligibility` و`assessRisk` حدود تجريبية ينبغي وصلها بالخدمات الحالية لا تكرار قواعدها.
-- `selectEffectiveForecast(base,candidate,monitor,mode='OFF')` يرجع إلى الأصل ما لم يكن الوضع ACTIVE والمراقب normal والتصحيح صالحًا.
+- `selectEffectiveForecast(base,candidate,monitor,mode='OFF',context)` يرجع إلى الأصل مع `reason` ما لم يكن الوضع ACTIVE والمراقب normal وتطابقت الهوية (الرمز، السوق، العملة، أساس السعر، إصدار النموذج) والصلاحية والاعتماد والأهلية؛ `context={asOf,approval,eligibility}`. التفاصيل في `FIXES-2026-10-21.md`.
 
 ## قبول قبل الوصل
 

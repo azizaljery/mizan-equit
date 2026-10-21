@@ -1,6 +1,6 @@
 // One research pipeline. Components remain separate so each output is auditable.
 // No live reads, persistence or production routing.
-import {buildBridgeInputs,predictCorrection,assessEligibility,assessRisk,selectEffectiveForecast} from './core.mjs';
+import {buildBridgeInputs,predictCorrection,bridgeFeatures,assessEligibility,assessRisk,selectEffectiveForecast} from './core.mjs';
 import {predictProbability} from './probability.mjs';
 import {applyInterval} from './interval.mjs';
 import {calendarHazard} from './calendar-regime.mjs';
@@ -28,8 +28,7 @@ export function runAzizResearch({base,snapshot,bridge,direction,calibration,inte
   if(candidate?.status==='corrected'&&direction&&calibration) {
     if(!scoped(direction,input)||time(direction.trainedThrough)>=issued
       ||calibration.market!==input.market||calibration.horizon!==21)throw Error('probability scope mismatch');
-    const features={earlyError:input.earlyError,baselineRemainingLogReturn:input.baselineRemainingLogReturn,
-      kalmanMean:kalmanState?.mean,kalmanVariance:kalmanState?.variance,...input.context};
+    const features=bridgeFeatures(input,kalmanState);
     probabilityUp=predictProbability(direction,calibration,features,input.asOf).probabilityUp;
     components.probability='available';
   }
@@ -38,13 +37,14 @@ export function runAzizResearch({base,snapshot,bridge,direction,calibration,inte
     const scale=interval.scale;
     if(!(Number.isFinite(scale)&&scale>0))throw Error('interval scale missing');
     range=applyInterval(interval,{currentPrice:input.currentPrice,
-      predictedLogReturn:candidate.remainingLogReturn,scale,asOf:input.asOf,market:input.market,horizon:21});
+      predictedLogReturn:candidate.remainingLogReturn,scale,asOf:input.asOf,symbol:input.symbol,market:input.market,
+      horizon:21,issueType:'bridge_5_to_21',modelVersion:bridge.version});
     components.interval=range.status;
   }
   if(regime) {
     if(regime.market!==input.market||time(regime.lastAvailableAt)>issued)throw Error('regime scope or availability mismatch');
     if(calendarMultipliers&&(calendarMultipliers.market!==input.market||time(calendarMultipliers.trainedThrough)>=issued))throw Error('calendar artifact unavailable');
-    calendar=calendarHazard(regime.baseHazard,events,input.asOf,calendarMultipliers?.multipliers??{},input.market);
+    calendar=calendarHazard(regime.baseHazard,events,input.asOf,calendarMultipliers?.multipliers??{},input.market,{targetAt:input.targetAt});
     components.regime='available';
   }
   if(monitor&&(monitor.market!==input.market||monitor.horizon!==21||monitor.modelVersion!==bridge?.version
