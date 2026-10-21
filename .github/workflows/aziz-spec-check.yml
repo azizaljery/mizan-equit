@@ -1,0 +1,43 @@
+name: Aziz spec branch check (no deploy)
+
+# Build + typecheck + tests for the Aziz spec branch. Never deploys, never touches Cloudflare, no secrets used.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - aziz-spec-v1
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: mizan-v45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install
+        run: npm install --no-audit --no-fund
+      - name: Typecheck
+        run: npx tsc --noEmit -p . 2>&1 | tee ../tsc.txt; test ${PIPESTATUS[0]} -eq 0
+        shell: bash
+      - name: Aziz readiness + model gate tests
+        run: node --test --import tsx tests/aziz-readiness.test.ts
+      - name: Daily picks tests (unchanged behaviour)
+        run: node --test --import tsx tests/daily-picks.test.ts tests/picks.test.ts
+      - name: Aziz research package tests
+        working-directory: mizan-v45/research/aziz
+        run: node --test test/*.test.mjs
+      - name: Research experiments tests (PIT universe, holdout seal)
+        working-directory: research/experiments
+        run: node --test __tests__/*.test.cjs
+      - name: Build (verifies bundle; nothing is published)
+        run: npm run build

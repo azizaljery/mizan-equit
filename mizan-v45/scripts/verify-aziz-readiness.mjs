@@ -6,7 +6,7 @@ const release=await (await fetch(site+'/mizan-deployment.json?aziz='+Date.now())
 for(const [market,symbol] of [['sa','2222.SR'],['us','AAPL']]){
  for(let i=0;i<2;i++){
  const r=await fetch(site+`/api/aziz/readiness?market=${market}&symbol=${symbol}`,{signal:AbortSignal.timeout(30000)});assert.equal(r.status,200);const d=await r.json();
- assert.equal(d.company.symbol,symbol);assert.equal(d.engine,'aziz');assert.equal(d.canForecast,false);assert.equal(d.recorded,false);assert.equal(d.forecast,null);assert.equal(d.dataEligibility,'not_checked');
+ assert.equal(d.company.symbol,symbol);assert.equal(d.engine,'aziz');assert.equal(d.schemaVersion,2);assert.equal(d.productionUseApproved,false);assert.equal(d.recorded,false);assert.equal(d.forecast,null);assert.equal(d.mode,'OFF');assert.ok(Array.isArray(d.abstentionReasons)&&d.abstentionReasons.length>0);
  report.checks.push({market,symbol,repeat:i,status:d.status,recorded:d.recorded});
  }
 }
