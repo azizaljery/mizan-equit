@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {buildReadiness,d1DataReader,assessData,DATA_SUMMARY_SQL,MIN_SESSIONS,type DataSummary} from '../lib/aziz/readiness';
-import {AZIZ_MODE,AZIZ_MODEL_REGISTRY,checkModelUsable,latestModel,type AzizModelEntry} from '../lib/aziz/model-registry';
+import {AZIZ_MODE,AZIZ_MODEL_REGISTRY,checkModelUsable,latestModel,type AzizModelEntry,type UsabilityQuery} from '../lib/aziz/model-registry';
 
 const NOW=new Date('2026-10-21T12:00:00Z');
 const company={symbol:'2222.SR',name:'أرامكو'};
@@ -50,9 +50,9 @@ test('model gate rejects rejected, other market/horizon, future artifact, expire
  assert.ok(AZIZ_MODEL_REGISTRY.every(e=>e.status!=='active_approved'));
  const rej=latestModel('sa',5,'direct');assert.equal(checkModelUsable(rej,{market:'sa',horizonSessions:5,issueType:'direct',purpose:'research',asOf:'2026-10-21'}).usable,false);
  const ok:AzizModelEntry={...rej!,status:'shadow_approved',artifactId:'a1',artifactHash:'h',trainedThrough:'2026-06-30',validFrom:'2026-07-01',expiresAt:'2027-01-01',modelVersion:'t'};
- const q={market:'sa' as const,horizonSessions:5,issueType:'direct' as const,purpose:'research' as const,asOf:'2026-10-21'};
+ const q:UsabilityQuery={market:'sa',horizonSessions:5,issueType:'direct',purpose:'research',asOf:'2026-10-21'};
  assert.equal(checkModelUsable(ok,q).usable,true);
- const code=(e:AzizModelEntry,qq=q)=>{const c=checkModelUsable(e,qq);return c.usable?'ok':c.code;};
+ const code=(e:AzizModelEntry,qq:UsabilityQuery=q)=>{const c=checkModelUsable(e,qq);return c.usable?'ok':c.code;};
  assert.equal(code(ok,{...q,market:'us'}),'model_identity_mismatch');
  assert.equal(code(ok,{...q,horizonSessions:21}),'model_identity_mismatch');
  assert.equal(code(ok,{...q,issueType:'bridge_5_to_21'}),'model_identity_mismatch');
