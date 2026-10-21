@@ -1,0 +1,58 @@
+name: Reset private gate PIN (owner request)
+
+# Owner-requested reset of the «بوابة ميزان الخاص» PIN. Input is a PBKDF2 hash only (never the PIN).
+# Effect: UPDATE recommendation_lock SET pin_hash=<hash>, attempts=0, window_started=0 WHERE id=1 (owner binding kept).
+# Output: booleans only.
+on:
+  workflow_dispatch:
+    inputs:
+      hash:
+        description: "PBKDF2 hash <32 hex>:<64 hex>"
+        required: true
+        type: string
+  push:
+    branches:
+      - mizan-aziz-deploy
+    paths:
+      - ".github/workflows/reset-private-pin.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Apply
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NEW_HASH: ${{ inputs.hash }}
+          RID: ${{ github.run_id }}
+          REF: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          echo "::add-mask::${NEW_HASH:-}"
+          mkdir -p out
+          node --input-type=module <<'NODE' > out/result.json
+          const acct=process.env.CLOUDFLARE_ACCOUNT_ID,tok=process.env.CLOUDFLARE_API_TOKEN,hash=process.env.NEW_HASH||'',DB='e95b74e8-81d6-4beb-8ea2-ad59c863d21d';
+          const q=async(sql,params=[])=>{const r=await fetch(`https://api.cloudflare.com/client/v4/accounts/${acct}/d1/database/${DB}/query`,{method:'POST',headers:{Authorization:'Bearer '+tok,'content-type':'application/json'},body:JSON.stringify({sql,params}),signal:AbortSignal.timeout(25000)});const j=await r.json().catch(()=>({}));return {http:r.status,success:!!j.success,rows:j.result?.[0]?.results};};
+          const out={at:new Date().toISOString(),mode:hash?'apply':'noop-push'};
+          if(hash){
+            if(!/^[a-f0-9]{32}:[a-f0-9]{64}$/.test(hash)){out.error='bad-hash-format';}
+            else{
+              await q("INSERT OR IGNORE INTO recommendation_lock (id,pin_hash) VALUES (1,?)",[hash]);
+              const u=await q("UPDATE recommendation_lock SET pin_hash=?,attempts=0,window_started=0 WHERE id=1",[hash]);
+              out.update={http:u.http,success:u.success};
+              const c=await q("SELECT attempts, (pin_hash=?) AS matches, (owner_id<>'') AS owner_bound FROM recommendation_lock WHERE id=1",[hash]);
+              out.row=c.rows;
+            }
+          }
+          console.log(JSON.stringify(out));
+          NODE
+          cat out/result.json
+          node -e 'const fs=require("fs");fs.writeFileSync("out/body.json",JSON.stringify({message:"ci diagnostics: reset private pin "+process.env.RID,branch:process.env.REF,content:fs.readFileSync("out/result.json").toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/reset-private-pin-${{ github.run_id }}.json" --input out/body.json >/dev/null || true
