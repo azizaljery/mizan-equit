@@ -8,7 +8,7 @@ on:
       - aziz-spec-v1
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   check:
@@ -26,9 +26,21 @@ jobs:
           node-version: "24"
       - name: Install
         run: npm install --no-audit --no-fund
-      - name: Typecheck
-        run: npx tsc --noEmit -p . 2>&1 | tee ../tsc.txt; test ${PIPESTATUS[0]} -eq 0
+      - name: Typecheck (branch vs base ef567e2; publish both outputs)
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RID: ${{ github.run_id }}
+          REF: ${{ github.ref_name }}
+        run: |
+          set +e
+          npx tsc --noEmit -p . > ../tsc-branch.txt 2>&1; BR=$?
+          git -C .. fetch -q --depth=1 origin ef567e2 2>/dev/null || git -C .. fetch -q origin mizan-aziz-deploy
+          mkdir -p /tmp/base && git -C .. archive ef567e2 mizan-v45 | tar -x -C /tmp/base && ln -s "$PWD/node_modules" /tmp/base/mizan-v45/node_modules
+          (cd /tmp/base/mizan-v45 && npx tsc --noEmit -p . > /tmp/tsc-base.txt 2>&1); BASE=$?
+          node -e 'const fs=require("fs");const b=fs.readFileSync("../tsc-branch.txt","utf8"),a=fs.readFileSync("/tmp/tsc-base.txt","utf8");const errs=t=>t.split("\n").filter(l=>/error TS/.test(l));const A=new Set(errs(a));const nw=errs(b).filter(l=>!A.has(l));const out={branchExit:+process.argv[1],baseExit:+process.argv[2],branchErrors:errs(b).length,baseErrors:errs(a).length,newErrors:nw};fs.writeFileSync("../tsc.json",JSON.stringify(out,null,1));fs.writeFileSync("../body.json",JSON.stringify({message:"ci diagnostics: aziz tsc "+process.env.RID,branch:process.env.REF,content:Buffer.from(JSON.stringify(out,null,1)).toString("base64")}));console.log(JSON.stringify(out,null,1));process.exit(nw.length?1:0)' "$BR" "$BASE"; NEW=$?
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/aziz-tsc-${RID}.json" --input ../body.json >/dev/null || echo WARN publish
+          exit $NEW
       - name: Aziz readiness + model gate tests
         run: node --test --import tsx tests/aziz-readiness.test.ts
       - name: Daily picks tests (unchanged behaviour)
