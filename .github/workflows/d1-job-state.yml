@@ -63,6 +63,12 @@ jobs:
             daily_picks_top:"SELECT market, horizon, pick_date, rank, symbol, round(ref_price,2) ref, round(mom126_5*100,1) mom_pct, round(mizan_predicted_price,2) mizan_pred FROM daily_picks WHERE rank<=3 AND pick_date=(SELECT MAX(pick_date) FROM daily_picks d2 WHERE d2.market=daily_picks.market) ORDER BY market, horizon, rank",
             source_status:"SELECT id, status, last_attempt, last_success, substr(detail,1,300) detail FROM source_status ORDER BY last_attempt DESC LIMIT 40",
             source_config:"SELECT json_extract(value,'$.sourceConfig') cfg FROM site_settings WHERE id=1",
+            aziz_import_runs:"SELECT id, started_at, finished_at, status, provider, requested_batch, substr(requested_symbols_json,1,200) syms, substr(result_json,1,600) result FROM aziz_import_runs ORDER BY started_at DESC LIMIT 10",
+            aziz_symbols:"SELECT id, market, symbol, provider_symbol, active FROM aziz_symbols ORDER BY id",
+            aziz_datasets:"SELECT d.id, s.symbol, d.provider, d.retrieved_at, d.source_status, substr(d.source_message,1,200) msg, length(d.raw_payload) bytes FROM aziz_market_datasets d JOIN aziz_symbols s ON s.id=d.symbol_id ORDER BY d.retrieved_at DESC LIMIT 20",
+            aziz_bars_by_symbol:"SELECT s.symbol, COUNT(*) bars, MIN(b.session_date) first, MAX(b.session_date) last, MAX(b.retrieved_at) retrieved FROM aziz_market_bars b JOIN aziz_symbols s ON s.id=b.symbol_id GROUP BY s.symbol ORDER BY s.symbol",
+            aziz_bars_total:"SELECT COUNT(*) n FROM aziz_market_bars",
+            aziz_tables:"SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'aziz%' ORDER BY name",
             council_running:"SELECT COUNT(*) n FROM sqlite_master WHERE name='council_runs'",
           };
           for(const [k,sql] of Object.entries(Q)){try{out[k]=await q(sql);}catch(e){out[k]={error:String(e).slice(0,120)};}}
