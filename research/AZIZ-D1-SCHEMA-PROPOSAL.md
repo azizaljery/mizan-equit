@@ -60,6 +60,14 @@
 
 قيود: `UNIQUE(symbol_id, provider, session_date, revision)`. الاستعلام as-of: أعلى `revision` بحيث `received_at ≤ t` (أو `published_at ≤ t` حين يكون موثقًا). الجدول القائم `aziz_market_bars` يبقى كما هو، ويضاف إليه الإدراج في `aziz_price_revisions` من نفس مسار الاستيراد اليدوي (لا upsert جديد).
 
+## 1-مكرر. الملف الفعلي والاختبار المتكامل (أُضيف 2026-10-22)
+- **DDL الكامل للمراجعة:** `research/drafts/0017_aziz_issue_ledger.DRAFT.sql` — خارج `drizzle/` عمدًا، فلا يطبقه النشر.
+- **قيود منع التكرار:** `UNIQUE(symbol, market, issue_type, initial_horizon, target_session, model_version, artifact_id)` على الإصدار؛ `UNIQUE(forecast_id, outcome_revision)` و`event_key UNIQUE` على النتيجة؛ `UNIQUE(symbol_id, provider, session_date, revision)` على الأسعار.
+- **ربط النتيجة بالإصدار:** مفتاح أجنبي إلى `aziz_forecast_issues`، وTrigger يرفض نتيجة لإصدار ممتنع (`recorded=0`)، وTrigger يرفض Brier بلا احتمال مُصدر أو إصابة نطاق بلا نطاق مُصدر.
+- **فصل الامتناع عن الدقة:** قيد CHECK يلزم الامتناع بكود وبلا نقطة، والإصدار بنقطة وبلا كود؛ عينة الدقة المرجعية تأخذ `recorded=1` وآخر نسخة نتيجة فقط؛ الامتناع يبقى في مقام `IssueRate`.
+- **as-of:** وقت المعرفة هو `received_at` حصرًا (أو `published_at` حين يوثقه المزود). `session_date` ليس وقت معرفة. سعر 2021 مستورد اليوم يحمل `received_at` = اليوم، فأي استعلام as-of لتاريخ أقدم يعيد «غير معلوم». وقيد `data_as_of ≤ issued_at` يمنع ادعاء معرفة بعد وقت الإصدار.
+- **الاختبار المتكامل:** `mizan-v45/tests/aziz-ledger-draft.test.mjs` (7/7) يثبت: إصدار محفوظ ← نتيجة عند الاستحقاق ← تصحيح كنسخة جديدة مع بقاء القديمة ← إعادة الإرسال (بنفس المفتاح أو بمعرف تسليم جديد) مرفوضة والعينة ثابتة ← الاستئناف لا يكرر الإصدار ← لا UPDATE/DELETE على الجداول الثلاثة ← الامتناع لا يدخل الدقة ← as-of بالاستلام.
+
 ## 2. الترحيل
 - ملف واحد `drizzle/0017_aziz_issue_ledger.sql`: `CREATE TABLE IF NOT EXISTS` ×3 + فهارس + Triggers. **إضافي فقط**؛ لا ALTER ولا DROP ولا تعديل جدول قائم.
 - يُطبّق تلقائيًا بخطوة `wrangler d1 migrations apply` الموجودة في النشر عند دمجه — لذلك لا يُدمج قبل موافقتك.
