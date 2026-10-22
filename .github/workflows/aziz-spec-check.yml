@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - aziz-spec-v1
+      - aziz-ledger-review
 
 permissions:
   contents: write
@@ -43,6 +44,8 @@ jobs:
           exit $NEW
       - name: Aziz readiness + model gate tests
         run: node --test --import tsx tests/aziz-readiness.test.ts
+      - name: Aziz ledger draft, write layer, guard, import preflight
+        run: node --test tests/aziz-ledger-draft.test.mjs tests/aziz-ledger-guard.test.mjs && node --test --import tsx tests/aziz-ledger-write.test.ts tests/aziz-import-preflight.test.ts
       - name: Daily picks tests (unchanged behaviour)
         run: node --test --import tsx tests/daily-picks.test.ts tests/picks.test.ts
       - name: Aziz research package tests

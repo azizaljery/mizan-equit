@@ -7,16 +7,16 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
 
-const DDL=readFileSync(new URL('../../research/drafts/0017_aziz_issue_ledger.DRAFT.sql',import.meta.url),'utf8');
+const DDL=readFileSync(new URL('../../research/drafts/0017_aziz_issue_ledger.DRAFT.sql',import.meta.url),'utf8').split('\n').filter(l=>!l.includes('@@DRAFT-GUARD@@')).join('\n');
 function db(){
  const d=new DatabaseSync(':memory:');d.exec('PRAGMA foreign_keys=ON');
  d.exec("CREATE TABLE aziz_symbols(id TEXT PRIMARY KEY, market TEXT, symbol TEXT); INSERT INTO aziz_symbols VALUES('aziz-sa-2222','sa','2222.SR');");
  d.exec("CREATE TABLE aziz_market_datasets(id TEXT PRIMARY KEY); INSERT INTO aziz_market_datasets VALUES('ds1'),('ds2');");
  d.exec(DDL);return d;
 }
-const ISSUE={id:'f1',issue_type:'direct',market:'sa',symbol:'2222.SR',instrument_id:'SA-2222',currency:'SAR',price_basis:'split_adjusted',issued_at:'2026-10-01T12:30:00Z',target_session:'2026-10-08',initial_horizon:5,elapsed_sessions:0,remaining_sessions:5,calendar_id:'TADAWUL-CALENDAR',calendar_version:'proxy-2222-1120-2010',input_hash:'h-in',artifact_id:'art-1',artifact_hash:'h-art',policy_hash:'h-pol',feature_schema_version:'fs-1',model_version:'test-v1',ref_price:25.0,ref_price_session:'2026-10-01',source_id:'yahoo',data_revision:1,data_as_of:'2026-10-01T12:30:00Z',predicted_log_return:0.01,point_price:25.25,mode:'SHADOW',recorded:1,created_at:'2026-10-01T12:30:00Z'};
+const ISSUE={id:'f1',issue_type:'direct',market:'sa',symbol:'2222.SR',instrument_id:'SA-2222',currency:'SAR',price_basis:'split_adjusted',issued_at:'2026-10-01T12:30:00Z',target_session:'2026-10-08',initial_horizon:5,elapsed_sessions:0,remaining_sessions:5,calendar_id:'TADAWUL-CALENDAR',calendar_version:'proxy-2222-1120-2010',input_hash:'h-in',artifact_id:'art-1',artifact_hash:'h-art',policy_hash:'h-pol',feature_schema_version:'fs-1',model_version:'test-v1',ref_price:25.0,ref_price_session:'2026-10-01',source_id:'yahoo',data_revision:1,data_as_of:'2026-10-01T12:30:00Z',predicted_log_return:0.01,point_price:25.25,mode:'SHADOW',recorded:1,payload_hash:'h',created_at:'2026-10-01T12:30:00Z'};
 function insertIssue(d,o){const r={...ISSUE,...o};const cols=Object.keys(r);d.prepare(`INSERT INTO aziz_forecast_issues(${cols.join(',')}) VALUES(${cols.map(()=>'?').join(',')})`).run(...cols.map(c=>r[c]));}
-function insertOutcome(d,o){const r={id:'o1',forecast_id:'f1',outcome_revision:1,event_key:'f1:2026-10-08:1',observed_at:'2026-10-08',available_at:'2026-10-08T13:00:00Z',evaluated_at:'2026-10-08T13:05:00Z',actual_price:25.5,price_basis:'split_adjusted',source_id:'yahoo',data_revision:1,point_loss:0.0098,direction_outcome:1,created_at:'2026-10-08T13:05:00Z',...o};const cols=Object.keys(r);d.prepare(`INSERT INTO aziz_forecast_outcomes(${cols.join(',')}) VALUES(${cols.map(()=>'?').join(',')})`).run(...cols.map(c=>r[c]));}
+function insertOutcome(d,o){const r={id:'o1',forecast_id:'f1',outcome_revision:1,event_key:'f1:2026-10-08:1',observed_at:'2026-10-08',available_at:'2026-10-08T13:00:00Z',evaluated_at:'2026-10-08T13:05:00Z',actual_price:25.5,price_basis:'split_adjusted',source_id:'yahoo',data_revision:1,point_loss:0.0098,direction_outcome:1,payload_hash:'h',created_at:'2026-10-08T13:05:00Z',...o};const cols=Object.keys(r);d.prepare(`INSERT INTO aziz_forecast_outcomes(${cols.join(',')}) VALUES(${cols.map(()=>'?').join(',')})`).run(...cols.map(c=>r[c]));}
 const count=(d,sql)=>d.prepare(sql).get().n;
 const SAMPLE="SELECT COUNT(*) n FROM aziz_forecast_issues i JOIN aziz_forecast_outcomes o ON o.forecast_id=i.id WHERE i.recorded=1 AND o.outcome_revision=(SELECT MAX(outcome_revision) FROM aziz_forecast_outcomes WHERE forecast_id=i.id)";
 

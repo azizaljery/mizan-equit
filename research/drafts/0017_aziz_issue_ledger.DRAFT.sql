@@ -6,6 +6,11 @@
 -- provider documents it). session_date is the date the price belongs to, never the time it was known. A price imported today
 -- for a 2021 session has received_at = today, so an as-of query for any t before today returns nothing for it.
 
+-- MANUAL-APPLY GUARD: the next statement references a table that does not exist, so running this file as-is
+-- (wrangler d1 execute --file, the Cloudflare D1 console, sqlite3) fails on its FIRST statement before any CREATE.
+-- The guard line is removed only in the approved copy placed in mizan-v45/drizzle/. Tests strip it explicitly.
+SELECT 1 FROM __aziz_draft_not_approved_do_not_apply__; -- @@DRAFT-GUARD@@
+
 -- A. Forecast issues: written once, never updated or deleted.
 CREATE TABLE IF NOT EXISTS aziz_forecast_issues (
  id TEXT PRIMARY KEY NOT NULL,
@@ -49,6 +54,7 @@ CREATE TABLE IF NOT EXISTS aziz_forecast_issues (
  recorded INTEGER NOT NULL CHECK(recorded IN (0,1)),
  abstention_code TEXT,
  abstention_message TEXT,
+ payload_hash TEXT NOT NULL,                     -- sha256 of the canonical issue payload; resend with same id+hash = no-op, different hash = conflict
  created_at TEXT NOT NULL,
  -- an issued forecast has a point; an abstention has a code and no point (never both, never neither)
  CHECK((recorded=1 AND predicted_log_return IS NOT NULL AND point_price IS NOT NULL AND abstention_code IS NULL)
@@ -84,6 +90,7 @@ CREATE TABLE IF NOT EXISTS aziz_forecast_outcomes (
  interval_score REAL,
  supersedes_revision INTEGER,
  correction_reason TEXT,
+ payload_hash TEXT NOT NULL,                     -- sha256 of the canonical outcome payload (same rule as issues)
  created_at TEXT NOT NULL,
  CHECK(available_at >= observed_at),
  CHECK(evaluated_at >= available_at),
@@ -131,6 +138,33 @@ CREATE TRIGGER IF NOT EXISTS trg_aziz_price_rev_no_update BEFORE UPDATE ON aziz_
  BEGIN SELECT RAISE(ABORT,'aziz_price_revisions is append-only'); END;
 CREATE TRIGGER IF NOT EXISTS trg_aziz_price_rev_no_delete BEFORE DELETE ON aziz_price_revisions
  BEGIN SELECT RAISE(ABORT,'aziz_price_revisions is append-only'); END;
+
+-- D. Inputs actually used by each issue. The trigger proves no input was known after the issue time (leakage guard
+--    beyond data_as_of <= issued_at). The write layer inserts the issue and all its inputs in ONE batch (atomic) and
+--    refuses a recorded issue with zero inputs.
+CREATE TABLE IF NOT EXISTS aziz_issue_inputs (
+ forecast_id TEXT NOT NULL REFERENCES aziz_forecast_issues(id),
+ price_revision_id TEXT NOT NULL REFERENCES aziz_price_revisions(id),
+ role TEXT NOT NULL CHECK(role IN ('feature','reference_price','calendar')),
+ PRIMARY KEY(forecast_id, price_revision_id)
+);
+CREATE TRIGGER IF NOT EXISTS trg_aziz_inputs_known_before_issue BEFORE INSERT ON aziz_issue_inputs
+ WHEN (SELECT received_at FROM aziz_price_revisions WHERE id=NEW.price_revision_id) >
+      (SELECT data_as_of FROM aziz_forecast_issues WHERE id=NEW.forecast_id)
+ BEGIN SELECT RAISE(ABORT,'input price revision received after the issue knowledge time'); END;
+CREATE TRIGGER IF NOT EXISTS trg_aziz_inputs_no_update BEFORE UPDATE ON aziz_issue_inputs
+ BEGIN SELECT RAISE(ABORT,'aziz_issue_inputs is append-only'); END;
+CREATE TRIGGER IF NOT EXISTS trg_aziz_inputs_no_delete BEFORE DELETE ON aziz_issue_inputs
+ BEGIN SELECT RAISE(ABORT,'aziz_issue_inputs is append-only'); END;
+
+-- E. Declared scoring policy (one scored outcome per issue, never per revision):
+--    the scored outcome of an issue, for an evaluation cutoff C, is the HIGHEST outcome_revision whose available_at <= C.
+--    Revisions received after C do not change a report already cut at C; a later report may use them and must say so.
+--    The view below is the policy with C = now (latest known); reports with a fixed C use the same query with "<= :C".
+CREATE VIEW IF NOT EXISTS aziz_scored_outcomes AS
+ SELECT o.* FROM aziz_forecast_outcomes o
+  JOIN aziz_forecast_issues i ON i.id=o.forecast_id AND i.recorded=1
+ WHERE o.outcome_revision=(SELECT MAX(o2.outcome_revision) FROM aziz_forecast_outcomes o2 WHERE o2.forecast_id=o.forecast_id);
 
 -- As-of read (reference query; implemented in code, shown here as the contract):
 --   SELECT closed FROM aziz_price_revisions
