@@ -31,7 +31,7 @@ export async function recordIssue(DB:LedgerDB,issue:IssueRow,inputs:IssueInput[]
   if(!r)return {status:'rejected',code:'input_unknown',message:'نسخة سعر غير موجودة: '+x.price_revision_id};
   if(r.received_at>issue.data_as_of)return {status:'rejected',code:'input_after_knowledge_time',message:'نسخة سعر استُلمت بعد وقت معرفة الإصدار: '+x.price_revision_id};
  }
- const row={...issue,payload_hash:hash};const cols=Object.keys(row);
+ const row:Record<string,unknown>={...issue,payload_hash:hash};const cols=Object.keys(row);
  try{
   await DB.batch([DB.prepare(insertSql('aziz_forecast_issues',cols)).bind(...cols.map(c=>row[c])),
    ...inputs.map(x=>DB.prepare('INSERT INTO aziz_issue_inputs(forecast_id,price_revision_id,role) VALUES(?,?,?)').bind(issue.id,x.price_revision_id,x.role))]);
@@ -42,21 +42,21 @@ export async function recordIssue(DB:LedgerDB,issue:IssueRow,inputs:IssueInput[]
   const msg=String((e as Error)?.message||e);
   return {status:'conflict',code:/UNIQUE/.test(msg)?'slot_already_issued':'issue_write_failed',message:/UNIQUE/.test(msg)?'يوجد إصدار آخر لنفس الخانة (السهم/الأفق/الهدف/الإصدار).':msg.slice(0,200)};
  }
- return {status:'created',row:row as IssueRow};
+ return {status:'created',row:row as unknown as IssueRow};
 }
 
 export async function recordOutcome(DB:LedgerDB,outcome:OutcomeRow):Promise<WriteResult<OutcomeRow>>{
  const hash=await payloadHash(outcome);
  const existing=await DB.prepare('SELECT * FROM aziz_forecast_outcomes WHERE event_key=? OR (forecast_id=? AND outcome_revision=?)').bind(outcome.event_key,outcome.forecast_id,outcome.outcome_revision).first<OutcomeRow>();
  if(existing)return existing.payload_hash===hash?{status:'unchanged',row:existing}:{status:'conflict',code:'outcome_conflict',message:'نتيجة بنفس الهوية ومحتوى مختلف؛ التصحيح يكون بنسخة جديدة (outcome_revision+1) مع سبب.'};
- const row={...outcome,payload_hash:hash};const cols=Object.keys(row);
+ const row:Record<string,unknown>={...outcome,payload_hash:hash};const cols=Object.keys(row);
  try{await DB.prepare(insertSql('aziz_forecast_outcomes',cols)).bind(...cols.map(c=>row[c])).run();}
  catch(e){
   const again=await DB.prepare('SELECT * FROM aziz_forecast_outcomes WHERE event_key=?').bind(outcome.event_key).first<OutcomeRow>();
   if(again)return again.payload_hash===hash?{status:'unchanged',row:again}:{status:'conflict',code:'outcome_conflict',message:'نتيجة بنفس الهوية ومحتوى مختلف.'};
   return {status:'rejected',code:'outcome_rejected',message:String((e as Error)?.message||e).slice(0,200)};
  }
- return {status:'created',row:row as OutcomeRow};
+ return {status:'created',row:row as unknown as OutcomeRow};
 }
 
 /** Declared scoring policy: one outcome per recorded issue — the highest revision available at the cutoff. */
