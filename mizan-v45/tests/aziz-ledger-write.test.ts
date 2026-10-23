@@ -73,8 +73,9 @@ test('scoring policy: one outcome per issue at a cutoff; corrections never infla
 
 test('REVIEW via write layer: early, foreign-basis, chain-breaking and half-interval writes are rejected, nothing stored',async()=>{
  const {d,DB}=make();await recordIssue(DB,ISSUE,inputs);
- for(const bad of [{observed_at:'2026-10-02'},{price_basis:'total_return'},{actual_price:30},{available_at:'2026-10-08T12:10:00Z',evaluated_at:'2026-10-08T12:15:00Z'}]){
-  const r=await recordOutcome(DB,{...OUT,...bad} as OutcomeRow);assert.equal(r.status,'rejected',JSON.stringify(bad));
+ const bads:Record<string,string|number>[]=[{observed_at:'2026-10-02'},{price_basis:'total_return'},{actual_price:30},{available_at:'2026-10-08T12:10:00Z',evaluated_at:'2026-10-08T12:15:00Z'}];
+ for(const bad of bads){
+  const r=await recordOutcome(DB,{...OUT,...bad});assert.equal(r.status,'rejected',JSON.stringify(bad));
  }
  const r9=await recordOutcome(DB,{...OUT,id:'o9',outcome_revision:9,event_key:'k9',supersedes_revision:8,correction_reason:'x',price_revision_id:'p-t2',actual_price:25.4});
  assert.equal(r9.status,'rejected');
