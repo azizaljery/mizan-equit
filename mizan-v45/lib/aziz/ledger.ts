@@ -22,7 +22,7 @@ export async function payloadHash(row:Record<string,unknown>){
 const insertSql=(table:string,cols:string[])=>`INSERT INTO ${table}(${cols.join(',')}) VALUES(${cols.map(()=>'?').join(',')})`;
 
 export async function recordIssue(DB:LedgerDB,issue:IssueRow,inputs:IssueInput[]):Promise<WriteResult<IssueRow>>{
- const hash=await payloadHash({...issue,__inputs:[...inputs].sort((a,b)=>a.price_revision_id.localeCompare(b.price_revision_id))});
+ const hash=await payloadHash({...issue,inputs_count:inputs.length,__inputs:[...inputs].sort((a,b)=>a.price_revision_id.localeCompare(b.price_revision_id))});
  const existing=await DB.prepare('SELECT * FROM aziz_forecast_issues WHERE id=?').bind(issue.id).first<IssueRow>();
  if(existing)return existing.payload_hash===hash?{status:'unchanged',row:existing}:{status:'conflict',code:'issue_conflict',message:'إصدار بنفس المعرف ومحتوى مختلف؛ لم يُكتب شيء.'};
  if(issue.recorded===1&&!inputs.length)return {status:'rejected',code:'inputs_missing',message:'إصدار مسجل بلا قائمة نسخ الأسعار المستخدمة.'};
@@ -31,7 +31,7 @@ export async function recordIssue(DB:LedgerDB,issue:IssueRow,inputs:IssueInput[]
   if(!r)return {status:'rejected',code:'input_unknown',message:'نسخة سعر غير موجودة: '+x.price_revision_id};
   if(r.received_at>issue.data_as_of)return {status:'rejected',code:'input_after_knowledge_time',message:'نسخة سعر استُلمت بعد وقت معرفة الإصدار: '+x.price_revision_id};
  }
- const row:Record<string,unknown>={...issue,payload_hash:hash};const cols=Object.keys(row);
+ const row:Record<string,unknown>={...issue,inputs_count:inputs.length,payload_hash:hash};const cols=Object.keys(row);
  try{
   await DB.batch([DB.prepare(insertSql('aziz_forecast_issues',cols)).bind(...cols.map(c=>row[c])),
    ...inputs.map(x=>DB.prepare('INSERT INTO aziz_issue_inputs(forecast_id,price_revision_id,role) VALUES(?,?,?)').bind(issue.id,x.price_revision_id,x.role))]);

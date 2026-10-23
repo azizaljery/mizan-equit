@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS aziz_forecast_issues (
  eligibility_json TEXT NOT NULL DEFAULT '{}',
  risk_json TEXT NOT NULL DEFAULT '{}',
  mode TEXT NOT NULL CHECK(mode IN ('REPLAY','SHADOW')),
+ inputs_count INTEGER NOT NULL CHECK(inputs_count >= 0),   -- closed list: inputs beyond this count are refused; outcomes require the list complete
  recorded INTEGER NOT NULL CHECK(recorded IN (0,1)),
  abstention_code TEXT,
  abstention_message TEXT,
@@ -58,8 +59,11 @@ CREATE TABLE IF NOT EXISTS aziz_forecast_issues (
  created_at TEXT NOT NULL,
  -- an issued forecast has a point; an abstention has a code and no point (never both, never neither)
  CHECK((recorded=1 AND predicted_log_return IS NOT NULL AND point_price IS NOT NULL AND abstention_code IS NULL)
-    OR (recorded=0 AND predicted_log_return IS NULL AND point_price IS NULL AND probability_up IS NULL AND interval_low IS NULL AND abstention_code IS NOT NULL)),
- CHECK((interval_low IS NULL AND interval_high IS NULL) OR (interval_low < interval_high)),
+    OR (recorded=0 AND predicted_log_return IS NULL AND point_price IS NULL AND probability_up IS NULL AND interval_low IS NULL AND interval_high IS NULL AND calibration_version IS NULL AND abstention_code IS NOT NULL)),
+ -- an interval has both bounds, both positive (price units), strictly ordered, and a calibration version
+ CHECK((interval_low IS NULL AND interval_high IS NULL) OR (interval_low IS NOT NULL AND interval_high IS NOT NULL AND interval_low > 0 AND interval_low < interval_high AND calibration_version IS NOT NULL)),
+ CHECK(probability_up IS NULL OR calibration_version IS NOT NULL),
+ CHECK(recorded=0 OR inputs_count >= 1),
  CHECK(data_as_of <= issued_at),
  UNIQUE(symbol, market, issue_type, initial_horizon, target_session, model_version, artifact_id)
 );
@@ -80,6 +84,7 @@ CREATE TABLE IF NOT EXISTS aziz_forecast_outcomes (
  available_at TEXT NOT NULL,                     -- when the price became known to the system (received_at)
  evaluated_at TEXT NOT NULL,
  actual_price REAL NOT NULL CHECK(actual_price > 0),
+ price_revision_id TEXT NOT NULL REFERENCES aziz_price_revisions(id),   -- the exact price version used for this outcome
  price_basis TEXT NOT NULL,
  source_id TEXT NOT NULL,
  data_revision INTEGER NOT NULL,
@@ -111,6 +116,24 @@ CREATE TRIGGER IF NOT EXISTS trg_aziz_outcomes_metric_scope BEFORE INSERT ON azi
  WHEN (NEW.brier IS NOT NULL AND (SELECT probability_up FROM aziz_forecast_issues WHERE id=NEW.forecast_id) IS NULL)
    OR (NEW.interval_hit IS NOT NULL AND (SELECT interval_low FROM aziz_forecast_issues WHERE id=NEW.forecast_id) IS NULL)
  BEGIN SELECT RAISE(ABORT,'metric without the corresponding issued output'); END;
+-- the outcome is for the issue's own target session, with its identity and price basis, from a price version that
+-- exists for that exact session and was received before the outcome's availability time (no early evaluation)
+CREATE TRIGGER IF NOT EXISTS trg_aziz_outcomes_target_and_identity BEFORE INSERT ON aziz_forecast_outcomes
+ WHEN NEW.observed_at IS NOT (SELECT target_session FROM aziz_forecast_issues WHERE id=NEW.forecast_id)
+   OR NEW.price_basis IS NOT (SELECT price_basis FROM aziz_forecast_issues WHERE id=NEW.forecast_id)
+   OR NOT EXISTS (SELECT 1 FROM aziz_price_revisions r JOIN aziz_symbols s ON s.id=r.symbol_id
+                  JOIN aziz_forecast_issues i ON i.id=NEW.forecast_id
+                  WHERE r.id=NEW.price_revision_id AND r.session_date=i.target_session AND s.symbol=i.symbol AND s.market=i.market
+                    AND r.price_basis=i.price_basis AND r.closed=NEW.actual_price AND r.received_at<=NEW.available_at)
+ BEGIN SELECT RAISE(ABORT,'outcome must use a price version of the issue target session, same instrument and price basis, received by available_at'); END;
+-- corrections form an unbroken chain: revision N>1 requires revision N-1 of the same forecast
+CREATE TRIGGER IF NOT EXISTS trg_aziz_outcomes_revision_chain BEFORE INSERT ON aziz_forecast_outcomes
+ WHEN NEW.outcome_revision > 1 AND NOT EXISTS (SELECT 1 FROM aziz_forecast_outcomes WHERE forecast_id=NEW.forecast_id AND outcome_revision=NEW.outcome_revision-1)
+ BEGIN SELECT RAISE(ABORT,'outcome revision chain broken: previous revision missing'); END;
+-- an outcome may attach only when the issue's input list is complete (equal to the declared count)
+CREATE TRIGGER IF NOT EXISTS trg_aziz_outcomes_inputs_complete BEFORE INSERT ON aziz_forecast_outcomes
+ WHEN (SELECT COUNT(*) FROM aziz_issue_inputs WHERE forecast_id=NEW.forecast_id) IS NOT (SELECT inputs_count FROM aziz_forecast_issues WHERE id=NEW.forecast_id)
+ BEGIN SELECT RAISE(ABORT,'issue input list incomplete'); END;
 
 -- C. Price revisions: every received version is kept; nothing is overwritten.
 CREATE TABLE IF NOT EXISTS aziz_price_revisions (
@@ -152,6 +175,11 @@ CREATE TRIGGER IF NOT EXISTS trg_aziz_inputs_known_before_issue BEFORE INSERT ON
  WHEN (SELECT received_at FROM aziz_price_revisions WHERE id=NEW.price_revision_id) >
       (SELECT data_as_of FROM aziz_forecast_issues WHERE id=NEW.forecast_id)
  BEGIN SELECT RAISE(ABORT,'input price revision received after the issue knowledge time'); END;
+-- the input list is closed at issue time: no input beyond the declared count, and none once any outcome exists
+CREATE TRIGGER IF NOT EXISTS trg_aziz_inputs_closed BEFORE INSERT ON aziz_issue_inputs
+ WHEN (SELECT COUNT(*) FROM aziz_issue_inputs WHERE forecast_id=NEW.forecast_id) >= (SELECT inputs_count FROM aziz_forecast_issues WHERE id=NEW.forecast_id)
+   OR EXISTS (SELECT 1 FROM aziz_forecast_outcomes WHERE forecast_id=NEW.forecast_id)
+ BEGIN SELECT RAISE(ABORT,'issue input list is closed'); END;
 CREATE TRIGGER IF NOT EXISTS trg_aziz_inputs_no_update BEFORE UPDATE ON aziz_issue_inputs
  BEGIN SELECT RAISE(ABORT,'aziz_issue_inputs is append-only'); END;
 CREATE TRIGGER IF NOT EXISTS trg_aziz_inputs_no_delete BEFORE DELETE ON aziz_issue_inputs
