@@ -1,6 +1,7 @@
 import {env} from 'cloudflare:workers';
 import {adminSession} from '@/lib/admin-access';
 import {ownerIdentity} from '@/lib/pin-lock';
+import {importPreflight,recordImportAttemptFailure} from '@/lib/aziz/import-run-log';
 
 const headers={'Cache-Control':'no-store, private'};
 const BATCHES=[
@@ -53,8 +54,9 @@ export async function POST(req:Request){
   const raw=await req.text();if(raw.length>200)throw Error('طلب الاستيراد غير صالح.');
   const body=JSON.parse(raw||'{}'),batch=Number(body.batch);
   if(!Number.isInteger(batch)||batch<1||batch>BATCHES.length)throw Error('اختر الدفعة 1 أو 2 أو 3.');
-  const key=String(runtime.TWELVE_DATA_API_KEY||'').trim();if(!key)throw Error('مفتاح Twelve Data غير مهيأ في أسرار الخادم.');
   const ids=[...BATCHES[batch-1]],marks=ids.map(()=>'?').join(',');
+  const key=String(runtime.TWELVE_DATA_API_KEY||'').trim(),preflight=importPreflight(key);
+  if(preflight){const runId=await recordImportAttemptFailure(DB,batch,ids,preflight);return Response.json({error:preflight.message,code:preflight.code,secretName:preflight.secretName,runId,batch,results:[],errors:[],events:'',sahmkConfigured:false},{status:400,headers});}
   const found=await DB.prepare('SELECT id,market,symbol,provider_symbol FROM aziz_symbols WHERE id IN ('+marks+') AND active=1').bind(...ids).all();
   const byId=new Map((found.results||[]).map((x:any)=>[x.id,x]));
   const items=ids.map(id=>byId.get(id)).filter(Boolean) as AzizSymbol[];
