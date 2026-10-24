@@ -1,0 +1,1353 @@
+
+إذًا نلغي الافتراض السابق بالكامل:
+
+D1 = شغالة
+D1 = Source Of Truth الحالي
+D1 = ذاكرة الموقع الدائمة
+
+
+وأما:
+
+D2
+
+
+فهي مبادرة جديدة وليست بديلًا تم اعتماده بعد.
+كيف أرى D2 بعد إغلاق Phase 1؟
+بما أن Phase 2 اسمها:
+
+TRUST
+
+
+فأنا لا أوصي أصلًا بأن يصبح هدفها:
+
+استبدال D1
+
+
+بل:
+
+فهم لماذا نحتاج D2؟
+
+
+
+
+الخيارات المحتملة لـ D2
+D2 كنظام أرشفة
+
+D1
+= التشغيل اليومي
+
+D2
+= أرشيف طويل الأجل
+
+
+يحفظ:
+
+- التوقعات القديمة
+- نتائج التقييم
+- سجلات البحث
+- سجلات AZIZ مستقبلًا
+
+
+D2 كمخزن تحليلي
+
+D1
+= معاملات تشغيلية
+
+D2
+= Analytics
+
+
+يحفظ:
+
+- تاريخ كامل للتوقعات
+- Backtesting
+- قياسات الأداء
+- أبحاث النماذج
+
+
+D2 كمخزن منفصل للذكاء
+في Phase 3 أو 4:
+
+D1
+= المحافظ والصفقات
+
+D2
+= Mizan Score
+     AZIZ
+     Research
+     Features
+
+
+
+
+ما الذي أنصح به الآن؟
+أن تنشئ وثيقة بسيطة جدًا:
+
+docs/phase2/D2-DISCOVERY.md
+
+
+وتضع فيها:
+
+Status:
+DISCOVERY
+
+Decision:
+NOT APPROVED
+
+Role:
+UNKNOWN
+
+Goal:
+Understand why D2 is needed.
+
+Questions:
+- What problem does D2 solve?
+- What data goes to D2?
+- What remains in D1?
+- Why not keep everything in D1?
+
+
+
+
+رأيي الحالي
+مع كل ما رأيته في Phase 1:
+أنا لا أرى أي سبب عاجل يدفعكم إلى:
+
+D1 → D2 Migration
+
+
+اليوم.
+لكن أرى سببًا قويًا لـ:
+
+D1
++
+D2
+
+
+في المراحل المستقبلية عندما تبدأ:
+
+AZIZ
+Mizan Score
+Research Engine
+Forecast History
+Evaluation History
+
+
+بالتراكم على مدى سنوات.
+لذلك لو كنت في غرفة التحكم الآن سأكتب:
+
+D1:
+ACTIVE
+
+D2:
+UNDER DISCOVERY
+
+Decision:
+DEFERRED TO PHASE-2
+
+
+وأكمل اختبارات الثقة أولًا قبل أي قرار جذري في طبقة التخزين. 🌹
+
+نعم. سنثبت أن D1 تعمل وفعالة وهي مصدر الحقيقة التشغيلي الحالي، بينما D2 مسار تخزين تحليلي وتاريخي مكمل، وليس بديلًا مباشرًا ولا اسمًا لتقنية محددة بعد. وهذا الفصل منطقي لأن D1 مناسبة للبيانات العلائقية التشغيلية، لكن كل قاعدة D1 لها حد أقصى 500 ميجابايت في الخطة المجانية و10 جيجابايت في Workers Paid، كما أن القاعدة الفردية تعالج الاستعلامات تسلسليًا. 【1-31584f】【2-f97d82】
+1. المخطط المعماري المقترح
+
+
+هذا Target Architecture مقترح، وليس وصفًا مؤكدًا لما ينفذه الكود حاليًا.
+
+
+
+flowchart TD
+    U[المستخدم] --> APP[تطبيق ميزان المالي]
+    APP --> API[واجهات التطبيق والخدمات]
+
+    API --> D1[(D1 Operational Store)]
+    API --> OUTBOX[Outbox / Export Queue]
+
+    D1 -->|بيانات تشغيلية حالية| APP
+    OUTBOX --> SYNC[D2 Transfer Worker]
+    SYNC --> D2[(D2 Analytical and Historical Store)]
+
+    D2 --> RESEARCH[الأبحاث والتجارب]
+    D2 --> BACKTEST[Backtesting and Evaluation]
+    D2 --> REPORTS[التقارير والتحليلات التاريخية]
+
+    RESEARCH -. ممنوع الكتابة المباشرة .-> D1
+    BACKTEST -. ممنوع تعديل السجل الأصلي .-> D1
+
+    D2 -->|نتيجة معتمدة فقط بعقد مستقل| PROMOTION[Controlled Promotion Gate]
+    PROMOTION -->|بعد مراجعة واختبار| D1
+
+
+المسؤوليات
+
+D1
+=
+Operational Source of Truth
+
+D2
+=
+Historical / Analytical Source of Truth
+
+
+D1 تملك
+
+- المحافظ الحالية.
+- الأرصدة النقدية.
+- المراكز المفتوحة.
+- الصفقات.
+- إعدادات الموقع.
+- جلسات الإدارة والصلاحيات التشغيلية.
+- حالة التوقعات النشطة.
+- قوائم المتابعة النشطة.
+- حالات المهام الدورية.
+- القيود والمعرفات التشغيلية.
+D2 تملك
+
+- التاريخ التحليلي طويل الأجل.
+- نسخ البيانات الخام المستخدمة في التحليل.
+- لقطات التوقعات والتقييمات الناضجة.
+- نتائج التجارب والـBacktests.
+- مخرجات النماذج التفصيلية.
+- ميزات النماذج Feature Sets.
+- سجلات تقييم النماذج.
+- نتائج الأبحاث وAZIZ مستقبلًا بعد اعتماد نطاقها.
+- بيانات المراقبة والتحليلات التي لا يحتاجها التطبيق التشغيلي لحظيًا.
+قاعدة الفصل
+
+D1 يشغّل المنتج.
+D2 يفسر ويقيّم تاريخه.
+
+
+ولا يُسمح بأن تعتمد عملية شراء أو بيع تشغيلية مباشرة على سجل قد لا يتوفر إلا في D2.
+
+
+2. قرار ADR لمسار D2
+المسار المقترح:
+
+docs/architecture/ADR-P2-001-D2-DATA-PATH.md
+
+
+
+# ADR-P2-001: اعتماد D2 كمسار تحليلي وتاريخي مستقل
+
+## الحالة
+
+ACCEPTED_IN_PRINCIPLE
+
+Implementation Status:
+NOT_STARTED
+
+Provider Decision:
+NOT_SELECTED
+
+Effective Phase:
+PHASE-2 DISCOVERY AND BASELINE ONLY
+
+## السياق
+
+تستخدم منصة ميزان المالي D1 بوصفها قاعدة البيانات التشغيلية الدائمة.
+
+تحتوي D1 حاليًا على بيانات تشغيلية، تشمل:
+
+- المحافظ والأرصدة والمراكز.
+- عمليات الشراء والبيع.
+- التوقعات المحفوظة ونتائج تقييمها.
+- إعدادات الموقع وسجل تعديلها.
+- بيانات المصادر وقوائم المتابعة.
+- سجلات التشغيل والمهام الدورية.
+
+يتوقع أن يؤدي نمو تاريخ التوقعات، ولقطات المصادر، وتجارب النماذج،
+والـBacktesting، وسجلات التقييم، والأبحاث المستقبلية إلى زيادة حجم
+وأنواع البيانات التي لا يحتاج التطبيق التشغيلي إلى قراءتها لحظيًا.
+
+## القرار
+
+يُعتمد D2 كمسار تخزين مستقل مكمل لـD1.
+
+D1 تبقى مصدر الحقيقة التشغيلي.
+
+D2 تصبح مصدر الحقيقة التحليلي والتاريخي للبيانات التي تُنقل إليها
+وفق عقود نقل وإصدارات وبصمات قابلة للتتبع.
+
+D2 لا تستبدل D1 في هذه المرحلة.
+
+## حدود المسؤولية
+
+### D1 تملك
+
+- الحالة التشغيلية للمحافظ.
+- النقد والمراكز الحالية.
+- سجل الصفقات القانوني داخل التطبيق.
+- الإعدادات الحالية.
+- حالة عمليات الموقع.
+- التوقعات النشطة التي يحتاجها التطبيق.
+- قواعد التحكم والصلاحيات.
+
+### D2 تملك
+
+- نسخ البيانات الخام التاريخية.
+- مجموعات البيانات التحليلية.
+- نتائج الـBacktesting.
+- تشغيلات الأبحاث.
+- تقييمات النماذج طويلة الأجل.
+- لقطات التوقعات المكتملة والناضجة.
+- التحليلات التجميعية التي لا تغيّر الحالة التشغيلية.
+
+## القيود
+
+- لا كتابة مباشرة من D2 إلى جداول D1 التشغيلية.
+- لا نقل لبيانات D1 قبل وجود عقد نقل موثق.
+- لا حذف من D1 بمجرد نجاح النسخ إلى D2.
+- لا تعتبر البيانات منقولة حتى تنجح مقارنة العدد والبصمة والهوية.
+- لا تستخدم D2 لاتخاذ قرار تشغيلي حي قبل اعتماد عقد قراءة واضح.
+- لا تُخزن أسرار أو رموز وصول داخل D2.
+- لا تُنقل بيانات حساسة دون سياسة وصول واحتفاظ وحذف معتمدة.
+- لا تعتمد التقنية المادية لـD2 ضمن هذا ADR.
+
+## نمط النقل
+
+النمط الافتراضي:
+
+COPY → VERIFY → RETAIN → REVIEW → OPTIONAL ARCHIVE
+
+وليس:
+
+MOVE → DELETE
+
+## هوية كل سجل منقول
+
+يجب أن يحتفظ السجل المنقول، عند انطباق ذلك، بالحقول التالية:
+
+- sourceSystem
+- sourceTable
+- sourceRecordId
+- sourceVersion
+- sourceCreatedAt
+- sourceUpdatedAt
+- exportedAt
+- transferBatchId
+- schemaVersion
+- contentHash
+- provenance
+- classification
+
+## الكتابة العكسية
+
+أي نتيجة من D2 يراد إدخالها إلى D1 يجب أن تمر عبر:
+
+1. عقد نتيجة معتمد.
+2. Validation.
+3. مقارنة خارج العينة عند انطباق ذلك.
+4. مراجعة بشرية أو بوابة ترقية معتمدة.
+5. سجل قرار مستقل.
+
+## ما لا يحسمه هذا القرار
+
+هذا القرار لا يحدد:
+
+- المنتج أو المزود المستخدم لتنفيذ D2.
+- سياسة الاحتفاظ النهائية.
+- مدة الاحتفاظ.
+- RPO أو RTO.
+- تكاليف التشغيل.
+- تشفير البيانات ونسخها الاحتياطية النهائية.
+- جدول النقل الدوري.
+- التاريخ الذي يمكن فيه حذف بيانات من D1.
+
+## البدائل التي نوقشت
+
+### إبقاء جميع البيانات في D1
+
+مقبول حاليًا، لكنه قد يخلط الحالة التشغيلية مع التاريخ البحثي والتحليلي.
+
+### استبدال D1 بالكامل بـD2
+
+مرفوض في هذه المرحلة، لأن D1 قاعدة التشغيل الحالية، ولم تُثبت حاجة
+أو فائدة الاستبدال.
+
+### تقسيم المسؤوليات بين D1 وD2
+
+مقبول من حيث المبدأ، بشرط تنفيذ تدريجي قائم على العقود والأدلة.
+
+## العواقب الإيجابية
+
+- عزل أعباء البحث والتحليل عن بيانات التشغيل.
+- الحفاظ على تاريخ طويل للتوقعات والتقييمات.
+- تسهيل إعادة الإنتاج والـBacktesting.
+- تقليل خلط البيانات البحثية بالقرارات التشغيلية.
+- توفير مسار نمو دون تغيير D1 مباشرة.
+
+## المخاطر
+
+- ازدواج الحقيقة بين D1 وD2.
+- فقد أو تكرار سجلات أثناء النقل.
+- اختلاف المخططات والإصدارات.
+- قراءة بيانات غير مكتملة من D2.
+- كتابة نتائج بحثية إلى التشغيل دون اعتماد.
+- زيادة التعقيد التشغيلي والتكلفة.
+
+## بوابة التنفيذ
+
+لا يبدأ تنفيذ D2 حتى تكتمل:
+
+- D2 technology decision.
+- Data classification.
+- Migration contract.
+- Transfer identity specification.
+- Reconciliation tests.
+- Access policy.
+- Retention policy.
+- Failure and retry policy.
+- Phase-2 human approval.
+
+## قرار المراجعة
+
+Decision:
+ACCEPTED_IN_PRINCIPLE
+
+Implementation Authorization:
+NOT_GRANTED
+
+Human Reviewer:
+
+Review Date:
+
+Signature:
+
+
+
+
+3. البيانات التي تنتقل إلى D2
+المجموعة الأولى: تنقل مبكرًا
+هذه أفضل نقطة بداية لأنها بيانات تحليلية أو تاريخية ولا ينبغي أن تغيّر حالة المستخدم التشغيلية مباشرة.
+لقطات بيانات المصادر
+
+- الأسعار التاريخية الخام.
+- القوائم المالية الخام المستلمة.
+- استجابات المصادر بعد التنقية من الأسرار.
+- وقت الجلب والمصدر والعملة والفترة.
+- نسبة التغطية والأخطاء المرتبطة بالجلب.
+
+
+سبب النقل: تمكين إعادة التحليل ومعرفة البيانات التي بُنيت عليها النتيجة.
+نتائج تشغيل التحليل
+
+- analysisRunId
+- symbol
+- market
+- inputSnapshotId
+- modelVersion
+- settingsVersion
+- generatedAt
+- componentScores
+- warnings
+- missingData
+- duration
+
+
+سبب النقل: تمكين إعادة الإنتاج ومقارنة النسخ.
+تاريخ تقييم التوقعات
+
+- forecastId
+- horizon
+- issuedAt
+- maturedAt
+- referencePrice
+- realizedPrice
+- directionResult
+- priceError
+- intervalCoverage
+- confidence
+- evaluationVersion
+
+
+سبب النقل: بناء سجل تقييم طويل الأجل دون إثقال المسار التشغيلي.
+تشغيلات الـBacktesting
+
+- backtestRunId
+- datasetVersion
+- modelVersion
+- parameters
+- trainWindow
+- testWindow
+- metrics
+- rejectedCases
+- artifacts
+
+
+سبب النقل: هذه بيانات بحثية وليست معاملات تشغيلية.
+
+
+المجموعة الثانية: تنقل بعد نجاح المرحلة الأولى من D2
+التوقعات الناضجة
+يمكن نسخ التوقعات بعد اكتمال تقييمها إلى D2، مع إبقاء النسخة التشغيلية المطلوبة في D1.
+
+D1:
+الحالة الحالية والمرجع التشغيلي
+
+D2:
+التاريخ الكامل والتقييم والتحليل التجميعي
+
+
+قوائم الترشيح التاريخية
+
+- القائمة وقت صدورها.
+- أسباب الترشيح.
+- بيانات الإدخال.
+- النموذج والإعدادات.
+- نتائج المتابعة لاحقًا.
+
+
+سجل المصادر طويل الأجل
+
+- نجاح وفشل كل مصدر.
+- زمن الاستجابة.
+- حجم البيانات.
+- سبب الفشل.
+- التغطية التاريخية.
+
+
+تشغيلات AZIZ المستقبلية
+لا تُنقل أو تُنشأ قبل فك تجميد AZIZ رسميًا، لكن مكانها المستقبلي الطبيعي هو D2:
+
+- candidate runs
+- evidence bundles
+- comparison traces
+- experiment results
+- model disagreements
+
+
+
+
+4. البيانات التي تبقى في D1
+لا أنصح بنقل ملكيتها التشغيلية إلى D2:
+
+- المحافظ الحالية.
+- النقد المتاح.
+- المراكز المفتوحة.
+- سجل الصفقات الأساسي.
+- عمليات الشراء والبيع.
+- إعدادات الموقع الحالية.
+- صلاحيات الإدارة والجلسات.
+- حالة المهام والـCron.
+- Locks وIdempotency Keys.
+- التوقعات النشطة التي يحتاج التطبيق إلى عرضها وتقييمها.
+- روابط التوقعات بعمليات الشراء.
+- حالة قوائم المتابعة الحالية.
+
+
+يمكن نسخ بعضها إلى D2 لأغراض التحليل، لكن:
+
+D1 remains authoritative.
+
+
+
+
+5. بيانات ممنوع نقلها حاليًا
+
+- كلمات المرور.
+- رموز الجلسات.
+- API Keys.
+- Cloudflare Tokens.
+- OpenAI أو مزودي الذكاء.
+- Secrets.
+- ملفات .env.
+- بيانات اعتماد قواعد البيانات.
+- سجلات تحتوي حقولًا حساسة قبل تصنيفها وتنقيتها.
+
+
+
+
+6. آلية النقل المقترحة
+لا أنصح بعملية نقل جماعية مباشرة. اعتمد دفعات محددة الهوية:
+
+D1 Record
+↓
+Export Contract
+↓
+Validation
+↓
+Transfer Batch
+↓
+D2 Write
+↓
+D2 Read-back
+↓
+Hash and Count Reconciliation
+↓
+Transfer Receipt
+
+
+حالة الدفعة
+
+CREATED
+VALIDATED
+WRITTEN
+VERIFIED
+FAILED
+QUARANTINED
+
+
+ولا تعتبر الدفعة مكتملة إلا عند:
+
+Source Count = Destination Count
+Source Hash = Destination Hash
+Rejected Count = 0
+
+
+أو وجود استثناءات مسجلة ومراجعة.
+
+
+7. بوابة البداية
+لا نبدأ ببناء D2 قبل الإجابة عن هذه الأسئلة:
+
+- [ ] ما التقنية الفعلية لـD2؟
+- [ ] هل تحتاج SQL أم تخزين ملفات أم الاثنين؟
+- [ ] ما أول Dataset سينتقل؟
+- [ ] ما سياسة الاحتفاظ؟
+- [ ] كيف نحمي البيانات الحساسة؟
+- [ ] كيف نعيد تشغيل دفعة دون تكرار؟
+- [ ] كيف نكتشف فقد سجل؟
+- [ ] من يملك Schema الخاص بـD2؟
+- [ ] هل D2 للقراءة التحليلية فقط؟
+- [ ] ما تكلفة الاحتفاظ والاستعلام؟
+- [ ] كيف تُنسخ احتياطيًا؟
+- [ ] كيف نثبت أن D1 لم تتغير بعد النسخ؟
+التوصية التنفيذية
+أول Dataset تجريبي لـD2 يجب أن يكون:
+
+Source Data Snapshots
++
+Matured Forecast Evaluation Records
+
+
+ولا تبدأ بالمحافظ والصفقات. بذلك نثبت النقل والمصالحة على بيانات تحليلية أولًا، دون الاقتراب من مصدر الحقيقة المالي التشغيلي.
+والحالة الرسمية حتى اعتماد التقنية والتنفيذ:
+
+D1 = ACTIVE OPERATIONAL SOURCE OF TRUTH
+D2 = ACCEPTED-IN-PRINCIPLE ANALYTICAL PATH
+D2 IMPLEMENTATION = NOT STARTED
+D1 REPLACEMENT = NOT APPROVED
+
+
+هذا يحافظ على D1 ويمنع D2 من أن يتحول إلى مشروع ضخم جديد قبل تحديد فائدته وحدوده.
+
+ممتاز. بما أن Phase 2 بدأت، فأقترح اعتماد حزمة معمارية أولية جاهزة للتسجيل.
+الملف النهائي
+
+docs/architecture/ADR-P2-001-D2-DATA-PLATFORM.md
+
+
+ADR-P2-001: D2 Data Platform
+
+# ADR-P2-001
+# D2 Data Platform
+
+Status:
+ACCEPTED_IN_PRINCIPLE
+
+Phase:
+PHASE-2
+
+Wave:
+TRUST
+
+Date:
+2026-10-03
+
+---
+
+## Context
+
+D1 is the current operational source of truth for Mizan Financial.
+
+D1 currently stores:
+
+- Portfolios
+- Cash balances
+- Buy/Sell transactions
+- Forecasts
+- Forecast evaluations
+- Site settings
+- Watchlists
+- Source metadata
+- Operational logs
+
+As historical data grows, especially:
+
+- Forecast history
+- Evaluations
+- Backtesting
+- Research datasets
+- AZIZ future artifacts
+- Mizan Score future artifacts
+
+a secondary data platform is required.
+
+---
+
+## Decision
+
+D2 shall be introduced as:
+
+Historical + Analytical Data Platform
+
+D1 remains:
+
+Operational Source of Truth
+
+D2 does not replace D1.
+
+D2 complements D1.
+
+---
+
+## Responsibilities
+
+### D1
+
+Operational State
+
+- portfolios
+- positions
+- balances
+- trades
+- active forecasts
+- settings
+- watchlists
+- operational logs
+
+### D2
+
+Historical State
+
+- source snapshots
+- research datasets
+- forecast history
+- forecast evaluations
+- backtesting results
+- model evaluations
+- analytical datasets
+- future AZIZ artifacts
+- future Mizan Score artifacts
+
+---
+
+## Migration Rule
+
+Default rule:
+
+COPY
+→ VERIFY
+→ RETAIN
+→ REVIEW
+
+Never:
+
+MOVE
+→ DELETE
+
+---
+
+## Source Of Truth
+
+D1 remains authoritative for operational workflows.
+
+D2 remains authoritative for historical analytics.
+
+---
+
+## Constraints
+
+- No direct writes from D2 into D1.
+- No deletion from D1 after export.
+- Every transferred batch must be verifiable.
+- Every transferred batch must have hashes.
+- Every transferred batch must have lineage.
+
+---
+
+## Future Review
+
+This ADR does not determine:
+
+- D2 technology
+- D2 hosting vendor
+- retention policy
+- backup policy
+- access model
+- cost model
+
+These decisions will be handled separately.
+
+---
+
+## Approval
+
+Status:
+ACCEPTED_IN_PRINCIPLE
+
+Implementation:
+NOT_STARTED
+
+
+
+
+مخطط تدفق نقل البيانات
+
+flowchart LR
+
+A[D1 Operational Database]
+
+B[Export Contract]
+
+C[Transfer Batch]
+
+D[Hash Validation]
+
+E[D2 Historical Store]
+
+F[Analytical Processing]
+
+G[Research]
+
+H[Backtesting]
+
+I[Future AZIZ]
+
+J[Future Mizan Score]
+
+A --> B
+B --> C
+C --> D
+
+D -->|PASS| E
+D -->|FAIL| C
+
+E --> F
+E --> G
+E --> H
+E --> I
+E --> J
+
+
+
+
+مخطط D2 المنطقي
+
+erDiagram
+
+SOURCE_SNAPSHOTS ||--o{ SOURCE_FILES : contains
+FORECASTS ||--o{ FORECAST_EVALUATIONS : evaluates
+BACKTEST_RUNS ||--o{ BACKTEST_RESULTS : produces
+
+SOURCE_SNAPSHOTS {
+    string snapshot_id
+    string source_name
+    datetime created_at
+    string content_hash
+}
+
+SOURCE_FILES {
+    string file_id
+    string snapshot_id
+    string symbol
+    string market
+    string dataset_hash
+}
+
+FORECASTS {
+    string forecast_id
+    string symbol
+    string model_version
+    datetime issued_at
+}
+
+FORECAST_EVALUATIONS {
+    string evaluation_id
+    string forecast_id
+    decimal reference_price
+    decimal realized_price
+    decimal error_pct
+}
+
+BACKTEST_RUNS {
+    string run_id
+    string model_version
+    string dataset_version
+    datetime executed_at
+}
+
+BACKTEST_RESULTS {
+    string result_id
+    string run_id
+    decimal accuracy
+    decimal precision
+    decimal recall
+}
+
+
+
+
+جداول D2 الأولية (V1)
+1. source_snapshots
+
+CREATE TABLE source_snapshots (
+    snapshot_id TEXT PRIMARY KEY,
+    source_name TEXT NOT NULL,
+    snapshot_time TEXT NOT NULL,
+    content_hash TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+
+
+
+
+2. source_files
+
+CREATE TABLE source_files (
+    file_id TEXT PRIMARY KEY,
+    snapshot_id TEXT NOT NULL,
+    symbol TEXT NOT NULL,
+    market TEXT NOT NULL,
+    dataset_hash TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+
+
+
+
+3. forecasts_history
+
+CREATE TABLE forecasts_history (
+    forecast_id TEXT PRIMARY KEY,
+    symbol TEXT NOT NULL,
+    model_version TEXT NOT NULL,
+    issued_at TEXT NOT NULL,
+    prediction_payload TEXT NOT NULL
+);
+
+
+
+
+4. forecast_evaluations
+
+CREATE TABLE forecast_evaluations (
+    evaluation_id TEXT PRIMARY KEY,
+    forecast_id TEXT NOT NULL,
+    reference_price REAL,
+    realized_price REAL,
+    error_percent REAL,
+    evaluated_at TEXT
+);
+
+
+
+
+5. backtest_runs
+
+CREATE TABLE backtest_runs (
+    run_id TEXT PRIMARY KEY,
+    model_version TEXT NOT NULL,
+    dataset_version TEXT NOT NULL,
+    executed_at TEXT NOT NULL,
+    parameters_json TEXT
+);
+
+
+
+
+6. backtest_results
+
+CREATE TABLE backtest_results (
+    result_id TEXT PRIMARY KEY,
+    run_id TEXT NOT NULL,
+    accuracy REAL,
+    precision_score REAL,
+    recall_score REAL,
+    f1_score REAL
+);
+
+
+
+
+7. transfer_batches
+جدول حرج جدًا للحوكمة.
+
+CREATE TABLE transfer_batches (
+    batch_id TEXT PRIMARY KEY,
+    source_table TEXT NOT NULL,
+    exported_rows INTEGER NOT NULL,
+    imported_rows INTEGER NOT NULL,
+    source_hash TEXT NOT NULL,
+    destination_hash TEXT NOT NULL,
+    transfer_status TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+
+
+التوصية التنفيذية
+أول بيانات تنتقل إلى D2:
+
+1. Source Snapshots
+2. Forecast Evaluations
+3. Backtest Runs
+
+
+ولا أنصح في بداية Phase 2 بنقل:
+
+Portfolios
+Trades
+Balances
+Settings
+
+
+لأن هذه ما زالت جزءًا من مصدر الحقيقة التشغيلي في D1.
+
+ممتاز. أوصي بفصلها إلى 3 ملفات مستقلة داخل المستودع:
+
+docs/architecture/
+├── ADR-P2-001-D2-DATA-PLATFORM.md
+├── D2-DATAFLOW.mmd
+└── D2-SCHEMA-V1.sql
+
+
+
+
+D2-DATAFLOW.mmd
+
+flowchart LR
+
+    D1[(D1 Operational Store)]
+
+    EXPORT[Export Contract]
+
+    BATCH[Transfer Batch]
+
+    HASH[Hash Validation]
+
+    D2[(D2 Historical Store)]
+
+    FORECAST[Forecast Analytics]
+
+    BACKTEST[Backtesting]
+
+    RESEARCH[Research Datasets]
+
+    AZIZ[Future AZIZ]
+
+    SCORE[Future Mizan Score]
+
+    D1 --> EXPORT
+
+    EXPORT --> BATCH
+
+    BATCH --> HASH
+
+    HASH -->|PASS| D2
+    HASH -->|FAIL| QUARANTINE[Quarantine Queue]
+
+    D2 --> FORECAST
+    D2 --> BACKTEST
+    D2 --> RESEARCH
+    D2 --> AZIZ
+    D2 --> SCORE
+
+    AZIZ -. Read Only .-> D2
+    SCORE -. Read Only .-> D2
+
+    D2 -. No Direct Write .-> D1
+
+
+
+
+D2-DATAFLOW-DETAILED.mmd
+
+flowchart TD
+
+    A[D1 Source Record]
+
+    B[Create Export Contract]
+
+    C[Build Transfer Batch]
+
+    D[Compute Source Hash]
+
+    E[Write To D2]
+
+    F[Read Back Verification]
+
+    G[Compute Destination Hash]
+
+    H{Hashes Equal?}
+
+    I[Mark Verified]
+
+    J[Quarantine Batch]
+
+    K[Human Review]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+
+    H -->|YES| I
+    H -->|NO| J
+
+    J --> K
+
+
+
+
+D2-SCHEMA-V1.sql
+
+PRAGMA foreign_keys = ON;
+
+-- =====================================================
+-- Source Snapshots
+-- =====================================================
+
+CREATE TABLE source_snapshots (
+    snapshot_id TEXT PRIMARY KEY,
+    source_name TEXT NOT NULL,
+    snapshot_time TEXT NOT NULL,
+    content_hash TEXT NOT NULL,
+    schema_version TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE INDEX idx_source_snapshots_time
+ON source_snapshots(snapshot_time);
+
+-- =====================================================
+-- Source Files
+-- =====================================================
+
+CREATE TABLE source_files (
+    file_id TEXT PRIMARY KEY,
+    snapshot_id TEXT NOT NULL,
+    symbol TEXT NOT NULL,
+    market TEXT NOT NULL,
+    dataset_hash TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+
+    FOREIGN KEY(snapshot_id)
+    REFERENCES source_snapshots(snapshot_id)
+);
+
+CREATE INDEX idx_source_files_symbol
+ON source_files(symbol);
+
+CREATE INDEX idx_source_files_snapshot
+ON source_files(snapshot_id);
+
+-- =====================================================
+-- Forecast History
+-- =====================================================
+
+CREATE TABLE forecasts_history (
+    forecast_id TEXT PRIMARY KEY,
+    symbol TEXT NOT NULL,
+    model_version TEXT NOT NULL,
+    issued_at TEXT NOT NULL,
+    prediction_payload TEXT NOT NULL,
+    source_snapshot_id TEXT,
+
+    FOREIGN KEY(source_snapshot_id)
+    REFERENCES source_snapshots(snapshot_id)
+);
+
+CREATE INDEX idx_forecast_symbol
+ON forecasts_history(symbol);
+
+CREATE INDEX idx_forecast_issued
+ON forecasts_history(issued_at);
+
+-- =====================================================
+-- Forecast Evaluations
+-- =====================================================
+
+CREATE TABLE forecast_evaluations (
+    evaluation_id TEXT PRIMARY KEY,
+    forecast_id TEXT NOT NULL,
+
+    reference_price REAL,
+    realized_price REAL,
+
+    error_percent REAL,
+
+    direction_correct INTEGER,
+    horizon_days INTEGER,
+
+    evaluated_at TEXT,
+
+    FOREIGN KEY(forecast_id)
+    REFERENCES forecasts_history(forecast_id)
+);
+
+CREATE INDEX idx_eval_forecast
+ON forecast_evaluations(forecast_id);
+
+-- =====================================================
+-- Backtest Runs
+-- =====================================================
+
+CREATE TABLE backtest_runs (
+    run_id TEXT PRIMARY KEY,
+
+    model_version TEXT NOT NULL,
+    dataset_version TEXT NOT NULL,
+
+    parameters_json TEXT NOT NULL,
+
+    executed_at TEXT NOT NULL
+);
+
+CREATE INDEX idx_backtest_model
+ON backtest_runs(model_version);
+
+-- =====================================================
+-- Backtest Results
+-- =====================================================
+
+CREATE TABLE backtest_results (
+    result_id TEXT PRIMARY KEY,
+
+    run_id TEXT NOT NULL,
+
+    accuracy REAL,
+    precision_score REAL,
+    recall_score REAL,
+    f1_score REAL,
+
+    sharpe_ratio REAL,
+    win_rate REAL,
+    max_drawdown REAL,
+
+    FOREIGN KEY(run_id)
+    REFERENCES backtest_runs(run_id)
+);
+
+CREATE INDEX idx_backtest_result_run
+ON backtest_results(run_id);
+
+-- =====================================================
+-- Research Datasets
+-- =====================================================
+
+CREATE TABLE research_datasets (
+    dataset_id TEXT PRIMARY KEY,
+
+    dataset_name TEXT NOT NULL,
+
+    dataset_version TEXT NOT NULL,
+
+    content_hash TEXT NOT NULL,
+
+    created_at TEXT NOT NULL
+);
+
+-- =====================================================
+-- Future Model Evaluations
+-- =====================================================
+
+CREATE TABLE model_evaluations (
+    evaluation_id TEXT PRIMARY KEY,
+
+    model_version TEXT NOT NULL,
+
+    dataset_id TEXT NOT NULL,
+
+    score REAL,
+
+    notes_json TEXT,
+
+    created_at TEXT NOT NULL,
+
+    FOREIGN KEY(dataset_id)
+    REFERENCES research_datasets(dataset_id)
+);
+
+-- =====================================================
+-- Transfer Batches
+-- =====================================================
+
+CREATE TABLE transfer_batches (
+    batch_id TEXT PRIMARY KEY,
+
+    source_table TEXT NOT NULL,
+
+    exported_rows INTEGER NOT NULL,
+
+    imported_rows INTEGER NOT NULL,
+
+    source_hash TEXT NOT NULL,
+
+    destination_hash TEXT NOT NULL,
+
+    transfer_status TEXT NOT NULL,
+
+    created_at TEXT NOT NULL,
+
+    verified_at TEXT
+);
+
+CREATE INDEX idx_transfer_status
+ON transfer_batches(transfer_status);
+
+-- =====================================================
+-- Transfer Receipts
+-- =====================================================
+
+CREATE TABLE transfer_receipts (
+    receipt_id TEXT PRIMARY KEY,
+
+    batch_id TEXT NOT NULL,
+
+    object_type TEXT NOT NULL,
+
+    object_id TEXT NOT NULL,
+
+    verified INTEGER NOT NULL,
+
+    created_at TEXT NOT NULL,
+
+    FOREIGN KEY(batch_id)
+    REFERENCES transfer_batches(batch_id)
+);
+
+
+توصية تنفيذية لـ Phase 2
+أول Migration في D2 يكون فقط:
+
+source_snapshots
+source_files
+forecasts_history
+forecast_evaluations
+transfer_batches
+
+
+أما:
+
+backtest_runs
+backtest_results
+research_datasets
+model_evaluations
+
+
+فتُفعّل عند فتح مسار:
+
+AZIZ
+Mizan Score
+Research Engine
+
+
+حتى لا يتحول D2 إلى تعقيد مبكر قبل الحاجة الفعلية له. 🌹
+
+
+
+

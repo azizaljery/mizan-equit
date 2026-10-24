@@ -1,0 +1,82 @@
+{
+  "portfolioId": "P2-TRUST-PORTFOLIO-001",
+  "instrument": "SYNTH-SAR-001",
+  "currency": "SAR",
+  "openingCash": 10000,
+  "fees": 0,
+  "events": [
+    {
+      "id": "P2-TRUST-TRADE-001",
+      "sequence": 1,
+      "side": "buy",
+      "quantity": 10,
+      "price": 100,
+      "at": "2026-10-03T00:00:01Z"
+    },
+    {
+      "id": "P2-TRUST-TRADE-002",
+      "sequence": 2,
+      "side": "buy",
+      "quantity": 5,
+      "price": 120,
+      "at": "2026-10-03T00:00:02Z"
+    },
+    {
+      "id": "P2-TRUST-TRADE-003",
+      "sequence": 3,
+      "side": "sell",
+      "quantity": 4,
+      "price": 130,
+      "at": "2026-10-03T00:00:03Z"
+    },
+    {
+      "id": "P2-TRUST-MARK-001",
+      "sequence": 4,
+      "side": "mark",
+      "quantity": null,
+      "price": 110,
+      "at": "2026-10-03T00:00:05Z"
+    },
+    {
+      "id": "P2-TRUST-TRADE-004",
+      "sequence": 5,
+      "side": "sell",
+      "quantity": 11,
+      "price": 110,
+      "at": "2026-10-03T00:00:06Z"
+    }
+  ],
+  "forecastSnapshot": {
+    "id": "P2-TRUST-FORECAST-001",
+    "modelVersion": "SYNTHETIC-1",
+    "settingsVersion": "SYNTHETIC-1",
+    "anchorDate": "2026-10-03",
+    "values": {
+      "low": 100,
+      "point": 110,
+      "high": 120
+    }
+  },
+  "expectedCheckpoints": {
+    "afterTwoBuys": {
+      "cash": 8400,
+      "units": 15,
+      "averageCost": 106.66666666666667
+    },
+    "afterPartialSale": {
+      "cash": 8920,
+      "units": 11,
+      "realizedPnl": 93.33333333333333
+    },
+    "atMark": {
+      "mark": 110,
+      "unrealizedPnl": 36.66666666666667
+    },
+    "afterFullSale": {
+      "cash": 10130,
+      "units": 0,
+      "cumulativeRealizedPnl": 130,
+      "unrealizedPnl": 0
+    }
+  }
+}

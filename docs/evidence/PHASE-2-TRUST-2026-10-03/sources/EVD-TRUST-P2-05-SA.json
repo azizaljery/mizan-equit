@@ -1,0 +1,299 @@
+{
+  "evidenceId": "EVD-TRUST-P2-05-SA",
+  "requirementId": "P2-05",
+  "scope": "Saudi Exchange identity/source/period validation at a single representative session date; no investment advice.",
+  "status": "PASS_AT_SAMPLE_DATE_WITH_LIMITS",
+  "humanReview": "PENDING",
+  "baseline": {
+    "repo": "azizaljery/mizan-equit",
+    "commit": "18ba8f39f3399a7a27d4ad16c2ed1e9b5f6fa241",
+    "sourceParityManifestSha256": "5fdf6dd6273c7765252495f6f960f74ad82592e619f583a24bd4d5bec03923bb",
+    "sourceCheckout": "/tmp/mizan-v45-canonical-18ba8f39-20261003T223500Z/mizan-v45"
+  },
+  "retrievedAtUtc": "2026-10-03T22:51:27.079Z",
+  "asOfDate": "2026-09-10",
+  "marketTimeZone": "Asia/Riyadh (Saudi Exchange source says Arabian Standard Time, GMT+03:00)",
+  "interval": "1d; raw per-session OHLCV. App request window is five years ending at as-of date; the official comparison is for this one date only.",
+  "appMethod": {
+    "module": "mizan-v45/lib/market-data.ts",
+    "functions": "upstream(url,true,0) then canonical parseChart(data, asOf); no configuredReader, DB, live application endpoint, source telemetry, or analysis write was used.",
+    "fieldMapping": "symbol/meta.symbol; company/meta.longName plus static Saudi directory; exchange/meta.exchangeName/fullExchangeName; currency/meta.currency; date from timestamp plus meta.gmtoffset; OHLCV from indicators.quote[0] (open/high/low/close/volume); historical price parser reads close, not adjclose.",
+    "rounding": "Compare prices at published two-decimal precision; retain binary floats unchanged in normalized-app-results.json. Volume compared as exact integer shares."
+  },
+  "officialSources": [
+    {
+      "publisher": "Saudi Exchange",
+      "sourceUrl": "https://www.saudiexchange.sa/Resources/Reports-v2/DetailedDaily_en.html",
+      "sourceName": "Detailed Daily Report",
+      "sourceAsOf": "Market Date 2026/09/10",
+      "retrieval": "Official source content returned by web-search result; direct page open returned 403 in this research environment. We did not bypass it.",
+      "quoteExcerpts": [
+        "Market Date 2026/09/10",
+        "Close Price (SAR)",
+        "Companies List"
+      ],
+      "searchFreshness": "Search result displayed Published/Crawled approximately 3 weeks before 2026-10-03; reported Market Date remains 2026/09/10."
+    },
+    {
+      "publisher": "Saudi Exchange",
+      "sourceUrl": "https://www.saudiexchange.sa/wps/portal/saudiexchange/hidden/company-profile-main/%21ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8ziTR3NDIw8LAz83d2MXA0C3SydAl1c3Q0NvE30I4EKzBEKDMKcTQzMDPxN3H19LAzdTU31w8syU8v1wwkpK8hOMgUA-oskdg%21%21/?companySymbol=2222",
+      "sourceName": "Saudi Aramco company profile",
+      "sourceAsOf": "Current profile fetched through search index; direct page access returned 403 in this research environment.",
+      "retrieval": "Official profile excerpt visible in web search results; no access-control bypass attempted.",
+      "quoteExcerpts": [
+        "Historical prices & volume traded data are adjusted to account for all corporate actions."
+      ]
+    },
+    {
+      "publisher": "Aramco Investor Relations",
+      "sourceUrl": "https://www.aramco.com/en/investors/investor-faq",
+      "sourceName": "Investor FAQ",
+      "sourceAsOf": "current official FAQ, retrieved 2026-10-03",
+      "quoteExcerpts": [
+        "symbol on Saudi Exchange is 2222",
+        "Long name: Saudi Arabian Oil Company / Short Name: Saudi Aramco"
+      ]
+    },
+    {
+      "publisher": "Saudi Exchange",
+      "sourceUrl": "https://www.saudiexchange.sa/wps/portal/saudiexchange/rules-guidance/all-faqs?locale=en",
+      "sourceName": "Trading FAQ",
+      "sourceAsOf": "current official FAQ, retrieved 2026-10-03",
+      "quoteExcerpts": [
+        "open Sunday through Thursday from 10AM to 3PM Arabian Standard Time (GMT +03:00)"
+      ]
+    },
+    {
+      "publisher": "Saudi Exchange",
+      "sourceUrl": "https://www.saudiexchange.sa/wps/portal/saudiexchange/trading/market-services/market-information-services/market-data?locale=en",
+      "sourceName": "Market Data",
+      "sourceAsOf": "current official page, retrieved 2026-10-03",
+      "quoteExcerpts": [
+        "End-of-Day Data",
+        "over the past five (5) years"
+      ]
+    }
+  ],
+  "corporateActionDisclosure": {
+    "appBehavior": "Canonical parseChart reads the quote close array and event records; it does not read adjclose. Raw chart payload includes provider-supplied dividend/split events (see raw response bundle). The normalized sample is an as-traded single-session OHLCV comparison, not total return.",
+    "officialContext": "Saudi Exchange company-profile pages separately state that historical price and volume series are adjusted for corporate actions. The comparison here uses a Detailed Daily Report row for the stated market date, not that adjusted historical profile series. Full window/corporate-action equivalence was not established."
+  },
+  "samples": [
+    {
+      "symbol": "2222.SR",
+      "appMeta": {
+        "symbol": "2222.SR",
+        "longName": "Saudi Arabian Oil Company",
+        "shortName": "Saudi Arabian Oil Co.",
+        "currency": "SAR",
+        "exchangeName": "SAU",
+        "fullExchangeName": "Saudi",
+        "instrumentType": "EQUITY",
+        "exchangeTimezoneName": "Asia/Riyadh",
+        "gmtoffset": 10800,
+        "dataGranularity": "1d"
+      },
+      "appDirectoryResolution": {
+        "nameEn": "Saudi Arabian Oil Company",
+        "marketType": "M",
+        "source": "canonical mizan-v45/lib/data/saudi-directory.json; confirmed with canonical searchSaudi()"
+      },
+      "officialMarketDayRow": {
+        "symbol": "2222",
+        "name": "SAUDI ARAMCO",
+        "open": 26.02,
+        "high": 26.18,
+        "low": 26.02,
+        "close": 26.14,
+        "volume": 5010055,
+        "currency": "SAR"
+      },
+      "fields": {
+        "symbol": {
+          "app": "2222.SR",
+          "official": "2222",
+          "status": "PASS",
+          "mapping": "Saudi 4-digit exchange code maps to app .SR suffix"
+        },
+        "name": {
+          "appDirectory": "Saudi Arabian Oil Co.",
+          "appProviderMeta": "Saudi Arabian Oil Company",
+          "officialExchangeDisplay": "SAUDI ARAMCO",
+          "status": "NAME_VARIANT",
+          "detail": "Provider metadata matches the official long name; canonical directory uses the abbreviated English label “Co.” and official exchange display uses SAUDI ARAMCO. Same exchange symbol/ISIN; not evidence of a wrong issuer."
+        },
+        "exchange_market": {
+          "app": "Saudi",
+          "official": "Saudi Exchange Main Market",
+          "status": "PASS"
+        },
+        "currency": {
+          "app": "SAR",
+          "official": "SAR",
+          "status": "PASS"
+        },
+        "date_period": {
+          "app": "2026-09-10",
+          "official": "2026-09-10 market date",
+          "status": "PASS"
+        },
+        "open": {
+          "appRaw": 26.020000457763672,
+          "appPublishedPrecision": 26.02,
+          "official": 26.02,
+          "status": "PASS"
+        },
+        "high": {
+          "appRaw": 26.18000030517578,
+          "appPublishedPrecision": 26.18,
+          "official": 26.18,
+          "status": "PASS"
+        },
+        "low": {
+          "appRaw": 26.020000457763672,
+          "appPublishedPrecision": 26.02,
+          "official": 26.02,
+          "status": "PASS"
+        },
+        "close": {
+          "appRaw": 26.139999389648438,
+          "appPublishedPrecision": 26.14,
+          "official": 26.14,
+          "status": "PASS"
+        },
+        "volume": {
+          "appShares": 5010055,
+          "officialShares": 5010055,
+          "differenceAppMinusOfficial": 0,
+          "status": "PASS"
+        }
+      },
+      "appRawResponseSha256": "7285fbf31e00d92e5385b7476de2b1f5404ca1665eb82d8234e74449987b5aca",
+      "appNormalizedPriceRow": {
+        "date": "2026-09-10",
+        "open": 26.020000457763672,
+        "high": 26.18000030517578,
+        "low": 26.020000457763672,
+        "close": 26.139999389648438,
+        "volume": 5010055
+      },
+      "appCoverage": {
+        "interval": "1d",
+        "count": 1252,
+        "firstDate": "2021-09-12",
+        "lastDate": "2026-09-10"
+      }
+    },
+    {
+      "symbol": "1120.SR",
+      "appMeta": {
+        "symbol": "1120.SR",
+        "longName": "Al Rajhi Banking and Investment Corporation",
+        "shortName": "Al Rajhi Bank",
+        "currency": "SAR",
+        "exchangeName": "SAU",
+        "fullExchangeName": "Saudi",
+        "instrumentType": "EQUITY",
+        "exchangeTimezoneName": "Asia/Riyadh",
+        "gmtoffset": 10800,
+        "dataGranularity": "1d"
+      },
+      "appDirectoryResolution": {
+        "nameEn": "Al Rajhi Bank",
+        "marketType": "M",
+        "source": "canonical mizan-v45/lib/data/saudi-directory.json; confirmed with canonical searchSaudi()"
+      },
+      "officialMarketDayRow": {
+        "symbol": "1120",
+        "name": "ALRAJHI",
+        "open": 66.1,
+        "high": 67.05,
+        "low": 66.0,
+        "close": 66.0,
+        "volume": 8479286,
+        "currency": "SAR"
+      },
+      "fields": {
+        "symbol": {
+          "app": "1120.SR",
+          "official": "1120",
+          "status": "PASS",
+          "mapping": "Saudi 4-digit exchange code maps to app .SR suffix"
+        },
+        "name": {
+          "appDirectory": "Al Rajhi Bank",
+          "appProviderMeta": "Al Rajhi Banking and Investment Corporation",
+          "officialExchangeDisplay": "ALRAJHI",
+          "status": "NAME_VARIANT",
+          "detail": "Provider long-name and issuer/exchange display-name variants; app canonical Saudi directory resolves to the official current entity name. This is not evidence of a wrong issuer."
+        },
+        "exchange_market": {
+          "app": "Saudi",
+          "official": "Saudi Exchange Main Market",
+          "status": "PASS"
+        },
+        "currency": {
+          "app": "SAR",
+          "official": "SAR",
+          "status": "PASS"
+        },
+        "date_period": {
+          "app": "2026-09-10",
+          "official": "2026-09-10 market date",
+          "status": "PASS"
+        },
+        "open": {
+          "appRaw": 66.0999984741211,
+          "appPublishedPrecision": 66.1,
+          "official": 66.1,
+          "status": "PASS"
+        },
+        "high": {
+          "appRaw": 67.05000305175781,
+          "appPublishedPrecision": 67.05,
+          "official": 67.05,
+          "status": "PASS"
+        },
+        "low": {
+          "appRaw": 66,
+          "appPublishedPrecision": 66,
+          "official": 66.0,
+          "status": "PASS"
+        },
+        "close": {
+          "appRaw": 66,
+          "appPublishedPrecision": 66,
+          "official": 66.0,
+          "status": "PASS"
+        },
+        "volume": {
+          "appShares": 8479286,
+          "officialShares": 8479286,
+          "differenceAppMinusOfficial": 0,
+          "status": "PASS"
+        }
+      },
+      "appRawResponseSha256": "e6abeae326efc5949a5a9b1473382a46391df4855d4b03214b3d2704f9b4bd89",
+      "appNormalizedPriceRow": {
+        "date": "2026-09-10",
+        "open": 66.0999984741211,
+        "high": 67.05000305175781,
+        "low": 66,
+        "close": 66,
+        "volume": 8479286
+      },
+      "appCoverage": {
+        "interval": "1d",
+        "count": 1252,
+        "firstDate": "2021-09-12",
+        "lastDate": "2026-09-10"
+      }
+    }
+  ],
+  "coverage": {
+    "sampleDate": "verified for both selected companies",
+    "officialFullWindow": "NOT_COMPARABLE / NOT VERIFIED; official source comparison is one market date only. Exchange data product page describes five-year EOD availability, but source range was not directly retrieved for these issuers.",
+    "missingSampleRows": [],
+    "limit": "Saudi Exchange direct page access returned 403; an official indexed page excerpt supplies the stated 2026-09-10 rows."
+  }
+}
