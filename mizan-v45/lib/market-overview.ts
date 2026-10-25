@@ -128,11 +128,11 @@ export async function buildOverview(market:'sa'|'us',fetcher:Fetcher=defaultFetc
  const indices=(await pool(defs,4,async d=>{
   const live=parseSeries(await fetchJson(fetcher,chartUrl(d.symbol,'1m','1d')),d.symbol);
   let daily:Series={...live,bars:[]};
-  try{daily=parseSeries(await fetchJson(fetcher,chartUrl(d.symbol,'1d','1y')),d.symbol);}catch{}
+  try{daily=parseSeries(await fetchJson(fetcher,chartUrl(d.symbol,'1d','2y')),d.symbol);}catch{}
   return analyse(daily,d.name,live);
  })).flatMap((r,i)=>{if(r.status==='fulfilled')return [r.value];notes.push(`تعذر جلب ${defs[i].name} الآن.`);return [];});
  const universe=market==='sa'?SA_UNIVERSE:US_UNIVERSE;
- const got=await pool(universe,8,async s=>parseSeries(await fetchJson(fetcher,chartUrl(s,'1d','1y')),s));
+ const got=await pool(universe,8,async s=>parseSeries(await fetchJson(fetcher,chartUrl(s,'1d','2y')),s));
  const members=got.flatMap(r=>r.status==='fulfilled'?[r.value]:[]);
  if(members.length<universe.length)notes.push(`تعذر جلب ${universe.length-members.length} من ${universe.length} شركة في عينة الاتساع؛ الحساب على المتاح فقط.`);
  const b=breadth(members,universe.length);
