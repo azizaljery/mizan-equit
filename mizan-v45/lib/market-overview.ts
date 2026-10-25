@@ -26,8 +26,9 @@ export type MarketOverview={market:'sa'|'us';generatedAt:string;indices:IndexAna
 const Y='https://query1.finance.yahoo.com/v8/finance/chart/';
 const chartUrl=(symbol:string,interval:'1m'|'1d',range:'1d'|'1y'|'2y')=>`${Y}${encodeURIComponent(symbol)}?interval=${interval}&range=${range}&includePrePost=false`;
 export const quotePage=(symbol:string)=>`https://finance.yahoo.com/quote/${encodeURIComponent(symbol)}`;
-export const INDICES={sa:[{symbol:'^TASI.SR',name:'مؤشر السوق الرئيسية (تاسي)'},{symbol:'^NOMUC.SR',name:'مؤشر نمو الموازي'}],
- us:[{symbol:'^GSPC',name:'S&P 500'},{symbol:'^IXIC',name:'ناسداك المركب'},{symbol:'^DJI',name:'داو جونز الصناعي'},{symbol:'^VIX',name:'مؤشر التقلب VIX'}]} as const;
+type IndexDef={symbol:string;name:string};
+export const INDICES:Record<'sa'|'us',readonly IndexDef[]>={sa:[{symbol:'^TASI.SR',name:'مؤشر السوق الرئيسية (تاسي)'},{symbol:'^NOMUC.SR',name:'مؤشر نمو الموازي'}],
+ us:[{symbol:'^GSPC',name:'S&P 500'},{symbol:'^IXIC',name:'ناسداك المركب'},{symbol:'^DJI',name:'داو جونز الصناعي'},{symbol:'^VIX',name:'مؤشر التقلب VIX'}]};
 
 const num=(v:unknown):v is number=>typeof v==='number'&&Number.isFinite(v);
 const r2=(v:number|null,d=2)=>v===null?null:Math.round(v*10**d)/10**d;
@@ -120,19 +121,19 @@ export const defaultFetcher:Fetcher=async url=>{
  const r=await fetch(url,{headers:{'User-Agent':USER_AGENT,Accept:'application/json'},signal:AbortSignal.timeout(12000),redirect:'manual'});
  if(!r.ok)throw Error('HTTP '+r.status);return r.json();
 };
-async function pool<T,R>(items:readonly T[],n:number,fn:(t:T)=>Promise<R>){const out:PromiseSettledResult<R>[]=new Array(items.length);let i=0;
+async function pool<T,R>(items:readonly T[],n:number,fn:(t:T)=>Promise<R>):Promise<PromiseSettledResult<R>[]>{const out:PromiseSettledResult<R>[]=new Array(items.length);let i=0;
  await Promise.all(Array.from({length:Math.min(n,items.length)},async()=>{while(i<items.length){const k=i++;try{out[k]={status:'fulfilled',value:await fn(items[k])};}catch(e){out[k]={status:'rejected',reason:e};}}}));return out;}
 
 export async function buildOverview(market:'sa'|'us',fetcher:Fetcher=defaultFetcher,now=new Date()):Promise<MarketOverview>{
  const notes:string[]=[];const defs=INDICES[market];
- const indices=(await pool(defs,4,async d=>{
+ const indices:IndexAnalysis[]=(await pool<IndexDef,IndexAnalysis>(defs,4,async d=>{
   const live=parseSeries(await fetchJson(fetcher,chartUrl(d.symbol,'1m','1d')),d.symbol);
   let daily:Series={...live,bars:[]};
   try{daily=parseSeries(await fetchJson(fetcher,chartUrl(d.symbol,'1d','2y')),d.symbol);}catch{}
   return analyse(daily,d.name,live);
- })).flatMap((r,i)=>{if(r.status==='fulfilled')return [r.value];notes.push(`تعذر جلب ${defs[i].name} الآن.`);return [];});
+ })).flatMap((r,i):IndexAnalysis[]=>{if(r.status==='fulfilled')return [r.value];notes.push(`تعذر جلب ${defs[i].name} الآن.`);return [];});
  const universe=market==='sa'?SA_UNIVERSE:US_UNIVERSE;
- const got=await pool(universe,8,async s=>parseSeries(await fetchJson(fetcher,chartUrl(s,'1d','2y')),s));
+ const got=await pool<string,Series>(universe,8,async s=>parseSeries(await fetchJson(fetcher,chartUrl(s,'1d','2y')),s));
  const members=got.flatMap(r=>r.status==='fulfilled'?[r.value]:[]);
  if(members.length<universe.length)notes.push(`تعذر جلب ${universe.length-members.length} من ${universe.length} شركة في عينة الاتساع؛ الحساب على المتاح فقط.`);
  const b=breadth(members,universe.length);
