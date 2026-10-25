@@ -38,6 +38,7 @@ import {explainTerm} from '@/lib/explanations';
 import {useMizanSettings,useMizanOwner} from '@/components/settings-context';
 import {saveDownload} from '@/lib/documents';
 import {CustomerMarketWatch} from '@/components/customer-market-watch';
+import {MarketOverviewPanel} from '@/components/market-overview';
 const money=(n:number|null|undefined)=>finite(n)?new Intl.NumberFormat('en-US',{notation:Math.abs(n)>=1e6?'compact':'standard',maximumFractionDigits:2}).format(n):'—';
 function Metric({title,value,note}:{title:string;value:string;note?:string}){const settings=useMizanSettings();if(settings.hiddenMetrics.includes(title))return null;return <div className="metric"><div className="title">{title}</div><div className="value"><Explain term={title} value={value} detail={note}/></div></div>}
 function Details({title,children,subtitle,id}:{title:string;children:React.ReactNode;subtitle?:string;id?:string}){const settings=useMizanSettings(),label=useSectionTitle(title),kind=/المالي|التقييم/.test(title)?'financial':/الفني|الشارت/.test(title)?'technical':/السيولة/.test(title)?'liquidity':null;return <details id={id} className="auto-details"><summary><span>{label}</span><ChevronDown size={18}/></summary><div className="detail-body">{subtitle&&<p>{subtitle}</p>}{kind&&!settings.indicators[kind]?<p>تفاصيل هذه المؤشرات مخفية حسب إعدادات الإدارة.</p>:children}</div></details>}
@@ -94,6 +95,7 @@ export default function Home(){
  const a=analysis,r=report;
  return <><SiteHeader current="/" meta={<><Globe2 size={16} aria-hidden="true"/> السعودية · أمريكا · الأسواق العالمية</>}/>
  <main className={`auto-workspace ${r?'has-result':''}`}>
+ {!r&&<MarketOverviewPanel/>}
  <CustomerMarketWatch company={selected ? {symbol:selected.symbol,name:selected.name,exchange:selected.exchange} : null}/>
  {error&&<Notice>{error}</Notice>}
  <ManagedSections scope="home"><ManagedSection sectionKey="search">

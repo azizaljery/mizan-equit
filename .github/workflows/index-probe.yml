@@ -1,0 +1,35 @@
+name: Index data probe (read-only Yahoo)
+
+# What Yahoo returns for market indices (TASI and US). Publishes point counts and last values only.
+on:
+  workflow_dispatch:
+  push:
+    branches: [market-overview]
+    paths: [".github/workflows/index-probe.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Probe
+        env: {RID: "${{ github.run_id }}", REF: "${{ github.ref_name }}", GH_TOKEN: "${{ github.token }}"}
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE' > out.json
+          const syms=['^TASI.SR','^TASI','TASI.SR','^GSPC','^IXIC','^DJI','SPY','^VIX','^NOMUC.SR','^MT30.SR'];
+          const ranges=[['1m','1d'],['1d','5d'],['1d','1mo'],['1d','1y'],['1d','2y'],['1wk','5y']];
+          const out={at:new Date().toISOString(),r:[]};
+          for(const s of syms)for(const [iv,rg] of ranges){
+            const u=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(s)}?interval=${iv}&range=${rg}&includePrePost=false`;
+            try{const r=await fetch(u,{headers:{'User-Agent':'Mozilla/5.0'},signal:AbortSignal.timeout(15000)});const j=await r.json().catch(()=>null);const res=j?.chart?.result?.[0];const c=res?.indicators?.quote?.[0]?.close||[];
+              out.r.push({s,iv,rg,http:r.status,type:res?.meta?.instrumentType,sym:res?.meta?.symbol,cur:res?.meta?.currency,price:res?.meta?.regularMarketPrice,prev:res?.meta?.chartPreviousClose,time:res?.meta?.regularMarketTime?new Date(res.meta.regularMarketTime*1000).toISOString():null,points:c.length,valid:c.filter(x=>typeof x==='number').length,first:res?.timestamp?.[0]?new Date(res.timestamp[0]*1000).toISOString().slice(0,10):null,err:j?.chart?.error?.code||null});
+            }catch(e){out.r.push({s,iv,rg,error:String(e).slice(0,80)});}
+          }
+          console.log(JSON.stringify(out,null,1));
+          NODE
+          node -e 'const fs=require("fs");fs.writeFileSync("body.json",JSON.stringify({message:"ci diagnostics: index probe "+process.env.RID,branch:process.env.REF,content:fs.readFileSync("out.json").toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/index-probe-${RID}.json" --input body.json >/dev/null

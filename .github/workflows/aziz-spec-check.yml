@@ -47,6 +47,8 @@ jobs:
         run: node --test --import tsx tests/aziz-readiness.test.ts
       - name: Admin password change tests
         run: node --test --import tsx tests/admin-password.test.ts
+      - name: Market overview tests
+        run: node --test --import tsx tests/market-overview.test.ts
       - name: Daily picks tests (unchanged behaviour)
         run: node --test --import tsx tests/daily-picks.test.ts tests/picks.test.ts
       - name: Aziz research package tests
