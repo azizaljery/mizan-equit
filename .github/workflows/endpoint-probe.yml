@@ -21,3 +21,4 @@ jobs:
           NODE
           node -e 'const fs=require("fs");fs.writeFileSync("body.json",JSON.stringify({message:"ci diagnostics: endpoint probe "+process.env.RID,branch:process.env.REF,content:fs.readFileSync("out.json").toString("base64")}))'
           gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/endpoint-probe-${RID}.json" --input body.json >/dev/null
+# rerun 2026-10-25T12:12:14Z
