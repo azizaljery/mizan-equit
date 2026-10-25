@@ -1,0 +1,34 @@
+name: Market overview live check (no deploy)
+
+# Builds the home-page market overview against live Yahoo data from the branch code and publishes the JSON.
+on:
+  push:
+    branches: [market-overview]
+    paths: ["mizan-v45/lib/market-overview.ts", ".github/workflows/market-overview-check.yml", "mizan-v45/app/api/market-overview/**"]
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults: {run: {working-directory: mizan-v45}}
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: "24"}
+      - run: npm i --no-save --no-audit --no-fund tsx@4.19.2
+      - name: Build both markets
+        env: {RID: "${{ github.run_id }}", REF: "${{ github.ref_name }}", GH_TOKEN: "${{ github.token }}"}
+        shell: bash
+        run: |
+          cat > /tmp/run.ts <<'TS'
+          import {buildOverview} from './lib/market-overview';
+          const t0=Date.now();const sa=await buildOverview('sa');const t1=Date.now();const us=await buildOverview('us');
+          console.log(JSON.stringify({ms:{sa:t1-t0,us:Date.now()-t1},sa,us},null,1));
+          TS
+          cp /tmp/run.ts ./run-overview.ts && npx tsx run-overview.ts > ../overview.json; rm run-overview.ts
+          node -e 'const fs=require("fs");fs.writeFileSync("../body.json",JSON.stringify({message:"ci diagnostics: market overview "+process.env.RID,branch:process.env.REF,content:fs.readFileSync("../overview.json").toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/market-overview-${RID}.json" --input ../body.json >/dev/null
