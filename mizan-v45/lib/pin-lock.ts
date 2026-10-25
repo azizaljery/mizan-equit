@@ -16,6 +16,9 @@ export async function verifyPin(pin:string,stored:string){
  for(let i=0;i<stored.length;i++)difference|=stored.charCodeAt(i)^candidate.charCodeAt(i);
  return difference===0;
 }
+/** Owner decision 2026-10-25: the code can be removed. The sentinel keeps the owner-identity binding; only the PIN check is skipped. */
+export const CODE_DISABLED='disabled';
+export async function gatePinDisabled(db:any){try{const r=await db.prepare('SELECT pin_hash FROM recommendation_lock WHERE id=1').first();return r?.pin_hash===CODE_DISABLED;}catch{return false;}}
 export async function unlock(db:any,initialHash:string,user:string,pin:string){
  if(!user)throw new Error('يلزم تسجيل الدخول بحساب مالك الموقع.');
  await db.prepare('INSERT OR IGNORE INTO recommendation_lock (id,pin_hash) VALUES (1,?)').bind(initialHash).run();
@@ -23,7 +26,7 @@ export async function unlock(db:any,initialHash:string,user:string,pin:string){
  await db.prepare('UPDATE recommendation_lock SET attempts=0,window_started=? WHERE id=1 AND window_started<?').bind(now,now-900000).run();
  const row=await db.prepare('UPDATE recommendation_lock SET attempts=attempts+1 WHERE id=1 AND attempts<5 AND (owner_id=? OR owner_id=?) RETURNING *').bind(user,'').first();
  if(!row)throw new Error('تعذر فتح التوصية. تأكد من حسابك، أو انتظر 15 دقيقة بعد كثرة المحاولات.');
- if(!await verifyPin(pin,row.pin_hash))throw new Error('الرمز غير صحيح.');
+ if(row.pin_hash!==CODE_DISABLED&&!await verifyPin(pin,row.pin_hash))throw new Error('الرمز غير صحيح.');
  const saved=await db.prepare('UPDATE recommendation_lock SET owner_id=?,attempts=0 WHERE id=1 AND pin_hash=? AND (owner_id=? OR owner_id=?) RETURNING id').bind(user,row.pin_hash,user,'').first();
  if(!saved)throw new Error('تغير الرمز؛ أعد المحاولة بالرمز الحالي.');
  return row.pin_hash as string;
