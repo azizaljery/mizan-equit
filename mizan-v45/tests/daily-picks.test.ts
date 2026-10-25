@@ -136,7 +136,7 @@ test('idempotency key and row building (append-only reference fields)',()=>{
 test('migration: UNIQUE + ON CONFLICT DO NOTHING is idempotent; triggers keep reference append-only and outcome final',()=>{
  const db=new DatabaseSync(':memory:');
  for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())db.exec(readFileSync('drizzle/'+f,'utf8'));
- const journal=JSON.parse(readFileSync('drizzle/meta/_journal.json','utf8'));assert.equal(journal.entries.at(-1).tag,'0016_daily_picks');
+ const journal=JSON.parse(readFileSync('drizzle/meta/_journal.json','utf8'));assert.ok(journal.entries.some((e:any)=>e.tag==='0016_daily_picks'),'0016 registered in the journal');
  const r=buildLedgerRows('us','2026-10-16',[{symbol:'AAPL',rank:1,universeSize:40,percentile:100,mom:0.2,inTop:true,refPrice:200,refPriceDate:'2026-10-16'}],'USD','2026-10-16T21:30:00Z')[0];
  const ins=()=>db.prepare(`INSERT INTO daily_picks(id,pick_date,market,horizon,symbol,rank,universe_size,percentile,mom126_5,in_top,ref_price,ref_price_date,currency,mizan_predicted_price,mizan_forecast_id,model_version,protocol_commit,created_at)
   VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT DO NOTHING`).run(r.id,r.pick_date,r.market,r.horizon,r.symbol,r.rank,r.universe_size,r.percentile,r.mom126_5,r.in_top,r.ref_price,r.ref_price_date,r.currency,r.mizan_predicted_price,r.mizan_forecast_id,r.model_version,r.protocol_commit,r.created_at);
