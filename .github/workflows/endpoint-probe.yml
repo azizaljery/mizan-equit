@@ -1,0 +1,23 @@
+name: Endpoint probe (read-only GET against mizan-aziz)
+on:
+  push:
+    branches: [market-overview]
+    paths: [".github/workflows/endpoint-probe.yml"]
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Probe
+        env: {RID: "${{ github.run_id }}", REF: "${{ github.ref_name }}", GH_TOKEN: "${{ github.token }}"}
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE' > out.json
+          const base='https://mizan-aziz.aljeryabod.workers.dev',out=[];
+          for(const m of ['sa','us','sa','sa'])for(const q of [`market=${m}`,`market=${m}&r=${Date.now()}`]){const t=Date.now();try{const r=await fetch(`${base}/api/market-overview?${q}`,{signal:AbortSignal.timeout(60000)});const tx=await r.text();const code=(tx.match(/Error code\s*:?\s*(\d{4})/i)||tx.match(/error code:\s*(\d{4})/i)||[])[1]||null;out.push({q,http:r.status,ms:Date.now()-t,cf:code,ray:r.headers.get('cf-ray'),cache:r.headers.get('cf-cache-status'),body:tx.slice(0,300)});}catch(e){out.push({q,error:String(e).slice(0,100)});}await new Promise(r=>setTimeout(r,3000));}
+          console.log(JSON.stringify(out,null,1));
+          NODE
+          node -e 'const fs=require("fs");fs.writeFileSync("body.json",JSON.stringify({message:"ci diagnostics: endpoint probe "+process.env.RID,branch:process.env.REF,content:fs.readFileSync("out.json").toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/endpoint-probe-${RID}.json" --input body.json >/dev/null
