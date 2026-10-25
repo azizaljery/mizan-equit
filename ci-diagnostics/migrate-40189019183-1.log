@@ -1,0 +1,39 @@
+4.92.0
+--- token/account presence (masked) ---
+CLOUDFLARE_API_TOKEN: set (len=54)
+CLOUDFLARE_ACCOUNT_ID: set (ee2a2be6c276b93b997874cb2a98ded2)
+--- wrangler d1 migrations list (remote) ---
+
+ ⛅️ wrangler 4.92.0
+───────────────────
+Resource location: remote 
+
+Migrations to be applied:
+┌─────────────────────────┐
+│ Name                    │
+├─────────────────────────┤
+│ 0017_admin_password.sql │
+└─────────────────────────┘
+--- wrangler d1 migrations apply (remote) ---
+
+ ⛅️ wrangler 4.92.0 (update available 4.152.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+Migrations to be applied:
+┌─────────────────────────┐
+│ name                    │
+├─────────────────────────┤
+│ 0017_admin_password.sql │
+└─────────────────────────┘
+? About to apply 1 migration(s)
+Your database may not be available to serve requests during the migration, continue?
+🤖 Using fallback value in non-interactive context: yes
+🌀 Executing on remote database mizan-equity-db (e95b74e8-81d6-4beb-8ea2-ad59c863d21d):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+🚣 Executed 3 commands in 3.07ms
+┌─────────────────────────┬────────┐
+│ name                    │ status │
+├─────────────────────────┼────────┤
+│ 0017_admin_password.sql │ ✅     │
+└─────────────────────────┴────────┘
