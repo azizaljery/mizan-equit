@@ -91,13 +91,21 @@ export function forecastConditions(report: MarketReport, now = Date.now()): Fore
       sources:used.map(f=>({key:f.key,source:f.source,date:f.date,publishedAt:f.publishedAt!})),reason},notes};
 }
 
-/** Requested abstention/low-volume policy, applied inside the existing six-horizon model. */
+/**
+ * Shock policy (owner decision 2026-10-26): a volatility shock or suspected structural break no longer withholds the
+ * short-horizon forecast when the data and calculation are valid. The row is issued WITH an explicit warning, forced low
+ * confidence (see research-model) and a range built from at least the latest 20-session volatility (the range may or may not widen). Withholding for
+ * invalid data, unresolved jumps, disabled horizons or the admin confidence floor is unchanged.
+ */
 export function horizonCondition(conditions: ForecastConditions, sessions: number) {
   const shock = conditions.regime.available && (conditions.regime.currentRegime==='VOLATILITY_SHOCK'
     || conditions.regime.structuralBreakDetected);
+  const warn = shock && sessions<=21;
+  const label = conditions.regime.currentRegime==='VOLATILITY_SHOCK' ? 'صدمة تقلب' : 'كسر هيكلي محتمل';
   return {
-    abstain: shock && sessions<=21,
-    abstainReason: shock && sessions<=21 ? 'امتناع مشروط: رُصد نمط صدمة في التذبذب؛ لا يصدر نطاق قصير المدى حتى مراجعة الحالة.' : null,
+    abstain: false,
+    abstainReason: null as string|null,
+    shockWarning: warn ? `${label}: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.` : null as string|null,
     positiveTiltMultiplier: conditions.relativeVolume!==null && conditions.relativeVolume<1.1 ? .6 : 1,
     shock,
   };

@@ -38,6 +38,7 @@ export function Forecasts({report,quote=null,data}:{report?:MarketReport|null;qu
  <div><dt>درجة الثقة</dt><dd><Explain term="درجة الثقة" value={row.confidence}/></dd></div>
  <div><dt>الحالة</dt><dd>{forecastStatus(row).label}</dd></div>
  </dl>
+ {row.available&&row.shockWarning&&<p role="status" className="notice">{row.shockWarning}</p>}
  {!row.available&&<p role="status" className="notice error">{(row.reasons||[]).join(' ')||'لم يصدر النموذج توقعًا لهذا الأفق.'}</p>}
  <details><summary>أدلة النموذج وشروط الإبطال — {row.period}</summary><div className="forecast-detail">
  <p>الأساسي: {row.scenarios?range(row.scenarios.base):'غير متاح'} · الإيجابي: {row.scenarios?range(row.scenarios.positive):'غير متاح'} · السلبي: {row.scenarios?range(row.scenarios.negative):'غير متاح'}</p>

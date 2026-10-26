@@ -1,0 +1,1264 @@
+{
+ "before": {
+  "version": "mizan-scenarios-7-diagnostics-1",
+  "cases": {
+   "calm": [
+    {
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.008,
+     "price": 113.488,
+     "range": [
+      113.046,
+      113.937
+     ],
+     "widthPct": 0.78,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.026,
+     "price": 113.509,
+     "range": [
+      112.536,
+      114.49
+     ],
+     "widthPct": 1.72,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.105,
+     "price": 113.598,
+     "range": [
+      111.56,
+      115.674
+     ],
+     "widthPct": 3.63,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.21,
+     "price": 113.718,
+     "range": [
+      110.072,
+      117.483
+     ],
+     "widthPct": 6.53,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 126,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.359,
+     "price": 113.887,
+     "range": [
+      108.674,
+      119.349
+     ],
+     "widthPct": 9.41,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pct": 0.597,
+     "price": 114.156,
+     "range": [
+      106.721,
+      122.11
+     ],
+     "widthPct": 13.56,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    }
+   ],
+   "shock_down": [
+    {
+     "s": 1,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 5,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 21,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.132,
+     "price": 110.823,
+     "range": [
+      106.227,
+      115.619
+     ],
+     "widthPct": 8.49,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 126,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.249,
+     "price": 110.953,
+     "range": [
+      104.396,
+      117.922
+     ],
+     "widthPct": 12.22,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 252,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.468,
+     "price": 111.195,
+     "range": [
+      101.871,
+      121.372
+     ],
+     "widthPct": 17.62,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    }
+   ],
+   "shock_down@minConfidence_medium": [
+    {
+     "s": 1,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 5,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 21,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 63,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "confidence_policy"
+     ]
+    },
+    {
+     "s": 126,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "confidence_policy"
+     ]
+    },
+    {
+     "s": 252,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "confidence_policy"
+     ]
+    }
+   ],
+   "shock_up": [
+    {
+     "s": 1,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 5,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 21,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.391,
+     "price": 119.764,
+     "range": [
+      112.207,
+      127.829
+     ],
+     "widthPct": 13.1,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 126,
+     "ok": true,
+     "dir": "صاعد",
+     "pct": 0.595,
+     "price": 120.007,
+     "range": [
+      109.297,
+      131.765
+     ],
+     "widthPct": 18.83,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pct": 0.814,
+     "price": 120.268,
+     "range": [
+      105.183,
+      137.518
+     ],
+     "widthPct": 27.1,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    }
+   ],
+   "shock_big_up": [
+    {
+     "s": 1,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 5,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 21,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.424,
+     "price": 123.452,
+     "range": [
+      112.292,
+      135.72
+     ],
+     "widthPct": 19.06,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 126,
+     "ok": true,
+     "dir": "صاعد",
+     "pct": 0.64,
+     "price": 123.718,
+     "range": [
+      107.999,
+      141.724
+     ],
+     "widthPct": 27.43,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pct": 0.864,
+     "price": 123.993,
+     "range": [
+      102.043,
+      150.664
+     ],
+     "widthPct": 39.55,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    }
+   ],
+   "sa_shock": [
+    {
+     "s": 1,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 5,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 21,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "volatility_shock_policy"
+     ]
+    },
+    {
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.108,
+     "price": 110.244,
+     "range": [
+      105.284,
+      115.438
+     ],
+     "widthPct": 9.22,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 126,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.216,
+     "price": 110.363,
+     "range": [
+      103.293,
+      117.917
+     ],
+     "widthPct": 13.28,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 252,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.434,
+     "price": 110.603,
+     "range": [
+      100.561,
+      121.647
+     ],
+     "widthPct": 19.15,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    }
+   ],
+   "invalid_dates": [
+    {
+     "s": 1,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "price_series_invalid"
+     ]
+    },
+    {
+     "s": 5,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "price_series_invalid"
+     ]
+    },
+    {
+     "s": 21,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "price_series_invalid"
+     ]
+    },
+    {
+     "s": 63,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "price_series_invalid"
+     ]
+    },
+    {
+     "s": 126,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "price_series_invalid"
+     ]
+    },
+    {
+     "s": 252,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "price_series_invalid"
+     ]
+    }
+   ]
+  }
+ },
+ "after": {
+  "version": "mizan-scenarios-7-shock-warning-1",
+  "cases": {
+   "calm": [
+    {
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.008,
+     "price": 113.488,
+     "range": [
+      113.046,
+      113.937
+     ],
+     "widthPct": 0.78,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.026,
+     "price": 113.509,
+     "range": [
+      112.536,
+      114.49
+     ],
+     "widthPct": 1.72,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.105,
+     "price": 113.598,
+     "range": [
+      111.56,
+      115.674
+     ],
+     "widthPct": 3.63,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.21,
+     "price": 113.718,
+     "range": [
+      110.072,
+      117.483
+     ],
+     "widthPct": 6.53,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 126,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.359,
+     "price": 113.887,
+     "range": [
+      108.674,
+      119.349
+     ],
+     "widthPct": 9.41,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pct": 0.597,
+     "price": 114.156,
+     "range": [
+      106.721,
+      122.11
+     ],
+     "widthPct": 13.56,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    }
+   ],
+   "shock_down": [
+    {
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.009,
+     "price": 110.687,
+     "range": [
+      109.798,
+      111.583
+     ],
+     "widthPct": 1.61,
+     "conf": "منخفض",
+     "warn": "صدمة تقلب: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.",
+     "blockers": []
+    },
+    {
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.015,
+     "price": 110.694,
+     "range": [
+      108.671,
+      112.755
+     ],
+     "widthPct": 3.69,
+     "conf": "منخفض",
+     "warn": "صدمة تقلب: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.",
+     "blockers": []
+    },
+    {
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.07,
+     "price": 110.755,
+     "range": [
+      106.539,
+      115.138
+     ],
+     "widthPct": 7.77,
+     "conf": "منخفض",
+     "warn": "صدمة تقلب: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.",
+     "blockers": []
+    },
+    {
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.132,
+     "price": 110.823,
+     "range": [
+      106.227,
+      115.619
+     ],
+     "widthPct": 8.49,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 126,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.249,
+     "price": 110.953,
+     "range": [
+      104.396,
+      117.922
+     ],
+     "widthPct": 12.22,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 252,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.468,
+     "price": 111.195,
+     "range": [
+      101.871,
+      121.372
+     ],
+     "widthPct": 17.62,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    }
+   ],
+   "shock_down@minConfidence_medium": [
+    {
+     "s": 1,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "confidence_policy"
+     ]
+    },
+    {
+     "s": 5,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "confidence_policy"
+     ]
+    },
+    {
+     "s": 21,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "confidence_policy"
+     ]
+    },
+    {
+     "s": 63,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "confidence_policy"
+     ]
+    },
+    {
+     "s": 126,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "confidence_policy"
+     ]
+    },
+    {
+     "s": 252,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "confidence_policy"
+     ]
+    }
+   ],
+   "shock_up": [
+    {
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.07,
+     "price": 119.38,
+     "range": [
+      117.511,
+      121.279
+     ],
+     "widthPct": 3.16,
+     "conf": "منخفض",
+     "warn": "صدمة تقلب: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.",
+     "blockers": []
+    },
+    {
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.057,
+     "price": 119.366,
+     "range": [
+      115.118,
+      123.77
+     ],
+     "widthPct": 7.25,
+     "conf": "منخفض",
+     "warn": "صدمة تقلب: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.",
+     "blockers": []
+    },
+    {
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.2,
+     "price": 119.536,
+     "range": [
+      110.813,
+      128.945
+     ],
+     "widthPct": 15.2,
+     "conf": "منخفض",
+     "warn": "صدمة تقلب: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.",
+     "blockers": []
+    },
+    {
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.391,
+     "price": 119.764,
+     "range": [
+      112.207,
+      127.829
+     ],
+     "widthPct": 13.1,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 126,
+     "ok": true,
+     "dir": "صاعد",
+     "pct": 0.595,
+     "price": 120.007,
+     "range": [
+      109.297,
+      131.765
+     ],
+     "widthPct": 18.83,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pct": 0.814,
+     "price": 120.268,
+     "range": [
+      105.183,
+      137.518
+     ],
+     "widthPct": 27.1,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    }
+   ],
+   "shock_big_up": [
+    {
+     "s": 1,
+     "ok": true,
+     "dir": "صاعد",
+     "pct": 0.119,
+     "price": 123.077,
+     "range": [
+      120.084,
+      126.144
+     ],
+     "widthPct": 4.93,
+     "conf": "منخفض",
+     "warn": "صدمة تقلب: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.",
+     "blockers": []
+    },
+    {
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.063,
+     "price": 123.008,
+     "range": [
+      116.249,
+      130.16
+     ],
+     "widthPct": 11.32,
+     "conf": "منخفض",
+     "warn": "صدمة تقلب: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.",
+     "blockers": []
+    },
+    {
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.217,
+     "price": 123.198,
+     "range": [
+      109.465,
+      138.653
+     ],
+     "widthPct": 23.74,
+     "conf": "منخفض",
+     "warn": "صدمة تقلب: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.",
+     "blockers": []
+    },
+    {
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.424,
+     "price": 123.452,
+     "range": [
+      112.292,
+      135.72
+     ],
+     "widthPct": 19.06,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 126,
+     "ok": true,
+     "dir": "صاعد",
+     "pct": 0.64,
+     "price": 123.718,
+     "range": [
+      107.999,
+      141.724
+     ],
+     "widthPct": 27.43,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pct": 0.864,
+     "price": 123.993,
+     "range": [
+      102.043,
+      150.664
+     ],
+     "widthPct": 39.55,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    }
+   ],
+   "sa_shock": [
+    {
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.008,
+     "price": 110.134,
+     "range": [
+      109.104,
+      111.173
+     ],
+     "widthPct": 1.88,
+     "conf": "منخفض",
+     "warn": "صدمة تقلب: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.",
+     "blockers": []
+    },
+    {
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.011,
+     "price": 110.138,
+     "range": [
+      107.796,
+      112.53
+     ],
+     "widthPct": 4.3,
+     "conf": "منخفض",
+     "warn": "صدمة تقلب: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.",
+     "blockers": []
+    },
+    {
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.058,
+     "price": 110.189,
+     "range": [
+      105.318,
+      115.285
+     ],
+     "widthPct": 9.05,
+     "conf": "منخفض",
+     "warn": "صدمة تقلب: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.",
+     "blockers": []
+    },
+    {
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.108,
+     "price": 110.244,
+     "range": [
+      105.284,
+      115.438
+     ],
+     "widthPct": 9.22,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 126,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.216,
+     "price": 110.363,
+     "range": [
+      103.293,
+      117.917
+     ],
+     "widthPct": 13.28,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    },
+    {
+     "s": 252,
+     "ok": true,
+     "dir": "محايد",
+     "pct": 0.434,
+     "price": 110.603,
+     "range": [
+      100.561,
+      121.647
+     ],
+     "widthPct": 19.15,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": []
+    }
+   ],
+   "invalid_dates": [
+    {
+     "s": 1,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "price_series_invalid"
+     ]
+    },
+    {
+     "s": 5,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "price_series_invalid"
+     ]
+    },
+    {
+     "s": 21,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "price_series_invalid"
+     ]
+    },
+    {
+     "s": 63,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "price_series_invalid"
+     ]
+    },
+    {
+     "s": 126,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "price_series_invalid"
+     ]
+    },
+    {
+     "s": 252,
+     "ok": false,
+     "dir": "غير متاح",
+     "pct": null,
+     "price": null,
+     "range": null,
+     "widthPct": null,
+     "conf": "منخفض",
+     "warn": null,
+     "blockers": [
+      "price_series_invalid"
+     ]
+    }
+   ]
+  }
+ }
+}
