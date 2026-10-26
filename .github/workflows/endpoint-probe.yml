@@ -50,3 +50,4 @@ jobs:
           for f in pw/sa.png pw/us.png shot.json shot-err.txt; do [ -f "$f" ] || continue; b=$(basename $f); node -e 'const fs=require("fs");fs.writeFileSync("b.json",JSON.stringify({message:"ci diagnostics: home shot "+process.env.RID,branch:process.env.REF,content:fs.readFileSync(process.argv[1]).toString("base64")}))' "$f"; gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/home-${RID}-$b" --input b.json >/dev/null; done
 
 # rerun 2
+# verify after fix
