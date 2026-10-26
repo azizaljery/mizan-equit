@@ -44,7 +44,7 @@ function Analysis({x,title}:{x:IndexAnalysis;title:string}){
 export function MarketOverviewPanel(){
  const [market,setMarket]=useState<'sa'|'us'>('sa'),[data,setData]=useState<Partial<Record<'sa'|'us',MarketOverview>>>({}),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  useEffect(()=>{let stop=false;
-  const load=async()=>{setBusy(true);try{const r=await fetch('/api/market-overview?market='+market);const d=await r.json();if(!r.ok)throw Error(d.error||'تعذر الجلب.');if(!stop){setData(p=>({...p,[market]:d}));setError('');}}catch(e){if(!stop)setError(e instanceof Error?e.message:'تعذر جلب بيانات السوق.');}finally{if(!stop)setBusy(false);}};
+  const load=async()=>{setBusy(true);try{const r=await fetch('/api/market-overview?market='+market,{cache:'no-store'});const raw=await r.text();let d:any=null;try{d=JSON.parse(raw);}catch{}if(!r.ok||!d)throw Error((d&&(d.error+(d.stage?' ['+d.stage+(d.detail?': '+d.detail:'')+']':'')))||('تعذر جلب بيانات السوق (رمز '+r.status+'). أعد تحميل الصفحة بعد لحظات.'));if(!stop){setData(p=>({...p,[market]:d}));setError('');}}catch(e){if(!stop)setError(e instanceof Error?e.message:'تعذر جلب بيانات السوق.');}finally{if(!stop)setBusy(false);}};
   void load();const t=setInterval(()=>{if(document.visibilityState==='visible')void load();},120000);return ()=>{stop=true;clearInterval(t);};
  },[market]);
  const d=data[market];
