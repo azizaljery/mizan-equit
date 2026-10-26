@@ -2,7 +2,15 @@
  * Admin tools: pure helpers shared by the owner-only tools page (browser) and the
  * internal automation route (server). No Worker bindings or secrets are imported here.
  */
-import {ownerIdentity} from './pin-lock';
+/**
+ * Same rule as ownerIdentity() in ./pin-lock, kept local on purpose: this module is bundled for the browser, and
+ * importing ./pin-lock (server-side hashing) produced an EMPTY chunk that Safari/WebKit refuses to import
+ * ("'text/plain' is not a valid JavaScript MIME type"), which stopped the home page from hydrating on iPad.
+ */
+function ownerIdentity(headers:Headers,ownerEmail:string){
+  const email=(headers.get('oai-authenticated-user-email')||headers.get('cf-access-authenticated-user-email'))?.trim().toLowerCase();
+  return ownerEmail&&email===ownerEmail.trim().toLowerCase()?'site-owner':null;
+}
 
 /* ───────────────────────── Safe caps used by the UI ───────────────────────── */
 /** Server accepts up to 100; each symbol fetches a full report, so one click stays tiny. */
