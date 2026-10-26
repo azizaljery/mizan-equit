@@ -8,17 +8,21 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 15
     steps:
       - name: Probe
         env: {RID: "${{ github.run_id }}", REF: "${{ github.ref_name }}", GH_TOKEN: "${{ github.token }}"}
         shell: bash
         run: |
           node --input-type=module <<'NODE' > out.json
-          const base='https://mizan-aziz.aljeryabod.workers.dev',out=[];
-          for(const m of ['sa','us','sa','sa'])for(const q of [`market=${m}`,`market=${m}&r=${Date.now()}`]){const t=Date.now();try{const r=await fetch(`${base}/api/market-overview?${q}`,{signal:AbortSignal.timeout(60000)});const tx=await r.text();const code=(tx.match(/Error code\s*:?\s*(\d{4})/i)||tx.match(/error code:\s*(\d{4})/i)||[])[1]||null;out.push({q,http:r.status,ms:Date.now()-t,cf:code,ray:r.headers.get('cf-ray'),cache:r.headers.get('cf-cache-status'),body:tx.slice(0,300)});}catch(e){out.push({q,error:String(e).slice(0,100)});}await new Promise(r=>setTimeout(r,3000));}
+          const base='https://mizan-aziz.aljeryabod.workers.dev',out={overview:[],analyze:[]};
+          for(const m of ['sa','us']){const t=Date.now();try{const r=await fetch(`${base}/api/market-overview?market=${m}&r=${Date.now()}`,{signal:AbortSignal.timeout(60000)});const tx=await r.text();let j=null;try{j=JSON.parse(tx)}catch{};out.overview.push({m,http:r.status,ms:Date.now()-t,cache:r.headers.get('cf-cache-status'),indices:j?.indices?.map(x=>[x.symbol,x.price,x.changePct,x.asOf]),proxy:!!j?.proxy,breadth:j?.breadth,notes:j?.notes,err:j?.error||(!j?tx.slice(0,200):null)});}catch(e){out.overview.push({m,error:String(e).slice(0,100)});}}
+          // Normal user analysis (records a forecast like any visitor).
+          for(const symbol of ['2222.SR','1120.SR','2010.SR','7010.SR','AAPL','MSFT']){const t=Date.now();try{const r=await fetch(`${base}/api/company/analyze`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({symbol}),signal:AbortSignal.timeout(150000)});const tx=await r.text();let j=null;try{j=JSON.parse(tx)}catch{};
+            const f=j?.forecast;const items=Array.isArray(f)?f:(f?.items||f?.forecasts||f?.horizons||null);
+            out.analyze.push({symbol,http:r.status,ms:Date.now()-t,topKeys:j?Object.keys(j).slice(0,30):null,forecastKeys:f&&typeof f==='object'?Object.keys(f).slice(0,30):null,forecastSample:JSON.stringify(f).slice(0,6000),err:j?.error||(!j?tx.slice(0,200):null)});}catch(e){out.analyze.push({symbol,error:String(e).slice(0,100)});}
+            await new Promise(r=>setTimeout(r,8000));}
           console.log(JSON.stringify(out,null,1));
           NODE
           node -e 'const fs=require("fs");fs.writeFileSync("body.json",JSON.stringify({message:"ci diagnostics: endpoint probe "+process.env.RID,branch:process.env.REF,content:fs.readFileSync("out.json").toString("base64")}))'
           gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/endpoint-probe-${RID}.json" --input body.json >/dev/null
-# rerun 2026-10-25T12:12:14Z
