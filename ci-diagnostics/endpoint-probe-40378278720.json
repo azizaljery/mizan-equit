@@ -1,0 +1,5635 @@
+{
+ "overview": [
+  {
+   "m": "sa",
+   "http": 200,
+   "ms": 1375,
+   "cache": null,
+   "indices": [
+    [
+     "^TASI.SR",
+     9761.78,
+     3.43,
+     "2026-10-26T12:19:59.000Z"
+    ],
+    [
+     "^NOMUC.SR",
+     21211.72,
+     0.8,
+     "2026-10-26T12:18:46.000Z"
+    ]
+   ],
+   "proxy": true,
+   "breadth": {
+    "universe": 40,
+    "priced": 40,
+    "advancers": 40,
+    "decliners": 0,
+    "unchanged": 0,
+    "aboveMa50": 0,
+    "aboveMa200": 3,
+    "eligibleMa200": 40,
+    "sessionDate": "2026-10-26"
+   },
+   "notes": [
+    "التاريخ اليومي لتاسي غير متاح من المزود؛ تحليل الفترات والمتوسطات للسوق السعودي محسوب على مؤشر بديل متساوي الأوزان من 40 شركة كبيرة، وليس تاسي نفسه."
+   ],
+   "err": null
+  },
+  {
+   "m": "us",
+   "http": 200,
+   "ms": 882,
+   "cache": null,
+   "indices": [
+    [
+     "^GSPC",
+     7681.99,
+     0.76,
+     "2026-10-26T18:30:10.000Z"
+    ],
+    [
+     "^IXIC",
+     26211.71,
+     0.99,
+     "2026-10-26T18:30:09.000Z"
+    ],
+    [
+     "^DJI",
+     52379.09,
+     0.31,
+     "2026-10-26T18:30:11.000Z"
+    ],
+    [
+     "^VIX",
+     18.31,
+     -5.86,
+     "2026-10-26T18:15:01.000Z"
+    ]
+   ],
+   "proxy": false,
+   "breadth": {
+    "universe": 40,
+    "priced": 40,
+    "advancers": 20,
+    "decliners": 20,
+    "unchanged": 0,
+    "aboveMa50": 27,
+    "aboveMa200": 28,
+    "eligibleMa200": 40,
+    "sessionDate": "2026-10-26"
+   },
+   "notes": [],
+   "err": null
+  }
+ ],
+ "analyze": [
+  {
+   "symbol": "2222.SR",
+   "http": 200,
+   "ms": 6589,
+   "topKeys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks",
+    "warnings",
+    "mode",
+    "research",
+    "changes",
+    "forecast"
+   ],
+   "forecastKeys": [
+    "createdAt",
+    "version",
+    "settingsUsed",
+    "price",
+    "currency",
+    "priceTime",
+    "retrievedAt",
+    "rows",
+    "factors",
+    "dataQuality",
+    "dataWarnings",
+    "dailyScope",
+    "method",
+    "snapshotId",
+    "recorded"
+   ],
+   "rows": [
+    {
+     "p": "يومي",
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 25.606371129725623,
+     "pct": 0.02488573500377047,
+     "range": [
+      25.321670499797836,
+      25.86895989391843
+     ],
+     "conf": "منخفض",
+     "cov": 96,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 1,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.016542325650708012,
+       "sigma20IncludingLatest": 0.009257432542448873,
+       "sigma20Prior": 0.008712710180893705,
+       "ratio5to20": 1.2760547695351665,
+       "lastOverSigma20": 1.7869237042619661,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.00041471065030608946,
+       "maxAbsLogReturn": 0.005071519168228476,
+       "clippedLogReturn": 0.00041471065030608946,
+       "centerLogReturn": 0.0002488263901836537,
+       "clipped": false,
+       "annualLogTilt": null
+      },
+      "neutralThresholdPct": 0.1,
+      "range": {
+       "low": 25.321670499797836,
+       "high": 25.86895989391843,
+       "reference": 25.600000381469727,
+       "expectedScale": 0.010143038336456953,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.010931795781546655,
+       "permittedLogDistance": 0.030429115009370858
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.9993493818559624,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.00× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.1
+    },
+    {
+     "p": "أسبوع",
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 25.61248698705249,
+     "pct": 0.04877580233084684,
+     "range": [
+      24.98203556933771,
+      26.358311025448312
+     ],
+     "conf": "منخفض",
+     "cov": 90,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 5,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.016542325650708012,
+       "sigma20IncludingLatest": 0.009257432542448873,
+       "sigma20Prior": 0.008712710180893705,
+       "ratio5to20": 1.2760547695351665,
+       "lastOverSigma20": 1.7869237042619661,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0008127318467170166,
+       "maxAbsLogReturn": 0.012067578810066466,
+       "clippedLogReturn": 0.0008127318467170166,
+       "centerLogReturn": 0.00048763910803020994,
+       "clipped": false,
+       "annualLogTilt": 0.04096168507453764
+      },
+      "neutralThresholdPct": 0.25,
+      "range": {
+       "low": 24.98203556933771,
+       "high": 26.358311025448312,
+       "reference": 25.600000381469727,
+       "expectedScale": 0.024135157620132932,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.029191267805171783,
+       "permittedLogDistance": 0.07240547286039879
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.9993493818559624,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.00× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.25
+    },
+    {
+     "p": "شهر",
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 25.66345260344561,
+     "pct": 0.24786023839988702,
+     "range": [
+      24.35011985968458,
+      27.23203885208968
+     ],
+     "conf": "منخفض",
+     "cov": 89,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 21,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.016542325650708012,
+       "sigma20IncludingLatest": 0.009257432542448873,
+       "sigma20Prior": 0.008712710180893705,
+       "ratio5to20": 1.2760547695351665,
+       "lastOverSigma20": 1.7869237042619661,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.004125892859054223,
+       "maxAbsLogReturn": 0.02235196780921692,
+       "clippedLogReturn": 0.004125892859054223,
+       "centerLogReturn": 0.0024755357154325336,
+       "clipped": false,
+       "annualLogTilt": 0.04951071430865067
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 24.35011985968458,
+       "high": 27.23203885208968,
+       "reference": 25.600000381469727,
+       "expectedScale": 0.04470393561843384,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.061801812710439004,
+       "permittedLogDistance": 0.13411180685530152
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.9993493818559624,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.00× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "3 أشهر",
+     "s": 63,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 25.84704733576816,
+     "pct": 0.9650271508482298,
+     "range": [
+      23.695600990991803,
+      29.13048545211581
+     ],
+     "conf": "منخفض",
+     "cov": 95,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 63,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.016542325650708012,
+       "sigma20IncludingLatest": 0.009257432542448873,
+       "sigma20Prior": 0.008712710180893705,
+       "ratio5to20": 1.2760547695351665,
+       "lastOverSigma20": 1.7869237042619661,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.016006675093543088,
+       "maxAbsLogReturn": 0.03902459237374825,
+       "clippedLogReturn": 0.016006675093543088,
+       "centerLogReturn": 0.009604005056125853,
+       "clipped": false,
+       "annualLogTilt": 0.06402670037417235
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 23.695600990991803,
+       "high": 29.13048545211581,
+       "reference": 25.600000381469727,
+       "expectedScale": 0.0780491847474965,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.1291928694686619,
+       "permittedLogDistance": 0.2341475542424895
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.9993493818559624,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.00× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "6 أشهر",
+     "s": 126,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 26.14320071556159,
+     "pct": 2.1218762734279237,
+     "range": [
+      22.874078569664036,
+      30.887329056466818
+     ],
+     "conf": "منخفض",
+     "cov": 95,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 126,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.016542325650708012,
+       "sigma20IncludingLatest": 0.009257432542448873,
+       "sigma20Prior": 0.008712710180893705,
+       "ratio5to20": 1.2760547695351665,
+       "lastOverSigma20": 1.7869237042619661,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.03499463239729924,
+       "maxAbsLogReturn": 0.056099984216509434,
+       "clippedLogReturn": 0.03499463239729924,
+       "centerLogReturn": 0.020996779438379545,
+       "clipped": false,
+       "annualLogTilt": 0.06998926479459848
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 22.874078569664036,
+       "high": 30.887329056466818,
+       "reference": 25.600000381469727,
+       "expectedScale": 0.11219996843301887,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.18775367052072664,
+       "permittedLogDistance": 0.3365999052990566
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.9993493818559624,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.00× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "سنة",
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 26.652364592040907,
+     "pct": 4.110797636288017,
+     "range": [
+      22.4000674246088,
+      31.71189286540647
+     ],
+     "conf": "منخفض",
+     "cov": 95,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 252,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.016542325650708012,
+       "sigma20IncludingLatest": 0.009257432542448873,
+       "sigma20Prior": 0.008712710180893705,
+       "ratio5to20": 1.2760547695351665,
+       "lastOverSigma20": 1.7869237042619661,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.07595182921502461,
+       "maxAbsLogReturn": 0.06714251324238181,
+       "clippedLogReturn": 0.06714251324238181,
+       "centerLogReturn": 0.04028550794542909,
+       "clipped": true,
+       "annualLogTilt": 0.07595182921502461
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 22.4000674246088,
+       "high": 31.71189286540647,
+       "reference": 25.600000381469727,
+       "expectedScale": 0.13428502648476362,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.21409941339389343,
+       "permittedLogDistance": 0.4028550794542909
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.9993493818559624,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.00× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    }
+   ],
+   "version": "mizan-scenarios-7-shock-warning-1-a3434e85",
+   "price": 25.600000381469727,
+   "dq": "جيدة",
+   "err": null
+  },
+  {
+   "symbol": "1120.SR",
+   "http": 200,
+   "ms": 6576,
+   "topKeys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks",
+    "warnings",
+    "mode",
+    "research",
+    "changes",
+    "forecast"
+   ],
+   "forecastKeys": [
+    "createdAt",
+    "version",
+    "settingsUsed",
+    "price",
+    "currency",
+    "priceTime",
+    "retrievedAt",
+    "rows",
+    "factors",
+    "dataQuality",
+    "dataWarnings",
+    "dailyScope",
+    "method",
+    "snapshotId",
+    "recorded"
+   ],
+   "rows": [
+    {
+     "p": "يومي",
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 59.242430928170755,
+     "pct": -0.012774804775096934,
+     "range": [
+      58.30943042476902,
+      60.261095897316565
+     ],
+     "conf": "منخفض",
+     "cov": 86,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 1,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.019600142420351574,
+       "sigma20IncludingLatest": 0.011642256239899092,
+       "sigma20Prior": 0.01054849486217883,
+       "ratio5to20": 1.4943875815759262,
+       "lastOverSigma20": 1.6835347046545899,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": -0.00012775620822785778,
+       "maxAbsLogReturn": 0.0070287506739918956,
+       "clippedLogReturn": -0.00012775620822785778,
+       "centerLogReturn": -0.00012775620822785778,
+       "clipped": false,
+       "annualLogTilt": null
+      },
+      "neutralThresholdPct": 0.1,
+      "range": {
+       "low": 58.30943042476902,
+       "high": 60.261095897316565,
+       "reference": 59.25,
+       "expectedScale": 0.014057501347983791,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.016920939670180685,
+       "permittedLogDistance": 0.04217250404395137
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.4901112079856569,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.49× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.1
+    },
+    {
+     "p": "أسبوع",
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 59.24450907876663,
+     "pct": -0.00926737760905809,
+     "range": [
+      57.00837339340994,
+      61.732374546501596
+     ],
+     "conf": "منخفض",
+     "cov": 67,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 5,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.019600142420351574,
+       "sigma20IncludingLatest": 0.011642256239899092,
+       "sigma20Prior": 0.01054849486217883,
+       "ratio5to20": 1.4943875815759262,
+       "lastOverSigma20": 1.6835347046545899,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": -0.00009267807057031593,
+       "maxAbsLogReturn": 0.015705532782469327,
+       "clippedLogReturn": -0.00009267807057031593,
+       "centerLogReturn": -0.00009267807057031593,
+       "clipped": false,
+       "annualLogTilt": -0.004670974756743923
+      },
+      "neutralThresholdPct": 0.25,
+      "range": {
+       "low": 57.00837339340994,
+       "high": 61.732374546501596,
+       "reference": 59.25,
+       "expectedScale": 0.03141106556493865,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.04104272230393411,
+       "permittedLogDistance": 0.09423319669481596
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.4901112079856569,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.49× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.25
+    },
+    {
+     "p": "شهر",
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 59.24316847976661,
+     "pct": -0.011529991955089655,
+     "range": [
+      54.232313107944215,
+      64.30629694395053
+     ],
+     "conf": "منخفض",
+     "cov": 56,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 21,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.019600142420351574,
+       "sigma20IncludingLatest": 0.011642256239899092,
+       "sigma20Prior": 0.01054849486217883,
+       "ratio5to20": 1.4943875815759262,
+       "lastOverSigma20": 1.6835347046545899,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": -0.00011530656709751237,
+       "maxAbsLogReturn": 0.03173083916313932,
+       "clippedLogReturn": -0.00011530656709751237,
+       "centerLogReturn": -0.00011530656709751237,
+       "clipped": false,
+       "annualLogTilt": -0.0013836788051701484
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 54.232313107944215,
+       "high": 64.30629694395053,
+       "reference": 59.25,
+       "expectedScale": 0.06346167832627864,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.08848886641260575,
+       "permittedLogDistance": 0.1903850349788359
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.4901112079856569,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.49× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "3 أشهر",
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 59.214030207986546,
+     "pct": -0.0607085097273479,
+     "range": [
+      51.668703029345096,
+      68.74194841620582
+     ],
+     "conf": "منخفض",
+     "cov": 36,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 63,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.019600142420351574,
+       "sigma20IncludingLatest": 0.011642256239899092,
+       "sigma20Prior": 0.01054849486217883,
+       "ratio5to20": 1.4943875815759262,
+       "lastOverSigma20": 1.6835347046545899,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": -0.0006072694480459661,
+       "maxAbsLogReturn": 0.04829436198810591,
+       "clippedLogReturn": -0.0006072694480459661,
+       "centerLogReturn": -0.0006072694480459661,
+       "clipped": false,
+       "annualLogTilt": -0.0024290777921838645
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 51.668703029345096,
+       "high": 68.74194841620582,
+       "reference": 59.25,
+       "expectedScale": 0.09658872397621182,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.14859383572696916,
+       "permittedLogDistance": 0.28976617192863546
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.4901112079856569,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.49× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "6 أشهر",
+     "s": 126,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 59.219566220513364,
+     "pct": -0.0513650286694272,
+     "range": [
+      48.695209546217846,
+      72.01852206873096
+     ],
+     "conf": "منخفض",
+     "cov": 27.5,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 126,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.019600142420351574,
+       "sigma20IncludingLatest": 0.011642256239899092,
+       "sigma20Prior": 0.01054849486217883,
+       "ratio5to20": 1.4943875815759262,
+       "lastOverSigma20": 1.6835347046545899,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": -0.0005137822501933722,
+       "maxAbsLogReturn": 0.06667394921517204,
+       "clippedLogReturn": -0.0005137822501933722,
+       "centerLogReturn": -0.0005137822501933722,
+       "clipped": false,
+       "annualLogTilt": -0.0010275645003867443
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 48.695209546217846,
+       "high": 72.01852206873096,
+       "reference": 59.25,
+       "expectedScale": 0.1333478984303441,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.19618512137244495,
+       "permittedLogDistance": 0.40004369529103223
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.4901112079856569,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.49× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "سنة",
+     "s": 252,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 59.272160609099316,
+     "pct": 0.037401871897580215,
+     "range": [
+      42.023647218305015,
+      78.48984965518702
+     ],
+     "conf": "منخفض",
+     "cov": 19,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 252,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.019600142420351574,
+       "sigma20IncludingLatest": 0.011642256239899092,
+       "sigma20Prior": 0.01054849486217883,
+       "ratio5to20": 1.4943875815759262,
+       "lastOverSigma20": 1.6835347046545899,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0003739487914103747,
+       "maxAbsLogReturn": 0.09429120323707127,
+       "clippedLogReturn": 0.0003739487914103747,
+       "centerLogReturn": 0.0003739487914103747,
+       "clipped": false,
+       "annualLogTilt": 0.0003739487914103747
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 42.023647218305015,
+       "high": 78.48984965518702,
+       "reference": 59.25,
+       "expectedScale": 0.18858240647414254,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.3435332911659729,
+       "permittedLogDistance": 0.5657472194224276
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.4901112079856569,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.49× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    }
+   ],
+   "version": "mizan-scenarios-7-shock-warning-1-a3434e85",
+   "price": 59.25,
+   "dq": "جيدة",
+   "err": null
+  },
+  {
+   "symbol": "2010.SR",
+   "http": 200,
+   "ms": 9517,
+   "topKeys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks",
+    "warnings",
+    "mode",
+    "research",
+    "changes",
+    "forecast"
+   ],
+   "forecastKeys": [
+    "createdAt",
+    "version",
+    "settingsUsed",
+    "price",
+    "currency",
+    "priceTime",
+    "retrievedAt",
+    "rows",
+    "factors",
+    "dataQuality",
+    "dataWarnings",
+    "dailyScope",
+    "method",
+    "snapshotId",
+    "recorded"
+   ],
+   "rows": [
+    {
+     "p": "يومي",
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 46.11127156344273,
+     "pct": 0.024453556821616918,
+     "range": [
+      44.689707588598054,
+      47.57805499134758
+     ],
+     "conf": "منخفض",
+     "cov": 95,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 1,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.06961280120971436,
+       "sigma20IncludingLatest": 0.02419270504310715,
+       "sigma20Prior": 0.017478251032503313,
+       "ratio5to20": 1.8776735038176453,
+       "lastOverSigma20": 2.877429418730835,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.00024450567426734113,
+       "maxAbsLogReturn": 0.012096352521553552,
+       "clippedLogReturn": 0.00024450567426734113,
+       "centerLogReturn": 0.00024450567426734113,
+       "clipped": false,
+       "annualLogTilt": null
+      },
+      "neutralThresholdPct": 0.1,
+      "range": {
+       "low": 44.689707588598054,
+       "high": 47.57805499134758,
+       "reference": 46.099998474121094,
+       "expectedScale": 0.024192705043107103,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.03155870843374117,
+       "permittedLogDistance": 0.0725781151293213
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 2.448215626585199,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 2.45× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.1
+    },
+    {
+     "p": "أسبوع",
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 46.10538015163115,
+     "pct": 0.011673921232512976,
+     "range": [
+      42.9398253302893,
+      49.5043019522246
+     ],
+     "conf": "منخفض",
+     "cov": 87,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 5,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.06961280120971436,
+       "sigma20IncludingLatest": 0.02419270504310715,
+       "sigma20Prior": 0.017478251032503313,
+       "ratio5to20": 1.8776735038176453,
+       "lastOverSigma20": 2.877429418730835,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.000116732398833576,
+       "maxAbsLogReturn": 0.027048266517994732,
+       "clippedLogReturn": 0.000116732398833576,
+       "centerLogReturn": 0.000116732398833576,
+       "clipped": false,
+       "annualLogTilt": 0.00588331290121223
+      },
+      "neutralThresholdPct": 0.25,
+      "range": {
+       "low": 42.9398253302893,
+       "high": 49.5043019522246,
+       "reference": 46.099998474121094,
+       "expectedScale": 0.054096533035989464,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.07124665702082501,
+       "permittedLogDistance": 0.1622895991079684
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 2.448215626585199,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 2.45× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.25
+    },
+    {
+     "p": "شهر",
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 46.123848293706985,
+     "pct": 0.051734968276147306,
+     "range": [
+      39.788107490793244,
+      53.468473762245885
+     ],
+     "conf": "منخفض",
+     "cov": 80,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 21,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.06961280120971436,
+       "sigma20IncludingLatest": 0.02419270504310715,
+       "sigma20Prior": 0.017478251032503313,
+       "ratio5to20": 1.8776735038176453,
+       "lastOverSigma20": 2.877429418730835,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0005172159035529288,
+       "maxAbsLogReturn": 0.05543245106288909,
+       "clippedLogReturn": 0.0005172159035529288,
+       "centerLogReturn": 0.0005172159035529288,
+       "clipped": false,
+       "annualLogTilt": 0.006206590842635145
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 39.788107490793244,
+       "high": 53.468473762245885,
+       "reference": 46.099998474121094,
+       "expectedScale": 0.11086490212577818,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.14827928783561561,
+       "permittedLogDistance": 0.33259470637733457
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 2.448215626585199,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 2.45× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "3 أشهر",
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 46.16356072580563,
+     "pct": 0.1378790754629177,
+     "range": [
+      39.17315109319338,
+      54.40140196573142
+     ],
+     "conf": "منخفض",
+     "cov": 80,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 63,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.06961280120971436,
+       "sigma20IncludingLatest": 0.02419270504310715,
+       "sigma20Prior": 0.017478251032503313,
+       "ratio5to20": 1.8776735038176453,
+       "lastOverSigma20": 2.877429418730835,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0013778410954772954,
+       "maxAbsLogReturn": 0.06159877273011932,
+       "clippedLogReturn": 0.0013778410954772954,
+       "centerLogReturn": 0.0013778410954772954,
+       "clipped": false,
+       "annualLogTilt": 0.005511364381909182
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 39.17315109319338,
+       "high": 54.40140196573142,
+       "reference": 46.099998474121094,
+       "expectedScale": 0.12319754546023864,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.1655770080554289,
+       "permittedLogDistance": 0.36959263638071593
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 2.448215626585199,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 2.45× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "6 أشهر",
+     "s": 126,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 46.266558787650226,
+     "pct": 0.36130221050361444,
+     "range": [
+      36.65452531743019,
+      58.39918655373188
+     ],
+     "conf": "منخفض",
+     "cov": 78.5,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 126,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.06961280120971436,
+       "sigma20IncludingLatest": 0.02419270504310715,
+       "sigma20Prior": 0.017478251032503313,
+       "ratio5to20": 1.8776735038176453,
+       "lastOverSigma20": 2.877429418730835,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0036065108195695527,
+       "maxAbsLogReturn": 0.08711381982047271,
+       "clippedLogReturn": 0.0036065108195695527,
+       "centerLogReturn": 0.0036065108195695527,
+       "clipped": false,
+       "annualLogTilt": 0.007213021639139105
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 36.65452531743019,
+       "high": 58.39918655373188,
+       "reference": 46.099998474121094,
+       "expectedScale": 0.17422763964094543,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.23648904395944279,
+       "permittedLogDistance": 0.5226829189228362
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 2.448215626585199,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 2.45× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "سنة",
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 46.51280243116089,
+     "pct": 0.8954532987057089,
+     "range": [
+      33.42936335428155,
+      64.71678108470823
+     ],
+     "conf": "منخفض",
+     "cov": 77,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 252,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.06961280120971436,
+       "sigma20IncludingLatest": 0.02419270504310715,
+       "sigma20Prior": 0.017478251032503313,
+       "ratio5to20": 1.8776735038176453,
+       "lastOverSigma20": 2.877429418730835,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.008914678896369032,
+       "maxAbsLogReturn": 0.12319754546023864,
+       "clippedLogReturn": 0.008914678896369032,
+       "centerLogReturn": 0.008914678896369032,
+       "clipped": false,
+       "annualLogTilt": 0.008914678896369032
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 33.42936335428155,
+       "high": 64.71678108470823,
+       "reference": 46.099998474121094,
+       "expectedScale": 0.2463950909204773,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.33920761858888715,
+       "permittedLogDistance": 0.7391852727614319
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 2.448215626585199,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 2.45× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    }
+   ],
+   "version": "mizan-scenarios-7-shock-warning-1-a3434e85",
+   "price": 46.099998474121094,
+   "dq": "جيدة",
+   "err": null
+  },
+  {
+   "symbol": "7010.SR",
+   "http": 200,
+   "ms": 9378,
+   "topKeys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks",
+    "warnings",
+    "mode",
+    "research",
+    "changes",
+    "forecast"
+   ],
+   "forecastKeys": [
+    "createdAt",
+    "version",
+    "settingsUsed",
+    "price",
+    "currency",
+    "priceTime",
+    "retrievedAt",
+    "rows",
+    "factors",
+    "dataQuality",
+    "dataWarnings",
+    "dailyScope",
+    "method",
+    "snapshotId",
+    "recorded"
+   ],
+   "rows": [
+    {
+     "p": "يومي",
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 41.30713005645327,
+     "pct": 0.017265906838860246,
+     "range": [
+      40.78813987126483,
+      41.832723896850595
+     ],
+     "conf": "منخفض",
+     "cov": 87,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 1,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.025504102972912612,
+       "sigma20IncludingLatest": 0.0096159871710793,
+       "sigma20Prior": 0.007102484777234727,
+       "ratio5to20": 1.8970061911263012,
+       "lastOverSigma20": 2.652260503177234,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.00017264416452708158,
+       "maxAbsLogReturn": 0.005640300911518481,
+       "clippedLogReturn": 0.00017264416452708158,
+       "centerLogReturn": 0.00017264416452708158,
+       "clipped": false,
+       "annualLogTilt": null
+      },
+      "neutralThresholdPct": 0.1,
+      "range": {
+       "low": 40.78813987126483,
+       "high": 41.832723896850595,
+       "reference": 41.29999923706055,
+       "expectedScale": 0.011280601823036963,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.012816420100960303,
+       "permittedLogDistance": 0.03384180546911089
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.1176419048431045,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.12× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.1
+    },
+    {
+     "p": "أسبوع",
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 41.31337778685909,
+     "pct": 0.03239358364573637,
+     "range": [
+      40.13958099007405,
+      42.554146273148056
+     ],
+     "conf": "منخفض",
+     "cov": 77,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 5,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.025504102972912612,
+       "sigma20IncludingLatest": 0.0096159871710793,
+       "sigma20Prior": 0.007102484777234727,
+       "ratio5to20": 1.8970061911263012,
+       "lastOverSigma20": 2.652260503177234,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0003238833805722301,
+       "maxAbsLogReturn": 0.012015429485283582,
+       "clippedLogReturn": 0.0003238833805722301,
+       "centerLogReturn": 0.0003238833805722301,
+       "clipped": false,
+       "annualLogTilt": 0.016323722380840396
+      },
+      "neutralThresholdPct": 0.25,
+      "range": {
+       "low": 40.13958099007405,
+       "high": 42.554146273148056,
+       "reference": 41.29999923706055,
+       "expectedScale": 0.024030858970567164,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.029914813505411374,
+       "permittedLogDistance": 0.07209257691170148
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.1176419048431045,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.12× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.25
+    },
+    {
+     "p": "شهر",
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 41.36853416181352,
+     "pct": 0.16594413079667683,
+     "range": [
+      38.72192834650853,
+      43.97969979247333
+     ],
+     "conf": "منخفض",
+     "cov": 73,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 21,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.025504102972912612,
+       "sigma20IncludingLatest": 0.0096159871710793,
+       "sigma20Prior": 0.007102484777234727,
+       "ratio5to20": 1.8970061911263012,
+       "lastOverSigma20": 2.652260503177234,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0016580659565724573,
+       "maxAbsLogReturn": 0.025055044104219003,
+       "clippedLogReturn": 0.0016580659565724573,
+       "centerLogReturn": 0.0016580659565724573,
+       "clipped": false,
+       "annualLogTilt": 0.019896791478869486
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 38.72192834650853,
+       "high": 43.97969979247333,
+       "reference": 41.29999923706055,
+       "expectedScale": 0.05011008820843801,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.06445641798808197,
+       "permittedLogDistance": 0.15033026462531401
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.1176419048431045,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.12× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "3 أشهر",
+     "s": 63,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 41.58242272618949,
+     "pct": 0.6838341267462115,
+     "range": [
+      37.747050235609,
+      47.0747286050436
+     ],
+     "conf": "منخفض",
+     "cov": 76,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 63,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.025504102972912612,
+       "sigma20IncludingLatest": 0.0096159871710793,
+       "sigma20Prior": 0.007102484777234727,
+       "ratio5to20": 1.8970061911263012,
+       "lastOverSigma20": 2.652260503177234,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.006815065861680405,
+       "maxAbsLogReturn": 0.040929417307180846,
+       "clippedLogReturn": 0.006815065861680405,
+       "centerLogReturn": 0.006815065861680405,
+       "clipped": false,
+       "annualLogTilt": 0.02726026344672162
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 37.747050235609,
+       "high": 47.0747286050436,
+       "reference": 41.29999923706055,
+       "expectedScale": 0.08185883461436169,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.13087382787167146,
+       "permittedLogDistance": 0.24557650384308508
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.1176419048431045,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.12× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "6 أشهر",
+     "s": 126,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 41.98316682132677,
+     "pct": 1.654158830233541,
+     "range": [
+      36.80878630735977,
+      47.042663936554476
+     ],
+     "conf": "منخفض",
+     "cov": 76,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 126,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.025504102972912612,
+       "sigma20IncludingLatest": 0.0096159871710793,
+       "sigma20Prior": 0.007102484777234727,
+       "ratio5to20": 1.8970061911263012,
+       "lastOverSigma20": 2.652260503177234,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.016406266483315682,
+       "maxAbsLogReturn": 0.042913327950342875,
+       "clippedLogReturn": 0.016406266483315682,
+       "centerLogReturn": 0.016406266483315682,
+       "clipped": false,
+       "annualLogTilt": 0.032812532966631364
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 36.80878630735977,
+       "high": 47.042663936554476,
+       "reference": 41.29999923706055,
+       "expectedScale": 0.08582665590068575,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.13019245179730737,
+       "permittedLogDistance": 0.2574799677020573
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.1176419048431045,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.12× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "سنة",
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 42.91525186073027,
+     "pct": 3.911023374112508,
+     "range": [
+      35.28288258914664,
+      50.40776599765512
+     ],
+     "conf": "منخفض",
+     "cov": 76,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 252,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1247,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.025504102972912612,
+       "sigma20IncludingLatest": 0.0096159871710793,
+       "sigma20Prior": 0.007102484777234727,
+       "ratio5to20": 1.8970061911263012,
+       "lastOverSigma20": 2.652260503177234,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.038364802486541096,
+       "maxAbsLogReturn": 0.059907018040886675,
+       "clippedLogReturn": 0.038364802486541096,
+       "centerLogReturn": 0.038364802486541096,
+       "clipped": false,
+       "annualLogTilt": 0.038364802486541096
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 35.28288258914664,
+       "high": 50.40776599765512,
+       "reference": 41.29999923706055,
+       "expectedScale": 0.11981403608177335,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.1992827689682864,
+       "permittedLogDistance": 0.3594421082453201
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.1176419048431045,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.12× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    }
+   ],
+   "version": "mizan-scenarios-7-shock-warning-1-a3434e85",
+   "price": 41.29999923706055,
+   "dq": "جيدة",
+   "err": null
+  },
+  {
+   "symbol": "1180.SR",
+   "http": 200,
+   "ms": 8889,
+   "topKeys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks",
+    "warnings",
+    "mode",
+    "research",
+    "changes",
+    "forecast"
+   ],
+   "forecastKeys": [
+    "createdAt",
+    "version",
+    "settingsUsed",
+    "price",
+    "currency",
+    "priceTime",
+    "retrievedAt",
+    "rows",
+    "factors",
+    "dataQuality",
+    "dataWarnings",
+    "dailyScope",
+    "method",
+    "snapshotId",
+    "recorded"
+   ],
+   "rows": [
+    {
+     "p": "يومي",
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 35.455480951980306,
+     "pct": -0.012741490719126558,
+     "range": [
+      34.52825378339194,
+      36.407608025080556
+     ],
+     "conf": "منخفض",
+     "cov": 86,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 1,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.039107935285179085,
+       "sigma20IncludingLatest": 0.020114802523245004,
+       "sigma20Prior": 0.017082768061958648,
+       "ratio5to20": 1.6282628899715892,
+       "lastOverSigma20": 1.9442366008806349,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": -0.00012742302516009128,
+       "maxAbsLogReturn": 0.01005740126162249,
+       "clippedLogReturn": -0.00012742302516009128,
+       "centerLogReturn": -0.00012742302516009128,
+       "clipped": false,
+       "annualLogTilt": null
+      },
+      "neutralThresholdPct": 0.1,
+      "range": {
+       "low": 34.52825378339194,
+       "high": 36.407608025080556,
+       "reference": 35.459999084472656,
+       "expectedScale": 0.02011480252324498,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.02662733570368723,
+       "permittedLogDistance": 0.06034440756973494
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.196448235954724,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.20× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.1
+    },
+    {
+     "p": "أسبوع",
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 35.45748637124081,
+     "pct": -0.007086049906145708,
+     "range": [
+      33.344352688401955,
+      37.70453580297052
+     ],
+     "conf": "منخفض",
+     "cov": 67,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 5,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.039107935285179085,
+       "sigma20IncludingLatest": 0.020114802523245004,
+       "sigma20Prior": 0.017082768061958648,
+       "ratio5to20": 1.6282628899715892,
+       "lastOverSigma20": 1.9442366008806349,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": -0.00007086300978520733,
+       "maxAbsLogReturn": 0.022489032897980037,
+       "clippedLogReturn": -0.00007086300978520733,
+       "centerLogReturn": -0.00007086300978520733,
+       "clipped": false,
+       "annualLogTilt": -0.0035714956931744493
+      },
+      "neutralThresholdPct": 0.25,
+      "range": {
+       "low": 33.344352688401955,
+       "high": 37.70453580297052,
+       "reference": 35.459999084472656,
+       "expectedScale": 0.04497806579596007,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.061516851485171574,
+       "permittedLogDistance": 0.1349341973878802
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.196448235954724,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.20× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.25
+    },
+    {
+     "p": "شهر",
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 35.45999929166005,
+     "pct": 5.842848171141502e-7,
+     "range": [
+      31.18320386870664,
+      40.32335981442832
+     ],
+     "conf": "منخفض",
+     "cov": 56,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 21,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.039107935285179085,
+       "sigma20IncludingLatest": 0.020114802523245004,
+       "sigma20Prior": 0.017082768061958648,
+       "ratio5to20": 1.6282628899715892,
+       "lastOverSigma20": 1.9442366008806349,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 5.842848267073597e-9,
+       "maxAbsLogReturn": 0.04608880257592942,
+       "clippedLogReturn": 5.842848267073597e-9,
+       "centerLogReturn": 5.842848267073597e-9,
+       "clipped": false,
+       "annualLogTilt": 7.011417920488316e-8
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 31.18320386870664,
+       "high": 40.32335981442832,
+       "reference": 35.459999084472656,
+       "expectedScale": 0.09217760515185884,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.12852567419486105,
+       "permittedLogDistance": 0.2765328154555765
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.196448235954724,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.20× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "3 أشهر",
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 35.43435753393222,
+     "pct": -0.07231119910452234,
+     "range": [
+      29.83602098180487,
+      42.08314823911164
+     ],
+     "conf": "منخفض",
+     "cov": 36,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 63,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.039107935285179085,
+       "sigma20IncludingLatest": 0.020114802523245004,
+       "sigma20Prior": 0.017082768061958648,
+       "ratio5to20": 1.6282628899715892,
+       "lastOverSigma20": 1.9442366008806349,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": -0.0007233735626255277,
+       "maxAbsLogReturn": 0.05947940642520016,
+       "clippedLogReturn": -0.0007233735626255277,
+       "centerLogReturn": -0.0007233735626255277,
+       "clipped": false,
+       "annualLogTilt": -0.0028934942505021107
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 29.83602098180487,
+       "high": 42.08314823911164,
+       "reference": 35.459999084472656,
+       "expectedScale": 0.11895881285040032,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.1726888534969352,
+       "permittedLogDistance": 0.35687643855120094
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.196448235954724,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.20× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "6 أشهر",
+     "s": 126,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 35.433399689251786,
+     "pct": -0.0750123968066252,
+     "range": [
+      26.725837009539575,
+      45.354797986501595
+     ],
+     "conf": "منخفض",
+     "cov": 27.5,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 126,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.039107935285179085,
+       "sigma20IncludingLatest": 0.020114802523245004,
+       "sigma20Prior": 0.017082768061958648,
+       "ratio5to20": 1.6282628899715892,
+       "lastOverSigma20": 1.9442366008806349,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": -0.0007504054518240106,
+       "maxAbsLogReturn": 0.08411658324841947,
+       "clippedLogReturn": -0.0007504054518240106,
+       "centerLogReturn": -0.0007504054518240106,
+       "clipped": false,
+       "annualLogTilt": -0.0015008109036480212
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 26.725837009539575,
+       "high": 45.354797986501595,
+       "reference": 35.459999084472656,
+       "expectedScale": 0.16823316649683895,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.28277449906013585,
+       "permittedLogDistance": 0.5046994994905168
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.196448235954724,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.20× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "سنة",
+     "s": 252,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 35.45616508869177,
+     "pct": -0.010812171122040783,
+     "range": [
+      23.35173480395405,
+      50.53139470610748
+     ],
+     "conf": "منخفض",
+     "cov": 19,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 252,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.039107935285179085,
+       "sigma20IncludingLatest": 0.020114802523245004,
+       "sigma20Prior": 0.017082768061958648,
+       "ratio5to20": 1.6282628899715892,
+       "lastOverSigma20": 1.9442366008806349,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": -0.00010812755679393182,
+       "maxAbsLogReturn": 0.11895881285040032,
+       "clippedLogReturn": -0.00010812755679393182,
+       "centerLogReturn": -0.00010812755679393182,
+       "clipped": false,
+       "annualLogTilt": -0.00010812755679393182
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 23.35173480395405,
+       "high": 50.53139470610748,
+       "reference": 35.459999084472656,
+       "expectedScale": 0.23791762570080063,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.41773399779979764,
+       "permittedLogDistance": 0.7137528771024019
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 1.196448235954724,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.20× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    }
+   ],
+   "version": "mizan-scenarios-7-shock-warning-1-a3434e85",
+   "price": 35.459999084472656,
+   "dq": "جيدة",
+   "err": null
+  },
+  {
+   "symbol": "2280.SR",
+   "http": 200,
+   "ms": 8109,
+   "topKeys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks",
+    "warnings",
+    "mode",
+    "research",
+    "changes",
+    "forecast"
+   ],
+   "forecastKeys": [
+    "createdAt",
+    "version",
+    "settingsUsed",
+    "price",
+    "currency",
+    "priceTime",
+    "retrievedAt",
+    "rows",
+    "factors",
+    "dataQuality",
+    "dataWarnings",
+    "dailyScope",
+    "method",
+    "snapshotId",
+    "recorded"
+   ],
+   "rows": [
+    {
+     "p": "يومي",
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 42.47382083592071,
+     "pct": 0.03255240637325022,
+     "range": [
+      41.71935935311345,
+      43.231243632395
+     ],
+     "conf": "منخفض",
+     "cov": 95,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 1,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.034990368008688044,
+       "sigma20IncludingLatest": 0.01839642029801033,
+       "sigma20Prior": 0.01640693872630217,
+       "ratio5to20": 1.0230707528494414,
+       "lastOverSigma20": 1.9020204714757707,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.00032547109226984094,
+       "maxAbsLogReturn": 0.0076534408134029406,
+       "clippedLogReturn": 0.00032547109226984094,
+       "centerLogReturn": 0.00032547109226984094,
+       "clipped": false,
+       "annualLogTilt": null
+      },
+      "neutralThresholdPct": 0.1,
+      "range": {
+       "low": 41.71935935311345,
+       "high": 43.231243632395,
+       "reference": 42.459999084472656,
+       "expectedScale": 0.015306881626805881,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.018001031362034722,
+       "permittedLogDistance": 0.045920644880417645
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 1.58687758648263,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.59× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.1
+    },
+    {
+     "p": "أسبوع",
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 42.48002129590766,
+     "pct": 0.04715546836252166,
+     "range": [
+      40.8082393169888,
+      44.22029079185287
+     ],
+     "conf": "منخفض",
+     "cov": 87,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 5,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.034990368008688044,
+       "sigma20IncludingLatest": 0.01839642029801033,
+       "sigma20Prior": 0.01640693872630217,
+       "ratio5to20": 1.0230707528494414,
+       "lastOverSigma20": 1.9020204714757707,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.00047144353665516035,
+       "maxAbsLogReturn": 0.01526761733976571,
+       "clippedLogReturn": 0.00047144353665516035,
+       "centerLogReturn": 0.00047144353665516035,
+       "clipped": false,
+       "annualLogTilt": 0.023760754247420083
+      },
+      "neutralThresholdPct": 0.25,
+      "range": {
+       "low": 40.8082393169888,
+       "high": 44.22029079185287,
+       "reference": 42.459999084472656,
+       "expectedScale": 0.03053523467953142,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.040621316720300955,
+       "permittedLogDistance": 0.09160570403859425
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 1.58687758648263,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.59× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.25
+    },
+    {
+     "p": "شهر",
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 42.55464263517235,
+     "pct": 0.22290050103723144,
+     "range": [
+      39.14933505666832,
+      46.25615242726268
+     ],
+     "conf": "منخفض",
+     "cov": 80,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 21,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.034990368008688044,
+       "sigma20IncludingLatest": 0.01839642029801033,
+       "sigma20Prior": 0.01640693872630217,
+       "ratio5to20": 1.0230707528494414,
+       "lastOverSigma20": 1.9020204714757707,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0022265244641203287,
+       "maxAbsLogReturn": 0.03128930463881805,
+       "clippedLogReturn": 0.0022265244641203287,
+       "centerLogReturn": 0.0022265244641203287,
+       "clipped": false,
+       "annualLogTilt": 0.026718293569443944
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 39.14933505666832,
+       "high": 46.25615242726268,
+       "reference": 42.459999084472656,
+       "expectedScale": 0.0625786092776361,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.085632045852665,
+       "permittedLogDistance": 0.18773582783290832
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 1.58687758648263,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.59× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "3 أشهر",
+     "s": 63,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 42.87797787051745,
+     "pct": 0.9844060175631133,
+     "range": [
+      36.883813352835816,
+      49.84628266814579
+     ],
+     "conf": "منخفض",
+     "cov": 80,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 63,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.034990368008688044,
+       "sigma20IncludingLatest": 0.01839642029801033,
+       "sigma20Prior": 0.01640693872630217,
+       "ratio5to20": 1.0230707528494414,
+       "lastOverSigma20": 1.9020204714757707,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.009795923067187755,
+       "maxAbsLogReturn": 0.05649167530718066,
+       "clippedLogReturn": 0.009795923067187755,
+       "centerLogReturn": 0.009795923067187755,
+       "clipped": false,
+       "annualLogTilt": 0.03918369226875102
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 36.883813352835816,
+       "high": 49.84628266814579,
+       "reference": 42.459999084472656,
+       "expectedScale": 0.11298335061436132,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.16038148856621587,
+       "permittedLogDistance": 0.33895005184308397
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 1.58687758648263,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.59× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "6 أشهر",
+     "s": 126,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 43.421189270138356,
+     "pct": 2.263754607609497,
+     "range": [
+      35.07094804925565,
+      53.75958685192129
+     ],
+     "conf": "منخفض",
+     "cov": 78.5,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 126,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.034990368008688044,
+       "sigma20IncludingLatest": 0.01839642029801033,
+       "sigma20Prior": 0.01640693872630217,
+       "ratio5to20": 1.0230707528494414,
+       "lastOverSigma20": 1.9020204714757707,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.022385119277721955,
+       "maxAbsLogReturn": 0.07989129338059217,
+       "clippedLogReturn": 0.022385119277721955,
+       "centerLogReturn": 0.022385119277721955,
+       "clipped": false,
+       "annualLogTilt": 0.04477023855544391
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 35.07094804925565,
+       "high": 53.75958685192129,
+       "reference": 42.459999084472656,
+       "expectedScale": 0.15978258676118434,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.2359595764262609,
+       "permittedLogDistance": 0.479347760283553
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 1.58687758648263,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.59× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "سنة",
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 44.65289842525731,
+     "pct": 5.164624088714559,
+     "range": [
+      32.98360311900117,
+      60.450683043409335
+     ],
+     "conf": "منخفض",
+     "cov": 77,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 252,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1246,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.034990368008688044,
+       "sigma20IncludingLatest": 0.01839642029801033,
+       "sigma20Prior": 0.01640693872630217,
+       "ratio5to20": 1.0230707528494414,
+       "lastOverSigma20": 1.9020204714757707,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.05035678484213679,
+       "maxAbsLogReturn": 0.11298335061436132,
+       "clippedLogReturn": 0.05035678484213679,
+       "centerLogReturn": 0.05035678484213679,
+       "clipped": false,
+       "annualLogTilt": 0.05035678484213679
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 32.98360311900117,
+       "high": 60.450683043409335,
+       "reference": 42.459999084472656,
+       "expectedScale": 0.22596670122872264,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.3532654415959511,
+       "permittedLogDistance": 0.6779001036861679
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 1,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 1.58687758648263,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": null,
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 1.59× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    }
+   ],
+   "version": "mizan-scenarios-7-shock-warning-1-a3434e85",
+   "price": 42.459999084472656,
+   "dq": "جيدة",
+   "err": null
+  },
+  {
+   "symbol": "AAPL",
+   "http": 200,
+   "ms": 21450,
+   "topKeys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks",
+    "warnings",
+    "mode",
+    "research",
+    "changes",
+    "forecast"
+   ],
+   "forecastKeys": [
+    "createdAt",
+    "version",
+    "settingsUsed",
+    "price",
+    "currency",
+    "priceTime",
+    "retrievedAt",
+    "rows",
+    "factors",
+    "dataQuality",
+    "dataWarnings",
+    "dailyScope",
+    "method",
+    "snapshotId",
+    "recorded"
+   ],
+   "rows": [
+    {
+     "p": "يومي",
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 343.3145301044144,
+     "pct": 0.06252699050259208,
+     "range": [
+      336.35349530167423,
+      350.2208321601079
+     ],
+     "conf": "منخفض",
+     "cov": 98,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 1,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": -0.0134043805094608,
+       "sigma20IncludingLatest": 0.01068279529268914,
+       "sigma20Prior": 0.010364978324506065,
+       "ratio5to20": 1.151472338215896,
+       "lastOverSigma20": 1.2547633968643206,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0010417908420774292,
+       "maxAbsLogReturn": 0.008803039993619649,
+       "clippedLogReturn": 0.0010417908420774292,
+       "centerLogReturn": 0.0006250745052464575,
+       "clipped": false,
+       "annualLogTilt": null
+      },
+      "neutralThresholdPct": 0.1,
+      "range": {
+       "low": 336.35349530167423,
+       "high": 350.2208321601079,
+       "reference": 343.1,
+       "expectedScale": 0.017606079987239297,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.020541954683283032,
+       "permittedLogDistance": 0.05281823996171789
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.5049097545109761,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2025-09-27",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.50× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.1
+    },
+    {
+     "p": "أسبوع",
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 343.2466723312194,
+     "pct": 0.04274914929156205,
+     "range": [
+      326.1562398532022,
+      359.7243186442445
+     ],
+     "conf": "منخفض",
+     "cov": 94,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 5,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": -0.0134043805094608,
+       "sigma20IncludingLatest": 0.01068279529268914,
+       "sigma20Prior": 0.010364978324506065,
+       "ratio5to20": 1.151472338215896,
+       "lastOverSigma20": 1.2547633968643206,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0007123335741005413,
+       "maxAbsLogReturn": 0.019660075506261993,
+       "clippedLogReturn": 0.0007123335741005413,
+       "centerLogReturn": 0.00042740014446032476,
+       "clipped": false,
+       "annualLogTilt": 0.035901612134667284
+      },
+      "neutralThresholdPct": 0.25,
+      "range": {
+       "low": 326.1562398532022,
+       "high": 359.7243186442445,
+       "reference": 343.1,
+       "expectedScale": 0.039320151012523986,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.05064541995431508,
+       "permittedLogDistance": 0.11796045303757197
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.5049097545109761,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2025-09-27",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.50× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.25
+    },
+    {
+     "p": "شهر",
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 343.58351299633756,
+     "pct": 0.14092480219689243,
+     "range": [
+      309.37038628500295,
+      376.76056767520004
+     ],
+     "conf": "منخفض",
+     "cov": 93,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 21,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": -0.0134043805094608,
+       "sigma20IncludingLatest": 0.01068279529268914,
+       "sigma20Prior": 0.010364978324506065,
+       "ratio5to20": 1.151472338215896,
+       "lastOverSigma20": 1.2547633968643206,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.002347093273171695,
+       "maxAbsLogReturn": 0.036900784236299555,
+       "clippedLogReturn": 0.002347093273171695,
+       "centerLogReturn": 0.001408255963903017,
+       "clipped": false,
+       "annualLogTilt": 0.02816511927806034
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 309.37038628500295,
+       "high": 376.76056767520004,
+       "reference": 343.1,
+       "expectedScale": 0.07380156847259911,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.10348272967082174,
+       "permittedLogDistance": 0.22140470541779733
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.5049097545109761,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2025-09-27",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.50× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "3 أشهر",
+     "s": 63,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 344.40942047353747,
+     "pct": 0.3816439736337637,
+     "range": [
+      291.1934221111262,
+      402.85451420881174
+     ],
+     "conf": "منخفض",
+     "cov": 98,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 63,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": -0.0134043805094608,
+       "sigma20IncludingLatest": 0.01068279529268914,
+       "sigma20Prior": 0.010364978324506065,
+       "ratio5to20": 1.151472338215896,
+       "lastOverSigma20": 1.2547633968643206,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.006348626010694978,
+       "maxAbsLogReturn": 0.060910571117717464,
+       "clippedLogReturn": 0.006348626010694978,
+       "centerLogReturn": 0.0038091756064169867,
+       "clipped": false,
+       "annualLogTilt": 0.025394504042779913
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 291.1934221111262,
+       "high": 402.85451420881174,
+       "reference": 343.1,
+       "expectedScale": 0.12182114223543493,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.16403422270110593,
+       "permittedLogDistance": 0.3654634267063048
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.5049097545109761,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2025-09-27",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.50× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "6 أشهر",
+     "s": 126,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 345.8849422158502,
+     "pct": 0.8116998588895805,
+     "range": [
+      277.1159960643032,
+      431.7195504798685
+     ],
+     "conf": "منخفض",
+     "cov": 98,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 126,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": -0.0134043805094608,
+       "sigma20IncludingLatest": 0.01068279529268914,
+       "sigma20Prior": 0.010364978324506065,
+       "ratio5to20": 1.151472338215896,
+       "lastOverSigma20": 1.2547633968643206,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.01347372157039778,
+       "maxAbsLogReturn": 0.08614055576656697,
+       "clippedLogReturn": 0.01347372157039778,
+       "centerLogReturn": 0.008084232942238668,
+       "clipped": false,
+       "annualLogTilt": 0.02694744314079556
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 277.1159960643032,
+       "high": 431.7195504798685,
+       "reference": 343.1,
+       "expectedScale": 0.17228111153313394,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.22975423886146756,
+       "permittedLogDistance": 0.5168433345994018
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.5049097545109761,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2025-09-27",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.50× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "سنة",
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 349.01754013559065,
+     "pct": 1.724727524217612,
+     "range": [
+      255.0943433012447,
+      477.52232270571193
+     ],
+     "conf": "منخفض",
+     "cov": 98,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 252,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": -0.0134043805094608,
+       "sigma20IncludingLatest": 0.01068279529268914,
+       "sigma20Prior": 0.010364978324506065,
+       "ratio5to20": 1.151472338215896,
+       "lastOverSigma20": 1.2547633968643206,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.02850038223881121,
+       "maxAbsLogReturn": 0.12182114223543493,
+       "clippedLogReturn": 0.02850038223881121,
+       "centerLogReturn": 0.017100229343286727,
+       "clipped": false,
+       "annualLogTilt": 0.02850038223881121
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 255.0943433012447,
+       "high": 477.52232270571193,
+       "reference": 343.1,
+       "expectedScale": 0.24364228447086986,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.3305889580855845,
+       "permittedLogDistance": 0.7309268534126095
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.5049097545109761,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2025-09-27",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.50× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    }
+   ],
+   "version": "mizan-scenarios-7-shock-warning-1-a3434e85",
+   "price": 343.1,
+   "dq": "جيدة",
+   "err": null
+  },
+  {
+   "symbol": "MSFT",
+   "http": 200,
+   "ms": 15485,
+   "topKeys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks",
+    "warnings",
+    "mode",
+    "research",
+    "changes",
+    "forecast"
+   ],
+   "forecastKeys": [
+    "createdAt",
+    "version",
+    "settingsUsed",
+    "price",
+    "currency",
+    "priceTime",
+    "retrievedAt",
+    "rows",
+    "factors",
+    "dataQuality",
+    "dataWarnings",
+    "dailyScope",
+    "method",
+    "snapshotId",
+    "recorded"
+   ],
+   "rows": [
+    {
+     "p": "يومي",
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 532.855073972057,
+     "pct": 0.07795694764798217,
+     "range": [
+      517.0969793956128,
+      549.0933831979281
+     ],
+     "conf": "منخفض",
+     "cov": 98,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 1,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.01500570771403531,
+       "sigma20IncludingLatest": 0.012330602644808559,
+       "sigma20Prior": 0.012426612699262376,
+       "ratio5to20": 1.1385944075648164,
+       "lastOverSigma20": 1.216948444961287,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0012987762833759225,
+       "maxAbsLogReturn": 0.011665344783534542,
+       "clippedLogReturn": 0.0012987762833759225,
+       "centerLogReturn": 0.0007792657700255535,
+       "clipped": false,
+       "annualLogTilt": null
+      },
+      "neutralThresholdPct": 0.1,
+      "range": {
+       "low": 517.0969793956128,
+       "high": 549.0933831979281,
+       "reference": 532.44,
+       "expectedScale": 0.023330689567069084,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.03079830876556169,
+       "permittedLogDistance": 0.06999206870120725
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.4498370945188495,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2026-06-30",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.45× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.1
+    },
+    {
+     "p": "أسبوع",
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 532.6687008078053,
+     "pct": 0.04295334832192162,
+     "range": [
+      497.820802606594,
+      569.9559828248064
+     ],
+     "conf": "منخفض",
+     "cov": 94,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 5,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.01500570771403531,
+       "sigma20IncludingLatest": 0.012330602644808559,
+       "sigma20Prior": 0.012426612699262376,
+       "ratio5to20": 1.1385944075648164,
+       "lastOverSigma20": 1.216948444961287,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0007157354335336894,
+       "maxAbsLogReturn": 0.02608450391695581,
+       "clippedLogReturn": 0.0007157354335336894,
+       "centerLogReturn": 0.00042944126012021364,
+       "clipped": false,
+       "annualLogTilt": 0.036073065850097945
+      },
+      "neutralThresholdPct": 0.25,
+      "range": {
+       "low": 497.820802606594,
+       "high": 569.9559828248064,
+       "reference": 532.44,
+       "expectedScale": 0.05216900783391162,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.06808891955354426,
+       "permittedLogDistance": 0.15650702350173484
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.4498370945188495,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2026-06-30",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.45× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.25
+    },
+    {
+     "p": "شهر",
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 533.4290930207998,
+     "pct": 0.18576609961680457,
+     "range": [
+      464.235260805931,
+      612.936201328199
+     ],
+     "conf": "منخفض",
+     "cov": 93,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 21,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.01500570771403531,
+       "sigma20IncludingLatest": 0.012330602644808559,
+       "sigma20Prior": 0.012426612699262376,
+       "ratio5to20": 1.1385944075648164,
+       "lastOverSigma20": 1.216948444961287,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0030932294631285623,
+       "maxAbsLogReturn": 0.053457325478305284,
+       "clippedLogReturn": 0.0030932294631285623,
+       "centerLogReturn": 0.0018559376778771372,
+       "clipped": false,
+       "annualLogTilt": 0.037118753557542745
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 464.235260805931,
+       "high": 612.936201328199,
+       "reference": 532.44,
+       "expectedScale": 0.10691465095661057,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.14079063920438956,
+       "permittedLogDistance": 0.3207439528698317
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.4498370945188495,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2026-06-30",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.45× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "3 أشهر",
+     "s": 63,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 536.6338344554139,
+     "pct": 0.7876632964115808,
+     "range": [
+      428.93243577747364,
+      671.3781664945476
+     ],
+     "conf": "منخفض",
+     "cov": 98,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 63,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.01500570771403531,
+       "sigma20IncludingLatest": 0.012330602644808559,
+       "sigma20Prior": 0.012426612699262376,
+       "ratio5to20": 1.1385944075648164,
+       "lastOverSigma20": 1.216948444961287,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.013076290377896425,
+       "maxAbsLogReturn": 0.08705242828031048,
+       "clippedLogReturn": 0.013076290377896425,
+       "centerLogReturn": 0.007845774226737854,
+       "clipped": false,
+       "annualLogTilt": 0.0523051615115857
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 428.93243577747364,
+       "high": 671.3781664945476,
+       "reference": 532.44,
+       "expectedScale": 0.17410485656062097,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.23186234946770276,
+       "permittedLogDistance": 0.522314569681863
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.4498370945188495,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2026-06-30",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.45× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "6 أشهر",
+     "s": 126,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 542.0471740417967,
+     "pct": 1.8043674483127883,
+     "range": [
+      394.86571920605894,
+      744.0887486446289
+     ],
+     "conf": "منخفض",
+     "cov": 98,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 126,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.01500570771403531,
+       "sigma20IncludingLatest": 0.012330602644808559,
+       "sigma20Prior": 0.012426612699262376,
+       "ratio5to20": 1.1385944075648164,
+       "lastOverSigma20": 1.216948444961287,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.02980469908469055,
+       "maxAbsLogReturn": 0.12311072471152625,
+       "clippedLogReturn": 0.02980469908469055,
+       "centerLogReturn": 0.017882819450814328,
+       "clipped": false,
+       "annualLogTilt": 0.0596093981693811
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 394.86571920605894,
+       "high": 744.0887486446289,
+       "reference": 532.44,
+       "expectedScale": 0.2462214494230525,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.33469009835295976,
+       "permittedLogDistance": 0.7386643482691575
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.4498370945188495,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2026-06-30",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.45× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "سنة",
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 554.251411997295,
+     "pct": 4.096501389319914,
+     "range": [
+      354.1020844070516,
+      867.5312606967467
+     ],
+     "conf": "منخفض",
+     "cov": 98,
+     "why": null,
+     "regime": "MEAN_REVERTING",
+     "shock": false,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 252,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.01500570771403531,
+       "sigma20IncludingLatest": 0.012330602644808559,
+       "sigma20Prior": 0.012426612699262376,
+       "ratio5to20": 1.1385944075648164,
+       "lastOverSigma20": 1.216948444961287,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.06691363482717651,
+       "maxAbsLogReturn": 0.17410485656062097,
+       "clippedLogReturn": 0.06691363482717651,
+       "centerLogReturn": 0.0401481808963059,
+       "clipped": false,
+       "annualLogTilt": 0.06691363482717651
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 354.1020844070516,
+       "high": 867.5312606967467,
+       "reference": 532.44,
+       "expectedScale": 0.34820971312124194,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.4881813313782356,
+       "permittedLogDistance": 1.044629139363726
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": false,
+      "calibrated": false,
+      "regime": "MEAN_REVERTING",
+      "relativeVolume": 0.4498370945188495,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2026-06-30",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.45× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    }
+   ],
+   "version": "mizan-scenarios-7-shock-warning-1-a3434e85",
+   "price": 532.44,
+   "dq": "جيدة",
+   "err": null
+  },
+  {
+   "symbol": "NVDA",
+   "http": 200,
+   "ms": 15012,
+   "topKeys": [
+    "sourceLayer",
+    "priceCoverage",
+    "priceAdjustment",
+    "priceSourceId",
+    "company",
+    "asOf",
+    "retrievedAt",
+    "context",
+    "regulatory",
+    "liveQuote",
+    "corporateActions",
+    "prices",
+    "priceSource",
+    "quoteTime",
+    "currency",
+    "facts",
+    "official",
+    "news",
+    "peers",
+    "checks",
+    "warnings",
+    "mode",
+    "research",
+    "changes",
+    "forecast"
+   ],
+   "forecastKeys": [
+    "createdAt",
+    "version",
+    "settingsUsed",
+    "price",
+    "currency",
+    "priceTime",
+    "retrievedAt",
+    "rows",
+    "factors",
+    "dataQuality",
+    "dataWarnings",
+    "dailyScope",
+    "method",
+    "snapshotId",
+    "recorded"
+   ],
+   "rows": [
+    {
+     "p": "يومي",
+     "s": 1,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 216.278529294632,
+     "pct": 0.06177764677970063,
+     "range": [
+      208.05982693065428,
+      224.32181891311666
+     ],
+     "conf": "منخفض",
+     "cov": 97,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 1,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.02428092465819187,
+       "sigma20IncludingLatest": 0.01911338793086518,
+       "sigma20Prior": 0.01861548463862204,
+       "ratio5to20": 1.4982641674796005,
+       "lastOverSigma20": 1.2703621537959744,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0010293095374494072,
+       "maxAbsLogReturn": 0.016214399182464086,
+       "clippedLogReturn": 0.0010293095374494072,
+       "centerLogReturn": 0.0006175857224696443,
+       "clipped": false,
+       "annualLogTilt": null
+      },
+      "neutralThresholdPct": 0.1,
+      "range": {
+       "low": 208.05982693065428,
+       "high": 224.32181891311666,
+       "reference": 216.145,
+       "expectedScale": 0.03242879836492817,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.038123810943698905,
+       "permittedLogDistance": 0.09728639509478451
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 0.6,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 0.5483607559250206,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2026-01-25",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.55× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.1
+    },
+    {
+     "p": "أسبوع",
+     "s": 5,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 216.24056725839026,
+     "pct": 0.044214420130119565,
+     "range": [
+      198.1210408454155,
+      235.04029190913528
+     ],
+     "conf": "منخفض",
+     "cov": 91,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 5,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.02428092465819187,
+       "sigma20IncludingLatest": 0.01911338793086518,
+       "sigma20Prior": 0.01861548463862204,
+       "ratio5to20": 1.4982641674796005,
+       "lastOverSigma20": 1.2703621537959744,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.0007367441405934196,
+       "maxAbsLogReturn": 0.034387125989136534,
+       "clippedLogReturn": 0.0007367441405934196,
+       "centerLogReturn": 0.00044204648435605177,
+       "clipped": false,
+       "annualLogTilt": 0.03713190468590835
+      },
+      "neutralThresholdPct": 0.25,
+      "range": {
+       "low": 198.1210408454155,
+       "high": 235.04029190913528,
+       "reference": 216.145,
+       "expectedScale": 0.06877425197827307,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.0870713174446313,
+       "permittedLogDistance": 0.2063227559348192
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 0.6,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 0.5483607559250206,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2026-01-25",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.55× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.25
+    },
+    {
+     "p": "شهر",
+     "s": 21,
+     "ok": true,
+     "dir": "محايد",
+     "pp": 216.5494347432591,
+     "pct": 0.18711269900256228,
+     "range": [
+      182.5259721630755,
+      263.29146353012675
+     ],
+     "conf": "منخفض",
+     "cov": 84,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 21,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.02428092465819187,
+       "sigma20IncludingLatest": 0.01911338793086518,
+       "sigma20Prior": 0.01861548463862204,
+       "ratio5to20": 1.4982641674796005,
+       "lastOverSigma20": 1.2703621537959744,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.003115631020895001,
+       "maxAbsLogReturn": 0.07020293149825726,
+       "clippedLogReturn": 0.003115631020895001,
+       "centerLogReturn": 0.0018693786125370004,
+       "clipped": false,
+       "annualLogTilt": 0.03738757225074001
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 182.5259721630755,
+       "high": 263.29146353012675,
+       "reference": 216.145,
+       "expectedScale": 0.14040586299651453,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.1973121661366638,
+       "permittedLogDistance": 0.4212175889895436
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": "صدمة تقلب: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.",
+      "positiveTiltMultiplier": 0.6,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 0.5483607559250206,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2026-01-25",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.55× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "3 أشهر",
+     "s": 63,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 217.56597141813342,
+     "pct": 0.6574158172214971,
+     "range": [
+      156.66844449148843,
+      314.9253896608955
+     ],
+     "conf": "منخفض",
+     "cov": 83,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 63,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.02428092465819187,
+       "sigma20IncludingLatest": 0.01911338793086518,
+       "sigma20Prior": 0.01861548463862204,
+       "ratio5to20": 1.4982641674796005,
+       "lastOverSigma20": 1.2703621537959744,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.010921071067617062,
+       "maxAbsLogReturn": 0.12656433387882687,
+       "clippedLogReturn": 0.010921071067617062,
+       "centerLogReturn": 0.0065526426405702375,
+       "clipped": false,
+       "annualLogTilt": 0.04368428427046825
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 156.66844449148843,
+       "high": 314.9253896608955,
+       "reference": 216.145,
+       "expectedScale": 0.25312866775765375,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.3763862737890262,
+       "permittedLogDistance": 0.7593860032729612
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 0.5483607559250206,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2026-01-25",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.55× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "6 أشهر",
+     "s": 126,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 219.29001668505575,
+     "pct": 1.4550494737586974,
+     "range": [
+      129.1489046139493,
+      396.8962182750321
+     ],
+     "conf": "منخفض",
+     "cov": 81.5,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 126,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.02428092465819187,
+       "sigma20IncludingLatest": 0.01911338793086518,
+       "sigma20Prior": 0.01861548463862204,
+       "ratio5to20": 1.4982641674796005,
+       "lastOverSigma20": 1.2703621537959744,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.02407608678961267,
+       "maxAbsLogReturn": 0.20153609242267548,
+       "clippedLogReturn": 0.02407608678961267,
+       "centerLogReturn": 0.014445652073767601,
+       "clipped": false,
+       "annualLogTilt": 0.04815217357922534
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 129.1489046139493,
+       "high": 396.8962182750321,
+       "reference": 216.145,
+       "expectedScale": 0.40307218484535096,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.6077253528261113,
+       "permittedLogDistance": 1.209216554536053
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 0.5483607559250206,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2026-01-25",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.55× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    },
+    {
+     "p": "سنة",
+     "s": 252,
+     "ok": true,
+     "dir": "صاعد",
+     "pp": 223.07800678315425,
+     "pct": 3.2075721312795764,
+     "range": [
+      136.4101141726989,
+      459.44606997227123
+     ],
+     "conf": "منخفض",
+     "cov": 80,
+     "why": null,
+     "regime": "VOLATILITY_SHOCK",
+     "shock": true,
+     "diag": {
+      "schemaVersion": 1,
+      "engine": "mizan-scenarios",
+      "sessions": 252,
+      "sourceAsOf": "2026-10-26",
+      "priceCount": 1255,
+      "state": "scenario_available",
+      "blockers": [],
+      "outputs": {
+       "point": {
+        "available": true
+       },
+       "range": {
+        "available": true,
+        "calibrated": false
+       },
+       "probability": {
+        "available": false,
+        "reason": "not_calibrated"
+       }
+      },
+      "shock": {
+       "available": true,
+       "lastLogReturn": 0.02428092465819187,
+       "sigma20IncludingLatest": 0.01911338793086518,
+       "sigma20Prior": 0.01861548463862204,
+       "ratio5to20": 1.4982641674796005,
+       "lastOverSigma20": 1.2703621537959744,
+       "threshold": 2.8,
+       "windowIncludesLatest": true
+      },
+      "center": {
+       "requestedLogReturn": 0.05262006288798242,
+       "maxAbsLogReturn": 0.25398167780793335,
+       "clippedLogReturn": 0.05262006288798242,
+       "centerLogReturn": 0.03157203773278945,
+       "clipped": false,
+       "annualLogTilt": 0.05262006288798242
+      },
+      "neutralThresholdPct": 0.5,
+      "range": {
+       "low": 136.4101141726989,
+       "high": 459.44606997227123,
+       "reference": 216.145,
+       "expectedScale": 0.5079633556158667,
+       "maxSigma": 3,
+       "maxAbsLogDistance": 0.7540720893825514,
+       "permittedLogDistance": 1.5238900668476
+      }
+     },
+     "cond": {
+      "abstain": false,
+      "abstainReason": null,
+      "shockWarning": null,
+      "positiveTiltMultiplier": 0.6,
+      "shock": true,
+      "calibrated": false,
+      "regime": "VOLATILITY_SHOCK",
+      "relativeVolume": 0.5483607559250206,
+      "cashFlow": {
+       "freeCashFlow": null,
+       "yieldPercent": null,
+       "marketCap": null,
+       "periodEnd": "2026-01-25",
+       "qualitySignal": null,
+       "sources": [],
+       "reason": "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين."
+      },
+      "notes": [
+       "حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.",
+       "الحجم النسبي 0.55× مقارنة بمتوسط 20 جلسة سابقة.",
+       "التدفق الحر غير متحقق؛ يلزم مبلغ مباشر أو تدفق تشغيلي وإنفاق رأسمالي لنفس السنة والعملة، بمصدر وتاريخ نشر معروفين.",
+       "لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين."
+      ]
+     },
+     "nstat": 0.5
+    }
+   ],
+   "version": "mizan-scenarios-7-shock-warning-1-a3434e85",
+   "price": 216.145,
+   "dq": "جيدة",
+   "err": null
+  }
+ ],
+ "browserlike": [
+  {
+   "m": "sa",
+   "http": 200,
+   "ms": 25,
+   "ct": "application/json; charset=utf-8",
+   "cf": null
+  },
+  {
+   "m": "us",
+   "http": 200,
+   "ms": 65,
+   "ct": "application/json; charset=utf-8",
+   "cf": null
+  },
+  {
+   "m": "sa",
+   "http": 200,
+   "ms": 24,
+   "ct": "application/json; charset=utf-8",
+   "cf": null
+  },
+  {
+   "m": "us",
+   "http": 200,
+   "ms": 71,
+   "ct": "application/json; charset=utf-8",
+   "cf": null
+  }
+ ]
+}
