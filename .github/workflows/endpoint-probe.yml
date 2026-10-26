@@ -1,5 +1,6 @@
 name: Endpoint probe (read-only GET against mizan-aziz)
 on:
+  workflow_dispatch:
   push:
     branches: [market-overview]
     paths: [".github/workflows/endpoint-probe.yml"]
@@ -46,3 +47,5 @@ jobs:
           JS
           node shot.mjs > ../shot.json 2> ../shot.err || true; cd ..; tail -c 3000 shot.err > shot-err.txt || true
           for f in pw/sa.png pw/us.png shot.json shot-err.txt; do [ -f "$f" ] || continue; b=$(basename $f); node -e 'const fs=require("fs");fs.writeFileSync("b.json",JSON.stringify({message:"ci diagnostics: home shot "+process.env.RID,branch:process.env.REF,content:fs.readFileSync(process.argv[1]).toString("base64")}))' "$f"; gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/home-${RID}-$b" --input b.json >/dev/null; done
+
+# rerun 2
