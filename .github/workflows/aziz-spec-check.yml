@@ -51,9 +51,18 @@ jobs:
       - name: Market overview tests
         run: node --test --import tsx tests/market-overview.test.ts
       - name: Forecast repair regression + full analysis tests
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RID: ${{ github.run_id }}
+          REF: ${{ github.ref_name }}
         run: |
-          node --test --import tsx tests/forecast-repair-regression.test.mjs
-          npm test
+          set +e
+          (node --test --import tsx tests/forecast-repair-regression.test.mjs; echo "exit=$?"; npm test; echo "exit=$?") > ../test-out.txt 2>&1
+          F=$(grep -c "exit=[1-9]" ../test-out.txt)
+          node -e 'const fs=require("fs");const t=fs.readFileSync("../test-out.txt","utf8");fs.writeFileSync("../tb.json",JSON.stringify({message:"ci diagnostics: tests "+process.env.RID,branch:process.env.REF,content:Buffer.from(t.slice(-60000)).toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/tests-${RID}.txt" --input ../tb.json >/dev/null || echo WARN
+          exit $F
       - name: Daily picks tests (unchanged behaviour)
         run: node --test --import tsx tests/daily-picks.test.ts tests/picks.test.ts
       - name: Aziz research package tests
