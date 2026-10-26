@@ -35,7 +35,7 @@ jobs:
           import {chromium} from 'playwright';
           const b=await chromium.launch();const p=await b.newPage({viewport:{width:820,height:1180},locale:'ar-SA'});
           const logs=[];p.on('console',m=>{if(m.type()==='error')logs.push(m.text().slice(0,200))});p.on('response',r=>{if(r.url().includes('market-overview'))logs.push('resp '+r.status()+' '+r.url().slice(-40))});
-          await p.goto('https://mizan-aziz.aljeryabod.workers.dev/',{waitUntil:'networkidle',timeout:60000});await p.waitForTimeout(4000);
+          await p.goto('https://mizan-aziz.aljeryabod.workers.dev/',{waitUntil:'load',timeout:60000});await p.waitForTimeout(12000);
           const panel=p.locator('section[aria-label="نظرة على السوق"]');
           const txt1=await panel.innerText().catch(e=>'NO PANEL '+e.message);
           await panel.screenshot({path:'sa.png'}).catch(()=>{});
