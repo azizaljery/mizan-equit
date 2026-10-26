@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {forecasts,MODEL_VERSION} from '../lib/research-model.ts';
+import {DEFAULT_SETTINGS} from '../lib/site-settings.ts';
+import {forecastPoint,forecastDisplayStatus} from '../lib/forecast-presentation.ts';
+import {scenarioCenter,inspectScenarioRange} from '../lib/forecast-diagnostics.ts';
+import {syntheticReport,NOW} from '../research/forecast-repair/fixtures.mjs';
+test('missing predicted price is not replaced with the observed price',()=>{assert.equal(forecastPoint({available:false,price:100}),null);assert.equal(forecastPoint({available:true,price:100}),null);});
+test('forecast labels contain no buy recommendation',()=>{assert.doesNotMatch(forecastDisplayStatus({available:true,direction:'صاعد'}).label,/نوصي|شراء/);});
+test('all six horizons carry numeric diagnostic evidence',()=>{const r=forecasts(syntheticReport(),null,NOW);assert.equal(r.rows.length,6);for(const row of r.rows)assert.equal(row.diagnostics.sessions,row.sessions);assert.match(MODEL_VERSION,/diagnostics-1/);});
+test('shock rule remains observable and is not silently bypassed',()=>{const r=forecasts(syntheticReport({shock:-.025}),null,NOW);for(const row of r.rows.filter(x=>x.sessions<=21))assert.ok(row.diagnostics.blockers.some(x=>x.code==='volatility_shock_policy'));});
+test('log drift is transformed exponentially',()=>{const x=scenarioCenter({bias:1,sessions:252,dailySigma:.03,expectedScale:.5,positiveTiltMultiplier:1});assert.equal(x.centerLogReturn,.15);assert.ok(Math.abs(100*Math.expm1(x.centerLogReturn)-16.1834242728283)<1e-10);});
+test('range guard distinguishes wide range and unresolved price jump',()=>{const r=inspectScenarioRange({low:80,high:120,reference:100,sigma:.01,expectedScale:.01,maxSigma:3,longJump:true});assert.deepEqual(r.map(x=>x.code),['range_too_wide','corporate_action_or_jump_unresolved']);});
+test('operator-disabled horizon remains disabled',()=>{const s=structuredClone(DEFAULT_SETTINGS);s.periods[5].enabled=false;const r=forecasts(syntheticReport(),null,NOW,s);assert.ok(r.rows.find(x=>x.sessions===5).diagnostics.blockers.some(x=>x.code==='horizon_disabled'));});

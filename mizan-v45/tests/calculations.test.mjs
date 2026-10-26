@@ -399,7 +399,7 @@ test('Calm stock has narrow weekly range and wider yearly uncertainty; anomalous
  const {forecasts}=await import(process.env.MIZAN_TEST_MODULE),r=researchFixture();r.prices=r.prices.map((p,i)=>{const close=40*Math.exp(.00004*i+.006*Math.sin(i*.81));return {...p,open:close*.999,high:close*1.001,low:close*.998,close}});
  const result=forecasts(r,null,Date.parse(r.asOf+'T20:00:00Z'));assert.equal(result.rows.length,6);assert.ok(result.rows.every(r=>r.available),JSON.stringify(result.rows.filter(r=>!r.available)));
  const week=result.rows.find(r=>r.sessions===5),year=result.rows.find(r=>r.sessions===252);assert.ok(week.change[1]<10);assert.ok(week.change[0]>-10);assert.ok(year.range[1]-year.range[0]>week.range[1]-week.range[0]);assert.notDeepEqual(result.rows[1].range,year.range);
- const jump={...r,prices:r.prices.map((p,i)=>i===r.prices.length-1?{...p,open:p.open*3,high:p.high*3,low:p.low*3,close:p.close*3}:p)};const failed=forecasts(jump,null,Date.parse(r.asOf+'T20:00:00Z'));assert.ok(failed.rows.every(r=>!r.available));assert.ok(failed.rows.every(r=>r.reasons.join(' ').includes('التذبذب')));
+ const jump={...r,prices:r.prices.map((p,i)=>i===r.prices.length-1?{...p,open:p.open*3,high:p.high*3,low:p.low*3,close:p.close*3}:p)};const failed=forecasts(jump,null,Date.parse(r.asOf+'T20:00:00Z'));assert.ok(failed.rows.every(r=>!r.available));assert.ok(failed.rows.every(r=>/التذبذب|قفزة/.test(r.reasons.join(' '))));
 });
 test('Natural-language constraints combine and trading can rank price evidence without inventing financial facts',async()=>{
  const {parseAskIntent,researchScore,eligibleUSCompanies,eligibleSaudiCompanies}=await import(process.env.MIZAN_TEST_MODULE);

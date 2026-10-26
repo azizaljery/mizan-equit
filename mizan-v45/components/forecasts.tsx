@@ -10,19 +10,9 @@ import {fmt} from '@/lib/analysis';
 import {SourceLink} from './source-link';
 import {Explain} from './explain';
 import {ForecastRangeCalibration} from './forecast-range-calibration';
+import {forecastPoint as forecastNumber,forecastDisplayStatus as forecastStatus} from '@/lib/forecast-presentation';
 export function completeForecastRows(result:any){return HORIZONS.map(h=>result?.rows?.find((r:any)=>r.sessions===h.sessions)||{period:h.name,sessions:h.sessions,available:false,direction:'غير متاح',price:result?.price??null,range:null,change:null,confidence:'منخفض',riskLevel:'غير متحقق',coverage:0,reasons:['لم تُحفظ هذه المدة في هذا التحليل؛ اطلب تحليلًا جديدًا.'],risks:[],basis:[],contributions:[]});}
 const range=(values:any)=>Array.isArray(values)?values.map((v:number)=>fmt(v)).join(' – '):'غير متاح';
-function forecastStatus(row:any){
- const risk=String(row.riskLevel||'');
- const change=Number(row.expectedChangePct);
- if(!row.available)return {tone:'neutral',label:'متذبذب'};
- if(row.direction==='هابط'||/مرتفع|عالي|حرج/.test(risk)||Number.isFinite(change)&&change<0)return {tone:'danger',label:'خطر — لا نوصي به'};
- if(row.direction==='صاعد'&&(!Number.isFinite(change)||change>=0))return {tone:'safe',label:'نوصي به'};
- return {tone:'neutral',label:'متذبذب'};
-}
-function forecastNumber(row:any){
- return Number.isFinite(row.predictedPrice)?row.predictedPrice:Number.isFinite(row.price)?row.price:null;
-}
 // عمداً بلا حساب هنا: forecasts() خادمية فقط (recordAnalysis في research-service.ts
 // يضبط report.forecast قبل وصول أي تقرير للعميل). مكوّن العميل يعرض نتيجة
 // جاهزة أو يمتنع صراحة — لا يُعيد حساب الأوزان بمدخلات محلية (Date.now() في
@@ -42,12 +32,13 @@ export function Forecasts({report,quote=null,data}:{report?:MarketReport|null;qu
  <dl>
  <div><dt>الاتجاه المتوقع</dt><dd className={row.direction==='صاعد'?'positive':row.direction==='هابط'?'negative':''}>{row.available?row.direction:'غير مقدّر'}</dd></div>
  <div><dt>نطاق سعر نهاية المدة</dt><dd dir="ltr">{row.available&&row.range?range(row.range)+' '+result.currency:'غير متاح'}</dd></div>
- <div><dt>رقم ميزان</dt><dd>{forecastNumber(row)!==null?fmt(forecastNumber(row))+' '+result.currency:'غير متاح'}</dd></div>
+ <div><dt>السعر المتوقع عند نهاية المدة</dt><dd>{forecastNumber(row)!==null?fmt(forecastNumber(row))+' '+result.currency:'لم يصدر توقع'}</dd></div>
+ <div><dt>نهاية تقديرية</dt><dd>{row.window?.estimatedEndAt||'غير متاحة'}{row.window?.calendarVerified===false?' · تقويم غير موثق للعطلات':''}</dd></div>
  <div><dt>الحركة المتوقعة</dt><dd>{row.available&&Number.isFinite(row.expectedChangePct)?fmt(row.expectedChangePct)+'%':'غير متاحة'}</dd></div>
  <div><dt>درجة الثقة</dt><dd><Explain term="درجة الثقة" value={row.confidence}/></dd></div>
  <div><dt>الحالة</dt><dd>{forecastStatus(row).label}</dd></div>
  </dl>
- {row.modelCondition?.abstainReason&&<p role="status" className="notice error">{row.modelCondition.abstainReason}</p>}
+ {!row.available&&<p role="status" className="notice error">{(row.reasons||[]).join(' ')||'لم يصدر النموذج توقعًا لهذا الأفق.'}</p>}
  <details><summary>أدلة النموذج وشروط الإبطال — {row.period}</summary><div className="forecast-detail">
  <p>الأساسي: {row.scenarios?range(row.scenarios.base):'غير متاح'} · الإيجابي: {row.scenarios?range(row.scenarios.positive):'غير متاح'} · السلبي: {row.scenarios?range(row.scenarios.negative):'غير متاح'}</p>
  {!row.available&&<p>سبب عدم إصدار نطاق: {(row.reasons||[]).join(' ')} السيناريوهات الوصفية شروط متابعة، وليست نطاقات سعرية محسوبة.</p>}
