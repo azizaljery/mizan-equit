@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [shock-warning]
-    paths: [".github/workflows/shock-compare.yml"]
+    paths: [".github/workflows/shock-compare.yml", "mizan-v45/research/forecast-repair/**", "mizan-v45/lib/research-model.ts"]
 permissions:
   contents: write
 jobs:
@@ -29,3 +29,6 @@ jobs:
           node --import tsx research/forecast-repair/shock-compare.mjs "$PWD" "$PWD/research/forecast-repair/fixtures.mjs" > /tmp/after.json
           node -e 'const fs=require("fs");const o={before:JSON.parse(fs.readFileSync("/tmp/before.json")),after:JSON.parse(fs.readFileSync("/tmp/after.json"))};fs.writeFileSync("/tmp/cmp.json",JSON.stringify(o,null,1));fs.writeFileSync("/tmp/b.json",JSON.stringify({message:"ci diagnostics: shock compare "+process.env.RID,branch:process.env.REF,content:Buffer.from(JSON.stringify(o,null,1)).toString("base64")}))'
           gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/shock-compare-${RID}.json" --input /tmp/b.json >/dev/null
+          node --import tsx research/forecast-repair/real-compare.mjs /tmp/before/mizan-v45 "$PWD" 2222.SR,1120.SR,2010.SR,7010.SR,1180.SR,2280.SR,AAPL,MSFT,NVDA > /tmp/real.json || echo '{"error":"real compare failed"}' > /tmp/real.json
+          node -e 'const fs=require("fs");fs.writeFileSync("/tmp/r.json",JSON.stringify({message:"ci diagnostics: real compare "+process.env.RID,branch:process.env.REF,content:fs.readFileSync("/tmp/real.json").toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/real-compare-${RID}.json" --input /tmp/r.json >/dev/null
