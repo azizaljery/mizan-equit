@@ -56,13 +56,13 @@ test('forecast API uses canonical six rows and estimated market-specific dates; 
  const historic=m.generateCalibratedForecast({report:hist,now:Date.parse('2026-09-03T20:00:00Z'),quote:{symbol:'AAPL',currency:'USD',price:9999,quoteTime:new Date(now).toISOString()}});
  assert.equal(historic.horizons[1].targetDate,'2026-09-04');assert.equal(historic.anchorPrice,hist.prices.at(-1).close);
 });
-test('short-horizon shocks abstain in the live forecast path with null target and range',()=>{
+test('short-horizon shocks are issued with a warning in the live forecast path (policy 2026-10-26)',()=>{
  const r=report();r.prices.at(-1).close*=1.08;
  const f=m.forecasts(r,null,now),g=m.generateCalibratedForecast({report:r,now});
  assert.ok(f.rows[0].modelCondition.shock);
- for(const h of [1,5,21]){assert.equal(g.horizons[h].status,'abstain');assert.equal(g.horizons[h].range,null);assert.equal(g.horizons[h].centralTarget,null);assert.match(g.horizons[h].abstainReason,/التذبذب/);}
- for(const h of [63,126,252])assert.equal(f.rows.find(r=>r.sessions===h).modelCondition.abstain,false);
- const html=m.renderForecastForTest(f);assert.match(html,/امتناع مشروط/);assert.doesNotMatch(html,/معايرة إحصائياً|تمثل فترات ثقة مغلقة/);
+ for(const h of [1,5,21]){assert.equal(g.horizons[h].status,'active');assert.ok(g.horizons[h].range);assert.ok(Number.isFinite(g.horizons[h].centralTarget));assert.match(g.horizons[h].warning,/صدمة تقلب|كسر هيكلي/);assert.equal(g.horizons[h].evidenceQuality,'منخفض');}
+ for(const h of [63,126,252]){const row=f.rows.find(r=>r.sessions===h);assert.equal(row.modelCondition.abstain,false);assert.equal(row.shockWarning,null);}
+ const html=m.renderForecastForTest(f);assert.match(html,/صدمة تقلب|كسر هيكلي/);assert.doesNotMatch(html,/معايرة إحصائياً|تمثل فترات ثقة مغلقة/);
 });
 test('low RVOL scales only positive tilt and FCF changes quality within its existing weight',()=>{
  const r=report(),low=m.forecasts(r,null,now),high=structuredClone(r);high.prices.at(-1).volume=15000;

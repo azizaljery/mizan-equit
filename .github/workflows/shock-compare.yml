@@ -1,0 +1,31 @@
+name: Shock policy before/after (no deploy)
+on:
+  workflow_dispatch:
+  push:
+    branches: [shock-warning]
+    paths: [".github/workflows/shock-compare.yml"]
+permissions:
+  contents: write
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false, fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: "24"}
+      - name: Install
+        working-directory: mizan-v45
+        run: npm install --no-audit --no-fund
+      - name: Compare engines on identical synthetic inputs
+        shell: bash
+        env: {GH_TOKEN: "${{ github.token }}", RID: "${{ github.run_id }}", REF: "${{ github.ref_name }}"}
+        run: |
+          set -e
+          mkdir -p /tmp/before && git archive origin/mizan-aziz-deploy mizan-v45 | tar -x -C /tmp/before && ln -s "$PWD/mizan-v45/node_modules" /tmp/before/mizan-v45/node_modules
+          cd mizan-v45
+          node --import tsx research/forecast-repair/shock-compare.mjs /tmp/before/mizan-v45 "$PWD/research/forecast-repair/fixtures.mjs" > /tmp/before.json
+          node --import tsx research/forecast-repair/shock-compare.mjs "$PWD" "$PWD/research/forecast-repair/fixtures.mjs" > /tmp/after.json
+          node -e 'const fs=require("fs");const o={before:JSON.parse(fs.readFileSync("/tmp/before.json")),after:JSON.parse(fs.readFileSync("/tmp/after.json"))};fs.writeFileSync("/tmp/cmp.json",JSON.stringify(o,null,1));fs.writeFileSync("/tmp/b.json",JSON.stringify({message:"ci diagnostics: shock compare "+process.env.RID,branch:process.env.REF,content:Buffer.from(JSON.stringify(o,null,1)).toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/shock-compare-${RID}.json" --input /tmp/b.json >/dev/null

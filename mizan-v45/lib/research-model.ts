@@ -12,7 +12,7 @@ import {calibrateForecastRange,CONFORMAL_RANGE_CALIBRATION_ENABLED,type RangeCal
 export {HORIZONS,type ForecastHorizon} from './forecast-horizons';
 import {HORIZONS,type ForecastHorizon} from './forecast-horizons';
 export type Horizon='short'|'medium'|'long';
-export const MODEL_VERSION='mizan-scenarios-7-diagnostics-1';
+export const MODEL_VERSION='mizan-scenarios-7-shock-warning-1';
 export type ResearchModelOutput=ReturnType<typeof forecasts>;
 const clamp=(v:number)=>Math.max(-1,Math.min(1,v));
 const avg=(v:(number|null)[])=>{const x=v.filter(finite);return x.length?x.reduce((s,n)=>s+n,0)/x.length:null};
@@ -146,7 +146,11 @@ export function forecasts(report:MarketReport,quote:LiveQuote|null=null,now=Date
   const empiricalSigma=deviation(returns)??0;
   const daily=report.prices.slice(1).map((p,i)=>Math.log(p.close/report.prices[i].close));
   const recentSigma=deviation(daily.slice(-63))??0,longSigma=deviation(daily.slice(-252))??recentSigma;
-  const daySigma=h.sessions<=21?recentSigma:(recentSigma+longSigma)/2;
+  const shortSigma=deviation(daily.slice(-20))??recentSigma;
+  const baseDaySigma=h.sessions<=21?recentSigma:(recentSigma+longSigma)/2;
+  // Shock warning rows use at least the latest-20-session volatility (data-driven widening, no new constant).
+  // Capped so a shocked short range never exceeds the 63-session volatility scale (ranges stay ordered by horizon): sqrt(63/21)=1.732.
+  const daySigma=condition.shockWarning?Math.min(Math.max(baseDaySigma,shortSigma),Math.max(baseDaySigma,Math.sqrt(3)*(recentSigma+longSigma)/2)):baseDaySigma;
   const sigma=daySigma*Math.sqrt(h.sessions),expectedScale=Math.max(sigma,empiricalSigma);
   const centerCalculation=scenarioCenter({bias,sessions:h.sessions,dailySigma:daySigma,expectedScale,positiveTiltMultiplier:condition.positiveTiltMultiplier});
   const center=centerCalculation.centerLogReturn;
@@ -170,7 +174,7 @@ export function forecasts(report:MarketReport,quote:LiveQuote|null=null,now=Date
   const diagnostics=forecastDiagnostic({...diagnosticInput,pointAvailable:!anomalous&&!confidenceBlocked,rangeAvailable:!anomalous&&!confidenceBlocked,center:centerCalculation,neutralThresholdPct,range:{low,high,reference:price!,expectedScale,maxSigma:settings.maxSigma}});
   if(anomalous||confidenceBlocked)return {diagnostics,modelCondition,window,riskLevel:a.riskLabel,contributions,period:h.name,sessions:h.sessions,available:false,direction:'غير متاح',price,range:null,change:null,confidence,coverage,reasons:blockers.map(b=>b.message),risks,invalidation,basis,sample:history!.sample,independent,dataQuality:readiness.quality,rangeCalibration};
   const logWidth=Math.log(high/low),q25=low*Math.exp(logWidth*.25),q75=low*Math.exp(logWidth*.75);
-  return {diagnostics,modelCondition,predictedPrice,expectedChange,expectedChangePct,neutralThresholdPct,rangeMeaning:'end_close_estimate',evaluationPolicy:EVALUATION_POLICY,window,riskLevel:a.riskLabel,rangeCheck:{dailyVolatility:daySigma*100,horizonVolatility:expectedScale*100,maxSigma:settings.maxSigma,market:report.context?.market?.symbol||null,sector:report.context?.sector?.symbol||null},contributions,scenarios:{negative:[low,q25],base:[q25,q75],positive:[q75,high]},catalysts:[h.sessions===1?'استمرار الزخم والسيولة واتجاه السوق في الجلسة التالية.':'استمرار النمو والتدفق والهوامش وفق الفرضيات المستخدمة.','تحقق اختراق يؤكده الحجم، أو إعلان جوهري جديد بعد مراجعته.'],period:h.name,sessions:h.sessions,available:true,direction,price,range:[low,high],change:[(low/price!-1)*100,(high/price!-1)*100],confidence,coverage,reasons:readiness.warnings,risks,invalidation,basis,sample:history!.sample,independent:Math.max(0,Math.floor((report.prices.length-1)/h.sessions)),dataQuality:readiness.quality,derivedRange:history!.derived,rangeCalibration};
+  return {diagnostics,modelCondition,shockWarning:condition.shockWarning,predictedPrice,expectedChange,expectedChangePct,neutralThresholdPct,rangeMeaning:'end_close_estimate',evaluationPolicy:EVALUATION_POLICY,window,riskLevel:a.riskLabel,rangeCheck:{dailyVolatility:daySigma*100,horizonVolatility:expectedScale*100,maxSigma:settings.maxSigma,market:report.context?.market?.symbol||null,sector:report.context?.sector?.symbol||null},contributions,scenarios:{negative:[low,q25],base:[q25,q75],positive:[q75,high]},catalysts:[h.sessions===1?'استمرار الزخم والسيولة واتجاه السوق في الجلسة التالية.':'استمرار النمو والتدفق والهوامش وفق الفرضيات المستخدمة.','تحقق اختراق يؤكده الحجم، أو إعلان جوهري جديد بعد مراجعته.'],period:h.name,sessions:h.sessions,available:true,direction,price,range:[low,high],change:[(low/price!-1)*100,(high/price!-1)*100],confidence,coverage,reasons:readiness.warnings,risks,invalidation,basis,sample:history!.sample,independent:Math.max(0,Math.floor((report.prices.length-1)/h.sessions)),dataQuality:readiness.quality,derivedRange:history!.derived,rangeCalibration};
  });
   return {createdAt:new Date(now).toISOString(),version:forecastModelVersion(settings),settingsUsed:{weights:settings.weights,maxSigma:settings.maxSigma,minConfidence:settings.minConfidence,periods:settings.periods},price,currency:report.currency,priceTime:quoteUsable?quote!.quoteTime:last?.date||'',retrievedAt:report.retrievedAt,rows,factors,dataQuality:readiness.quality,dataWarnings:[...readiness.warnings,...(quoteUsable&&now-Date.parse(quote!.quoteTime)>60000?['السعر المرجعي متأخر حتى 15 دقيقة؛ لا يصلح كسعر تنفيذ لحظي.']:[])],dailyScope:'اليومي: الجلسة التالية، وليس توصية تنفيذ داخل الدقيقة. السعر قد يتأخر حتى 15 دقيقة.',method:'نموذج سيناريو متعدد العوامل؛ اليومي للجلسة التالية بميل محدود بربع التذبذب اليومي مرجحًا بالفني والسيولة والسوق، وللمدد الأطول ميل سنوي محدود ±15% تُحدده الأوزان المعلنة، واتساع من المئينين 10 و90 لعوائد تاريخية مماثلة للأفق والتذبذب اليومي الحديث مضروبًا بجذر عدد جلسات المدة؛ أضيفت طبقة معايرة نطاق Conformal تجريبية لكنها معطلة حتى تثبت تغطيتها خارج العينة. السعر المركزي ناتج ميل النموذج، وليس منتصف النطاق. مقام مساهمات الأوزان 100 دائمًا؛ لا يعاد توزيع وزن العامل الناقص. المئينات وصف للماضي وليست احتمال تحقق مستقبلي. عند نقص القوائم ينخفض مستوى الثقة ولا يختفي التوقع ما دامت الأسعار صالحة. لا تثبت دقة النموذج باختبار مستقبلي؛ لذلك لا تمنح ثقة مرتفعة.'};
 }
@@ -197,6 +201,7 @@ export interface HorizonForecast {
  fcfDriftImpact: null;
  status: 'active' | 'abstain';
  abstainReason?: string;
+ warning?: string;
 }
 export interface ComprehensiveForecastReport {
  symbol: string;
@@ -225,7 +230,8 @@ export function generateCalibratedForecast(input: ForecastInput): ComprehensiveF
   direction:row.direction,probabilityUp:null,confidenceScore:null,evidenceQuality:row.confidence,
   expectedReturnPercent:row.available&&finite(row.expectedChangePct)?row.expectedChangePct:null,
   fcfDriftImpact:null,status:row.available?'active' as const:'abstain' as const,
-  ...(!row.available?{abstainReason:row.reasons.join(' ')}:{})
+  ...(!row.available?{abstainReason:row.reasons.join(' ')}:{}),
+  ...(row.available&&(row as any).shockWarning?{warning:(row as any).shockWarning as string}:{})
  }]);
  const condition=result.rows[0]?.modelCondition;
  const label=condition?.regime==='VOLATILITY_SHOCK'?'صدمة تقلب':condition?.regime==='BULL_TREND'?'اتجاه صاعد وصفي':condition?.regime==='MEAN_REVERTING'?'مسار عرضي':'غير متحقق';
