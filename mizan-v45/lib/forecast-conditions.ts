@@ -94,7 +94,7 @@ export function forecastConditions(report: MarketReport, now = Date.now()): Fore
 /**
  * Shock policy (owner decision 2026-10-26): a volatility shock or suspected structural break no longer withholds the
  * short-horizon forecast when the data and calculation are valid. The row is issued WITH an explicit warning, forced low
- * confidence (see research-model) and a range built from at least the latest 20-session volatility. Withholding for
+ * confidence (see research-model) and a range built from at least the latest 20-session volatility (the range may or may not widen). Withholding for
  * invalid data, unresolved jumps, disabled horizons or the admin confidence floor is unchanged.
  */
 export function horizonCondition(conditions: ForecastConditions, sessions: number) {
@@ -105,7 +105,7 @@ export function horizonCondition(conditions: ForecastConditions, sessions: numbe
   return {
     abstain: false,
     abstainReason: null as string|null,
-    shockWarning: warn ? `${label}: صدر التوقع بثقة منخفضة ونطاق أوسع من المعتاد؛ لا يُعامل كإشارة قوية حتى تهدأ الحالة.` : null as string|null,
+    shockWarning: warn ? `${label}: صدر السيناريو بثقة منخفضة؛ قد يتسع النطاق ولا يدل على أفضلية اتجاهية واضحة.` : null as string|null,
     positiveTiltMultiplier: conditions.relativeVolume!==null && conditions.relativeVolume<1.1 ? .6 : 1,
     shock,
   };
