@@ -35,7 +35,7 @@ jobs:
           import {webkit,devices} from 'playwright';
           const logs=[];
           const b=await webkit.launch();const ctx=await b.newContext({...devices['iPad Pro 11'],locale:'ar-SA',timezoneId:'Asia/Riyadh'});const p=await ctx.newPage();p.on('pageerror',e=>logs.push('PAGEERROR '+String(e.message).slice(0,300)));
-          p.on('console',m=>{if(m.type()==='error')logs.push(m.text().slice(0,200))});p.on('response',r=>{if(r.url().includes('market-overview'))logs.push('resp '+r.status()+' '+r.url().slice(-40))});
+          p.on('console',m=>{if(m.type()==='error')logs.push(m.text().slice(0,200))});p.on('response',r=>{const u=r.url();const ct=r.headers()['content-type']||'';if(u.includes('market-overview'))logs.push('resp '+r.status()+' '+u.slice(-40));if(/\/assets\//.test(u)&&(/\.js(\?|$)/.test(u)||r.status()>=400||!/javascript/.test(ct)))logs.push('ASSET '+r.status()+' ['+ct+'] '+u.replace(/^https:\/\/[^/]+/,'')+' enc='+(r.headers()['content-encoding']||'-'))});
           await p.goto('https://mizan-aziz.aljeryabod.workers.dev/',{waitUntil:'load',timeout:60000});await p.waitForTimeout(12000);
           const panel=p.locator('section[aria-label="نظرة على السوق"]');
           const txt1=await panel.innerText().catch(e=>'NO PANEL '+e.message);
