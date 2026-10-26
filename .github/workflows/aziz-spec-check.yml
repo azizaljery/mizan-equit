@@ -8,6 +8,7 @@ on:
       - aziz-spec-v1
       - admin-password
       - code-disable
+      - forecast-repair
 
 permissions:
   contents: write
@@ -49,6 +50,10 @@ jobs:
         run: node --test --import tsx tests/admin-password.test.ts
       - name: Market overview tests
         run: node --test --import tsx tests/market-overview.test.ts
+      - name: Forecast repair regression + full analysis tests
+        run: |
+          node --test --import tsx tests/forecast-repair-regression.test.mjs
+          npm test
       - name: Daily picks tests (unchanged behaviour)
         run: node --test --import tsx tests/daily-picks.test.ts tests/picks.test.ts
       - name: Aziz research package tests

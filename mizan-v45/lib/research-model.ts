@@ -1,4 +1,5 @@
 import {directionOf,EVALUATION_POLICY} from './forecast-metrics';
+import {scenarioCenter,inspectScenarioRange,forecastDiagnostic,type ForecastBlock} from './forecast-diagnostics';
 import {DEFAULT_SETTINGS,adjustedWeights,type SiteSettings} from './site-settings';
 import {forecastWindow} from './forecast-window';
 import {automaticAnalysis} from './automatic-analysis';
@@ -9,9 +10,9 @@ import {resolveFinancialSources} from './source-resolution';
 import {forecastConditions,horizonCondition} from './forecast-conditions';
 import {calibrateForecastRange,CONFORMAL_RANGE_CALIBRATION_ENABLED,type RangeCalibration} from './conformal-calibration';
 export {HORIZONS,type ForecastHorizon} from './forecast-horizons';
-import {HORIZONS} from './forecast-horizons';
+import {HORIZONS,type ForecastHorizon} from './forecast-horizons';
 export type Horizon='short'|'medium'|'long';
-export const MODEL_VERSION='mizan-scenarios-7';
+export const MODEL_VERSION='mizan-scenarios-7-diagnostics-1';
 export type ResearchModelOutput=ReturnType<typeof forecasts>;
 const clamp=(v:number)=>Math.max(-1,Math.min(1,v));
 const avg=(v:(number|null)[])=>{const x=v.filter(finite);return x.length?x.reduce((s,n)=>s+n,0)/x.length:null};
@@ -110,6 +111,7 @@ export function forecastReadiness(report:MarketReport,now=Date.now()){
  return {quality,confidence,warnings,unavailable,financial,financialFacts,coverage,stale,priceCount:report.prices.length};
 }
 export function forecasts(report:MarketReport,quote:LiveQuote|null=null,now=Date.now(),settings:SiteSettings=DEFAULT_SETTINGS,horizons:readonly {name:string;sessions:number}[]=HORIZONS){
+ if(horizons.some(h=>!Number.isInteger(h.sessions)||h.sessions<1||h.sessions>252)||new Set(horizons.map(h=>h.sessions)).size!==horizons.length)throw new RangeError('Forecast horizons must be unique integers from 1 to 252');
  const {a,factors,conditioning}=researchFactors(report,now),last=report.prices.at(-1);
  const quoteUsable=report.mode!=='historical'&&quote&&finite(quote.price)&&quote.price>0&&quote.symbol===report.company.symbol&&quote.currency===report.currency&&now-Date.parse(quote.quoteTime)>=0&&now-Date.parse(quote.quoteTime)<=15*60000;
  const price=quoteUsable?quote!.price:last?.close??null;
@@ -121,20 +123,23 @@ export function forecasts(report:MarketReport,quote:LiveQuote|null=null,now=Date
   const window=forecastWindow(report.company.symbol,h.sessions,report.asOf,now,report.mode==='historical');
   const weights=adjustedWeights(forecastWeights(h.sessions),settings);
   const available=factors.filter(f=>f.signal!==null),coverage=available.reduce((s,f)=>s+weights[f.key],0);
-  const reasons=[...readiness.unavailable];
-  if(!conditioning.pricesValid)reasons.push('سلسلة الأسعار تحوي قيمة أو تاريخًا غير صالح، أو جلسات مكررة/غير مرتبة/بعد تاريخ القطع.');
-  if(condition.abstainReason)reasons.push(condition.abstainReason);
-  if(h.sessions===1&&report.mode!=='historical'&&readiness.stale>4)reasons.push('آخر جلسة قديمة جدًا لتوقع الجلسة التالية.');
-  if(settings.periods[h.sessions]?.enabled===false)reasons.push('أوقفت هذه المدة من إعدادات الإدارة؛ يمكنك إعادة تشغيلها.');
+  const blockers:ForecastBlock[]=readiness.unavailable.map(message=>({code:readiness.stale>21&&message.includes('قديم')?'data_stale':'data_missing',message}));
+  const block=(code:string,message:string)=>blockers.push({code,message});
+  if(!conditioning.pricesValid)block('price_series_invalid','سلسلة الأسعار تحوي قيمة أو تاريخًا غير صالح، أو جلسات مكررة/غير مرتبة/بعد تاريخ القطع.');
+  if(condition.abstainReason)block('volatility_shock_policy',condition.abstainReason);
+  if(h.sessions===1&&report.mode!=='historical'&&readiness.stale>4)block('daily_data_stale','آخر جلسة قديمة جدًا لتوقع الجلسة التالية.');
+  if(settings.periods[h.sessions]?.enabled===false)block('horizon_disabled','أوقفت هذه المدة من إعدادات الإدارة؛ يمكنك إعادة تشغيلها.');
   const returns:number[]=[];for(let i=h.sessions;i<report.prices.length;i++)returns.push(Math.log(report.prices[i].close/report.prices[i-h.sessions].close));
   const median=quantile(returns,.5),q10=quantile(returns,.1),q90=quantile(returns,.9),fallback=dailyReturnRange(report.prices,h.sessions);
   const history=median!==null&&q10!==null&&q90!==null&&q90-q10>0?{median,low:q10,high:q90,sample:returns.length,derived:false}:fallback;
-  if(!price||history===null)reasons.push('لا تتوفر عينة تذبذب سعرية صالحة لبناء نطاق استرشادي.');
+  if(!price||history===null)block('range_history_unavailable','لا تتوفر عينة تذبذب سعرية صالحة لبناء نطاق استرشادي.');
+  const reasons=blockers.map(b=>b.message);
+  const diagnosticInput={sessions:h.sessions,closes:report.prices.map(p=>p.close),sourceAsOf:last?.date||'',blocks:blockers};
   const basis=available.sort((x,y)=>Math.abs(y.signal!)*weights[y.key]-Math.abs(x.signal!)*weights[x.key]).slice(0,6).map(f=>`${f.name}: ${f.detail}`);
   const contributions=factors.map(f=>({name:f.name,weight:weights[f.key],impact:f.signal===null?null:Math.round(f.signal*weights[f.key]*100)/100}));
   const invalidation=[...(finite(a.tech.support)?[`إغلاق السعر دون الدعم ${fmt(a.tech.support)} يستدعي مراجعة الفرضية الفنية.`]:[]),h.sessions===1?'انعكاس الزخم أو انكماش السيولة في الجلسة التالية يبطل القراءة القصيرة.':'تراجع الإيرادات أو التدفق التشغيلي في نتائج جديدة يضعف فرضية النمو.','إعلان جوهري مخالف للفرضيات أو تغير اتجاه السوق والقطاع يستدعي إعادة التحليل.'];
   const risks=[...invalidation,...a.weaknesses,...missing,...readiness.warnings,'تغير النظام السوقي أو الأرباح والسيولة قد يخرج السعر عن النطاق.','التوزيعات النقدية وتكاليف التنفيذ غير داخلة في نطاق حركة السعر.'];
-  if(reasons.length)return {modelCondition,window,riskLevel:a.riskLabel,contributions,period:h.name,sessions:h.sessions,available:false,direction:'غير متاح',price,range:null,change:null,confidence:'منخفض',coverage,reasons,risks,invalidation,basis,sample:returns.length,independent:Math.max(0,Math.floor((report.prices.length-1)/h.sessions)),dataQuality:readiness.quality};
+  if(reasons.length)return {diagnostics:forecastDiagnostic({...diagnosticInput,pointAvailable:false,rangeAvailable:false}),modelCondition,window,riskLevel:a.riskLabel,contributions,period:h.name,sessions:h.sessions,available:false,direction:'غير متاح',price,range:null,change:null,confidence:'منخفض',coverage,reasons,risks,invalidation,basis,sample:returns.length,independent:Math.max(0,Math.floor((report.prices.length-1)/h.sessions)),dataQuality:readiness.quality};
   // Transparent scenario model: multi-factor tilt (bounded to +/-15% annual log drift),
   // plus centered 10th/90th-percentile historical horizon returns. These are NOT calibrated probabilities.
   const bias=coverage?available.reduce((s,f)=>s+f.signal!*weights[f.key],0)/100:0;
@@ -143,8 +148,8 @@ export function forecasts(report:MarketReport,quote:LiveQuote|null=null,now=Date
   const recentSigma=deviation(daily.slice(-63))??0,longSigma=deviation(daily.slice(-252))??recentSigma;
   const daySigma=h.sessions<=21?recentSigma:(recentSigma+longSigma)/2;
   const sigma=daySigma*Math.sqrt(h.sessions),expectedScale=Math.max(sigma,empiricalSigma);
-  const rawCenter=Math.max(-expectedScale*.5,Math.min(expectedScale*.5,h.sessions===1?bias*daySigma*.25:bias*.15*h.sessions/252));
-  const center=rawCenter>0?rawCenter*condition.positiveTiltMultiplier:rawCenter;
+  const centerCalculation=scenarioCenter({bias,sessions:h.sessions,dailySigma:daySigma,expectedScale,positiveTiltMultiplier:condition.positiveTiltMultiplier});
+  const center=centerCalculation.centerLogReturn;
   const widthLow=Math.max(history!.median-history!.low,1.28155*sigma),widthHigh=Math.max(history!.high-history!.median,1.28155*sigma);
   const penalty=1+Math.min(.20,(100-coverage)/500)+(readiness.quality==='ضعيفة'?.10:0);
   let low=price!*Math.exp(center-widthLow*penalty),high=price!*Math.exp(center+widthHigh*penalty);
@@ -157,11 +162,15 @@ export function forecasts(report:MarketReport,quote:LiveQuote|null=null,now=Date
   const independent=Math.max(0,Math.floor((report.prices.length-1)/h.sessions));
   const confidence=condition.shock?'منخفض':h.sessions===1?(!quoteUsable||now-Date.parse(quote!.quoteTime)>60000||!report.context?.market?'منخفض':readiness.confidence):h.sessions>=126&&readiness.financial<3?'منخفض':readiness.confidence;
   const longJump=daily.slice(-20).some(v=>Math.abs(v)>.25&&Math.abs(v)>Math.max(.01,longSigma)*6);
-  const anomalous=!Number.isFinite(high)||!Number.isFinite(low)||low<=0||sigma<=0||Math.max(Math.abs(Math.log(high/price!)),Math.abs(Math.log(low/price!)))>settings.maxSigma*expectedScale||longJump;
+  const rangeBlocks=inspectScenarioRange({low,high,reference:price!,sigma,expectedScale,maxSigma:settings.maxSigma,longJump});
+  const anomalous=rangeBlocks.length>0;
   const confidenceBlocked=settings.minConfidence==='high'||settings.minConfidence==='medium'&&confidence==='منخفض';
-  if(anomalous||confidenceBlocked)return {modelCondition,window,riskLevel:a.riskLabel,contributions,period:h.name,sessions:h.sessions,available:false,direction:'غير متاح',price,range:null,change:null,confidence,coverage,reasons:[anomalous?'درجة الثقة غير كافية لإصدار نطاق سعري دقيق. النطاق أو حركة حديثة تجاوزت فحص التذبذب التاريخي؛ يلزم التحقق من الأحداث وتعديلات رأس المال.':'الثقة المتاحة أقل من الحد الذي حددته في الإدارة.'],risks,invalidation,basis,sample:history!.sample,independent,dataQuality:readiness.quality,rangeCalibration};
+  blockers.push(...rangeBlocks);
+  if(confidenceBlocked)block('confidence_policy','الثقة المتاحة أقل من الحد الذي حددته في الإدارة.');
+  const diagnostics=forecastDiagnostic({...diagnosticInput,pointAvailable:!anomalous&&!confidenceBlocked,rangeAvailable:!anomalous&&!confidenceBlocked,center:centerCalculation,neutralThresholdPct,range:{low,high,reference:price!,expectedScale,maxSigma:settings.maxSigma}});
+  if(anomalous||confidenceBlocked)return {diagnostics,modelCondition,window,riskLevel:a.riskLabel,contributions,period:h.name,sessions:h.sessions,available:false,direction:'غير متاح',price,range:null,change:null,confidence,coverage,reasons:blockers.map(b=>b.message),risks,invalidation,basis,sample:history!.sample,independent,dataQuality:readiness.quality,rangeCalibration};
   const logWidth=Math.log(high/low),q25=low*Math.exp(logWidth*.25),q75=low*Math.exp(logWidth*.75);
-  return {modelCondition,predictedPrice,expectedChange,expectedChangePct,neutralThresholdPct,rangeMeaning:'end_close_estimate',evaluationPolicy:EVALUATION_POLICY,window,riskLevel:a.riskLabel,rangeCheck:{dailyVolatility:daySigma*100,horizonVolatility:expectedScale*100,maxSigma:settings.maxSigma,market:report.context?.market?.symbol||null,sector:report.context?.sector?.symbol||null},contributions,scenarios:{negative:[low,q25],base:[q25,q75],positive:[q75,high]},catalysts:[h.sessions===1?'استمرار الزخم والسيولة واتجاه السوق في الجلسة التالية.':'استمرار النمو والتدفق والهوامش وفق الفرضيات المستخدمة.','تحقق اختراق يؤكده الحجم، أو إعلان جوهري جديد بعد مراجعته.'],period:h.name,sessions:h.sessions,available:true,direction,price,range:[low,high],change:[(low/price!-1)*100,(high/price!-1)*100],confidence,coverage,reasons:readiness.warnings,risks,invalidation,basis,sample:history!.sample,independent:Math.max(0,Math.floor((report.prices.length-1)/h.sessions)),dataQuality:readiness.quality,derivedRange:history!.derived,rangeCalibration};
+  return {diagnostics,modelCondition,predictedPrice,expectedChange,expectedChangePct,neutralThresholdPct,rangeMeaning:'end_close_estimate',evaluationPolicy:EVALUATION_POLICY,window,riskLevel:a.riskLabel,rangeCheck:{dailyVolatility:daySigma*100,horizonVolatility:expectedScale*100,maxSigma:settings.maxSigma,market:report.context?.market?.symbol||null,sector:report.context?.sector?.symbol||null},contributions,scenarios:{negative:[low,q25],base:[q25,q75],positive:[q75,high]},catalysts:[h.sessions===1?'استمرار الزخم والسيولة واتجاه السوق في الجلسة التالية.':'استمرار النمو والتدفق والهوامش وفق الفرضيات المستخدمة.','تحقق اختراق يؤكده الحجم، أو إعلان جوهري جديد بعد مراجعته.'],period:h.name,sessions:h.sessions,available:true,direction,price,range:[low,high],change:[(low/price!-1)*100,(high/price!-1)*100],confidence,coverage,reasons:readiness.warnings,risks,invalidation,basis,sample:history!.sample,independent:Math.max(0,Math.floor((report.prices.length-1)/h.sessions)),dataQuality:readiness.quality,derivedRange:history!.derived,rangeCalibration};
  });
   return {createdAt:new Date(now).toISOString(),version:forecastModelVersion(settings),settingsUsed:{weights:settings.weights,maxSigma:settings.maxSigma,minConfidence:settings.minConfidence,periods:settings.periods},price,currency:report.currency,priceTime:quoteUsable?quote!.quoteTime:last?.date||'',retrievedAt:report.retrievedAt,rows,factors,dataQuality:readiness.quality,dataWarnings:[...readiness.warnings,...(quoteUsable&&now-Date.parse(quote!.quoteTime)>60000?['السعر المرجعي متأخر حتى 15 دقيقة؛ لا يصلح كسعر تنفيذ لحظي.']:[])],dailyScope:'اليومي: الجلسة التالية، وليس توصية تنفيذ داخل الدقيقة. السعر قد يتأخر حتى 15 دقيقة.',method:'نموذج سيناريو متعدد العوامل؛ اليومي للجلسة التالية بميل محدود بربع التذبذب اليومي مرجحًا بالفني والسيولة والسوق، وللمدد الأطول ميل سنوي محدود ±15% تُحدده الأوزان المعلنة، واتساع من المئينين 10 و90 لعوائد تاريخية مماثلة للأفق والتذبذب اليومي الحديث مضروبًا بجذر عدد جلسات المدة؛ أضيفت طبقة معايرة نطاق Conformal تجريبية لكنها معطلة حتى تثبت تغطيتها خارج العينة. السعر المركزي ناتج ميل النموذج، وليس منتصف النطاق. مقام مساهمات الأوزان 100 دائمًا؛ لا يعاد توزيع وزن العامل الناقص. المئينات وصف للماضي وليست احتمال تحقق مستقبلي. عند نقص القوائم ينخفض مستوى الثقة ولا يختفي التوقع ما دامت الأسعار صالحة. لا تثبت دقة النموذج باختبار مستقبلي؛ لذلك لا تمنح ثقة مرتفعة.'};
 }
