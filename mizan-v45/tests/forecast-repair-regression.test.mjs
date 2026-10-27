@@ -54,3 +54,23 @@ test('shock widening is REAL: same inputs with vs without the policy; short rang
  }
  assert.ok(widenedSomewhere,'the policy must widen at least one short range in these cases');
 });
+
+test('FCST-0001: each horizon is computed independently of the other horizons requested with it',()=>{
+ const full=forecasts(syntheticReport(),null,NOW);
+ for(const row of full.rows){
+  const alone=forecasts(syntheticReport(),null,NOW,DEFAULT_SETTINGS,[{name:row.period,sessions:row.sessions}]).rows[0];
+  assert.equal(alone.predictedPrice,row.predictedPrice,'predictedPrice '+row.sessions);
+  assert.deepEqual(alone.range,row.range,'range '+row.sessions);
+  assert.equal(alone.diagnostics?.center?.centerLogReturn,row.diagnostics?.center?.centerLogReturn);
+ }
+});
+test('FCST-0001: identical inputs give identical outputs and the displayed point equals the stored predictedPrice',()=>{
+ const a=forecasts(syntheticReport(),null,NOW),b=forecasts(syntheticReport(),null,NOW);
+ assert.deepEqual(a.rows.map(r=>[r.predictedPrice,r.range,r.direction]),b.rows.map(r=>[r.predictedPrice,r.range,r.direction]));
+ for(const r of a.rows.filter(x=>x.available))assert.equal(forecastPoint(r),r.predictedPrice);
+});
+test('FCST-0001: centre log return equals the tilt scaled by sessions/252 (no hidden cap or mixing) when unclipped',()=>{
+ const r=forecasts(syntheticReport(),null,NOW);
+ for(const row of r.rows.filter(x=>x.available&&x.sessions>1)){const c=row.diagnostics.center;if(c.clipped)continue;
+  assert.ok(Math.abs(c.requestedLogReturn-c.annualLogTilt*row.sessions/252)<1e-9,'h='+row.sessions);}
+});

@@ -60,7 +60,7 @@ jobs:
           REF: ${{ github.ref_name }}
         run: |
           set +e
-          (node --test --import tsx tests/forecast-repair-regression.test.mjs; echo "exit=$?"; npm test; echo "exit=$?") > ../test-out.txt 2>&1
+          (node --test --import tsx tests/forecast-repair-regression.test.mjs tests/forecast-fcst0001.test.mjs; echo "exit=$?"; npm test; echo "exit=$?") > ../test-out.txt 2>&1
           F=$(grep -c "exit=[1-9]" ../test-out.txt)
           node -e 'const fs=require("fs");const t=fs.readFileSync("../test-out.txt","utf8");fs.writeFileSync("../tb.json",JSON.stringify({message:"ci diagnostics: tests "+process.env.RID,branch:process.env.REF,content:Buffer.from(t.slice(-60000)).toString("base64")}))'
           gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/tests-${RID}.txt" --input ../tb.json >/dev/null || echo WARN

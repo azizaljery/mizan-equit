@@ -11,6 +11,7 @@ import {SourceLink} from './source-link';
 import {Explain} from './explain';
 import {ForecastRangeCalibration} from './forecast-range-calibration';
 import {forecastPoint as forecastNumber,forecastDisplayStatus as forecastStatus} from '@/lib/forecast-presentation';
+import {directionalEdgeProven,signalVsUncertainty,NO_EDGE_LABEL,EVIDENCE_PROTOCOL} from '@/lib/forecast-evidence';
 export function completeForecastRows(result:any){return HORIZONS.map(h=>result?.rows?.find((r:any)=>r.sessions===h.sessions)||{period:h.name,sessions:h.sessions,available:false,direction:'غير متاح',price:result?.price??null,range:null,change:null,confidence:'منخفض',riskLevel:'غير متحقق',coverage:0,reasons:['لم تُحفظ هذه المدة في هذا التحليل؛ اطلب تحليلًا جديدًا.'],risks:[],basis:[],contributions:[]});}
 const range=(values:any)=>Array.isArray(values)?values.map((v:number)=>fmt(v)).join(' – '):'غير متاح';
 // عمداً بلا حساب هنا: forecasts() خادمية فقط (recordAnalysis في research-service.ts
@@ -30,7 +31,7 @@ export function Forecasts({report,quote=null,data}:{report?:MarketReport|null;qu
  <div className="forecast-grid">{rows.map((row:any)=><article className="forecast-card" key={row.sessions}>
  <h4><span className={`forecast-status-dot forecast-status-${forecastStatus(row).tone}`} title={forecastStatus(row).label} aria-label={forecastStatus(row).label}/>{row.period}</h4>{row.id&&(result as any).recorded&&<a href={'/tests?forecast='+encodeURIComponent(row.id)}>اختبر هذا التوقع</a>}
  <dl>
- <div><dt>الاتجاه المتوقع</dt><dd className={row.direction==='صاعد'?'positive':row.direction==='هابط'?'negative':''}>{row.available?row.direction:'غير مقدّر'}</dd></div>
+ <div><dt>الاتجاه المتوقع</dt><dd className={directionalEdgeProven(row.sessions)?(row.direction==='صاعد'?'positive':row.direction==='هابط'?'negative':''):''}>{!row.available?'غير مقدّر':directionalEdgeProven(row.sessions)?row.direction:NO_EDGE_LABEL}</dd></div>
  <div><dt>نطاق سعر نهاية المدة</dt><dd dir="ltr">{row.available&&row.range?range(row.range)+' '+result.currency:'غير متاح'}</dd></div>
  <div><dt>السعر المتوقع عند نهاية المدة</dt><dd>{forecastNumber(row)!==null?fmt(forecastNumber(row))+' '+result.currency:'لم يصدر توقع'}</dd></div>
  <div><dt>نهاية تقديرية</dt><dd>{row.window?.estimatedEndAt||'غير متاحة'}{row.window?.calendarVerified===false?' · تقويم غير موثق للعطلات':''}</dd></div>
@@ -39,6 +40,7 @@ export function Forecasts({report,quote=null,data}:{report?:MarketReport|null;qu
  <div><dt>الحالة</dt><dd>{forecastStatus(row).label}</dd></div>
  </dl>
  {row.available&&row.shockWarning&&<p role="status" className="notice">{row.shockWarning}</p>}
+ {row.available&&!directionalEdgeProven(row.sessions)&&<p className="reference">{signalVsUncertainty(row).note} الرقم مركز تقديري لسعر الإغلاق عند نهاية المدة وليس إشارة اتجاه ({EVIDENCE_PROTOCOL}). اتجاه المحرك الخام: {row.direction}.</p>}
  {!row.available&&<p role="status" className="notice error">{(row.reasons||[]).join(' ')||'لم يصدر النموذج توقعًا لهذا الأفق.'}</p>}
  <details><summary>أدلة النموذج وشروط الإبطال — {row.period}</summary><div className="forecast-detail">
  <p>الأساسي: {row.scenarios?range(row.scenarios.base):'غير متاح'} · الإيجابي: {row.scenarios?range(row.scenarios.positive):'غير متاح'} · السلبي: {row.scenarios?range(row.scenarios.negative):'غير متاح'}</p>
@@ -58,7 +60,7 @@ export function Forecasts({report,quote=null,data}:{report?:MarketReport|null;qu
  <h4>الأوزان الفعلية</h4><ul>{(row.contributions||[]).map((c:any)=><li key={c.name}>{c.name}: وزن {fmt(c.weight,1)}% · أثر {c.impact===null?'غير متحقق':fmt(c.impact)}</li>)}</ul><p>تغطية الأدلة {fmt(row.coverage,0)}% · {row.sessions} جلسات · {row.sample??0} عوائد تاريخية · {row.independent??0} فترات غير متداخلة</p>
  {row.rangeCheck&&<p>تذبذب المدة {fmt(row.rangeCheck.horizonVolatility)}% · فحص الشذوذ {row.rangeCheck.maxSigma} · مرجع السوق {row.rangeCheck.market||'غير متاح'} · القطاع {row.rangeCheck.sector||'غير متاح'}</p>}
  </div></details></article>)}</div>
- <details><summary>ⓘ منهج التوقع والمصادر وحدود الاستخدام</summary><p>النطاق تقدير وليس توصية مباشرة أو ضمانًا للسعر. الثقة الحالية واحتمال السيناريو والدقة التاريخية مقاييس منفصلة.</p><p>{result.method}</p><p>وقت الإصدار {time} · نسخة {result.version} · {(result as any).recorded?'حُفظ في السجل':'لم يُؤكد حفظه في السجل'}</p><p>{(result.dataWarnings||[]).join(' ')}</p><ul>{(result.factors||[]).map(f=><li key={f.key}>{f.name}: {f.detail} · {f.date} · <SourceLink href={f.source} period={f.date} retrievedAt={result.retrievedAt}>المصدر</SourceLink></li>)}</ul></details>
+ <details><summary>ⓘ منهج التوقع والمصادر وحدود الاستخدام</summary><p>النطاق تقدير وليس توصية مباشرة أو ضمانًا للسعر. الثقة الحالية واحتمال السيناريو والدقة التاريخية مقاييس منفصلة.</p><p>{result.method}</p><p>وقت الإصدار {time} · تاريخ البيانات {(result as any).asOf||result.priceTime||'غير متاح'} · نسخة {result.version} · {(result as any).recorded?'حُفظ في السجل':'لم يُؤكد حفظه في السجل'}</p><p>{(result.dataWarnings||[]).join(' ')}</p><ul>{(result.factors||[]).map(f=><li key={f.key}>{f.name}: {f.detail} · {f.date} · <SourceLink href={f.source} period={f.date} retrievedAt={result.retrievedAt}>المصدر</SourceLink></li>)}</ul></details>
  </section>;
 }
 export function UnavailableForecasts({reason}:{reason:string}){return <Forecasts data={{price:null,currency:'',priceTime:'',retrievedAt:'',version:'',rows:HORIZONS.map(h=>({period:h.name,sessions:h.sessions,available:false,direction:'غير متاح',confidence:'غير محددة',riskLevel:'غير متحقق',reasons:[reason]})),dataQuality:'غير صالحة',dataWarnings:[reason],factors:[],method:'لم يصدر توقع لأن بيانات التحليل لم تصل.'} as any}/>}
