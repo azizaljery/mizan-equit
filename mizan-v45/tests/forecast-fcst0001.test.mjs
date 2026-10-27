@@ -13,8 +13,7 @@ test('registry: no horizon is marked proven until a frozen acceptance rule passe
 });
 test('display uses the evidence gate and shows data date + version, never a probability', () => {
   assert.match(ui, /directionalEdgeProven\(row\.sessions\)/);
-  assert.match(ui, /تاريخ البيانات/);
-  assert.match(ui, /نسخة \{result\.version\}/);
+  assert.match(ui, /provenanceLines\(\{priceTime:result\.priceTime,version:result\.version/);
 });
 test('horizon conversion: log returns add over sessions and sigma scales with sqrt(h)', () => {
   const c = [100]; for (let i = 1; i <= 300; i++) c.push(c[i - 1] * Math.exp(0.001 * ((i % 7) - 3)));
@@ -46,4 +45,27 @@ test('direction uses the engine neutral thresholds; zero centre is neutral at ev
 test('bootstrap is reproducible for the same seed key', () => {
   const v = Array.from({length: 60}, (_, i) => Math.sin(i) * 0.1);
   assert.deepEqual(F.bootstrapMean(v, 5, 'k'), F.bootstrapMean(v, 5, 'k'));
+});
+
+test('card: scenario-centre wording; confidence, probability and directional status hidden while unproven', () => {
+  assert.match(ev, /مركز سيناريو غير معتمد تنبؤيًا/);
+  assert.match(ui, /directionalEdgeProven\(row\.sessions\)&&<div><dt>درجة الثقة/);
+  assert.match(ui, /directionalEdgeProven\(row\.sessions\)&&<p>احتمال السيناريو/);
+  assert.match(ui, /UNPROVEN_STATUS_LABEL/);
+  assert.doesNotMatch(ui, /نوصي|اشترِ|شراء الآن/);
+});
+test('provenance: market-data date, engine version and evaluation date are three separate lines', async () => {
+  const {provenanceLines} = await import('../lib/forecast-evidence.ts');
+  const l = provenanceLines({priceTime: '2026-10-26', version: 'v-x', createdAt: '2026-10-27T10:00:00Z'});
+  assert.equal(l.length, 4);
+  const m = Object.fromEntries(l);
+  assert.match(m['تاريخ بيانات السوق (آخر سعر)'], /^2026-10-26$/); assert.equal(m['نسخة المحرك'], 'v-x');
+  assert.match(m['تاريخ التقييم خارج العينة'], /^2026-10-27 · PROTOCOL-FCST-0001$/);
+  assert.equal(new Set(l.map((x) => x[0])).size, 4);
+});
+test('signalVsUncertainty: weak signal is not an invented direction or probability', async () => {
+  const {signalVsUncertainty} = await import('../lib/forecast-evidence.ts');
+  const r = signalVsUncertainty({available: true, expectedChangePct: 0.05, neutralThresholdPct: 0.5, range: [80, 125], price: 100});
+  assert.equal(r.signal, 'low'); assert.equal(r.uncertainty, 'high'); assert.doesNotMatch(r.note, /%|احتمال/);
+  assert.equal(signalVsUncertainty({available: false}).signal, 'unknown');
 });

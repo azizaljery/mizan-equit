@@ -77,7 +77,7 @@ function scored(r, pred, h, model) {
   const S = F.scale(r.sig, h);
   const dir = F.directionOfLog(p.yhat, h), act = r.y > 0 ? 1 : -1;
   return {nae: F.nae(r.y, p.yhat, r.sig, h), nse: F.nse(r.y, p.yhat, r.sig, h), cover: r.y >= p.lo && r.y <= p.hi ? 1 : 0, width: (p.hi - p.lo) / S,
-    wink: F.intervalScore(r.y, p.lo, p.hi, r.sig, h), neutral: dir === 0 ? 1 : 0, hit: dir === 0 ? null : (dir === act ? 1 : 0)};
+    wink: F.intervalScore(r.y, p.lo, p.hi, r.sig, h), neutral: dir === 0 ? 1 : 0, signHit: (p.yhat > 0 ? 1 : -1) === act ? 1 : 0, upHit: act === 1 ? 1 : 0, dirNum: dir, hit: dir === 0 ? null : (dir === act ? 1 : 0)};
 }
 function runFolds(foldList, label, dropFutureLabels) {
   const res = [];
@@ -141,10 +141,27 @@ out.descriptive = [];
 for (const market of ['sa', 'us']) for (const h of F.HORIZONS) for (const [a, b] of [['C0', 'R0'], ['M1', 'C0'], ['R1', 'R0']]) out.descriptive.push(cell(test, h, [market], a, b));
 out.profiles = {};
 for (const market of ['sa', 'us']) for (const h of F.HORIZONS) out.profiles[`${market}|${h}`] = Object.fromEntries(['R0', 'R1', 'C0', 'M1'].map((m) => [m, profile(test, h, market, m)]));
+// AMEND-1 (descriptive): sign-of-centre accuracy vs always-up, per market x horizon
+out.direction = [];
+for (const market of ['sa', 'us']) for (const h of F.HORIZONS) for (const model of ['C0', 'M1']) {
+  const sel = test.filter((r) => r.h === h && r.market === market && !r.skipped && r.s[model]);
+  if (!sel.length) continue;
+  const upShare = N.mean(sel.map((r) => r.s[model].upHit)), majUp = upShare >= 0.5, baseHit = (r) => (majUp ? r.s[model].upHit : 1 - r.s[model].upHit); // hindsight-majority baseline: deliberately conservative
+  const pd = F.perDateMeans(sel.map((r) => ({date: r.week, v: -(r.s[model].signHit - baseHit(r))})), (r) => r.v);
+  const bs = F.bootstrapMean(pd.values, h, `dir|${market}|${h}|${model}`), rho = F.rho1(pd.values);
+  const nd = sel.filter((r) => r.s[model].dirNum !== 0), w = F.wilson(nd.reduce((a, r) => a + r.s[model].hit, 0), nd.length);
+  out.direction.push({market, h, model, n: sel.length, nWeeks: pd.dates.length, nEff: +F.effectiveN(pd.dates.length, h, rho).toFixed(1), signAcc: +N.mean(sel.map((r) => r.s[model].signHit)).toFixed(4), upAcc: +upShare.toFixed(4), baselineAcc: +Math.max(upShare, 1 - upShare).toFixed(4),
+    gainOverMajority: +(-bs.mean).toFixed(4), ci95: [+(-bs.ci95[1]).toFixed(4), +(-bs.ci95[0]).toFixed(4)], nDirectional: nd.length, dirAccWilson: nd.length ? [+w[0].toFixed(3), +w[1].toFixed(3)] : null,
+    dirAcc: nd.length ? +(nd.reduce((a, r) => a + r.s[model].hit, 0) / nd.length).toFixed(3) : null});
+}
 // C0 availability
 out.c0Availability = F.HORIZONS.map((h) => { const x = recs.filter((r) => r.h === h && r.date >= F.FOLDS[0].start); return {h, n: x.length, available: x.filter((r) => r.c0).length, reasons: x.filter((r) => !r.c0).reduce((m, r) => { m[r.c0Reason] = (m[r.c0Reason] || 0) + 1; return m; }, {})}; });
 // center-magnitude diagnostics: |yhat|/S by model (does the centre move at all?)
 out.centerMagnitude = {};
 for (const h of F.HORIZONS) { const x = recs.filter((r) => r.h === h && r.c0 && r.date >= F.FOLDS[0].start); out.centerMagnitude[h] = x.length ? {n: x.length, medianAbsCentreOverS: +N.median(x.map((r) => Math.abs(r.c0.yhat) / F.scale(r.sig, h))).toFixed(4), medianAbsCentrePct: +(100 * N.median(x.map((r) => Math.abs(Math.exp(r.c0.yhat) - 1)))).toFixed(3), medianHalfWidthOverS: +N.median(x.map((r) => (r.c0.hi - r.c0.lo) / 2 / F.scale(r.sig, h))).toFixed(3)} : null; }
+out.meta = {firstOrigin: recs.reduce((a, r) => (r.date < a ? r.date : a), '9999'), lastLabel: recs.reduce((a, r) => (r.labelDate > a ? r.labelDate : a), ''),
+  symbols: {sa: new Set(recs.filter((r) => r.market === 'sa').map((r) => r.sym)).size, us: new Set(recs.filter((r) => r.market === 'us').map((r) => r.sym)).size},
+  foldRecords: F.FOLDS.map((f) => ({id: f.id, start: f.start, end: f.end, records: test.filter((r) => !r.skipped && r.fold === f.id && r.h === F.PRIMARY_H).length})),
+  skipped: test.filter((r) => r.skipped).map((r) => ({market: r.market, h: r.h, fold: r.fold, nTrain: r.nTrain, nTest: r.nTest}))};
 fs.writeFileSync(outFile, JSON.stringify(out, null, 1));
 console.log('done', recs.length, 'records ->', outFile);

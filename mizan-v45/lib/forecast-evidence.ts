@@ -3,6 +3,13 @@
  *  so every horizon shows the honest label. Changing a value here requires a new protocol/AMEND — never edit to improve appearance. */
 export const NO_EDGE_LABEL='لا توجد أفضلية اتجاهية مثبتة لهذا الأفق';
 export const EVIDENCE_PROTOCOL='PROTOCOL-FCST-0001';
+export const EVIDENCE_EVALUATION_DATE='2026-10-27';
+export const SCENARIO_CENTER_LABEL='مركز سيناريو غير معتمد تنبؤيًا';
+export const UNPROVEN_STATUS_LABEL='سيناريو غير معتمد تنبؤيًا';
+/** Three separate facts, never merged: market-data date, engine version, evaluation date. */
+export function provenanceLines(v:{priceTime?:string;version?:string;createdAt?:string}):[string,string][]{
+ return [['تاريخ بيانات السوق (آخر سعر)',v.priceTime||'غير متاح'],['نسخة المحرك',v.version||'غير متاحة'],['تاريخ التقييم خارج العينة',EVIDENCE_EVALUATION_DATE+' · '+EVIDENCE_PROTOCOL],['وقت إصدار هذا التوقع',v.createdAt||'غير متاح']];
+}
 const PROVEN_SESSIONS:readonly number[]=[];
 export function directionalEdgeProven(sessions:number):boolean{return PROVEN_SESSIONS.includes(sessions);}
 type RowView={available?:boolean;sessions?:number;expectedChangePct?:number|null;neutralThresholdPct?:number|null;range?:[number,number]|null;price?:number|null;direction?:string};
