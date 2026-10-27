@@ -340,7 +340,7 @@ test('Actual forecast UI renders all five Saudi and US horizons, including legac
   const r=researchFixture();r.company={...r.company,symbol};r.currency=currency;
   const data=forecasts(r,null,Date.parse(r.asOf+'T20:00:00Z'));
   assert.ok(data.rows.every(row=>row.available&&Array.isArray(row.risks)&&row.risks.length>0));
-  const html=renderForecastForTest(data);assert.equal((html.match(/class="forecast-card"/g)||[]).length,6);assert.match(html,/درجة الثقة/);assert.match(html,/المخاطر والنواقص/);
+  const html=renderForecastForTest(data);assert.equal((html.match(/class="forecast-card"/g)||[]).length,6);assert.match(html,/مركز سيناريو غير معتمد تنبؤيًا/);assert.doesNotMatch(html,/<dt>درجة الثقة/);assert.doesNotMatch(html,/احتمال السيناريو/);assert.match(html,/المخاطر والنواقص/);
   const legacy={...data,rows:data.rows.map(({risks,...row})=>row)};assert.match(renderForecastForTest(legacy),/لم تُحفظ تفاصيل المخاطر/);
  }
 });
