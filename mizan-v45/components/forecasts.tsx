@@ -34,7 +34,7 @@ export function Forecasts({report,quote=null,data}:{report?:MarketReport|null;qu
  <dl>
  <div><dt>الاتجاه المتوقع</dt><dd className={directionalEdgeProven(row.sessions)?(row.direction==='صاعد'?'positive':row.direction==='هابط'?'negative':''):''}>{!row.available?'غير مقدّر':directionalEdgeProven(row.sessions)?row.direction:NO_EDGE_LABEL}</dd></div>
  <div><dt>نطاق سعر نهاية المدة</dt><dd dir="ltr">{row.available&&row.range?range(row.range)+' '+result.currency:'غير متاح'}</dd></div>
- <div><dt>{directionalEdgeProven(row.sessions)?'السعر المتوقع عند نهاية المدة':SCENARIO_CENTER_LABEL}</dt><dd>{forecastNumber(row)!==null?fmt(forecastNumber(row))+' '+result.currency:'لم يصدر توقع'}</dd></div>
+ <div><dt>{directionalEdgeProven(row.sessions)||!row.available?'السعر المتوقع عند نهاية المدة':SCENARIO_CENTER_LABEL}</dt><dd>{forecastNumber(row)!==null?fmt(forecastNumber(row))+' '+result.currency:'لم يصدر توقع'}</dd></div>
  <div><dt>نهاية تقديرية</dt><dd><bdi dir="ltr">{row.window?.estimatedEndAt||'غير متاحة'}</bdi>{row.window?.calendarVerified===false?' · تقويم غير موثق للعطلات':''}</dd></div>
  <div><dt>الحركة المتوقعة</dt><dd>{row.available&&Number.isFinite(row.expectedChangePct)?fmt(row.expectedChangePct)+'%':'غير متاحة'}</dd></div>
  {directionalEdgeProven(row.sessions)&&<div><dt>درجة الثقة</dt><dd><Explain term="درجة الثقة" value={row.confidence}/></dd></div>}
