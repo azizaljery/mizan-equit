@@ -1,0 +1,33 @@
+name: CF token check (read-only)
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      A: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check token (no secret printed)
+        shell: bash
+        run: |
+          set -u
+          out=cf-token-check.txt
+          echo "token_len=${#T} prefix_ok=$([[ "$T" =~ ^[A-Za-z0-9_-]+$ ]] && echo yes || echo NO_unexpected_chars)" > $out
+          echo "has_whitespace=$([[ "$T" =~ [[:space:]] ]] && echo YES || echo no)" >> $out
+          echo "--- user token verify ---" >> $out
+          curl -sS -H "Authorization: Bearer $T" https://api.cloudflare.com/client/v4/user/tokens/verify | sed 's/"id":"[^"]*"/"id":"<hidden>"/' >> $out
+          echo; echo "--- account token verify ---" >> $out
+          curl -sS -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/accounts/$A/tokens/verify" | sed 's/"id":"[^"]*"/"id":"<hidden>"/' >> $out
+          echo; echo "--- D1 list ---" >> $out
+          curl -sS -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/accounts/$A/d1/database?per_page=20" | sed 's/"uuid":"[^"]*"/"uuid":"<hidden>"/g' | head -c 1500 >> $out
+          cat $out
+      - name: Publish result to repo
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          b64="$(base64 -w0 cf-token-check.txt)"
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/cf-token-check-${{ github.run_id }}.txt" -f message="ci diagnostics: cf token check" -f content="$b64" -f branch="${{ github.ref_name }}"
