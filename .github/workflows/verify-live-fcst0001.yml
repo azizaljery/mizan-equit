@@ -1,0 +1,28 @@
+name: Verify live FCST-0001 display (read-only; no deploy, no writes)
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - run: |
+          mkdir -p /tmp/pw && cd /tmp/pw && npm init -y >/dev/null && npm i --no-audit --no-fund playwright >/dev/null
+          npx playwright install --with-deps chromium webkit
+      - name: Run
+        env: {GH_TOKEN: "${{ github.token }}", RID: "${{ github.run_id }}", REF: "${{ github.ref_name }}"}
+        run: |
+          set +e
+          cp research/screenshots-fcst0001/live/verify.cjs /tmp/pw/verify.cjs
+          (cd /tmp/pw && node verify.cjs /tmp/pw/out) > /tmp/verify.log 2>&1
+          for f in /tmp/pw/out/*; do n=$(basename $f);
+            node -e 'const fs=require("fs");fs.writeFileSync("/tmp/b.json",JSON.stringify({message:"ci diagnostics: live verify "+process.argv[2],branch:process.env.REF,content:fs.readFileSync(process.argv[1]).toString("base64")}))' "$f" "$n"
+            gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/live-verify-${RID}/$n" --input /tmp/b.json >/dev/null || true
+          done
+          node -e 'const fs=require("fs");fs.writeFileSync("/tmp/b.json",JSON.stringify({message:"ci diagnostics: live verify log "+process.env.RID,branch:process.env.REF,content:Buffer.from(fs.readFileSync("/tmp/verify.log","utf8").slice(-30000)).toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/live-verify-${RID}/log.txt" --input /tmp/b.json >/dev/null || true
