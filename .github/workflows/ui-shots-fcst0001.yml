@@ -1,0 +1,51 @@
+name: UI shots FCST-0001 (render only; nothing is deployed)
+on:
+  workflow_dispatch:
+  push:
+    branches: [forecast-diagnosis]
+    paths: ['research/screenshots-fcst0001/ci/**', '.github/workflows/ui-shots-fcst0001.yml']
+permissions:
+  contents: write
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: mizan-v45
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - run: npm install --no-audit --no-fund
+      - name: Real price data (research-data branch, read only)
+        run: git show origin/research-data:prices/1120.SR.json > /tmp/1120.json || git show origin/research-data:research-data/prices/1120.SR.json > /tmp/1120.json
+      - name: Build site CSS and render the real components
+        env: {GH_TOKEN: "${{ github.token }}", RID: "${{ github.run_id }}", REF: "${{ github.ref_name }}"}
+        run: |
+          set +e
+          mkdir -p /tmp/ui
+          cp ../research/screenshots-fcst0001/ci/build-css.mjs ./shots-build-css.mjs
+          cp ../research/screenshots-fcst0001/ci/entry.tsx ./shots-entry.tsx
+          ( node shots-build-css.mjs /tmp/ui/site.css &&
+            npx esbuild shots-entry.tsx --bundle --platform=node --format=cjs --outfile=/tmp/ui/bundle.cjs --alias:@=$PWD --jsx=automatic --loader:.css=empty --log-level=warning &&
+            PRICES_JSON=/tmp/1120.json OUT_HTML=/tmp/ui/page.html node /tmp/ui/bundle.cjs ) > /tmp/render.log 2>&1
+          RC=$?
+          node -e 'const fs=require("fs");fs.writeFileSync("/tmp/b.json",JSON.stringify({message:"ci diagnostics: ui render log "+process.env.RID,branch:process.env.REF,content:Buffer.from(fs.readFileSync("/tmp/render.log","utf8").slice(-20000)).toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/ui-render-${RID}.txt" --input /tmp/b.json >/dev/null || true
+          exit $RC
+      - name: Screenshots (Chromium, 390 mobile + 1280 desktop)
+        run: |
+          npm install --no-save --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+          cp ../research/screenshots-fcst0001/ci/shoot.cjs ./shots-shoot.cjs
+          node shots-shoot.cjs /tmp/ui
+          ls -la /tmp/ui
+      - name: Publish PNGs to ci-diagnostics (no deploy)
+        env: {GH_TOKEN: "${{ github.token }}", RID: "${{ github.run_id }}", REF: "${{ github.ref_name }}"}
+        run: |
+          for f in /tmp/ui/*.png; do n=$(basename $f);
+            node -e 'const fs=require("fs");fs.writeFileSync("/tmp/b.json",JSON.stringify({message:"ci diagnostics: ui shot "+process.argv[2],branch:process.env.REF,content:fs.readFileSync(process.argv[1]).toString("base64")}))' "$f" "$n"
+            gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/ui-shots-${RID}/$n" --input /tmp/b.json >/dev/null
+          done

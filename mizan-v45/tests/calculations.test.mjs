@@ -252,7 +252,7 @@ test('Sample outcomes refuse missing sessions, revised units and splits and neve
  const saved={available:true,price:100,range:[90,110],scenarios:{base:[97,103]},currency:'USD',direction:'محايد',anchorDate:'2025-01-01'};
  const prices=['2025-01-01','2025-01-02','2025-01-03'].map(date=>({date,close:100,low:99,high:101})),series={prices,sessionDates:prices.map(p=>p.date),currency:'USD',corporateActions:[],source:'https://example.test'};
  const complete=evaluateSampleOutcome(saved,series,2);assert.equal(complete.state,'complete');assert.equal(complete.matchPct,100);assert.equal(evaluateSampleOutcome(saved,series,3).matchPct,null);assert.equal(evaluateSampleOutcome(saved,{...series,sessionDates:null},2).state,'waiting');assert.equal(evaluateSampleOutcome(saved,{...series,prices:prices.filter(p=>p.date!=='2025-01-02')},2).state,'waiting');assert.equal(evaluateSampleOutcome(saved,{...series,currency:'SAR'},2).state,'excluded');assert.equal(evaluateSampleOutcome(saved,{...series,corporateActions:[{kind:'split',date:'2025-01-02'}]},2).state,'excluded');assert.equal(evaluateSampleOutcome(saved,{...series,prices:[{...prices[0],close:50},...prices.slice(1)]},2).state,'excluded');
- const html=renderSampleTableForTest({run:{period:'أسبوع',sessions:5,date:'2025-01-01'},rows:[{id:'a',ordinal:1,symbol:'AAPL',company:{name:'Apple'},state:'pending',forecast:null,outcome:null}]});let index=-1;for(const h of ['الشركة','التوصية التحليلية','السعر والوقت','المدة','النتيجة خلال الفترة','المطابقة']){const next=html.indexOf(h,index+1);assert.ok(next>index);index=next;}assert.ok(html.includes('لم تُحسب'));
+ const html=renderSampleTableForTest({run:{period:'أسبوع',sessions:5,date:'2025-01-01'},rows:[{id:'a',ordinal:1,symbol:'AAPL',company:{name:'Apple'},state:'pending',forecast:null,outcome:null}]});let index=-1;for(const h of ['الشركة','اتجاه المحرك (غير معتمد تنبؤيًا)','السعر والوقت','المدة','النتيجة خلال الفترة','المطابقة']){const next=html.indexOf(h,index+1);assert.ok(next>index);index=next;}assert.ok(html.includes('لم تُحسب'));
 });
 
 function researchFixture(){
@@ -340,7 +340,7 @@ test('Actual forecast UI renders all five Saudi and US horizons, including legac
   const r=researchFixture();r.company={...r.company,symbol};r.currency=currency;
   const data=forecasts(r,null,Date.parse(r.asOf+'T20:00:00Z'));
   assert.ok(data.rows.every(row=>row.available&&Array.isArray(row.risks)&&row.risks.length>0));
-  const html=renderForecastForTest(data);assert.equal((html.match(/class="forecast-card"/g)||[]).length,6);assert.match(html,/درجة الثقة/);assert.match(html,/المخاطر والنواقص/);
+  const html=renderForecastForTest(data);assert.equal((html.match(/class="forecast-card"/g)||[]).length,6);assert.match(html,/مركز سيناريو غير معتمد تنبؤيًا/);assert.doesNotMatch(html,/<dt>درجة الثقة/);assert.doesNotMatch(html,/<p>احتمال السيناريو:/);assert.match(html,/المخاطر والنواقص/);
   const legacy={...data,rows:data.rows.map(({risks,...row})=>row)};assert.match(renderForecastForTest(legacy),/لم تُحفظ تفاصيل المخاطر/);
  }
 });

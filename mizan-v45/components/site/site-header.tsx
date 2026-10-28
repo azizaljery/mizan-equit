@@ -8,7 +8,7 @@ import {cn} from '@/lib/utils';
 /** Public sections of Mizan, in reading order. `hint` is shown as a tooltip and in the mobile menu. */
 export const SITE_LINKS=[
  {href:'/',label:'تحليل شركة',hint:'ابحث عن سهم واحصل على التحليل والتوقع ومصادره'},
- {href:'/picks',label:'توصيات الشركات',hint:'الشركات الأرجح صعودًا يوميًا أو أسبوعيًا أو شهريًا من توقعات ميزان المسجلة'},
+ {href:'/picks',label:'ترشيحات المحرك',hint:'ترتيب مراكز السيناريو الصاعدة من توقعات ميزان المسجلة؛ غير معتمد تنبؤيًا'},
  {href:'/screener',label:'فرز التوقعات',hint:'مسح عينة من السوق للشركات المتوقع صعودها وحفظ الترشيح للقياس'},
  {href:'/accuracy',label:'دقة ميزان',hint:'نتائج التوقعات المحفوظة بعد اكتمال مددها'},
  {href:'/accuracy-sample',label:'اختبار عينة',hint:'اختبار تاريخي لعينة عشوائية من 20 شركة'},
