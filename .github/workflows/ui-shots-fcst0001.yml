@@ -37,8 +37,10 @@ jobs:
           exit $RC
       - name: Screenshots (Chromium, 390 mobile + 1280 desktop)
         run: |
+          npm install --no-save --no-audit --no-fund playwright
           npx playwright install --with-deps chromium
-          NODE_PATH=$PWD/node_modules node ../research/screenshots-fcst0001/ci/shoot.cjs /tmp/ui
+          cp ../research/screenshots-fcst0001/ci/shoot.cjs ./shots-shoot.cjs
+          node shots-shoot.cjs /tmp/ui
           ls -la /tmp/ui
       - name: Publish PNGs to ci-diagnostics (no deploy)
         env: {GH_TOKEN: "${{ github.token }}", RID: "${{ github.run_id }}", REF: "${{ github.ref_name }}"}
