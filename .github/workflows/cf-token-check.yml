@@ -1,5 +1,8 @@
 name: CF token check (read-only)
-on: workflow_dispatch
+on:
+  push:
+    branches: [forecast-diagnosis]
+    paths: ['.github/workflows/cf-token-check.yml']
 permissions:
   contents: write
 jobs:
