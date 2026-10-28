@@ -11,7 +11,7 @@ import {SourceLink} from './source-link';
 import {Explain} from './explain';
 import {ForecastRangeCalibration} from './forecast-range-calibration';
 import {forecastPoint as forecastNumber,forecastDisplayStatus as forecastStatus} from '@/lib/forecast-presentation';
-import {directionalEdgeProven,signalVsUncertainty,NO_EDGE_LABEL,EVIDENCE_PROTOCOL,SCENARIO_CENTER_LABEL,UNPROVEN_STATUS_LABEL,provenanceLines} from '@/lib/forecast-evidence';
+import {evidenceStatement,directionalEdgeProven,signalVsUncertainty,NO_EDGE_LABEL,EVIDENCE_PROTOCOL,SCENARIO_CENTER_LABEL,UNPROVEN_STATUS_LABEL,provenanceLines} from '@/lib/forecast-evidence';
 export function completeForecastRows(result:any){return HORIZONS.map(h=>result?.rows?.find((r:any)=>r.sessions===h.sessions)||{period:h.name,sessions:h.sessions,available:false,direction:'غير متاح',price:result?.price??null,range:null,change:null,confidence:'منخفض',riskLevel:'غير متحقق',coverage:0,reasons:['لم تُحفظ هذه المدة في هذا التحليل؛ اطلب تحليلًا جديدًا.'],risks:[],basis:[],contributions:[]});}
 const range=(values:any)=>Array.isArray(values)?values.map((v:number)=>fmt(v)).join(' – '):'غير متاح';
 // عمداً بلا حساب هنا: forecasts() خادمية فقط (recordAnalysis في research-service.ts
@@ -41,7 +41,7 @@ export function Forecasts({report,quote=null,data}:{report?:MarketReport|null;qu
  <div><dt>الحالة</dt><dd>{row.available&&!directionalEdgeProven(row.sessions)?UNPROVEN_STATUS_LABEL:forecastStatus(row).label}</dd></div>
  </dl>
  {row.available&&row.shockWarning&&<p role="status" className="notice">{row.shockWarning}</p>}
- {row.available&&!directionalEdgeProven(row.sessions)&&<p className="reference">{signalVsUncertainty(row).note} الرقم مركز تقديري لسعر الإغلاق عند نهاية المدة وليس إشارة اتجاه (<bdi dir="ltr">{EVIDENCE_PROTOCOL}</bdi>). اتجاه المحرك الخام: {row.direction}.</p>}
+ {row.available&&!directionalEdgeProven(row.sessions)&&<p className="reference">{signalVsUncertainty(row).note} {evidenceStatement(row.sessions)} الرقم مركز تقديري لسعر الإغلاق عند نهاية المدة وليس إشارة اتجاه (<bdi dir="ltr">{EVIDENCE_PROTOCOL}</bdi>). اتجاه المحرك الخام: {row.direction}.</p>}
  {!row.available&&<p role="status" className="notice error">{(row.reasons||[]).join(' ')||'لم يصدر النموذج توقعًا لهذا الأفق.'}</p>}
  <details><summary>أدلة النموذج وشروط الإبطال — {row.period}</summary><div className="forecast-detail">
  <p>الأساسي: {row.scenarios?range(row.scenarios.base):'غير متاح'} · الإيجابي: {row.scenarios?range(row.scenarios.positive):'غير متاح'} · السلبي: {row.scenarios?range(row.scenarios.negative):'غير متاح'}</p>

@@ -69,3 +69,22 @@ test('signalVsUncertainty: weak signal is not an invented direction or probabili
   assert.equal(r.signal, 'low'); assert.equal(r.uncertainty, 'high'); assert.doesNotMatch(r.note, /%|احتمال/);
   assert.equal(signalVsUncertainty({available: false}).signal, 'unknown');
 });
+
+test('other screens: engine-derived confidence/ranking use neutral labels; independent rule-based recommendation states its basis', async () => {
+  const rd = (f) => fs.readFileSync(new URL('../' + f, import.meta.url), 'utf8');
+  for (const f of ['components/company-picks.tsx', 'components/accuracy-sample.tsx', 'components/research-workspace.tsx', 'app/screener/page.tsx']) {
+    const s = rd(f);
+    assert.doesNotMatch(s, /from '(@\/components|\.)\/confidence-badge'/, f);
+    assert.match(s, /EngineConfidenceBadge/, f);
+  }
+  assert.match(rd('components/company-picks.tsx'), /UnprovenEdgeNote/);
+  assert.match(rd('app/screener/page.tsx'), /UnprovenEdgeNote/);
+  assert.doesNotMatch(rd('components/company-picks.tsx') + rd('app/screener/page.tsx'), /الأرجح صعودًا|المركزي المتوقع|الشركات المتوقع صعودها/);
+  assert.match(rd('components/trade-scenario.tsx'), /مستقلة عن محرك توقع الأفق/);
+});
+test('evidence statement: weak-sample horizons say evidence is insufficient; descriptive evaluation is not called confirmatory', async () => {
+  const {evidenceStatement} = await import('../lib/forecast-evidence.ts');
+  assert.match(evidenceStatement(21), /الأدلة غير كافية للحكم/); assert.match(evidenceStatement(252), /الأدلة غير كافية للحكم/);
+  assert.doesNotMatch(evidenceStatement(5), /غير كافية/);
+  for (const h of [1, 5, 21]) { assert.match(evidenceStatement(h), /لم تثبت أفضلية ضمن البيانات والتقييم المتاحين/); assert.match(evidenceStatement(h), /ليس إثباتًا تأكيديًا/); }
+});

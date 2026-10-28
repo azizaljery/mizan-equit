@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {TrendingUp,Sparkles} from 'lucide-react';
-import {ConfidenceBadge} from './confidence-badge';
+import {EngineConfidenceBadge,UnprovenEdgeNote} from './engine-notice';
 import {Notice} from './site/notice';
 import {EmptyState,ListSkeleton} from './site/empty-state';
 
@@ -24,13 +24,14 @@ export function CompanyPicks({compact=false}:{compact?:boolean}){
   return()=>ctrl.abort();},[market,horizon,count]);
  const t=data?.trackRecord;
  return <section className="panel company-picks" dir="rtl" aria-labelledby="picks-title">
-  <div className="panel-head"><h2 id="picks-title"><Sparkles size={20} aria-hidden="true"/> توصيات الشركات — الأرجح صعودًا حسب ميزان</h2></div>
-  <p className="muted">أقوى التوقعات الصاعدة التي سجّلها ميزان مؤخرًا، بنفس شروط الفرز دون تخفيفها. ترتيب نموذج وليس توصية شراء ولا ضمانًا للصعود.</p>
+  <div className="panel-head"><h2 id="picks-title"><Sparkles size={20} aria-hidden="true"/> ترشيحات المحرك — ترتيب غير معتمد تنبؤيًا</h2></div>
+  <p className="muted">أعلى مراكز السيناريو الصاعدة التي سجّلها المحرك مؤخرًا، بنفس شروط الفرز دون تخفيفها. ترتيب نموذج وليس توصية شراء ولا ضمانًا للصعود.</p>
   <div className="company-search picks-controls">
    <label className="market-select"><span>السوق</span><select aria-label="السوق" value={market} onChange={e=>setMarket(e.target.value as 'sa'|'us')}><option value="sa">السعودي</option><option value="us">الأمريكي</option></select></label>
    <label className="market-select"><span>المدة</span><select aria-label="المدة" value={horizon} onChange={e=>setHorizon(Number(e.target.value))}>{HORIZONS.map(([s,n])=><option key={s} value={s}>{n}</option>)}</select></label>
    <label className="market-select"><span>عدد الشركات</span><select aria-label="عدد الشركات" value={count} onChange={e=>setCount(Number(e.target.value))}>{[1,2,3,4,5].map(n=><option key={n} value={n}>{n===1?'شركة واحدة':n===2?'شركتان':n+' شركات'}</option>)}</select></label>
   </div>
+  <UnprovenEdgeNote sessions={horizon}/>
   {error&&<Notice>{error}</Notice>}
   {busy&&!data&&<ListSkeleton rows={count}/>}
   {data&&!data.picks.length&&<EmptyState icon={<TrendingUp aria-hidden="true"/>} title={`لا توجد شركة مستوفية للشروط (${data.horizonName})`} action={<a className="secondary-btn" href="/screener">شغّل فرزًا جديدًا</a>}>
@@ -41,11 +42,11 @@ export function CompanyPicks({compact=false}:{compact?:boolean}){
     <h3><a href={`/?symbol=${encodeURIComponent(p.symbol)}`}>{p.name}</a> <bdi dir="ltr" className="muted">{p.symbol.replace('.SR','')}</bdi></h3>
     <div className="pick-figures">
      <span>السعر المرجعي <b>{fmt(p.price)}</b> {p.currency}</span>
-     <span>المركزي المتوقع <b>{fmt(p.predictedPrice)}</b></span>
+     <span>مركز السيناريو (غير معتمد) <b>{fmt(p.predictedPrice)}</b></span>
      <span className="pick-change">+{fmt(p.expectedChangePct)}%</span>
      <span>النطاق {p.range?`${fmt(p.range[0])} – ${fmt(p.range[1])}`:'—'}</span>
     </div>
-    <div className="pick-meta"><ConfidenceBadge value={p.confidence}/><small>المخاطر: {p.riskLevel}</small><small>تغطية العوامل {fmt(p.coverage,0)}%</small><small>صدر {when(p.issuedAt)} · سعر {p.priceTime||'—'}</small></div>
+    <div className="pick-meta"><EngineConfidenceBadge value={p.confidence}/><small>المخاطر: {p.riskLevel}</small><small>تغطية العوامل {fmt(p.coverage,0)}%</small><small>صدر {when(p.issuedAt)} · سعر {p.priceTime||'—'}</small></div>
     {!compact&&p.reasons.length>0&&<details><summary>لماذا رُشّحت؟</summary><ul>{p.reasons.map(r=><li key={r}>{r}</li>)}</ul>{p.risks.length>0&&<><b>مخاطر:</b><ul>{p.risks.map(r=><li key={r}>{r}</li>)}</ul></>}</details>}
    </div></li>)}</ol>}
   {data&&<p className="muted picks-foot">

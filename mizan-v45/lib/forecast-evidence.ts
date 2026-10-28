@@ -24,3 +24,11 @@ export function signalVsUncertainty(row:RowView):{signal:'low'|'above-threshold'
  if(uncertainty==='high')parts.push('عدم اليقين مرتفع: نصف عرض النطاق أكبر بكثير من الحركة المركزية'+(ratio&&Number.isFinite(ratio)?' (≈'+Math.round(ratio)+' ضعفًا)':'')+'.');
  return{signal,uncertainty,note:parts.join(' ')};
 }
+
+export const EVIDENCE_CONCLUSION='لم تثبت أفضلية ضمن البيانات والتقييم المتاحين';
+export const EVIDENCE_INSUFFICIENT='الأدلة غير كافية للحكم';
+/** Horizons from 21 sessions have ~0-3 effective independent observations in FCST-0001, so no verdict either way is possible. */
+export const weakSampleHorizon=(sessions:number)=>sessions>=21;
+export function evidenceStatement(sessions:number):string{
+ return EVIDENCE_CONCLUSION+(weakSampleHorizon(sessions)?' — '+EVIDENCE_INSUFFICIENT:'')+'. التقييم الاتجاهي الوصفي المضاف لاحقًا ليس إثباتًا تأكيديًا.';
+}
