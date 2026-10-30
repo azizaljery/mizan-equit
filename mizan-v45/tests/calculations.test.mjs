@@ -1309,3 +1309,14 @@ test('Previously saved company layouts remain readable after retiring a section 
   const duplicate=structuredClone(saved);duplicate.layout.company[11].id='decision';assert.throws(()=>gold.validateSettings(duplicate));
  }finally{gold.testRuntime.DB=priorDB;sqlite.close();}
 });
+
+// PR #17 (#16): the /manual Sharia badge reads requirementAnalysis(...).shariaOk. Behavioural checks, not just types.
+const shariaCase=(edit=()=>{})=>{const d=makeExample();const meta={...d.meta},req={...d.requirements};edit(meta,req);const a=requirementAnalysis(req,d.history,d.financials,d.prices,meta,d.checks,d.events);return {a,item:a.items.find(i=>i.title==='التصنيف الشرعي والتطهير')};};
+test('Sharia badge: complete compliant reference for the latest quarter -> shariaOk true, item pass',()=>{const {a,item}=shariaCase();assert.equal(typeof a.shariaOk,'boolean');assert.equal(a.shariaOk,true);assert.equal(item.state,'pass');});
+test('Sharia badge: unknown status is never treated as compliant (missing)',()=>{const {a,item}=shariaCase(m=>{m.shariaStatus='unknown'});assert.equal(a.shariaOk,false);assert.equal(item.state,'missing');});
+test('Sharia badge: non-compliant reference -> false, item problem (not missing)',()=>{const {a,item}=shariaCase(m=>{m.shariaStatus='noncompliant'});assert.equal(a.shariaOk,false);assert.equal(item.state,'problem');});
+for(const [name,edit] of [['no source',m=>{m.shariaSource='  '}],['no method',(m,r)=>{r.shariaMethod=''}],['invalid date',m=>{m.shariaDate='2026-13-40'}],['no quarter',(m,r)=>{r.shariaQuarter=''}],['purification null',(m,r)=>{r.purification=null}],['negative purification',(m,r)=>{r.purification=-1}],['no purification basis',(m,r)=>{r.purificationBasis=''}]])
+ test(`Sharia badge: incomplete data (${name}) -> false, item missing`,()=>{const {a,item}=shariaCase(edit);assert.equal(a.shariaOk,false);assert.equal(item.state,'missing');});
+test('Sharia badge: stale quarter or reference dated after the analysis date -> false',()=>{
+ assert.equal(shariaCase((m,r)=>{r.shariaQuarter='2000-Q1'}).a.shariaOk,false);
+ const future=shariaCase(m=>{const t=new Date(m.asOf);t.setUTCDate(t.getUTCDate()+10);m.shariaDate=t.toISOString().slice(0,10)});assert.equal(future.a.shariaOk,false);});
