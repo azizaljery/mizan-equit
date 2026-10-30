@@ -1,6 +1,9 @@
 name: Verify live FCST-0001 display (read-only; no deploy, no writes)
 on:
   workflow_dispatch:
+  push:
+    branches: [forecast-diagnosis]
+    paths: ['.github/workflows/verify-live-fcst0001.yml']
 permissions:
   contents: write
 jobs:
