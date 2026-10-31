@@ -21,3 +21,6 @@ test('file not in manifest is refused; unlisted file in dir blocks opening', () 
   fs.writeFileSync(path.join(s.dev, 'Y.json'), '{}'); assert.throws(() => openDevInput({manifestPath: s.mp, manifestSha256: s.msha, restrictedRoots: [s.sealed]}), /unlisted file/); });
 test('an approved-but-wrong file with post-cutoff dates is still refused (secondary check)', () => { const s = setup(); fs.copyFileSync(path.join(s.sealed, 'X.json'), path.join(s.dev, 'X.json')); const m = buildManifest(s.dev, '2024-09-04'); const mb = JSON.stringify(m); fs.writeFileSync(s.mp, mb);
   const g = openDevInput({manifestPath: s.mp, manifestSha256: sha256(Buffer.from(mb)), restrictedRoots: [s.sealed]}); assert.throws(() => g.read('X.json'), /after cutoff/); });
+test('parsed content is the hashed content: exactly one read of the data file per read() (no second read / TOCTOU)', () => { const s = setup(); const g = openDevInput({manifestPath: s.mp, manifestSha256: s.msha, restrictedRoots: [s.sealed]});
+  const orig = fs.readFileSync; let n = 0; fs.readFileSync = function (p, ...a) { if (String(p).endsWith('X.json')) n++; return orig.call(this, p, ...a); };
+  try { g.read('X.json'); } finally { fs.readFileSync = orig; } assert.equal(n, 1); });

@@ -2,8 +2,12 @@
  * Rule: research scripts read price files ONLY through openDevInput(), which
  *  1) refuses any directory inside a restricted root (the sealed research-data copy) — including via symlinks (realpath);
  *  2) refuses any file not listed in an approved manifest;
- *  3) verifies SHA-256 of the raw bytes BEFORE JSON.parse (no parsing of unapproved content);
- *  4) only then parses, and re-checks max date <= manifest.cutoff as a secondary assertion.
+ *  3) reads the file bytes ONCE and verifies their SHA-256 against the manifest. Hashing necessarily reads the bytes; the guarantee
+ *     is that no price is PARSED or USED unless the bytes match the approved file;
+ *  4) parses exactly that same in-memory buffer (no second read, so the parsed content is the content that was hashed),
+ *     then re-checks max date <= manifest.cutoff as a secondary assertion.
+ * Manifest provenance: produced by buildManifest() in the same CI job that performs the source-side cut fetch, committed to the
+ * repo, and its own SHA-256 pinned in the freeze commit; openDevInput() refuses a manifest whose hash differs from the pinned one.
  * The manifest itself is approved by commit (its own SHA-256 is pinned by the caller).
  * A new cut fetch restores separation of INPUTS; it does not restore independence of a period already used. */
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
