@@ -1,0 +1,172 @@
+name: Isolated preview of #17+#18 (no production data, no production secrets)
+
+# Manual only. Deploys the app code of a fixed commit to a SEPARATE worker (mizan-aziz-preview) bound to a
+# SEPARATE, empty D1 database (mizan-preview-db), with no crons, no R2, and no provider keys.
+# The production worker, its database, its secrets and its Access app are never touched.
+# action=teardown deletes the preview worker, the preview D1 database and the preview Access app.
+on:
+  push:
+    branches: [integration/17-18]
+    paths: ['.github/workflows/preview-17-18.yml']
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "deploy | teardown"
+        required: true
+        default: deploy
+      app_ref:
+        description: "Commit to preview (app code)"
+        required: true
+        default: 4053fc197cd3ac202a3b821f89f27b766ed1364d
+      owner_email:
+        description: "Email allowed by the PREVIEW Access policy (identity only; not a credential)"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  PREVIEW_WORKER: mizan-aziz-preview
+  PREVIEW_DB: mizan-preview-db
+  PREVIEW_HOST: mizan-aziz-preview.aljeryabod.workers.dev
+  PREVIEW_ACCESS_APP: Mizan Aziz PREVIEW owner-only
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout app code at the fixed commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.app_ref }}
+          persist-credentials: false
+
+      - name: Use Node 24
+        if: ${{ inputs.action == 'deploy' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install and build (same steps as production build; nothing deployed yet)
+        if: ${{ inputs.action == 'deploy' }}
+        working-directory: mizan-v45
+        run: |
+          npm install --no-audit --no-fund
+          node scripts/verify-deployment.mjs --mark
+          node scripts/stamp-deployment-route.mjs
+          npm run build
+
+      - name: Preview Access app (separate from production) and preview D1
+        id: infra
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          OWNER_EMAIL: ${{ inputs.owner_email }}
+          ACTION: ${{ inputs.action }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p /tmp/out
+          node <<'NODE' > /tmp/out/infra.log 2>&1; echo "infra_exit=$?" >> /tmp/out/infra.log
+          const {CLOUDFLARE_API_TOKEN:token,CLOUDFLARE_ACCOUNT_ID:acct,OWNER_EMAIL,ACTION,PREVIEW_HOST:host,PREVIEW_ACCESS_APP:name,PREVIEW_DB:dbName,PREVIEW_WORKER:worker}=process.env;
+          const fs=require('fs');
+          const cf=async(method,path,body)=>{const r=await fetch(`https://api.cloudflare.com/client/v4/accounts/${acct}${path}`,{method,headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});const j=await r.json().catch(()=>({}));return {status:r.status,ok:j.success===true,errors:j.errors,result:j.result};};
+          (async()=>{
+            if(host==='mizan-aziz.aljeryabod.workers.dev'||worker==='mizan-aziz'||dbName==='mizan-equity-db'){console.log('REFUSE: production name');process.exit(2);}
+            const apps=await cf('GET','/access/apps?per_page=100');if(!apps.ok){console.log('access list failed',apps.status,JSON.stringify(apps.errors));process.exit(1);}
+            const existing=(apps.result||[]).find(a=>a.name===name);
+            const dbs=await cf('GET','/d1/database?per_page=100');if(!dbs.ok){console.log('d1 list failed',dbs.status,JSON.stringify(dbs.errors));process.exit(1);}
+            let db=(dbs.result||[]).find(d=>d.name===dbName);
+            if(ACTION==='teardown'){
+              if(existing){const d=await cf('DELETE',`/access/apps/${existing.id}`);console.log('delete access app',d.status,d.ok);}
+              const w=await cf('DELETE',`/workers/scripts/${worker}`);console.log('delete worker',w.status,w.ok);
+              if(db){const d=await cf('DELETE',`/d1/database/${db.uuid}`);console.log('delete preview d1',d.status,d.ok);}
+              return;
+            }
+            const email=(OWNER_EMAIL||'').trim();if(!email){console.log('owner email input missing');process.exit(1);}
+            const paths=['/admin','/admin/*','/api/admin','/api/admin/*','/api/private-recommendation','/api/backtest'];
+            const body={name,type:'self_hosted',session_duration:'1h',destinations:paths.map(p=>({type:'public',uri:host+p})),policies:[{name:'Preview owner email only',decision:'allow',include:[{email:{email}}]}]};
+            const res=existing?await cf('PUT',`/access/apps/${existing.id}`,body):await cf('POST','/access/apps',body);
+            console.log('access app',existing?'updated':'created',res.status,res.ok,JSON.stringify(res.errors||[]));if(!res.ok)process.exit(1);
+            if(!db){const c=await cf('POST','/d1/database',{name:dbName});console.log('create preview d1',c.status,c.ok,JSON.stringify(c.errors||[]));if(!c.ok)process.exit(1);db=c.result;}
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,`aud=${res.result.aud}\ndb_id=${db.uuid}\n`);
+            console.log('preview d1 id',db.uuid,'(separate from production)');
+          })();
+          NODE
+          cat /tmp/out/infra.log
+          grep -q "infra_exit=0" /tmp/out/infra.log
+
+      - name: Rewrite generated Wrangler config for the isolated preview
+        if: ${{ inputs.action == 'deploy' }}
+        id: cfg
+        working-directory: mizan-v45
+        env:
+          AUD: ${{ steps.infra.outputs.aud }}
+          DB_ID: ${{ steps.infra.outputs.db_id }}
+          OWNER_EMAIL: ${{ inputs.owner_email }}
+        run: |
+          config="$(find dist -type f -name wrangler.json -print -quit)"; test -n "$config"
+          rm -rf "$(dirname "$config")/drizzle"; cp -R drizzle "$(dirname "$config")/drizzle"
+          node - "$config" <<'NODE' | tee /tmp/out/config-summary.txt
+          const fs=require('fs');const f=process.argv[2];const c=JSON.parse(fs.readFileSync(f,'utf8'));
+          c.name=process.env.PREVIEW_WORKER;
+          c.triggers={crons:[]};
+          delete c.routes;delete c.route;c.workers_dev=true;
+          c.r2_buckets=[];
+          c.vars={...(c.vars||{}),MIZAN_BACKGROUND_CRON_ENABLED:'false',ACCESS_AUD:process.env.AUD,RECOMMENDATION_OWNER_EMAIL:process.env.OWNER_EMAIL.trim(),MIZAN_PREVIEW:'true'};
+          c.d1_databases=(c.d1_databases||[]).map(d=>({...d,database_name:process.env.PREVIEW_DB,database_id:process.env.DB_ID}));
+          for(const k of ['kv_namespaces','durable_objects','queues','services','analytics_engine_datasets','hyperdrive','vectorize'])if(c[k]&&(Array.isArray(c[k])?c[k].length:Object.keys(c[k]).length))throw Error('unexpected production binding: '+k);
+          fs.writeFileSync(f,JSON.stringify(c,null,2));
+          console.log(JSON.stringify({name:c.name,crons:c.triggers.crons,r2:c.r2_buckets,d1:c.d1_databases.map(d=>({binding:d.binding,name:d.database_name,id:d.database_id})),vars:Object.keys(c.vars).sort()},null,1));
+          if(c.d1_databases.some(d=>d.database_id==='e95b74e8-81d6-4beb-8ea2-ad59c863d21d'))throw Error('production D1 id present');
+          NODE
+          echo "config=$config" >> "$GITHUB_OUTPUT"
+
+      - name: Migrate preview D1 and deploy preview worker
+        if: ${{ inputs.action == 'deploy' }}
+        working-directory: mizan-v45
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -o pipefail
+          npx wrangler d1 migrations apply "$PREVIEW_DB" --remote --config "${{ steps.cfg.outputs.config }}" > /tmp/out/migrate.log 2>&1
+          npx wrangler deploy --config "${{ steps.cfg.outputs.config }}" > /tmp/out/deploy.log 2>&1
+          tail -5 /tmp/out/deploy.log
+
+      - name: Visitor checks on the preview (no sign-in)
+        if: ${{ inputs.action == 'deploy' }}
+        run: |
+          mkdir -p /tmp/pw && cd /tmp/pw && npm init -y >/dev/null && npm i --no-audit --no-fund playwright >/dev/null && npx playwright install --with-deps chromium >/dev/null
+          cat > /tmp/pw/visitor.cjs <<'JS'
+          const {chromium}=require('playwright');const fs=require('fs');
+          const BASE='https://'+process.env.PREVIEW_HOST;const out={base:BASE,checks:[]};const add=(n,ok,d)=>{out.checks.push({name:n,ok,detail:d});console.log(ok===true?'PASS':ok===null?'INFO':'FAIL',n,d||'')};
+          (async()=>{const b=await chromium.launch();const p=await (await b.newContext({locale:'ar-SA'})).newPage();const calls=[];
+           p.on('response',r=>{const u=r.url().replace(BASE,'');if(u.startsWith('/api/research'))calls.push(r.request().method()+' '+r.status()+' '+u)});
+           const r=await p.goto(BASE+'/?symbol=1120.SR',{waitUntil:'domcontentloaded',timeout:60000});add('preview home reachable',!!r&&r.status()<400,'status='+(r&&r.status()));
+           await p.waitForTimeout(25000);
+           const gets=calls.filter(c=>c.startsWith('GET'));
+           add('visitor: owner-only /api/research GET denied (protection intact)',gets.length>0&&gets.every(c=>/ 401 /.test(c)),gets.join(' ; '));
+           add('visitor: /api/research not re-requested automatically after denial (expect 1 GET per mounted workspace)',gets.length<=2,gets.length+' GET');
+           const before=gets.length;await p.evaluate(()=>{window.dispatchEvent(new Event('focus'))});await p.waitForTimeout(4000);
+           const after=calls.filter(c=>c.startsWith('GET')).length;add('visitor: focus triggers one re-check (retry not disabled)',after>before,`${before} -> ${after}`);
+           const m=await p.goto(BASE+'/manual',{waitUntil:'domcontentloaded'});await p.waitForTimeout(5000);const t=await p.innerText('body').catch(()=>'');
+           add('/manual reachable',!!m&&m.status()<400,'status='+(m&&m.status()));
+           add('/manual Sharia badge shows «بيانات الفحص غير كافية» for empty input (not «مستوفاة»)',t.includes('بيانات الفحص غير كافية')&&!t.includes('مستوفاة بحسب المرجع المدخل'),'');
+           const a=await fetch(BASE+'/api/admin',{method:'GET',redirect:'manual'});add('preview /api/admin protected by preview Access (redirect/403)',[302,303,401,403].includes(a.status),'status='+a.status);
+           fs.writeFileSync('/tmp/out/visitor.json',JSON.stringify(out,null,1));await b.close();})().catch(e=>{console.error(e);process.exitCode=1});
+          JS
+          node /tmp/pw/visitor.cjs || true
+
+      - name: Publish evidence (logs, summaries; no secrets)
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RID: ${{ github.run_id }}
+        run: |
+          for f in /tmp/out/*; do [ -f "$f" ] || continue; n=$(basename "$f")
+            sed -i -E 's/[A-Za-z0-9_-]{30,}\.[A-Za-z0-9_-]{30,}\.[A-Za-z0-9_-]{20,}/[redacted-jwt]/g' "$f"
+            node -e 'const fs=require("fs");fs.writeFileSync("/tmp/b.json",JSON.stringify({message:"ci diagnostics: preview "+process.env.RID+" "+process.argv[2],branch:"integration/17-18",content:Buffer.from(fs.readFileSync(process.argv[1],"utf8").slice(-30000)).toString("base64")}))' "$f" "$n"
+            gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/preview-${RID}/$n" --input /tmp/b.json >/dev/null || echo "WARN $n"
+          done
