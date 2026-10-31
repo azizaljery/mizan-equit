@@ -125,7 +125,8 @@ jobs:
           c.r2_buckets=[];
           c.vars={...(c.vars||{}),MIZAN_BACKGROUND_CRON_ENABLED:'false',ACCESS_AUD:process.env.AUD,RECOMMENDATION_OWNER_EMAIL:process.env.OWNER_EMAIL.trim(),MIZAN_PREVIEW:'true'};
           c.d1_databases=(c.d1_databases||[]).map(d=>({...d,database_name:process.env.PREVIEW_DB,database_id:process.env.DB_ID}));
-          for(const k of ['kv_namespaces','durable_objects','queues','services','analytics_engine_datasets','hyperdrive','vectorize'])if(c[k]&&(Array.isArray(c[k])?c[k].length:Object.keys(c[k]).length))throw Error('unexpected production binding: '+k);
+          const count=v=>!v?0:Array.isArray(v)?v.length:Array.isArray(v.bindings)?v.bindings.length:(v.producers||v.consumers)?((v.producers||[]).length+(v.consumers||[]).length):Object.keys(v).length;
+          for(const k of ['kv_namespaces','durable_objects','queues','services','analytics_engine_datasets','hyperdrive','vectorize']){console.log('binding check',k,JSON.stringify(c[k]??null).slice(0,200));if(count(c[k]))throw Error('unexpected production binding: '+k);}
           fs.writeFileSync(f,JSON.stringify(c,null,2));
           console.log(JSON.stringify({name:c.name,crons:c.triggers.crons,r2:c.r2_buckets,d1:c.d1_databases.map(d=>({binding:d.binding,name:d.database_name,id:d.database_id})),vars:Object.keys(c.vars).sort()},null,1));
           if(c.d1_databases.some(d=>d.database_id==='e95b74e8-81d6-4beb-8ea2-ad59c863d21d'))throw Error('production D1 id present');
