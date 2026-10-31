@@ -153,3 +153,4 @@ export {COUNCIL_VERSION,normalizeCouncilTask} from '../lib/agents/council-core';
 export {POST as azizImportPOST} from '../app/api/admin/aziz/import/route';
 export {archiveFingerprint} from '../lib/screener-snapshot';
 export * from '../lib/source-blocking';
+export * from '../lib/owner-fetch-gate';
