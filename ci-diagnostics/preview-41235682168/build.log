@@ -1,0 +1,126 @@
+--- install
+npm warn deprecated tsconfck@3.1.6: unmaintained
+npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.hirok.io
+npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.hirok.io
+npm warn deprecated eslint@9.39.4: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 641 packages in 16s
+npm warn install-scripts 7 packages have install scripts not yet covered by allowScripts:
+npm warn install-scripts   esbuild@0.18.20 (postinstall: node install.js)
+npm warn install-scripts   esbuild@0.25.12 (postinstall: node install.js)
+npm warn install-scripts   esbuild@0.28.2 (postinstall: node install.js)
+npm warn install-scripts   sharp@0.34.5 (install: node install/check.js || npm run build)
+npm warn install-scripts   unrs-resolver@1.12.2 (postinstall: node postinstall.js)
+npm warn install-scripts   workerd@1.20260515.1 (postinstall: node install.js)
+npm warn install-scripts   esbuild@0.27.3 (postinstall: node install.js)
+npm warn install-scripts
+npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+--- mark
+--- stamp
+--- build
+
+> site-creator-vinext-starter@0.1.0 build
+> bash scripts/build-verified.sh
+
+/usr/bin/timeout
+MIZAN_BUILD_IDENTITY={"worker":"mizan-equity","commit":"4b7051a91c6bf11d57f09fec9c1b5252be913539","generatedAt":"2026-10-31T19:45:40.683Z"}
+Running bounded vinext build...
+
+  vinext build  (Vite 8.0.13)
+
+[34m[1/5] analyze client references...[39m
+[2Ktransforming...✓ 450 modules transformed.
+rendering chunks...
+[32m✓ built in 1.47s[39m
+[34m[2/5] analyze server references...[39m
+[2Ktransforming...✓ 341 modules transformed.
+rendering chunks...
+[32m✓ built in 463ms[39m
+[34m[3/5] build rsc environment...[39m
+[2Ktransforming...✓ 456 modules transformed.
+rendering chunks...
+computing gzip size...
+[32m✓ built in 1.48s[39m
+[34m[4/5] build client environment...[39m
+[2Ktransforming...✓ 2177 modules transformed.
+rendering chunks...
+computing gzip size...
+[32m✓ built in 1.55s[39m
+[34m[5/5] build ssr environment...[39m
+[2Ktransforming...✓ 347 modules transformed.
+rendering chunks...
+computing gzip size...
+[32m✓ built in 647ms[39m
+[0m
+  Route (app)
+  ┌ ? /                             
+  ├ ? /accuracy                     
+  ├ ? /accuracy-sample              
+  ├ ? /admin/tools                  
+  ├ ? /admin/verify                 
+  ├ λ /api/accuracy-sample          
+  ├ λ /api/admin                    
+  ├ λ /api/admin/aziz/import        
+  ├ λ /api/admin/backtest           
+  ├ λ /api/admin/backtest/aggregate 
+  ├ λ /api/admin/backtest/export    
+  ├ λ /api/admin/council            
+  ├ λ /api/admin/dashboard          
+  ├ λ /api/admin/gold               
+  ├ λ /api/admin/heartbeat          
+  ├ λ /api/admin/jobs/evaluate-due  
+  ├ λ /api/admin/metals-connection  
+  ├ λ /api/admin/research           
+  ├ λ /api/admin/retention          
+  ├ λ /api/admin/run-background     
+  ├ λ /api/admin/screener-history   
+  ├ λ /api/admin/screener-operations
+  ├ λ /api/admin/signin             
+  ├ λ /api/admin/state              
+  ├ λ /api/admin/tools/automation   
+  ├ λ /api/admin/tools/backtest-runs
+  ├ λ /api/admin/verify             
+  ├ λ /api/ask-mizan                
+  ├ λ /api/aziz/company             
+  ├ λ /api/aziz/monitor             
+  ├ λ /api/aziz/readiness           
+  ├ λ /api/backtest                 
+  ├ λ /api/company/analyze          
+  ├ λ /api/company/chart            
+  ├ λ /api/company/quote            
+  ├ λ /api/company/search           
+  ├ λ /api/forecast-tests           
+  ├ λ /api/gold/chart               
+  ├ λ /api/gold/fx                  
+  ├ λ /api/gold/quote               
+  ├ λ /api/internal/automation      
+  ├ λ /api/market-overview          
+  ├ λ /api/market-watch             
+  ├ λ /api/picks                    
+  ├ λ /api/picks/ledger             
+  ├ λ /api/private-recommendation   
+  ├ λ /api/research                 
+  ├ λ /api/research/export          
+  ├ λ /api/screener                 
+  ├ λ /api/site-settings            
+  ├ λ /api/temporal                 
+  ├ ? /aziz                         
+  ├ ? /gold                         
+  ├ ? /manual                       
+  ├ λ /mizan-deployment.json        
+  ├ ? /picks                        
+  ├ ? /screener                     
+  ├ ? /screener/operations          
+  ├ λ /signin-with-chatgpt          
+  └ ? /tests                        
+
+  λ API  ? Unknown
+
+  ? Some routes could not be classified. vinext currently uses static analysis
+    and cannot detect dynamic API usage (headers(), cookies(), etc.) at build time.
+    Automatic classification will be improved in a future release.
+
+  Build complete. Run `vinext start` to start the production server.
+
+Verified 68 server-referenced client assets.
+MIZAN_RELEASE_BUNDLE={"checkedAt":"2026-10-31T19:45:48.502Z","expectedSha":"4b7051a91c6bf11d57f09fec9c1b5252be913539","checks":{"publicCommit":true,"bundledCommit":true,"identicalMetadata":true,"entryContainsCommit":true,"entryContainsReleaseRoute":true},"status":"passed"}
