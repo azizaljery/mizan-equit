@@ -33,7 +33,7 @@
 
 ### خطوات (أ) نقرة بنقرة
 1. افتح https://one.dash.cloudflare.com واختر الحساب.
-2. من القائمة الجانبية: **Access** ← **Applications** ← **Add an application** ← **Self-hosted**.
+2. من القائمة الجانبية: **Access** (قد تظهر باسم **Access controls**) ← **Applications** ← **Add an application** ← **Self-hosted**.
 3. **Application name:** `Mizan Aziz PREVIEW owner-only`. **Session duration:** 1 hour.
 4. **Add public hostname:** النطاق `mizan-aziz-preview.aljeryabod.workers.dev`، والمسار `admin`. كرر لكل من: `admin/*`، و`api/admin`، و`api/admin/*`، و`api/private-recommendation`، و`api/backtest`.
 5. **Policy:** الاسم `Preview owner email only`. Action: **Allow**. Include → **Emails** → بريدك.
