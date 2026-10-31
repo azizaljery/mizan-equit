@@ -16,9 +16,10 @@ const [host,label,outFile]=process.argv.slice(2);const BASE='https://'+host;
  const cut1=ev.length;out.scenarios.initial={panel,events:ev.slice(0,cut1),gets:ev.slice(0,cut1).filter(e=>e.kind==='GET').length,mounts:ev.slice(0,cut1).filter(e=>e.kind==='MOUNT').length};
  // scenario 2: same-symbol re-analysis through the search box
  let triggered=false;
- try{const inp=p.locator('input[type="search"], input[inputmode="search"], input[placeholder*="شرك"], input[placeholder*="رمز"]').first();await inp.fill('1120');await inp.press('Enter');
-  const btn=p.locator('button:has-text("1120"), [role="option"]:has-text("1120"), li:has-text("1120.SR") button').first();await btn.click({timeout:15000});triggered=true;
-  await p.waitForTimeout(45000);}catch(e){out.scenarios.reanalysisError=String(e).slice(0,200)}
+ try{const btn=p.locator('button:has-text("إعادة جلب بيانات الشركة")').first();await btn.waitFor({state:'attached',timeout:20000});
+  await btn.evaluate(el=>{for(let e=el;e;e=e.parentElement)if(e.tagName==='DETAILS')e.open=true;el.scrollIntoView()});
+  ev.push({t:T(),kind:'CLICK_REFETCH_SAME_COMPANY'});await btn.click({timeout:15000,force:true});triggered=true;
+  await p.waitForTimeout(50000);}catch(e){out.scenarios.reanalysisError=String(e).slice(0,200)}
  const cut2=ev.length;const s2=ev.slice(cut1,cut2);out.scenarios.reanalysis={triggered,events:s2,gets:s2.filter(e=>e.kind==='GET').length,mounts:s2.filter(e=>e.kind==='MOUNT').length,unmounts:s2.filter(e=>e.kind==='UNMOUNT').length};
  await p.evaluate(()=>window.dispatchEvent(new Event('focus')));await p.waitForTimeout(5000);
  const s3=ev.slice(cut2);out.scenarios.focus={events:s3,gets:s3.filter(e=>e.kind==='GET').length};
