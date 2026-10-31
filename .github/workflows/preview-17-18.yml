@@ -17,6 +17,10 @@ on:
       owner_email:
         description: "Email allowed by the PREVIEW Access policy (identity only; not a credential)"
         required: true
+      access_aud:
+        description: "AUD tag of a PREVIEW Access app created by the owner in the dashboard (optional; used if the API token cannot manage Access)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -65,6 +69,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           OWNER_EMAIL: ${{ inputs.owner_email }}
           ACTION: ${{ inputs.action }}
+          MANUAL_AUD: ${{ inputs.access_aud }}
         shell: bash
         run: |
           set -uo pipefail
@@ -75,8 +80,8 @@ jobs:
           const cf=async(method,path,body)=>{const r=await fetch(`https://api.cloudflare.com/client/v4/accounts/${acct}${path}`,{method,headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});const j=await r.json().catch(()=>({}));return {status:r.status,ok:j.success===true,errors:j.errors,result:j.result};};
           (async()=>{
             if(host==='mizan-aziz.aljeryabod.workers.dev'||worker==='mizan-aziz'||dbName==='mizan-equity-db'){console.log('REFUSE: production name');process.exit(2);}
-            const apps=await cf('GET','/access/apps?per_page=100');if(!apps.ok){console.log('access list failed',apps.status,JSON.stringify(apps.errors));process.exit(1);}
-            const existing=(apps.result||[]).find(a=>a.name===name);
+            const apps=await cf('GET','/access/apps?per_page=100');if(!apps.ok)console.log('access list not permitted',apps.status,JSON.stringify(apps.errors));
+            const existing=apps.ok?(apps.result||[]).find(a=>a.name===name):null;
             const dbs=await cf('GET','/d1/database?per_page=100');if(!dbs.ok){console.log('d1 list failed',dbs.status,JSON.stringify(dbs.errors));process.exit(1);}
             let db=(dbs.result||[]).find(d=>d.name===dbName);
             if(ACTION==='teardown'){
@@ -88,10 +93,12 @@ jobs:
             const email=(OWNER_EMAIL||'').trim();if(!email){console.log('owner email input missing');process.exit(1);}
             const paths=['/admin','/admin/*','/api/admin','/api/admin/*','/api/private-recommendation','/api/backtest'];
             const body={name,type:'self_hosted',session_duration:'1h',destinations:paths.map(p=>({type:'public',uri:host+p})),policies:[{name:'Preview owner email only',decision:'allow',include:[{email:{email}}]}]};
-            const res=existing?await cf('PUT',`/access/apps/${existing.id}`,body):await cf('POST','/access/apps',body);
-            console.log('access app',existing?'updated':'created',res.status,res.ok,JSON.stringify(res.errors||[]));if(!res.ok)process.exit(1);
+            let aud=(process.env.MANUAL_AUD||'').trim();
+            if(apps.ok){const res=existing?await cf('PUT',`/access/apps/${existing.id}`,body):await cf('POST','/access/apps',body);
+              console.log('access app',existing?'updated':'created',res.status,res.ok,JSON.stringify(res.errors||[]));
+              if(res.ok)aud=res.result.aud;else console.log('ACCESS_NOT_CONFIGURED_BY_TOKEN: owner must create the preview Access app in the dashboard; deploying visitor-only preview',aud?'(manual AUD supplied)':'(no AUD: owner sign-in disabled)');}
             if(!db){const c=await cf('POST','/d1/database',{name:dbName});console.log('create preview d1',c.status,c.ok,JSON.stringify(c.errors||[]));if(!c.ok)process.exit(1);db=c.result;}
-            fs.appendFileSync(process.env.GITHUB_OUTPUT,`aud=${res.result.aud}\ndb_id=${db.uuid}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,`aud=${aud}\ndb_id=${db.uuid}\n`);
             console.log('preview d1 id',db.uuid,'(separate from production)');
           })();
           NODE
