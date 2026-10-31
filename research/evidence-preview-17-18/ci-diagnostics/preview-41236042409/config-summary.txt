@@ -1,0 +1,30 @@
+config file dist/server/wrangler.json top-level keys ai_search,ai_search_namespaces,analytics_engine_datasets,artifacts,assets,build,cloudchamber,compatibility_date,compatibility_flags,d1_databases,define,dev,dispatch_namespaces,durable_objects,flagship,hyperdrive,jsx_factory,jsx_fragment,kv_namespaces,legacy_env,limits,logfwdr,main,migrations,mtls_certificates,name,no_bundle,observability,pipelines,python_modules,queues,r2_buckets,ratelimits,rules,secrets_store_secrets,send_email,services,topLevelName,triggers,unsafe_hello_world,vars,vectorize,vpc_networks,vpc_services,worker_loaders,workflows
+binding check kv_namespaces []
+binding check durable_objects {"bindings":[]}
+binding check queues {"producers":[],"consumers":[]}
+binding check services []
+binding check analytics_engine_datasets []
+binding check hyperdrive []
+binding check vectorize []
+{
+ "name": "mizan-aziz-preview",
+ "crons": [],
+ "r2": [],
+ "d1": [
+  {
+   "binding": "DB",
+   "name": "mizan-preview-db",
+   "id": "12d4c574-f609-4bf0-b8cd-ab7db694696e"
+  }
+ ],
+ "vars": [
+  "ACCESS_AUD",
+  "ACCESS_TEAM_DOMAIN",
+  "MIZAN_ANTHROPIC_MODEL",
+  "MIZAN_BACKGROUND_CRON_ENABLED",
+  "MIZAN_DEEPSEEK_MODEL",
+  "MIZAN_OPENAI_MODEL",
+  "MIZAN_PREVIEW",
+  "RECOMMENDATION_OWNER_EMAIL"
+ ]
+}

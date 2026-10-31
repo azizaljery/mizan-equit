@@ -1,0 +1,40 @@
+{
+ "base": "https://mizan-aziz-preview.aljeryabod.workers.dev",
+ "checks": [
+  {
+   "name": "preview home reachable",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "visitor: owner-only /api/research GET denied (protection intact)",
+   "ok": true,
+   "detail": "GET 401 /api/research ; GET 401 /api/research"
+  },
+  {
+   "name": "visitor: /api/research not re-requested automatically after denial (expect 1 GET per mounted workspace)",
+   "ok": true,
+   "detail": "2 GET"
+  },
+  {
+   "name": "visitor: focus triggers one re-check (retry not disabled)",
+   "ok": true,
+   "detail": "2 -> 3"
+  },
+  {
+   "name": "/manual reachable",
+   "ok": true,
+   "detail": "status=200"
+  },
+  {
+   "name": "/manual Sharia badge shows «بيانات الفحص غير كافية» for empty input (not «مستوفاة»)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "preview /api/admin protected by preview Access (redirect/403)",
+   "ok": true,
+   "detail": "status=302"
+  }
+ ]
+}
