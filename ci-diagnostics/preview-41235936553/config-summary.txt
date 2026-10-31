@@ -1,0 +1,18 @@
+config file dist/server/wrangler.json top-level keys ai_search,ai_search_namespaces,analytics_engine_datasets,artifacts,assets,build,cloudchamber,compatibility_date,compatibility_flags,d1_databases,define,dev,dispatch_namespaces,durable_objects,flagship,hyperdrive,jsx_factory,jsx_fragment,kv_namespaces,legacy_env,limits,logfwdr,main,migrations,mtls_certificates,name,no_bundle,observability,pipelines,python_modules,queues,r2_buckets,ratelimits,rules,secrets_store_secrets,send_email,services,topLevelName,triggers,unsafe_hello_world,vars,vectorize,vpc_networks,vpc_services,worker_loaders,workflows
+[stdin]:8
+for(const k of ['kv_namespaces','durable_objects','queues','services','analytics_engine_datasets','hyperdrive','vectorize'])if(c[k]&&(Array.isArray(c[k])?c[k].length:Object.keys(c[k]).length))throw Error('unexpected production binding: '+k);
+                                                                                                                                                                                                ^
+
+Error: unexpected production binding: durable_objects
+    at [stdin]:8:199
+    at runScriptInThisContext (node:internal/vm:219:10)
+    at node:internal/process/execution:451:12
+    at [stdin]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:449:60)
+    at evalFunction (node:internal/process/execution:283:30)
+    at evalTypeScript (node:internal/process/execution:295:3)
+    at node:internal/main/eval_stdin:51:5
+    at Socket.<anonymous> (node:internal/process/execution:205:5)
+    at Socket.emit (node:events:526:24)
+
+Node.js v24.22.1
