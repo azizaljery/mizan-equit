@@ -1320,3 +1320,17 @@ for(const [name,edit] of [['no source',m=>{m.shariaSource='  '}],['no method',(m
 test('Sharia badge: stale quarter or reference dated after the analysis date -> false',()=>{
  assert.equal(shariaCase((m,r)=>{r.shariaQuarter='2000-Q1'}).a.shariaOk,false);
  const future=shariaCase(m=>{const t=new Date(m.asOf);t.setUTCDate(t.getUTCDate()+10);m.shariaDate=t.toISOString().slice(0,10)});assert.equal(future.a.shariaOk,false);});
+
+// Four-state badge: «غير متوافق وفق الفحص» must never collapse into «بيانات غير كافية» (and vice versa).
+test('Sharia badge state: compliant / noncompliant / outdated / insufficient are distinct',()=>{
+ const {SHARIA_BADGE}=gold;
+ assert.equal(shariaCase().a.shariaState,'compliant');
+ assert.equal(shariaCase(m=>{m.shariaStatus='noncompliant'}).a.shariaState,'noncompliant');
+ assert.equal(shariaCase(m=>{m.shariaStatus='unknown'}).a.shariaState,'insufficient');
+ assert.equal(shariaCase(m=>{m.shariaSource=''}).a.shariaState,'insufficient');
+ assert.equal(shariaCase((m,r)=>{r.purification=null}).a.shariaState,'insufficient');
+ assert.equal(shariaCase(m=>{m.shariaSource='';m.shariaStatus='noncompliant'}).a.shariaState,'insufficient','incomplete reference is not a verdict');
+ assert.equal(shariaCase((m,r)=>{r.shariaQuarter='2000-Q1'}).a.shariaState,'outdated');
+ const labels=new Set(Object.values(SHARIA_BADGE).map(b=>b.label));assert.equal(labels.size,4);
+ assert.notEqual(SHARIA_BADGE.noncompliant.label,SHARIA_BADGE.insufficient.label);
+ assert.equal(SHARIA_BADGE.compliant.level,'level0');assert.notEqual(SHARIA_BADGE.insufficient.level,'level0');});
