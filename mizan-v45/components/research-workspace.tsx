@@ -10,6 +10,7 @@ import {downloadCsvWithToast as downloadCsv} from './site/download-toast';
 import {Tabs,TabsContent,TabsList,TabsTrigger} from './ui/tabs';
 import {Notice} from './site/notice';
 import {SignInPrompt} from './site/sign-in-prompt';
+import {createOwnerFetchGate,type FetchTrigger} from '@/lib/owner-fetch-gate';
 import {pollDelay} from '@/lib/live-quote';
 import {PaperStockPicker} from './paper-stock-picker';
 import {useMizanSettings} from './settings-context';
@@ -30,9 +31,10 @@ export function ResearchWorkspace({company,onAnalyze,analysisTime='',paperIntent
  useEffect(()=>{try{const id=localStorage.getItem('mizan-selected-portfolio');if(id)setPortfolioId(id)}catch{}},[]);
  useEffect(()=>{if(portfolioId)try{localStorage.setItem('mizan-selected-portfolio',portfolioId)}catch{}},[portfolioId]);
  const order=useRef<{key:string;id:string}|null>(null),loadVersion=useRef(0);
- const denied=useRef(false);
- async function load(id=portfolioId,accessToken=portfolioToken){if(denied.current)return;const version=++loadVersion.current,params=new URLSearchParams();if(historyFilter)params.set('symbol',historyFilter);if(id)params.set('portfolio',id);const response=await fetch('/api/research'+(params.size?'?'+params.toString():''),{cache:'no-store',headers:accessToken?{'x-mizan-portfolio-token':accessToken}:{}}),next=await response.json();if(version!==loadVersion.current)return;if(!response.ok){setAccessCode(next.code||'');if(response.status===401&&next.code==='SIGN_IN_REQUIRED')denied.current=true;throw Error(next.error);}setAccessCode('');setData(next);}
- useEffect(()=>{void load().catch(e=>setMessage(e.message));},[analysisTime,historyFilter,portfolioId,portfolioToken]);
+ const gate=useRef(createOwnerFetchGate());
+ async function load(id=portfolioId,accessToken=portfolioToken,trigger:FetchTrigger='explicit'){if(!gate.current.allow(trigger))return;const version=++loadVersion.current,params=new URLSearchParams();if(historyFilter)params.set('symbol',historyFilter);if(id)params.set('portfolio',id);const response=await fetch('/api/research'+(params.size?'?'+params.toString():''),{cache:'no-store',headers:accessToken?{'x-mizan-portfolio-token':accessToken}:{}}),next=await response.json();if(version!==loadVersion.current)return;gate.current.record(response.status,next.code);if(!response.ok){setAccessCode(next.code||'');throw Error(next.error);}setAccessCode('');setData(next);}
+ useEffect(()=>{void load(portfolioId,portfolioToken,'auto').catch(e=>setMessage(e.message));},[analysisTime,historyFilter,portfolioId,portfolioToken]);
+ useEffect(()=>{const recheck=()=>{if(!document.hidden&&gate.current.denied)void load(portfolioId,portfolioToken,'focus').catch(e=>setMessage(e.message));};window.addEventListener('focus',recheck);document.addEventListener('visibilitychange',recheck);return()=>{window.removeEventListener('focus',recheck);document.removeEventListener('visibilitychange',recheck)}},[portfolioId,portfolioToken,historyFilter]);
  useEffect(()=>{const timer=setInterval(()=>{if(document.hidden||busy||!data?.pendingSymbols?.length)return;void request('resolve',{symbol:data.pendingSymbols[0]});},60000);return()=>clearInterval(timer)},[data,busy]);
  function choosePaperStock(c:Company){setPaperCompany(c);if(c.symbol!==paperCompany?.symbol){setTradePrice('');setStockQuoteNote('');}setStockCurrency(paperStockCurrency(c));setQuantity('');setAmount('');setEntryMode('quantity');setReason('');setForecastId('');order.current=null;setTradeDate(localNow());setUseCurrentTime(true);}
  useEffect(()=>{if(company)choosePaperStock(company);setHistoryFilter(current=>current?company?.symbol||'':'');},[company?.symbol]);
