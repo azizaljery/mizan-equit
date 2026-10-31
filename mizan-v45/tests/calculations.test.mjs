@@ -1334,3 +1334,16 @@ test('Sharia badge state: compliant / noncompliant / outdated / insufficient are
  const labels=new Set(Object.values(SHARIA_BADGE).map(b=>b.label));assert.equal(labels.size,4);
  assert.notEqual(SHARIA_BADGE.noncompliant.label,SHARIA_BADGE.insufficient.label);
  assert.equal(SHARIA_BADGE.compliant.level,'level0');assert.notEqual(SHARIA_BADGE.insufficient.level,'level0');});
+// #18 owner-only fetch gate (public page). Simulated server responses; endpoint protection is unchanged server-side.
+test('Owner gate: visitor denial stops automatic re-requests only',()=>{const {createOwnerFetchGate}=gold;const g=createOwnerFetchGate();
+ assert.equal(g.allow('auto'),true);g.record(401,'SIGN_IN_REQUIRED');assert.equal(g.denied,'SIGN_IN_REQUIRED');
+ assert.equal(g.allow('auto'),false,'no repeat on every analysis change');assert.equal(g.allow('explicit'),true,'retry button still works');assert.equal(g.allow('focus'),true,'re-check on focus still works');});
+test('Owner gate: owner signs in after a visitor denial -> success clears the gate',()=>{const g=gold.createOwnerFetchGate();
+ g.record(401,'SIGN_IN_REQUIRED');assert.equal(g.allow('focus'),true);g.record(200);assert.equal(g.denied,null);assert.equal(g.allow('auto'),true);});
+test('Owner gate: session expiry after success re-arms the gate without blocking retries',()=>{const g=gold.createOwnerFetchGate();
+ g.record(200);assert.equal(g.allow('auto'),true);g.record(401,'SIGN_IN_REQUIRED');assert.equal(g.allow('auto'),false);assert.equal(g.allow('explicit'),true);});
+test('Owner gate: user switch to a non-owner account (403 OWNER_REQUIRED) and back to owner',()=>{const g=gold.createOwnerFetchGate();
+ g.record(200);g.record(403,'OWNER_REQUIRED');assert.equal(g.denied,'OWNER_REQUIRED');assert.equal(g.allow('auto'),false);assert.equal(g.allow('focus'),true);
+ g.record(200);assert.equal(g.denied,null);assert.equal(g.allow('auto'),true);});
+test('Owner gate: other failures (500, 503 config, network-style 0) never block automatic retries',()=>{const g=gold.createOwnerFetchGate();
+ for(const [s,c] of [[500,undefined],[503,'OWNER_CONFIG_UNAVAILABLE'],[0,undefined],[401,'SOMETHING_ELSE']]){g.record(s,c);assert.equal(g.allow('auto'),true,`${s} ${c}`);}});
