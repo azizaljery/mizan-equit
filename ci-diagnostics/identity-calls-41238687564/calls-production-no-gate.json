@@ -1,0 +1,47 @@
+{
+ "host": "mizan-aziz.aljeryabod.workers.dev",
+ "label": "production-no-gate",
+ "scenarios": {
+  "initial": {
+   "panel": true,
+   "events": [
+    {
+     "t": 606,
+     "kind": "MOUNT"
+    },
+    {
+     "t": 869,
+     "kind": "GET",
+     "status": 401
+    },
+    {
+     "t": 7234,
+     "kind": "UNMOUNT"
+    },
+    {
+     "t": 7235,
+     "kind": "MOUNT"
+    },
+    {
+     "t": 7470,
+     "kind": "GET",
+     "status": 401
+    }
+   ],
+   "gets": 2,
+   "mounts": 2
+  },
+  "reanalysisError": "TimeoutError: locator.fill: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('input[type=\"search\"], input[inputmode=\"search\"], input[placeholder*=\"شرك\"], input[placeholder*=\"رمز\"]').first()",
+  "reanalysis": {
+   "triggered": false,
+   "events": [],
+   "gets": 0,
+   "mounts": 0,
+   "unmounts": 0
+  },
+  "focus": {
+   "events": [],
+   "gets": 0
+  }
+ }
+}
