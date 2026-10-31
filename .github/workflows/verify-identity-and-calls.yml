@@ -1,0 +1,51 @@
+name: Verify identity spoofing + /api/research call attribution (read-only; preview and production)
+
+# No deploy, no writes to any site, no secrets used. Production is probed as an anonymous visitor only.
+on:
+  workflow_dispatch:
+    inputs:
+      forged_email:
+        description: "Email to forge in headers (should be the owner email to prove forging it fails)"
+        required: true
+  push:
+    branches: [integration/17-18]
+    paths: ['.github/workflows/verify-identity-and-calls.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Identity unit tests (incl. spoofing)
+        working-directory: mizan-v45
+        run: |
+          mkdir -p /tmp/out
+          npm install --no-audit --no-fund > /dev/null 2>&1
+          (node --test --import tsx tests/owner-identity.test.ts tests/owner-identity-rotation.test.ts; echo "exit=$?") > /tmp/out/identity-unit.txt 2>&1
+          tail -12 /tmp/out/identity-unit.txt
+      - name: Live probes (visitor only)
+        if: ${{ inputs.forged_email != '' }}
+        env:
+          FORGED: ${{ inputs.forged_email }}
+        run: |
+          mkdir -p /tmp/pw && cd /tmp/pw && npm init -y >/dev/null && npm i --no-audit --no-fund playwright >/dev/null && npx playwright install --with-deps chromium >/dev/null
+          cp "$GITHUB_WORKSPACE/research/preview-checks/research-calls.cjs" "$GITHUB_WORKSPACE/research/preview-checks/spoof.mjs" /tmp/pw/
+          for pair in "mizan-aziz-preview.aljeryabod.workers.dev preview-with-gate" "mizan-aziz.aljeryabod.workers.dev production-no-gate"; do set -- $pair
+            node /tmp/pw/research-calls.cjs "$1" "$2" "/tmp/out/calls-$2.json" || true
+            node /tmp/pw/spoof.mjs "$1" "$2" "$FORGED" "/tmp/out/spoof-$2.json" || true
+          done
+      - name: Publish evidence
+        if: ${{ always() }}
+        env: {GH_TOKEN: "${{ github.token }}", RID: "${{ github.run_id }}"}
+        run: |
+          for f in /tmp/out/*; do [ -f "$f" ] || continue; n=$(basename "$f")
+            node -e 'const fs=require("fs");fs.writeFileSync("/tmp/b.json",JSON.stringify({message:"ci diagnostics: identity/calls "+process.env.RID+" "+process.argv[2],branch:"integration/17-18",content:Buffer.from(fs.readFileSync(process.argv[1],"utf8").slice(-40000)).toString("base64")}))' "$f" "$n"
+            gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/identity-calls-${RID}/$n" --input /tmp/b.json >/dev/null || echo "WARN $n"
+          done

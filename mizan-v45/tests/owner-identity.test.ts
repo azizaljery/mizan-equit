@@ -79,3 +79,37 @@ test('signing certificates are cached across requests',async()=>{
 test('no JWT means no certificate fetch',async()=>{
  const before=certFetches;await run({});assert.equal(certFetches,before);
 });
+
+// Owner determination end-to-end: the configured owner email grants owner status ONLY through a verified Access JWT.
+import {ownerIdentity} from '../lib/pin-lock';
+const OWNER='owner@example.test';
+test('spoof: sending the owner email in headers without a JWT does not make the request owner',async()=>{
+ const h=await run({'oai-authenticated-user-email':OWNER,'cf-access-authenticated-user-email':OWNER});
+ assert.equal(ownerIdentity(h,OWNER),null);
+});
+test('spoof: owner email in headers plus a forged token (other key) is not owner',async()=>{
+ const h=await run({'oai-authenticated-user-email':OWNER,'cf-access-jwt-assertion':await jwt(good(),{key:other.privateKey})});
+ assert.equal(ownerIdentity(h,OWNER),null);
+});
+test('spoof: unsigned token (alg none) and HS256 header are rejected',async()=>{
+ const body=b64u(JSON.stringify(good()));
+ for(const alg of ['none','HS256']){const t=`${b64u(JSON.stringify({alg,kid:'k1'}))}.${body}.`;
+  const h=await run({'oai-authenticated-user-email':OWNER,'cf-access-jwt-assertion':t});assert.equal(ownerIdentity(h,OWNER),null,alg);}
+});
+test('Access team set but AUD empty: fail closed even with a valid token',async()=>{
+ const h=await run({'cf-access-jwt-assertion':await jwt(good())},{ACCESS_TEAM_DOMAIN:team,ACCESS_AUD:''});
+ assert.equal(ownerIdentity(h,OWNER),null);
+});
+test('verified JWT for a different account is authenticated but not owner (app-level denial)',async()=>{
+ const h=await run({'cf-access-jwt-assertion':await jwt(good({email:'someone@example.test',sub:'x'}))});
+ assert.equal(h.get('oai-authenticated-user-email'),'someone@example.test');
+ assert.equal(ownerIdentity(h,OWNER),null);
+});
+test('verified JWT for the owner (any case) is owner',async()=>{
+ const h=await run({'cf-access-jwt-assertion':await jwt(good())});
+ assert.equal(ownerIdentity(h,OWNER),'site-owner');
+});
+test('empty configured owner email never matches',async()=>{
+ const h=await run({'cf-access-jwt-assertion':await jwt(good())});
+ assert.equal(ownerIdentity(h,''),null);
+});
