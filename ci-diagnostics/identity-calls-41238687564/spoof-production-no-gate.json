@@ -1,0 +1,54 @@
+{
+ "host": "mizan-aziz.aljeryabod.workers.dev",
+ "label": "production-no-gate",
+ "results": [
+  {
+   "name": "GET /api/research (no identity)",
+   "status": 401,
+   "layer": "app (Worker)",
+   "granted": false,
+   "location": "",
+   "body": "{\"error\":\"سجّل الدخول بحساب مالك ميزان لفتح المحافظ والسجل. بياناتك المحفوظة لم تُحذف.\",\"code\":\"SIGN_IN_REQUIRED\"}"
+  },
+  {
+   "name": "GET /api/research forged owner headers",
+   "status": 401,
+   "layer": "app (Worker)",
+   "granted": false,
+   "location": "",
+   "body": "{\"error\":\"سجّل الدخول بحساب مالك ميزان لفتح المحافظ والسجل. بياناتك المحفوظة لم تُحذف.\",\"code\":\"SIGN_IN_REQUIRED\"}"
+  },
+  {
+   "name": "GET /api/research forged headers + junk Cf-Access-Jwt-Assertion",
+   "status": 401,
+   "layer": "app (Worker)",
+   "granted": false,
+   "location": "",
+   "body": "{\"error\":\"سجّل الدخول بحساب مالك ميزان لفتح المحافظ والسجل. بياناتك المحفوظة لم تُحذف.\",\"code\":\"SIGN_IN_REQUIRED\"}"
+  },
+  {
+   "name": "GET /api/research forged CF_Authorization cookie",
+   "status": 401,
+   "layer": "app (Worker)",
+   "granted": false,
+   "location": "",
+   "body": "{\"error\":\"سجّل الدخول بحساب مالك ميزان لفتح المحافظ والسجل. بياناتك المحفوظة لم تُحذف.\",\"code\":\"SIGN_IN_REQUIRED\"}"
+  },
+  {
+   "name": "GET /api/admin/signin forged owner headers",
+   "status": 302,
+   "layer": "Access (edge, before Worker)",
+   "granted": false,
+   "location": "https://solitary-frost-7b9b.cloudflareaccess.com/cdn-cgi/access/login/mizan-aziz.aljeryabod.workers.dev?…",
+   "body": "<html> <head><title>302 Found</title></head> <body> <center><h1>302 Found</h1></center> <hr><center>cloudflare</center> </body> </html> "
+  },
+  {
+   "name": "GET /api/market-watch forged user headers",
+   "status": 401,
+   "layer": "app (Worker)",
+   "granted": false,
+   "location": "",
+   "body": "{\"error\":\"سجّل الدخول لمراقبة السوق وحفظ بياناتك.\"}"
+  }
+ ]
+}
