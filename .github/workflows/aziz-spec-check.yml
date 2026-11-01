@@ -61,11 +61,16 @@ jobs:
           REF: ${{ github.ref_name }}
         run: |
           set +e
-          (node --test --import tsx tests/forecast-repair-regression.test.mjs tests/forecast-fcst0001.test.mjs; echo "exit=$?"; npm test; echo "exit=$?") > ../test-out.txt 2>&1
+          (node --test --import tsx tests/forecast-repair-regression.test.mjs tests/forecast-fcst0001.test.mjs tests/forecast-fcst0003.test.mjs; echo "exit=$?"; npm test; echo "exit=$?") > ../test-out.txt 2>&1
           F=$(grep -c "exit=[1-9]" ../test-out.txt)
           node -e 'const fs=require("fs");const t=fs.readFileSync("../test-out.txt","utf8");fs.writeFileSync("../tb.json",JSON.stringify({message:"ci diagnostics: tests "+process.env.RID,branch:process.env.REF,content:Buffer.from(t.slice(-60000)).toString("base64")}))'
           gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/tests-${RID}.txt" --input ../tb.json >/dev/null || echo WARN
           exit $F
+      - name: FCST-0003 trace consistency (recomputed stages == forecasts() on the frozen snapshot)
+        shell: bash
+        run: |
+          npx esbuild research/fcst-0003/entry.ts --bundle --platform=node --format=esm '--banner:js=import {createRequire} from "node:module"; const require=createRequire(import.meta.url);' --alias:cloudflare:workers=./tests/runtime-env.ts --outfile=/tmp/fcst3.mjs
+          node research/fcst-0003/trace.mjs /tmp/fcst3.mjs ../research/snapshots/fcst-0003/run-41300568222/snapshot.json.gz /tmp/fcst3-trace.json
       - name: Daily picks tests (unchanged behaviour)
         run: node --test --import tsx tests/daily-picks.test.ts tests/picks.test.ts
       - name: Aziz research package tests
