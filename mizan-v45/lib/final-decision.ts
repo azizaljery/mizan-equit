@@ -1,15 +1,16 @@
 import {technical,finite,fmt} from './analysis';
 import {automaticAnalysis} from './automatic-analysis';
+import {lastBarIncomplete} from './session-volume';
 import {resolveFinancialSources} from './source-resolution';
 import type {MarketReport} from './market-data';
 import type {LiveQuote} from './live-quote';
 import type {tradeScenario} from './trade-scenario';
 export function finalDecision(report:MarketReport,scenario:ReturnType<typeof tradeScenario>,quote:LiveQuote|null,now=Date.now()){
- const t=technical(report.prices),prior=technical(report.prices.slice(0,-1)),a=automaticAnalysis(report),p=scenario.levels;
+ const open=lastBarIncomplete(report,now),t=technical(report.prices,{excludeLastVolume:open}),prior=technical(report.prices.slice(0,-1)),a=automaticAnalysis(report,'trader',now),p=scenario.levels;
  const average50=t.sma50.at(-1),average200=t.sma200.at(-1),rsi=t.rsi.at(-1);
  const fresh=!!quote&&quote.symbol===report.company.symbol&&quote.currency===report.currency&&finite(quote.price)&&quote.price>0&&now-Date.parse(quote.quoteTime)>=0&&now-Date.parse(quote.quoteTime)<=15*60000;
  const price=fresh?quote!.price:t.last?.close??null;
- const confirmed=!!p&&!!t.last&&finite(prior.resistance)&&t.last.close>prior.resistance&&finite(t.relativeVolume)&&t.relativeVolume>=1.5&&finite(average50)&&finite(average200)&&average50>average200&&finite(rsi)&&rsi>=50&&rsi<=70;
+ const confirmed=!!p&&!!t.last&&finite(prior.resistance)&&t.last.close>prior.resistance&&t.volumeBasis==='last-bar'&&finite(t.relativeVolume)&&t.relativeVolume>=1.5&&finite(average50)&&finite(average200)&&average50>average200&&finite(rsi)&&rsi>=50&&rsi<=70;
  const rangePct=t.last&&t.last.low>0?(t.last.high/t.last.low-1)*100:null;
  const risky=!!(finite(t.atrPct)&&t.atrPct>12||finite(rangePct)&&rangePct>25||finite(a.annual.equity)&&a.annual.equity<=0);
  const financialWeak=finite(a.annual.netIncome)&&a.annual.netIncome<0&&finite(a.annual.operatingCashFlow)&&a.annual.operatingCashFlow<0;

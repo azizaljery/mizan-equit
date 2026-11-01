@@ -76,20 +76,24 @@ export function rsi(values:number[],n=14):(number|null)[]{const out:(number|null
 export function atr(p:Price[],n=14):(number|null)[]{const tr=p.map((v,i)=>i?Math.max(v.high-v.low,Math.abs(v.high-p[i-1].close),Math.abs(v.low-p[i-1].close)):v.high-v.low);const out:(number|null)[]=Array(p.length).fill(null);if(p.length<n)return out;let prev=tr.slice(0,n).reduce((a,b)=>a+b,0)/n;out[n-1]=prev;for(let i=n;i<p.length;i++){prev=(prev*(n-1)+tr[i])/n;out[i]=prev}return out}
 const mean=(v:number[])=>v.length?v.reduce((a,b)=>a+b,0)/v.length:null;
 const last=<T,>(a:T[]):T|null=>a.length?a[a.length-1]:null;
-export function technical(prices:Price[]){
+export type TechnicalOptions={excludeLastVolume?:boolean};
+/** excludeLastVolume (FCST-0004): the last bar's session is still open/just closed, so its volume is partial. Volume statistics
+ * (avgV20, priorV20, turnover, relativeVolume, volumeRatio, zeroVolume) are then taken from completed sessions only, and
+ * volumeBasis says so. Price indicators are unchanged. */
+export function technical(prices:Price[],opts:TechnicalOptions={}){
  const close=prices.map(p=>p.close),a50=sma(close,50),a200=sma(close,200),r=rsi(close),a=atr(prices),e12=ema(close,12),e26=ema(close,26);
  const macd=close.map((_,i)=>finite(e12[i])&&finite(e26[i])?e12[i]!-e26[i]!:null);const mvals=macd.filter(finite);const signal=Array(Math.min(25,prices.length)).fill(null).concat(ema(mvals,9)) as (number|null)[];
  const macdHist=macd.map((v,i)=>finite(v)&&finite(signal[i])?v-signal[i]!:null);
  let peak=0,maxDD=0;for(const v of close.slice(-252)){peak=Math.max(peak,v);if(peak>0)maxDD=Math.max(maxDD,(peak-v)/peak*100)}
  const returns=close.slice(1).map((v,i)=>Math.log(v/close[i])).slice(-60);const mu=mean(returns);const vol=returns.length>=20?Math.sqrt(returns.reduce((s,v)=>s+(v-mu!)**2,0)/(returns.length-1))*Math.sqrt(252)*100:null;
- const p=last(prices),avgV20=mean(prices.slice(-20).map(p=>p.volume)),priorV20=prices.length>=40?mean(prices.slice(-40,-20).map(p=>p.volume)):null;
+ const p=last(prices),vp=opts.excludeLastVolume?prices.slice(0,-1):prices,vlast=last(vp),volumeBasis=opts.excludeLastVolume?'previous-complete' as const:'last-bar' as const,avgV20=mean(vp.slice(-20).map(p=>p.volume)),priorV20=vp.length>=40?mean(vp.slice(-40,-20).map(p=>p.volume)):null;
  const history=prices.slice(-122);const lows:number[]=[],highs:number[]=[];for(let i=2;i<history.length-2;i++){const v=history[i],window=history.slice(i-2,i+3);if(window.every(x=>x.low>=v.low))lows.push(v.low);if(window.every(x=>x.high<=v.high))highs.push(v.high)}const below=lows.filter(v=>p&&v<p.close),above=highs.filter(v=>p&&v>p.close);const support=below.length?Math.max(...below):null,resistance=above.length?Math.min(...above):null;
- return {sma50:a50,sma200:a200,rsi:r,atr:a,macd,signal,macdHist,last:p,atrPct:p&&finite(last(a))?last(a)!/p.close*100:null,maxDD:prices.length?maxDD:null,vol,avgV20,turnover:mean(prices.slice(-20).map(p=>p.close*p.volume)),relativeVolume:p&&avgV20&&avgV20>0?p.volume/avgV20:null,volumeRatio:avgV20!==null&&priorV20&&priorV20>0?avgV20/priorV20:null,zeroVolume:prices.length>=20?prices.slice(-20).filter(p=>p.volume===0).length:null,support,resistance};
+ return {sma50:a50,sma200:a200,rsi:r,atr:a,macd,signal,macdHist,last:p,atrPct:p&&finite(last(a))?last(a)!/p.close*100:null,maxDD:prices.length?maxDD:null,vol,avgV20,turnover:mean(vp.slice(-20).map(p=>p.close*p.volume)),volumeBasis,relativeVolume:vlast&&avgV20&&avgV20>0?vlast.volume/avgV20:null,volumeRatio:avgV20!==null&&priorV20&&priorV20>0?avgV20/priorV20:null,zeroVolume:vp.length>=20?vp.slice(-20).filter(p=>p.volume===0).length:null,support,resistance};
 }
 const ratio=(a:number|null,b:number|null)=>finite(a)&&finite(b)&&b>0?a/b:null;
 function weighted(f:Factor[]):number|null{const v=f.filter(x=>x.score!==null);return v.length?v.reduce((a,b)=>a+b.score!*b.weight,0)/v.reduce((a,b)=>a+b.weight,0):null}
-export function analyze(f:Financials,p:Price[],m:Meta,c:Checks,ev:Events){
- const t=technical(p);const factors:Factor[]=[];
+export function analyze(f:Financials,p:Price[],m:Meta,c:Checks,ev:Events,topts:TechnicalOptions={}){
+ const t=technical(p,topts);const factors:Factor[]=[];
  const add=(key:string,name:string,category:Factor['category'],v:number|null,score:number|null,weight:number,reason:string,rule:string,suffix='')=>factors.push({key,name,category,value:v,display:v===null&&score!==null?'حالة خاصة':fmt(v)+((v!==null)?suffix:''),score:finite(score)?score:null,weight,reason:v===null&&score===null?'البيانات اللازمة لهذا العامل غير مكتملة.':reason,rule});
  const margin=ratio(f.netIncome,f.revenue);add('margin','هامش صافي الربح','financial',margin===null?null:margin*100,margin===null?null:margin<0?90:margin<.05?65:margin<.15?40:20,10,margin!==null&&margin<0?'الشركة تسجل خسارة خلال الفترة.':'يقيس ما يتبقى من الإيراد كربح؛ يتأثر بطبيعة القطاع.','صافي الربح ÷ الإيرادات. درجات 90 / 65 / 40 / 20 عند: <0% / <5% / <15% / ≥15%.','%');
  const growth=finite(f.revenue)&&finite(f.previousRevenue)&&f.previousRevenue>0?(f.revenue/f.previousRevenue-1)*100:null;add('growth','نمو الإيرادات','financial',growth,growth===null?null:growth<-15?85:growth<0?65:growth<10?40:20,10,growth!==null&&growth<0?'تراجعت الإيرادات عن الفترة المقارنة.':'تتطلب المقارنة نفس مدة الفترة ونطاق القوائم.','(إيرادات الفترة ÷ المقارنة − 1) × 100. درجات 85 / 65 / 40 / 20 عند: <−15% / <0% / <10% / ≥10%.','%');

@@ -19,7 +19,7 @@ export function extendedAnalysis(report:MarketReport){const a=automaticAnalysis(
  const prevMargin=divide(get('operatingIncome',previous),get('revenue',previous));if(revenueGrowth!==null&&revenueGrowth>0&&prevMargin!==null&&a.operatingMargin!==null&&a.operatingMargin<prevMargin*100)anomalies.push('نمو الإيرادات يترافق مع تراجع الهامش التشغيلي.');
  if(nonRecurring!==null&&nonRecurring>15)anomalies.push('فرق مؤثر بين صافي الربح والربح المطبع؛ يلزم الرجوع إلى الإيضاحات لتحديد البنود الاستثنائية.');
  if(a.dupont.leverage!==null&&a.dupont.leverage>3)anomalies.push('مضاعف حقوق الملكية مرتفع؛ قد يكون ROE مدفوعًا بالرافعة المالية.');
- if(a.priceChange!==null&&a.priceChange>2&&finite(a.tech.relativeVolume)&&a.tech.relativeVolume<1)anomalies.push('صعود السعر لم يصاحبه حجم أعلى من متوسط التداول.');
+ if(a.priceChange!==null&&a.priceChange>2&&a.tech.volumeBasis==='last-bar'&&finite(a.tech.relativeVolume)&&a.tech.relativeVolume<1)anomalies.push('صعود السعر لم يصاحبه حجم أعلى من متوسط التداول.');
  if(finite(a.tech.relativeVolume)&&a.tech.relativeVolume>=3)anomalies.push('حجم تداول استثنائي يتجاوز 3 أمثال المتوسط.');
  const last=report.prices.at(-1),prev=report.prices.at(-2);if(last&&prev&&Math.abs(last.open/prev.close-1)>.05)anomalies.push('فجوة افتتاح تتجاوز 5%؛ افحص الإعلان وتغييرات رأس المال قبل تفسيرها.');
  if(a.fair&&a.price&&a.price>a.fair[1])anomalies.push('السعر أعلى نطاق التقييم النسبي المتاح؛ عينة النظراء محدودة.');

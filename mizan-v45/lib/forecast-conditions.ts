@@ -2,6 +2,7 @@ import {finite, ageDays} from './analysis';
 import type {Fact, MarketReport} from './market-data';
 import {RegimeEngine, type RegimeState} from './regime-engine';
 import {resolveFinancialSources} from './source-resolution';
+import {completedSessionPrices} from './session-volume';
 
 export interface ForecastConditions {
   version: 'fcf-regime-volume-1';
@@ -39,7 +40,9 @@ export function forecastConditions(report: MarketReport, now = Date.now()): Fore
   const regime = closes.length >= 60 ? RegimeEngine.detect(closes) : {
     ...RegimeEngine.detect([]), reason: 'لم تتوفر 60 جلسة صالحة لتطبيق شروط حالة السوق.'
   };
-  const volumes = pricesValid ? report.prices.slice(-21).map(p=>p.volume) : [];
+  // FCST-0003: while the live quote says the session is still open and the last bar IS that session, its volume is
+  // partial; comparing it with 20 complete sessions understates relative volume. Use the last 21 complete sessions.
+  const volumes = pricesValid ? completedSessionPrices(report, now).slice(-21).map(p=>p.volume) : [];
   const validVolumes = volumes.length===21 && volumes.every(v=>finite(v)&&v>=0);
   const average = validVolumes ? volumes.slice(0,20).reduce((s,v)=>s+v/20,0) : 0;
   const volumeRatio = average>0 ? volumes[20]/average : null;

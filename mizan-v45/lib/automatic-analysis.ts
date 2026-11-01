@@ -1,13 +1,14 @@
 import {DEFAULT_SETTINGS} from './site-settings';
 import {resolveFinancialSources} from './source-resolution';
 import {analyze,blankChecks,blankEvents,blankFinancials,blankMeta,finite,ageDays,fmt,label,type Financials} from './analysis';
+import {lastBarIncomplete} from './session-volume';
 import {latestFact,type MarketReport,type Fact} from './market-data';
 export type Axis={name:string;value:number|null;weight:number;note:string};
 const divide=(a:number|null|undefined,b:number|null|undefined)=>finite(a)&&finite(b)&&b>0?a/b:null;
 const percent=(v:number|null)=>v===null?null:v*100;
 const average=(a:number|null|undefined,b:number|null|undefined)=>finite(a)&&finite(b)?(a+b)/2:null;
 const median=(values:number[])=>{const v=[...values].sort((a,b)=>a-b);return v.length?v.length%2?v[(v.length-1)/2]:(v[v.length/2-1]+v[v.length/2])/2:null};
-export function automaticAnalysis(report:MarketReport,mode:'trader'|'investor'='trader'){
+export function automaticAnalysis(report:MarketReport,mode:'trader'|'investor'='trader',now=Date.now()){
  const resolution=resolveFinancialSources(report),facts=resolution.facts,annualDate=latestFact(facts,'revenue')?.date||latestFact(facts,'netIncome')?.date||'';
  const currency=latestFact(facts,'revenue','annual',annualDate)?.currency||'';
  const get=(key:string,date=annualDate,period:Fact['period']='annual')=>{const f=latestFact(facts,key,period,date);return f&&f.currency===currency?f.value:null};
@@ -37,7 +38,7 @@ export function automaticAnalysis(report:MarketReport,mode:'trader'|'investor'='
  const avgAssets=average(annual.assets,get('assets',previousDate)),avgEquity=average(annual.equity,get('equity',previousDate));
  const dupont={margin:divide(annual.netIncome,annual.revenue),turnover:divide(annual.revenue,avgAssets),leverage:divide(avgAssets,avgEquity)};
  const meta={...blankMeta(),name:report.company.name,symbol:report.company.symbol,asOf:report.asOf,currency:currency||report.currency,priceCurrency:report.currency,periodEnd:annualDate};
- const base=analyze(annual,report.prices,meta,blankChecks(),blankEvents()),tech=base.technical;
+ const base=analyze(annual,report.prices,meta,blankChecks(),blankEvents(),{excludeLastVolume:lastBarIncomplete(report,now)}),tech=base.technical;
  const sourceComparisons=resolution.comparisons;
  const conflicts=sourceComparisons.filter(c=>c.conflict);
  const blockers:string[]=[];

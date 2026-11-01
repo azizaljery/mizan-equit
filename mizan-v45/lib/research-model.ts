@@ -12,7 +12,7 @@ import {calibrateForecastRange,CONFORMAL_RANGE_CALIBRATION_ENABLED,type RangeCal
 export {HORIZONS,type ForecastHorizon} from './forecast-horizons';
 import {HORIZONS,type ForecastHorizon} from './forecast-horizons';
 export type Horizon='short'|'medium'|'long';
-export const MODEL_VERSION='mizan-scenarios-7-shock-warning-1';
+export const MODEL_VERSION='mizan-scenarios-7-shock-warning-2';
 export type ResearchModelOutput=ReturnType<typeof forecasts>;
 const clamp=(v:number)=>Math.max(-1,Math.min(1,v));
 const avg=(v:(number|null)[])=>{const x=v.filter(finite);return x.length?x.reduce((s,n)=>s+n,0)/x.length:null};
@@ -32,7 +32,7 @@ export function forecastWeights(sessions:number):Record<string,number>{
  return RESEARCH_WEIGHTS.long;
 }
 export function researchFactors(report:MarketReport,now=Date.now()){
- const a=automaticAnalysis(report);
+ const a=automaticAnalysis(report,'trader',now);
  const conditioning=forecastConditions(report,now);
  report={...report,facts:resolveFinancialSources(report).facts};
  const t=a.tech,price=a.price,source=report.priceSource,financial=report.facts.find(f=>f.key==='revenue')?.source||source,date=t.last?.date||'';
