@@ -64,7 +64,7 @@ jobs:
           set +e
           (node --test --import tsx tests/forecast-repair-regression.test.mjs tests/forecast-fcst0001.test.mjs tests/session-volume.test.mjs; echo "exit=$?"; npm test; echo "exit=$?") > ../test-out.txt 2>&1
           F=$(grep -c "exit=[1-9]" ../test-out.txt)
-          node -e 'const fs=require("fs");const full=fs.readFileSync("../test-out.txt","utf8");const fl=full.split("\n").filter(l=>/^not ok|✖|failureType|error:|expected:|actual:|^exit=|location:/.test(l.trim())||/^\s*not ok/.test(l)).slice(0,120).join("\n");const t="FAILURES-EXTRACT\n"+fl+"\n=====\n"+full;fs.writeFileSync("../tb.json",JSON.stringify({message:"ci diagnostics: tests "+process.env.RID,branch:process.env.REF,content:Buffer.from(t.slice(-60000)).toString("base64")}))'
+          node -e 'const fs=require("fs");const full=fs.readFileSync("../test-out.txt","utf8");const fl=full.split("\n").filter(l=>/^not ok|✖|failureType|error:|expected:|actual:|^exit=|location:/.test(l.trim())||/^\s*not ok/.test(l)).slice(0,120).join("\n");const t="FAILURES-EXTRACT\n"+fl+"\n=====\n"+full.slice(-30000);fs.writeFileSync("../tb.json",JSON.stringify({message:"ci diagnostics: tests "+process.env.RID,branch:process.env.REF,content:Buffer.from(t).toString("base64")}))'
           gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/tests-${RID}.txt" --input ../tb.json >/dev/null || echo WARN
           exit $F
       - name: Daily picks tests (unchanged behaviour)
