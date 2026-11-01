@@ -2,7 +2,7 @@ import {finite, ageDays} from './analysis';
 import type {Fact, MarketReport} from './market-data';
 import {RegimeEngine, type RegimeState} from './regime-engine';
 import {resolveFinancialSources} from './source-resolution';
-import {completedSessionPrices} from './session-volume';
+import {confirmedSessionPrices, lastBarStatus} from './session-volume';
 
 export interface ForecastConditions {
   version: 'fcf-regime-volume-1';
@@ -10,6 +10,9 @@ export interface ForecastConditions {
   pricesValid: boolean;
   regime: RegimeState;
   relativeVolume: number | null;
+  /** Definition: volume(S) / mean(20 sessions strictly before S); S = last CONFIRMED session (volumeSessionDate), not necessarily today's. */
+  volumeSessionDate: string | null;
+  volumeLastBar: {state: 'complete'|'in-session'|'unverified'; date: string | null; reasonCode: string};
   cashFlow: {
     freeCashFlow: number | null;
     yieldPercent: number | null;
@@ -40,13 +43,15 @@ export function forecastConditions(report: MarketReport, now = Date.now()): Fore
   const regime = closes.length >= 60 ? RegimeEngine.detect(closes) : {
     ...RegimeEngine.detect([]), reason: 'لم تتوفر 60 جلسة صالحة لتطبيق شروط حالة السوق.'
   };
-  // FCST-0003: while the live quote says the session is still open and the last bar IS that session, its volume is
-  // partial; comparing it with 20 complete sessions understates relative volume. Use the last 21 complete sessions.
-  const volumes = pricesValid ? completedSessionPrices(report, now).slice(-21).map(p=>p.volume) : [];
+  // FCST-0003/0004: a bar whose volume is not confirmed final (open session, or closed without evidence the source finished
+  // it) is not compared with complete sessions. Use the last 21 CONFIRMED sessions; the dates are reported, not hidden.
+  const lastBar = lastBarStatus(report, now), confirmed = confirmedSessionPrices(report, now);
+  const volumes = pricesValid ? confirmed.slice(-21).map(p=>p.volume) : [];
   const validVolumes = volumes.length===21 && volumes.every(v=>finite(v)&&v>=0);
   const average = validVolumes ? volumes.slice(0,20).reduce((s,v)=>s+v/20,0) : 0;
   const volumeRatio = average>0 ? volumes[20]/average : null;
   const relativeVolume = finite(volumeRatio) ? volumeRatio : null;
+  const volumeSessionDate = relativeVolume!==null ? confirmed.slice(-21).at(-1)?.date ?? null : null;
 
   // Source resolution retains authority/unit/conflict rules. Unknown publication time
   // cannot supply a new financial influence, even if other report factors remain usable.
@@ -85,11 +90,11 @@ export function forecastConditions(report: MarketReport, now = Date.now()): Fore
   const notes = [
     regime.available ? 'حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.' : regime.reason,
     relativeVolume===null ? 'الحجم النسبي غير متحقق؛ يلزم حجم الجلسة و20 جلسة سابقة صالحة.'
-      : `الحجم النسبي ${relativeVolume.toFixed(2)}× مقارنة بمتوسط 20 جلسة سابقة.`,
+      : `الحجم النسبي ${relativeVolume.toFixed(2)}× لجلسة ${volumeSessionDate} مقارنة بمتوسط 20 جلسة سابقة لها${lastBar.state!=='complete'?` (شمعة ${lastBar.barDate} غير مؤكدة الاكتمال فلم تُستخدم)`:''}.`,
     reason,
     'لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين.'
   ];
-  return {version:'fcf-regime-volume-1',calibrated:false,pricesValid,regime,relativeVolume,
+  return {version:'fcf-regime-volume-1',calibrated:false,pricesValid,regime,relativeVolume,volumeSessionDate,volumeLastBar:{state:lastBar.state,date:lastBar.barDate,reasonCode:lastBar.reasonCode},
     cashFlow:{freeCashFlow,yieldPercent,marketCap,periodEnd,qualitySignal,
       sources:used.map(f=>({key:f.key,source:f.source,date:f.date,publishedAt:f.publishedAt!})),reason},notes};
 }

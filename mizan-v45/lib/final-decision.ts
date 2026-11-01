@@ -1,12 +1,12 @@
 import {technical,finite,fmt} from './analysis';
 import {automaticAnalysis} from './automatic-analysis';
-import {lastBarIncomplete} from './session-volume';
+import {lastBarNotConfirmed} from './session-volume';
 import {resolveFinancialSources} from './source-resolution';
 import type {MarketReport} from './market-data';
 import type {LiveQuote} from './live-quote';
 import type {tradeScenario} from './trade-scenario';
 export function finalDecision(report:MarketReport,scenario:ReturnType<typeof tradeScenario>,quote:LiveQuote|null,now=Date.now()){
- const open=lastBarIncomplete(report,now),t=technical(report.prices),tc=open?technical(report.prices,{excludeLastVolume:true}):t,prior=technical(report.prices.slice(0,-1)),a=automaticAnalysis(report,'trader',now),p=scenario.levels;
+ const open=lastBarNotConfirmed(report,now),t=technical(report.prices),tc=open?technical(report.prices,{excludeLastVolume:true}):t,prior=technical(report.prices.slice(0,-1)),a=automaticAnalysis(report,'trader',now),p=scenario.levels;
  const average50=t.sma50.at(-1),average200=t.sma200.at(-1),rsi=t.rsi.at(-1);
  const fresh=!!quote&&quote.symbol===report.company.symbol&&quote.currency===report.currency&&finite(quote.price)&&quote.price>0&&now-Date.parse(quote.quoteTime)>=0&&now-Date.parse(quote.quoteTime)<=15*60000;
  const price=fresh?quote!.price:t.last?.close??null;
@@ -17,7 +17,7 @@ export function finalDecision(report:MarketReport,scenario:ReturnType<typeof tra
  const analysisReady=a.blockers.length===0;
  const riskLevel=risky?'مرتفع جدًا':financialWeak?'مرتفع':a.risk===null?'غير محسوم':a.riskLabel;
  const buy=analysisReady&&!!p&&!scenario.reasons.length&&fresh&&quote!.isOpen&&confirmed&&!risky&&quote!.price>=p.low&&quote!.price<=p.high;
- const evidence=[...(t.last?[`السعر المرجعي ${fmt(price)} ${report.currency}؛ نطاق آخر جلسة ${fmt(t.last.low)}–${fmt(t.last.high)}.`]:[]),...(finite(rsi)?[`RSI = ${fmt(rsi)}؛ ${rsi>70?'زخم مرتفع مع خطر تراجع بعد الاندفاع':rsi<40?'زخم ضعيف':'الزخم يحتاج تأكيد الاتجاه والحجم'}.`]:[]),...(finite(t.relativeVolume)?[`حجم نسبي ${fmt(t.relativeVolume)}× من متوسطه${open?` (جلسة جارية: حجم جزئي وهو حد أدنى؛ آخر جلسة مكتملة ${fmt(tc.relativeVolume)}×)`:''}؛ لا يدل وحده على جودة الشركة.`]:[]),...(finite(a.annual.netIncome)?[`صافي الربح السنوي ${fmt(a.annual.netIncome)} ${a.currency} للفترة ${a.annualDate}.`]:[]),...(finite(a.annual.operatingCashFlow)?[`التدفق التشغيلي ${fmt(a.annual.operatingCashFlow)} ${a.currency} للفترة ${a.annualDate}.`]:[])];
+ const evidence=[...(t.last?[`السعر المرجعي ${fmt(price)} ${report.currency}؛ نطاق آخر جلسة ${fmt(t.last.low)}–${fmt(t.last.high)}.`]:[]),...(finite(rsi)?[`RSI = ${fmt(rsi)}؛ ${rsi>70?'زخم مرتفع مع خطر تراجع بعد الاندفاع':rsi<40?'زخم ضعيف':'الزخم يحتاج تأكيد الاتجاه والحجم'}.`]:[]),...(finite(t.relativeVolume)?[`حجم نسبي ${fmt(t.relativeVolume)}× من متوسطه${open?` (شمعة ${t.priceBarDate}: حجم جزئي أو غير مؤكد وهو حد أدنى؛ نسبة جلسة ${tc.volumeSessionDate} المؤكدة ${fmt(tc.relativeVolume)}× ولا تخص شمعة السعر)`:''}؛ لا يدل وحده على جودة الشركة.`]:[]),...(finite(a.annual.netIncome)?[`صافي الربح السنوي ${fmt(a.annual.netIncome)} ${a.currency} للفترة ${a.annualDate}.`]:[]),...(finite(a.annual.operatingCashFlow)?[`التدفق التشغيلي ${fmt(a.annual.operatingCashFlow)} ${a.currency} للفترة ${a.annualDate}.`]:[])];
  const explanation=buy?'توافقت منطقة الدخول والاتجاه والزخم والحجم. التوصية للمضاربة وبثقة محدودة وفق البيانات المتاحة، وليست اعتمادًا لجودة الاستثمار طويل الأجل.':!analysisReady?'نفضل الانتظار لأن التحليل غير مكتمل: '+a.blockers.join(' '):risky?'التذبذب أو اتساع الجلسة أو ضعف حقوق الملكية يجعل مطاردة السعر غير مناسبة؛ نفضل الانتظار لاستقرار الحركة.':scenario.reasons.length?scenario.reasons.join(' '):!fresh?'نفضل الانتظار لتحديث السعر؛ تستمر القراءة بالمعلومات المتاحة.':!confirmed?'لم تجتمع إشارات الاتجاه والاختراق والحجم والزخم؛ نفضل الانتظار.':!quote?.isOpen?'نعيد تقييم التنفيذ أثناء الجلسة.':'السعر خارج منطقة الدخول المحسوبة؛ نفضل الانتظار بدل مطاردته.';
  const checks=[
   {name:'اكتمال التحليل الأساسي',ok:analysisReady,detail:analysisReady?'لا توجد موانع بيانات تمنع القرار.':a.blockers.join(' ')},

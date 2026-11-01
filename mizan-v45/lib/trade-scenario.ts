@@ -2,7 +2,7 @@ import {automaticAnalysis} from './automatic-analysis';
 import {ageDays,finite,technical} from './analysis';
 import type {MarketReport} from './market-data';
 import {RegimeEngine} from './regime-engine';
-import {lastBarIncomplete} from './session-volume';
+import {lastBarStatus} from './session-volume';
 import {extendedAnalysis} from './extended-analysis';
 import type {CashFlowQualityAssessment} from './decision-room';
 export type {MarketRegimeType} from './regime-engine';
@@ -42,7 +42,7 @@ interface TradeTarget {price:number;gainPercentage:number;rrRatio:number;actionT
 /** Presentation of the existing anchored plan; it never authorizes a live buy. */
 export function tradeScenario(report:MarketReport,now=Date.now()){
  const result=buildScenario(report,now),p=result.levels;
- const incomplete=lastBarIncomplete(report,now),volumes=report.prices.slice(-21).map(v=>v.volume);
+ const barStatus=lastBarStatus(report,now),incomplete=barStatus.state!=='complete',volumes=report.prices.slice(-21).map(v=>v.volume);
  const usable=volumes.length===21&&volumes.every(v=>finite(v)&&v>=0);
  const average=usable?volumes.slice(0,-1).reduce((s,v)=>s+v,0)/20:0;
  const rvol=usable&&average>0?volumes[20]/average:null;
@@ -58,7 +58,7 @@ export function tradeScenario(report:MarketReport,now=Date.now()){
   stopLoss:{price:p?.stop??null,percentage:p&&risk?risk/p.high*100:null,reason:result.invalidation||result.reasons.join(' ')},
   targets:p?{primary:target(p.target1,'جني جزء من الكمية وفق خطة التنفيذ'),secondary:target(p.target2,'إعادة تقييم المتبقي أو وقف متحرك')}:null,
   positionSizing:{recommendedFraction:null,portfolioAllocationText:'غير متاح — يلزم سجل صفقات خارج العينة لحساب كيلي',riskCapitalPerTradePercent:null},
-  liquidityConfirmation:{rvol,isConfirmed:confirmed,note:rvol===null?'يلزم حجم الجلسة و20 جلسة سابقة صالحة.':incomplete?(confirmed?'الحجم الجزئي للجلسة الجارية بلغ عتبة 1.5 (حد أدنى؛ الحجم النهائي لا يقل عنه).':'حجم الجلسة الجارية جزئي (حد أدنى) ولم يبلغ عتبة 1.5؛ لا يُعتبر عدم تأكيد نهائيًا قبل اكتمال الجلسة.'):confirmed?'الحجم النسبي بلغ عتبة 1.5؛ بقية شروط القرار مستقلة.':'الحجم النسبي دون عتبة التأكيد 1.5.'},
+  liquidityConfirmation:{rvol,isConfirmed:confirmed,note:rvol===null?'يلزم حجم الجلسة و20 جلسة سابقة صالحة.':incomplete?(confirmed?`حجم شمعة ${barStatus.barDate} المسجّل حتى الآن بلغ عتبة 1.5× متوسط 20 جلسة سابقة (حد أدنى؛ ${barStatus.state==='in-session'?'الجلسة لم تنتهِ':'اكتمالها لدى المصدر غير مؤكد'}).`:`حجم شمعة ${barStatus.barDate} المسجّل حتى الآن (${barStatus.state==='in-session'?'الجلسة جارية':'اكتمالها لدى المصدر غير مؤكد'}) لم يبلغ عتبة 1.5×؛ هذا حد أدنى وليس حكمًا نهائيًا.`):confirmed?'الحجم النسبي بلغ عتبة 1.5؛ بقية شروط القرار مستقلة.':'الحجم النسبي دون عتبة التأكيد 1.5.'},
   executionNotes:[...result.reasons,'العائد والمخاطرة محسوبان من أعلى منطقة الدخول قبل التكاليف.','المستويات مشروطة؛ الفجوات والانزلاق قد يتجاوزان الوقف، ولا توجد صفقة خالية من المخاطر.'],
  };
  const x=extendedAnalysis(report),fcf=x.components.find(c=>c.name==='التدفق الحر')?.value;
