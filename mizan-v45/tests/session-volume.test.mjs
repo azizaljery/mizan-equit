@@ -45,7 +45,7 @@ test('opt-in settlement policy is honoured, labelled an assumption, and off by d
 
 test('later session at the provider = evidence the bar is final; weekend and holiday gaps are not',()=>{
  // Friday 2026-10-23 bar; the quote already describes Monday 2026-10-26: complete.
- const later=rep(()=>1000,quote(NY),'2026-10-23');
+ const later=rep(()=>1000,quote(NY,{quoteTime:new Date(NY.start+60e3).toISOString()}),'2026-10-23'); // a real trade, already inside the later session
  const s=S(later,NY.start+3600e3);assert.equal(s.state,'complete');assert.equal(s.reasonCode,'later-session');
  // Friday bar read on Sunday, the quote still describes Friday's session: nothing newer, so unverified.
  const FRI={start:Z('2026-10-23T13:30:00Z'),end:Z('2026-10-23T20:00:00Z'),off:-14400};
@@ -169,7 +169,12 @@ test('final decision: checks and buy are identical for every bar state; the evid
  const run=(rr,t)=>finalDecision(rr,scenario,q,t);
  const inS=run(withFacts(rep((i,n)=>i===n-1?6e6:1.5e6)),now);
  const unv=run(withFacts(rep((i,n)=>i===n-1?6e6:1.5e6,quote({...NY,start:NY.start-86400e3,end:NY.end-86400e3}),'2026-10-26')),now);
- const done=run(withFacts(rep((i,n)=>i===n-1?6e6:1.5e6,quote({...NY,start:NY.start+86400e3,end:NY.end+86400e3}),'2026-10-26')),now);
+ // 'complete' needs a REAL trade inside the later session: evaluate that leg during Tuesday's session with a fresh quote.
+ const now2=NY.start+86400e3+3600e3,q2={...q,quoteTime:new Date(now2-60e3).toISOString()};
+ const done=finalDecision(withFacts(rep((i,n)=>i===n-1?6e6:1.5e6,quote({...NY,start:NY.start+86400e3,end:NY.end+86400e3},{quoteTime:q2.quoteTime}),'2026-10-26')),scenario,q2,now2);
+ assert.equal(lastBarStatus(withFacts(rep((i,n)=>i===n-1?6e6:1.5e6,quote({...NY,start:NY.start+86400e3,end:NY.end+86400e3},{quoteTime:q2.quoteTime}),'2026-10-26')),now2).state,'complete');
+ assert.equal(lastBarStatus(withFacts(rep((i,n)=>i===n-1?6e6:1.5e6)),now).state,'in-session');
+ assert.equal(lastBarStatus(withFacts(rep((i,n)=>i===n-1?6e6:1.5e6,quote({...NY,start:NY.start-86400e3,end:NY.end-86400e3}),'2026-10-26')),now).state,'unverified');
  assert.equal(inS.buy,true,'parity must be compared on a case that actually buys');
  const sig=x=>JSON.stringify([x.buy,x.checks.map(c=>c.ok)]);
  assert.equal(sig(inS),sig(unv));assert.equal(sig(inS),sig(done));
@@ -203,4 +208,15 @@ test('final decision parity is not vacuous: buy reaches true in the compared sce
  const now=NY.start+3600e3,q={symbol:r0.company.symbol,currency:r0.currency,price:scenario.levels.low,quoteTime:new Date(now-60e3).toISOString(),isOpen:true,source:'test'};
  const d=finalDecision(withFacts(rep((i,n)=>i===n-1?6e6:1.5e6)),scenario,q,now);
  assert.equal(d.buy,true,'the parity scenario must reach buy=true or the identity check proves nothing');
+});
+
+test('a quote time in the FUTURE is not evidence of a later-session trade',()=>{
+ const NEXT={start:NY.start+86400e3,end:NY.end+86400e3,off:NY.off},now=NY.end+3600e3;
+ const r=rep(()=>1000,quote(NEXT,{quoteTime:new Date(now+2*3600e3).toISOString()}),'2026-10-26');
+ const x=S(r,now);assert.equal(x.state,'unverified');assert.equal(x.reasonCode,'quote-time-in-future');
+});
+test('with a known offset the later-trade test is a local-date test (a skipped provider session does not hide a final bar)',()=>{
+ const THU={start:Z('2026-10-22T13:30:00Z'),end:Z('2026-10-22T20:00:00Z'),off:-14400},MON={start:Z('2026-10-26T13:30:00Z'),end:Z('2026-10-26T20:00:00Z'),off:-14400};
+ const r=rep(()=>1000,quote(MON,{quoteTime:'2026-10-25T09:00:00.000Z'}),'2026-10-22');
+ assert.equal(S(r,Z('2026-10-26T12:00:00Z')).state,'complete');
 });

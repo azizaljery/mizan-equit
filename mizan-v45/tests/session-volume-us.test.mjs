@@ -24,6 +24,8 @@ const decide=(r,now)=>{const t=technical(r.prices),pr=technical(r.prices.slice(0
  const open=!!r.liveQuote?.isOpen,q={symbol:r.company.symbol,currency:r.currency,price:sc.levels.low+.05*atr,quoteTime:new Date(now-6e4).toISOString(),isOpen:open,source:'t'};
  return finalDecision(r,sc,q,now).checks.find(c=>c.name.includes('الاختراق')).ok};
 
+// Realistic last-trade time: while the market is open it is ~now; otherwise it is the close of the bar's own session (no trades on weekends).
+const lastTrade=(bar,now,open)=>new Date(open?now-6e4:Math.min(now-6e4,win(bar).end+1e3)).toISOString();
 // [label, last bar date, provider session, now, isOpen, expected state, session whose volume the statistics use]
 const TL=[
  ['Fri in session',FRI,FRI,'2026-10-23T17:00:00Z',true,'in-session',THU],
@@ -41,7 +43,7 @@ const TL=[
 ];
 test('timeline: state, session used by the volume statistics, and a visible lag whenever it is not the price bar',()=>{
  for(const [label,bar,sess,when,open,state,vsess] of TL){
-  const now=Z(when),r=build({lastDate:bar,rLast:1,rPrev:1.8,q:quote(sess,now,{isOpen:open}),now});
+  const now=Z(when),r=build({lastDate:bar,rLast:1,rPrev:1.8,q:quote(sess,now,{isOpen:open,quoteTime:lastTrade(bar,now,open)}),now});
   assert.equal(lastBarStatus(r,now).state,state,label);
   const t=automaticAnalysis(r,'trader',now).tech,fc=forecastConditions(r,now);
   assert.equal(t.volumeSessionDate,vsess,label);assert.equal(fc.volumeSessionDate,vsess,label);
@@ -52,7 +54,7 @@ test('timeline: state, session used by the volume statistics, and a visible lag 
 });
 test('a previous session\'s volume never confirms a current breakout: weak last bar + strong previous bar stays unconfirmed in every state',()=>{
  for(const [label,bar,sess,when,open] of TL){
-  const now=Z(when),r=build({lastDate:bar,rLast:1.0,rPrev:1.8,q:quote(sess,now,{isOpen:open}),now});
+  const now=Z(when),r=build({lastDate:bar,rLast:1.0,rPrev:1.8,q:quote(sess,now,{isOpen:open,quoteTime:lastTrade(bar,now,open)}),now});
   assert.equal(tradeScenario(r,now).executionPlan.liquidityConfirmation.isConfirmed,false,label);
   assert.equal(decide(r,now),false,label);
   const t=automaticAnalysis(r,'trader',now).tech;
@@ -61,7 +63,7 @@ test('a previous session\'s volume never confirms a current breakout: weak last 
 });
 test('a strong CURRENT bar still confirms, in every state (gate unchanged: partial volume is a lower bound)',()=>{
  for(const [label,bar,sess,when,open] of TL){
-  const now=Z(when),r=build({lastDate:bar,rLast:1.8,rPrev:0.9,q:quote(sess,now,{isOpen:open}),now});
+  const now=Z(when),r=build({lastDate:bar,rLast:1.8,rPrev:0.9,q:quote(sess,now,{isOpen:open,quoteTime:lastTrade(bar,now,open)}),now});
   assert.equal(tradeScenario(r,now).executionPlan.liquidityConfirmation.isConfirmed,true,label);
   assert.equal(decide(r,now),true,label);
  }

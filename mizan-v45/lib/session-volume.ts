@@ -49,7 +49,10 @@ export function lastBarStatus(report: SessionReport, now = Date.now(), policy: S
     // The provider's window can advance past midnight with NO new trade (observed: Saudi bar still null-close ~10h after the close).
     // So the window alone proves nothing. Evidence = the last TRADE time (quoteTime) lies inside that later window.
     const qtl = typeof q.quoteTime === 'string' ? Date.parse(q.quoteTime) : NaN;
-    const tradeInLater = Number.isFinite(qtl) && (start !== null ? qtl >= start : off !== null ? day(qtl, off) > d : day(qtl, 0) > d);
+    // A trade stamped in the future (clock skew, bad data) is not evidence: allow 5 s of skew, like parseLiveQuote.
+    if (Number.isFinite(qtl) && qtl > now + 5000) return st('unverified', d, 'quote-time-in-future', `وقت آخر صفقة (${q.quoteTime}) بعد الوقت الحالي؛ لا يُعدّ دليلًا.`);
+    // Local-date comparison whenever the exchange offset is known (a window-start test would call a final bar unverified if the provider skipped a session).
+    const tradeInLater = Number.isFinite(qtl) && (off !== null ? day(qtl, off) > d : start !== null ? qtl >= start : day(qtl, 0) > d);
     if (tradeInLater) return st('complete', d, 'later-session', `آخر صفقة (${q.quoteTime}) تقع في جلسة أحدث (${dates[0]}) من تاريخ الشمعة ${d}${tzNote}.`);
     return st('unverified', d, 'window-ahead-no-trade', `نافذة المزود تقدمت إلى ${dates[0]} لكن لا صفقة فيها بعد؛ لا دليل على اكتمال شمعة ${d}.`);
   }
