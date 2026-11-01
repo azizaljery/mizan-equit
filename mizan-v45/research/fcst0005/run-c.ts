@@ -40,7 +40,7 @@ const out = {
   parameters: {gridStep: GRID, B: B_DEFAULT, seeds: SEEDS, familyM: FAMILY_M, engineWindow: WINDOW, kappa: 0.5, delta: 0.01},
   stocks: {sa: stocks.filter(s => s.market === 'sa').length, us: stocks.filter(s => s.market === 'us').length}, skipped, manifest,
   timings: {engineMs: engMs, runMs: Date.now() - t1},
-  decisions: res.decisions, controls: res.controls, testYears: res.testYears, trainStats: res.trainStats,
+  decisions: res.decisions, controls: res.controls, cpubVsR0: res.cpubVsR0, testYears: res.testYears, trainStats: res.trainStats,
   cells: res.cells.map(c => ({market: c.market, h: c.h, model: c.model, ok: c.ok, testable: c.testable, deltaMin: c.deltaMin, nDates: c.nDates, p: c.p, holmP: c.holmP,
     relImprovement: c.relImprovement, ciLower: c.ciLower, ciUpper: c.ciUpper, stableOk: c.stableOk,
     vsR0: c.vsR0.ok ? {rel: c.vsR0.relImprovement, lo: c.vsR0.ciLower, hi: c.vsR0.ciUpper, p: c.vsR0.p, maeC: c.vsR0.maeC, maeRef: c.vsR0.maeR, block: c.vsR0.block} : null,

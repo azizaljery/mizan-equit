@@ -170,7 +170,10 @@ export function runAll({stocks, calendars, engFor, gridStep = 5, B = B_DEFAULT})
       controls[m][h] = {ok: ca.ok === null || cb.ok === null ? undefined : ca.ok && cb.ok, shuffled: ca, displaced: cb};
     }
   }
+  // DESCRIPTIVE ONLY (added after the first run, decisions unaffected and verified identical): does the published price-only centre beat 'no move'?
+  const cpubVsR0 = Object.fromEntries(real.map(r => [r.market, Object.fromEntries(RUN_HORIZONS.map(h => { const q = pairStats(r.out[h].perModel, 'CPUB', 'R0', h, B, gridStep);
+    return [h, q.ok ? {n: q.n, rel: q.relImprovement, lo: q.ciLower, hi: q.ciUpper, maeCpub: q.maeC, maeR0: q.maeR, block: q.block} : null]; }))]));
   const res = decideAll(real, {B, controls, gridStep});
-  return {...res, controls, testYears: Object.fromEntries(real.map(r => [r.market, Object.fromEntries(RUN_HORIZONS.map(h => [h, r.out[h].testYears]))])),
+  return {...res, controls, cpubVsR0, testYears: Object.fromEntries(real.map(r => [r.market, Object.fromEntries(RUN_HORIZONS.map(h => [h, r.out[h].testYears]))])),
     trainStats: Object.fromEntries(real.map(r => [r.market, Object.fromEntries(RUN_HORIZONS.map(h => [h, r.out[h].trainStats]))]))};
 }
