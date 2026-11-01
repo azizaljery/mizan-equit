@@ -1,0 +1,39 @@
+✔ certificate fetch carries an abort signal (bounded wait) (41.195622ms)
+✔ unknown kid within 60 s of the last fetch does not refetch (rate limit) (3.630377ms)
+✔ rotated key is accepted after one refetch instead of waiting up to an hour (7.814286ms)
+✔ a still-unknown kid refetches at most once per minute (97.320359ms)
+✔ a hung certificate endpoint is aborted and yields no identity (3001.565542ms)
+✔ forged identity headers are stripped when there is no JWT (36.98987ms)
+✔ forged identity headers are stripped when Access is not configured (10.000451ms)
+✔ invalid JWT yields no identity headers: malformed token (1.270619ms)
+✔ invalid JWT yields no identity headers: bad signature (other key) (15.314727ms)
+✔ invalid JWT yields no identity headers: unknown kid (3.253523ms)
+✔ invalid JWT yields no identity headers: tampered payload (3.537975ms)
+✔ invalid JWT yields no identity headers: wrong audience (2.070349ms)
+✔ invalid JWT yields no identity headers: expired (2.063236ms)
+✔ invalid JWT yields no identity headers: not yet valid (1.976525ms)
+✔ invalid JWT yields no identity headers: wrong issuer (2.180575ms)
+✔ invalid JWT yields no identity headers: wrong team domain (1.58236ms)
+✔ invalid JWT yields no identity headers: missing email (3.096492ms)
+✔ valid JWT sets the id from sub and overwrites forged headers (2.542048ms)
+✔ valid JWT in the CF_Authorization cookie is accepted (2.271855ms)
+✔ id falls back to SHA-256 of the verified lowercase email when sub is missing or empty (8.609711ms)
+✔ id is stable across requests and differs between accounts (7.80656ms)
+✔ signing certificates are cached across requests (3.58349ms)
+✔ no JWT means no certificate fetch (0.276867ms)
+✔ spoof: sending the owner email in headers without a JWT does not make the request owner (0.263562ms)
+✔ spoof: owner email in headers plus a forged token (other key) is not owner (1.831286ms)
+✔ spoof: unsigned token (alg none) and HS256 header are rejected (0.528114ms)
+✔ Access team set but AUD empty: fail closed even with a valid token (1.234601ms)
+✔ verified JWT for a different account is authenticated but not owner (app-level denial) (1.300384ms)
+✔ verified JWT for the owner (any case) is owner (1.43777ms)
+✔ empty configured owner email never matches (1.419977ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3457.814511
+exit=0
