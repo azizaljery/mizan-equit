@@ -12,6 +12,11 @@ import {calibrateForecastRange,CONFORMAL_RANGE_CALIBRATION_ENABLED,type RangeCal
 export {HORIZONS,type ForecastHorizon} from './forecast-horizons';
 import {HORIZONS,type ForecastHorizon} from './forecast-horizons';
 export type Horizon='short'|'medium'|'long';
+// Version history (the stored model string is MODEL_VERSION + a hash of the settings, see forecastModelVersion();
+// forecast_records.model carries it and every evaluation query filters by it, so versions are never mixed):
+//   shock-warning-1  shock policy: short horizons issued with warning, wider capped range.
+//   shock-warning-2  FCST-0004: VOLUME statistics only. Volume is read from confirmed sessions (lib/session-volume.ts);
+//                    weights, centre formula, range and decision gates are unchanged. Not evidence of better accuracy.
 export const MODEL_VERSION='mizan-scenarios-7-shock-warning-2';
 export type ResearchModelOutput=ReturnType<typeof forecasts>;
 const clamp=(v:number)=>Math.max(-1,Math.min(1,v));
