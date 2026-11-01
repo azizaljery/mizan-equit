@@ -29,10 +29,11 @@ const TL=[
  ['Fri in session',FRI,FRI,'2026-10-23T17:00:00Z',true,'in-session',THU],
  ['Fri just closed',FRI,FRI,'2026-10-23T20:30:00Z',false,'unverified',THU],
  ['Sat, quote still Friday',FRI,FRI,'2026-10-24T12:00:00Z',false,'unverified',THU],
- ['Sat, quote already Monday',FRI,MON,'2026-10-24T12:00:00Z',false,'complete',FRI],
+ // FCST-0005: the provider window advancing to Monday is NOT evidence (no trade in it yet): still unverified, volume stays on Thursday.
+ ['Sat, window already Monday, last trade Friday',FRI,MON,'2026-10-24T12:00:00Z',false,'unverified',THU],
  ['Sun night, quote still Friday',FRI,FRI,'2026-10-25T23:00:00Z',false,'unverified',THU],
  ['Mon pre-open, quote still Friday',FRI,FRI,'2026-10-26T12:00:00Z',false,'unverified',THU],
- ['Mon pre-open, quote Monday',FRI,MON,'2026-10-26T12:00:00Z',false,'complete',FRI],
+ ['Mon pre-open, window Monday, no Monday trade yet',FRI,MON,'2026-10-26T12:00:00Z',false,'unverified',THU],
  ['Mon open, Monday bar delivered (partial)',MON,MON,'2026-10-26T14:00:00Z',true,'in-session',FRI],
  ['Mon open, Monday bar not yet delivered',FRI,MON,'2026-10-26T14:00:00Z',true,'complete',FRI],
  ['Mon closed',MON,MON,'2026-10-26T21:00:00Z',false,'unverified',FRI],
@@ -90,6 +91,6 @@ test('every place that shows the ratio names its session: research factor detail
  const now=Z('2026-10-24T12:00:00Z'),r=build({lastDate:FRI,rLast:1,rPrev:1.8,q:quote(FRI,now),now});
  const d=researchFactors(r,now).factors.find(f=>f.key==='momentum').detail;
  assert.ok(d.includes(THU)&&d.includes('ليست حجم الجلسة الحالية'));
- const c=build({lastDate:FRI,rLast:1,rPrev:1.8,q:quote(MON,now),now});
- assert.ok(!researchFactors(c,now).factors.find(f=>f.key==='momentum').detail.includes('ليست حجم'));
+ const now2=Z('2026-10-26T14:00:00Z'),c=build({lastDate:FRI,rLast:1,rPrev:1.8,q:quote(MON,now2,{isOpen:true}),now:now2}); // a Monday trade exists: Friday is final
+ assert.ok(!researchFactors(c,now2).factors.find(f=>f.key==='momentum').detail.includes('ليست حجم'));
 });
