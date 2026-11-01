@@ -1,6 +1,16 @@
 import {type Financials,type Meta,type Price,type Events,type Checks,finite,validDate,ageDays,technical,fmt} from './analysis';
 export type YearRow={year:string;revenue:number|null;cfo:number|null;grossProfit:number|null;operatingIncome:number|null;netIncome:number|null;averageAssets:number|null;averageEquity:number|null;source:string};
 export type Requirements={activity:string;activityType:string;shariaQuarter:string;shariaMethod:string;purification:number|null;purificationBasis:string;shariaDisagreement:string;bid:number|null;ask:number|null;quoteDate:string;quoteSource:string;eventDate:string;eventNote:string;auditor:string;auditorSource:string;entry:number|null;stop:number|null;target:number|null;capital:number|null;capitalCurrency:string;availableCash:number|null;costPerShare:number|null;thesis:string;invalidator:string;exitPrice:number|null;exitType:string;deadline:string;catalyst:string;horizon:string;shares:number|null;peLow:number|null;peHigh:number|null;valuationSource:string;normalization:string;historyReviewed:boolean;planReviewed:boolean;invalidated:boolean;invalidationEvidence:string};
+/** Sharia gate as shown on /manual. 'insufficient' = required reference data missing or status not decided (never compliant);
+ * 'noncompliant' = the entered reference classifies the company as non-compliant; 'outdated' = complete compliant reference that is
+ * not for the latest completed quarter or is dated inconsistently; 'compliant' = complete, current, compliant per the entered reference. */
+export type ShariaState='compliant'|'noncompliant'|'outdated'|'insufficient';
+export const SHARIA_BADGE:Record<ShariaState,{label:string;level:string}>={
+ compliant:{label:'مستوفاة بحسب المرجع المدخل',level:'level0'},
+ noncompliant:{label:'غير متوافقة وفق المرجع المدخل',level:'level4'},
+ outdated:{label:'المرجع غير محدَّث لآخر ربع — يحتاج تحديثًا',level:'level2'},
+ insufficient:{label:'بيانات الفحص غير كافية',level:'level2'},
+};
 export type CheckItem={title:string;state:'pass'|'problem'|'missing';detail:string;group:'shared'|'investor'|'trader'};
 export const blankRequirements=():Requirements=>({activity:'',activityType:'unknown',shariaQuarter:'',shariaMethod:'',purification:null,purificationBasis:'',shariaDisagreement:'',bid:null,ask:null,quoteDate:'',quoteSource:'',eventDate:'',eventNote:'',auditor:'unknown',auditorSource:'',entry:null,stop:null,target:null,capital:null,capitalCurrency:'SAR',availableCash:null,costPerShare:0,thesis:'',invalidator:'',exitPrice:null,exitType:'price',deadline:'',catalyst:'',horizon:'',shares:null,peLow:null,peHigh:null,valuationSource:'',normalization:'',historyReviewed:false,planReviewed:false,invalidated:false,invalidationEvidence:''});
 export const blankHistory=():YearRow[]=>[0,1,2].map(()=>({year:'',revenue:null,cfo:null,grossProfit:null,operatingIncome:null,netIncome:null,averageAssets:null,averageEquity:null,source:''}));
@@ -67,7 +77,8 @@ export function requirementAnalysis(r:Requirements,h:YearRow[],f:Financials,p:Pr
  const missing=(mode:'trader'|'investor')=>items.filter(x=>(x.group==='shared'||x.group===mode)&&x.state==='missing').map(x=>x.title);
  const gated=r.activityType==='prohibited'||r.capitalCurrency!==m.priceCurrency||plan.errors.length>0||(liquidAvail&&(ageDays(m.asOf,r.quoteDate)<0||quoteSessionGap(r.quoteDate,m.asOf,m.market)>1));
  const planFloor=finite(plan.rr)&&plan.rr<2||spread!==null&&spread>1||nearEvent||ev.upcoming?65:0;
- return {items,shared,missingTrader:missing('trader'),missingInvestor:missing('investor'),spread,plan,cagrRevenue:cagr('revenue'),cagrCfo:cagr('cfo'),margins,dupont,valuation,mos,gated,planFloor,expectedQuarter:q};
+ const shariaState:ShariaState=!shariaComplete?'insufficient':m.shariaStatus==='noncompliant'?'noncompliant':shariaOk?'compliant':'outdated';
+ return {shariaOk:!!shariaOk,shariaState,items,shared,missingTrader:missing('trader'),missingInvestor:missing('investor'),spread,plan,cagrRevenue:cagr('revenue'),cagrCfo:cagr('cfo'),margins,dupont,valuation,mos,gated,planFloor,expectedQuarter:q};
 }
 export const THESIS_EXAMPLES=[
  ['sector','رخيص مقارنة بقطاعه','تبيّن أن الخصم مبرر بأرباح غير متكررة أو مشكلة حوكمة','event'],

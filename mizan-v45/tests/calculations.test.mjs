@@ -1309,3 +1309,41 @@ test('Previously saved company layouts remain readable after retiring a section 
   const duplicate=structuredClone(saved);duplicate.layout.company[11].id='decision';assert.throws(()=>gold.validateSettings(duplicate));
  }finally{gold.testRuntime.DB=priorDB;sqlite.close();}
 });
+
+// PR #17 (#16): the /manual Sharia badge reads requirementAnalysis(...).shariaOk. Behavioural checks, not just types.
+const shariaCase=(edit=()=>{})=>{const d=makeExample();const meta={...d.meta},req={...d.requirements};edit(meta,req);const a=requirementAnalysis(req,d.history,d.financials,d.prices,meta,d.checks,d.events);return {a,item:a.items.find(i=>i.title==='التصنيف الشرعي والتطهير')};};
+test('Sharia badge: complete compliant reference for the latest quarter -> shariaOk true, item pass',()=>{const {a,item}=shariaCase();assert.equal(typeof a.shariaOk,'boolean');assert.equal(a.shariaOk,true);assert.equal(item.state,'pass');});
+test('Sharia badge: unknown status is never treated as compliant (missing)',()=>{const {a,item}=shariaCase(m=>{m.shariaStatus='unknown'});assert.equal(a.shariaOk,false);assert.equal(item.state,'missing');});
+test('Sharia badge: non-compliant reference -> false, item problem (not missing)',()=>{const {a,item}=shariaCase(m=>{m.shariaStatus='noncompliant'});assert.equal(a.shariaOk,false);assert.equal(item.state,'problem');});
+for(const [name,edit] of [['no source',m=>{m.shariaSource='  '}],['no method',(m,r)=>{r.shariaMethod=''}],['invalid date',m=>{m.shariaDate='2026-13-40'}],['no quarter',(m,r)=>{r.shariaQuarter=''}],['purification null',(m,r)=>{r.purification=null}],['negative purification',(m,r)=>{r.purification=-1}],['no purification basis',(m,r)=>{r.purificationBasis=''}]])
+ test(`Sharia badge: incomplete data (${name}) -> false, item missing`,()=>{const {a,item}=shariaCase(edit);assert.equal(a.shariaOk,false);assert.equal(item.state,'missing');});
+test('Sharia badge: stale quarter or reference dated after the analysis date -> false',()=>{
+ assert.equal(shariaCase((m,r)=>{r.shariaQuarter='2000-Q1'}).a.shariaOk,false);
+ const future=shariaCase(m=>{const t=new Date(m.asOf);t.setUTCDate(t.getUTCDate()+10);m.shariaDate=t.toISOString().slice(0,10)});assert.equal(future.a.shariaOk,false);});
+
+// Four-state badge: «غير متوافق وفق الفحص» must never collapse into «بيانات غير كافية» (and vice versa).
+test('Sharia badge state: compliant / noncompliant / outdated / insufficient are distinct',()=>{
+ const {SHARIA_BADGE}=gold;
+ assert.equal(shariaCase().a.shariaState,'compliant');
+ assert.equal(shariaCase(m=>{m.shariaStatus='noncompliant'}).a.shariaState,'noncompliant');
+ assert.equal(shariaCase(m=>{m.shariaStatus='unknown'}).a.shariaState,'insufficient');
+ assert.equal(shariaCase(m=>{m.shariaSource=''}).a.shariaState,'insufficient');
+ assert.equal(shariaCase((m,r)=>{r.purification=null}).a.shariaState,'insufficient');
+ assert.equal(shariaCase(m=>{m.shariaSource='';m.shariaStatus='noncompliant'}).a.shariaState,'insufficient','incomplete reference is not a verdict');
+ assert.equal(shariaCase((m,r)=>{r.shariaQuarter='2000-Q1'}).a.shariaState,'outdated');
+ const labels=new Set(Object.values(SHARIA_BADGE).map(b=>b.label));assert.equal(labels.size,4);
+ assert.notEqual(SHARIA_BADGE.noncompliant.label,SHARIA_BADGE.insufficient.label);
+ assert.equal(SHARIA_BADGE.compliant.level,'level0');assert.notEqual(SHARIA_BADGE.insufficient.level,'level0');});
+// #18 owner-only fetch gate (public page). Simulated server responses; endpoint protection is unchanged server-side.
+test('Owner gate: visitor denial stops automatic re-requests only',()=>{const {createOwnerFetchGate}=gold;const g=createOwnerFetchGate();
+ assert.equal(g.allow('auto'),true);g.record(401,'SIGN_IN_REQUIRED');assert.equal(g.denied,'SIGN_IN_REQUIRED');
+ assert.equal(g.allow('auto'),false,'no repeat on every analysis change');assert.equal(g.allow('explicit'),true,'retry button still works');assert.equal(g.allow('focus'),true,'re-check on focus still works');});
+test('Owner gate: owner signs in after a visitor denial -> success clears the gate',()=>{const g=gold.createOwnerFetchGate();
+ g.record(401,'SIGN_IN_REQUIRED');assert.equal(g.allow('focus'),true);g.record(200);assert.equal(g.denied,null);assert.equal(g.allow('auto'),true);});
+test('Owner gate: session expiry after success re-arms the gate without blocking retries',()=>{const g=gold.createOwnerFetchGate();
+ g.record(200);assert.equal(g.allow('auto'),true);g.record(401,'SIGN_IN_REQUIRED');assert.equal(g.allow('auto'),false);assert.equal(g.allow('explicit'),true);});
+test('Owner gate: user switch to a non-owner account (403 OWNER_REQUIRED) and back to owner',()=>{const g=gold.createOwnerFetchGate();
+ g.record(200);g.record(403,'OWNER_REQUIRED');assert.equal(g.denied,'OWNER_REQUIRED');assert.equal(g.allow('auto'),false);assert.equal(g.allow('focus'),true);
+ g.record(200);assert.equal(g.denied,null);assert.equal(g.allow('auto'),true);});
+test('Owner gate: other failures (500, 503 config, network-style 0) never block automatic retries',()=>{const g=gold.createOwnerFetchGate();
+ for(const [s,c] of [[500,undefined],[503,'OWNER_CONFIG_UNAVAILABLE'],[0,undefined],[401,'SOMETHING_ELSE']]){g.record(s,c);assert.equal(g.allow('auto'),true,`${s} ${c}`);}});

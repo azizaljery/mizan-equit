@@ -90,7 +90,7 @@ async function verifiedOwner(request: Request, env: IdentityEnv): Promise<Verifi
     const valid = await crypto.subtle.verify(
       'RSASSA-PKCS1-v1_5',
       key,
-      b64urlToBytes(parts[2]),
+      b64urlToBytes(parts[2]) as BufferSource,
       new TextEncoder().encode(`${parts[0]}.${parts[1]}`),
     );
     if (!valid) return null;
