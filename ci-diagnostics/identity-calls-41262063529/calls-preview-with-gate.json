@@ -1,0 +1,57 @@
+{
+ "host": "mizan-aziz-preview.aljeryabod.workers.dev",
+ "label": "preview-with-gate",
+ "scenarios": {
+  "initial": {
+   "panel": true,
+   "events": [
+    {
+     "t": 754,
+     "kind": "MOUNT"
+    },
+    {
+     "t": 1268,
+     "kind": "GET",
+     "status": 401
+    },
+    {
+     "t": 5103,
+     "kind": "UNMOUNT"
+    },
+    {
+     "t": 5103,
+     "kind": "MOUNT"
+    },
+    {
+     "t": 5121,
+     "kind": "GET",
+     "status": 401
+    }
+   ],
+   "gets": 2,
+   "mounts": 2
+  },
+  "reanalysis": {
+   "triggered": true,
+   "events": [
+    {
+     "t": 13167,
+     "kind": "CLICK_REFETCH_SAME_COMPANY"
+    }
+   ],
+   "gets": 0,
+   "mounts": 0,
+   "unmounts": 0
+  },
+  "focus": {
+   "events": [
+    {
+     "t": 63242,
+     "kind": "GET",
+     "status": 401
+    }
+   ],
+   "gets": 1
+  }
+ }
+}
