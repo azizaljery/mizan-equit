@@ -98,7 +98,7 @@ test('late data: a quote older than the close is unverified and says so; missing
 test('parseLiveQuote exposes the session window and offset that lastBarStatus relies on',()=>{
  const now=NY.start+3600e3;
  const data={chart:{result:[{meta:{symbol:'TEST_US_CALM',currency:'USD',exchangeName:'NMS',instrumentType:'EQUITY',regularMarketPrice:100,regularMarketTime:Math.floor(now/1000)-60,gmtoffset:-14400,currentTradingPeriod:{regular:{start:NY.start/1000,end:NY.end/1000}}}}]}};
- let q;try{q=parseLiveQuote(data,'TEST_US_CALM',now)}catch(e){return}  // identity validation may refuse the synthetic meta; the fields are then covered below
+ const q=parseLiveQuote(data,'TEST_US_CALM',now);
  assert.equal(q.sessionStart,NY.start);assert.equal(q.sessionEnd,NY.end);assert.equal(q.gmtOffsetSeconds,-14400);
 });
 
