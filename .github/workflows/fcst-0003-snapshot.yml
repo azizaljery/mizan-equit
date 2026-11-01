@@ -1,0 +1,49 @@
+name: FCST-0003 input snapshot (read-only, no deploy)
+
+# Builds ONE snapshot of production-shaped MarketReport objects via lib/market-data.ts fetchCompany
+# for the frozen list research/snapshots/fcst-0003/SYMBOLS.json. No D1, no secrets, no production API, no deploy.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fcst-0003-engine
+    paths:
+      - .github/workflows/fcst-0003-snapshot.yml
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: mizan-v45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Bundle production modules (esbuild, same alias as scripts/test-analysis.mjs)
+        run: |
+          mkdir -p /tmp/b
+          npx -y esbuild@0.24.2 research/fcst-0003/entry.ts --bundle --platform=node --format=esm \
+            '--banner:js=import {createRequire} from "node:module"; const require=createRequire(import.meta.url);' \
+            --alias:cloudflare:workers=./tests/runtime-env.ts --outfile=/tmp/b/entry.mjs
+      - name: Build snapshot
+        run: node research/fcst-0003/snapshot.mjs /tmp/b/entry.mjs ../research/snapshots/fcst-0003/SYMBOLS.json /tmp/snap 2>&1 | tee /tmp/snap-log.txt
+      - name: Publish snapshot to branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RID: ${{ github.run_id }}
+          REF: ${{ github.ref_name }}
+        run: |
+          cp /tmp/snap-log.txt /tmp/snap/log.txt
+          for f in snapshot.json.gz MANIFEST.json log.txt; do
+            node -e 'const fs=require("fs");const f=process.argv[1];fs.writeFileSync("/tmp/body.json",JSON.stringify({message:"FCST-0003 snapshot "+process.env.RID+": "+f,branch:process.env.REF,content:fs.readFileSync("/tmp/snap/"+f).toString("base64")}))' "$f"
+            gh api --method PUT "repos/${{ github.repository }}/contents/research/snapshots/fcst-0003/run-${RID}/${f}" --input /tmp/body.json >/dev/null || echo "WARN publish $f"
+          done
