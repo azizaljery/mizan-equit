@@ -10,7 +10,9 @@ function report(){
  while(dates.length<300){if(![0,6].includes(day.getUTCDay()))dates.unshift(day.toISOString().slice(0,10));day.setUTCDate(day.getUTCDate()-1);}
  const prices=dates.map((date,i)=>{const close=100*Math.exp(i*.0004+.004*Math.sin(i*.81));return {date,open:close*.998,high:close*1.002,low:close*.996,close,volume:10000};});
  const facts=Object.entries({revenue:50000,netIncome:3000,operatingCashFlow:10000,capex:-2000,equity:20000,shares:1000}).map(([key,value])=>({key,value,date:'2026-06-30',period:'annual',currency:'USD',source:'https://www.sec.gov/fixture',publishedAt:'2026-08-01'}));
- return {company:{symbol:'AAPL',name:'Synthetic test only',exchange:'NASDAQ',sector:'Retail',industry:'Retail',source:'fixture'},currency:'USD',asOf:'2026-09-10',retrievedAt:new Date(now).toISOString(),quoteTime:null,priceSource:'fixture',prices,facts,official:null,news:[],peers:[],checks:[{name:'الأسعار اليومية',state:'ok'}],warnings:[],mode:'current'};
+ // The provider's quote already describes the NEXT session (2026-09-11), which is the evidence that the last bar is final.
+ const liveQuote={isOpen:false,sessionKnown:true,sessionStart:Date.parse('2026-09-11T13:30:00Z'),sessionEnd:Date.parse('2026-09-11T20:00:00Z'),gmtOffsetSeconds:-14400,quoteTime:'2026-09-10T20:00:00.000Z'};
+ return {liveQuote,company:{symbol:'AAPL',name:'Synthetic test only',exchange:'NASDAQ',sector:'Retail',industry:'Retail',source:'fixture'},currency:'USD',asOf:'2026-09-10',retrievedAt:new Date(now).toISOString(),quoteTime:null,priceSource:'fixture',prices,facts,official:null,news:[],peers:[],checks:[{name:'الأسعار اليومية',state:'ok'}],warnings:[],mode:'current'};
 }
 test('FCF uses matched, source-resolved base-unit amounts and explicitly dated shares',()=>{
  const r=report(),before=JSON.stringify(r),c=m.forecastConditions(r,now);
