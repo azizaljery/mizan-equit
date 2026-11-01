@@ -1,5 +1,5 @@
-// FCST-0004: the last daily bar's volume is partial while its session is open (or just closed). Every volume statistic
-// must then come from completed sessions, and nothing may become EASIER to confirm because of the change.
+// FCST-0004: the last daily bar's volume is partial while its session is open (or just closed). Volume STATISTICS
+// then come from completed sessions; the decision gates are deliberately unchanged (nothing becomes easier or harder to confirm).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {lastBarIncomplete,completedSessionPrices,POST_CLOSE_GRACE_MS} from '../lib/session-volume.ts';
@@ -54,12 +54,17 @@ test('forecast conditions: open or just-closed session uses completed sessions; 
  assert.ok(forecastConditions(r,LATER).relativeVolume<0.2); // complete bar, genuinely low volume: reported as is
 });
 
-test('trade scenario: a previous session\'s volume never confirms a breakout while the last session is incomplete',()=>{
- const spike=rep((i,n)=>i===n-2?5000:1000); // last COMPLETED session has rvol 5, the open one is partial
- const open=tradeScenario(spike,OPEN).executionPlan.liquidityConfirmation;
- assert.ok(open.rvol>1.5); assert.equal(open.isConfirmed,false); assert.match(open.note,/جزئي/);
+test('trade scenario: the confirmation gate is UNCHANGED (partial volume is a lower bound); only the note explains it',()=>{
+ const lc=(r,now)=>tradeScenario(r,now).executionPlan.liquidityConfirmation;
+ // previous COMPLETED session had rvol 5, the open one is partial and small: not confirmed, as before
+ const spike=rep((i,n)=>i===n-2?5000:1000), a=lc(spike,OPEN);
+ assert.equal(a.isConfirmed,false); assert.match(a.note,/جزئي/);
+ // open session whose partial volume already exceeds 1.5x: confirmed, as before (lower bound can only under-confirm)
+ const early=rep((i,n)=>i===n-1?1800:1000), b=lc(early,OPEN);
+ assert.equal(b.isConfirmed,true); assert.ok(Math.abs(b.rvol-1.8)<1e-9); assert.match(b.note,/حد أدنى/);
+ // complete bar: unchanged
  const done=rep((i,n)=>i===n-1?5000:1000);
- assert.equal(tradeScenario(done,LATER).executionPlan.liquidityConfirmation.isConfirmed,true); // unchanged for a complete bar
+ assert.equal(lc(done,LATER).isConfirmed,true); assert.doesNotMatch(lc(done,LATER).note,/جزئي/);
 });
 
 test('screener evidence: volume statistics skip the incomplete bar; ATR and bar age still use it',()=>{

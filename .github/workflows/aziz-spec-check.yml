@@ -75,5 +75,26 @@ jobs:
       - name: Research experiments tests (PIT universe, holdout seal)
         working-directory: research/experiments
         run: node --test __tests__/*.test.cjs
+      - name: FCST-0004 session-volume tests (spec reporter, published) + old/new comparison on the frozen snapshot
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RID: ${{ github.run_id }}
+          REF: ${{ github.ref_name }}
+        run: |
+          set +e
+          node --test --test-reporter=spec --import tsx tests/session-volume.test.mjs > ../sv-tests.txt 2>&1; SV=$?
+          BASE=$(git merge-base HEAD origin/mizan-aziz-deploy); echo "base=$BASE" >> ../sv-tests.txt
+          git worktree add /tmp/base "$BASE" >/dev/null 2>&1; ln -s "$PWD/node_modules" /tmp/base/mizan-v45/node_modules; mkdir -p /tmp/base/mizan-v45/research/fcst-0004; cp research/fcst-0004/entry.ts /tmp/base/mizan-v45/research/fcst-0004/entry.ts
+          git show origin/fcst-0003-engine:research/snapshots/fcst-0003/run-41300568222/snapshot.json.gz > /tmp/snap.json.gz
+          EB='--banner:js=import {createRequire} from "node:module"; const require=createRequire(import.meta.url);'
+          npx esbuild research/fcst-0004/entry-new.ts --bundle --platform=node --format=esm "$EB" --alias:cloudflare:workers=./tests/runtime-env.ts --outfile=/tmp/new.mjs >> ../sv-tests.txt 2>&1
+          (cd /tmp/base/mizan-v45 && npx esbuild research/fcst-0004/entry.ts --bundle --platform=node --format=esm "$EB" --alias:cloudflare:workers=./tests/runtime-env.ts --outfile=/tmp/old.mjs >> /home/runner/work/sv-old.txt 2>&1)
+          node research/fcst-0004/compare.mjs /tmp/old.mjs /tmp/new.mjs /tmp/snap.json.gz /tmp/compare.json >> ../sv-tests.txt 2>&1; CMP=$?
+          echo "sv=$SV cmp=$CMP" >> ../sv-tests.txt
+          node -e 'const fs=require("fs");const t=fs.readFileSync("../sv-tests.txt","utf8");fs.writeFileSync("../b1.json",JSON.stringify({message:"ci diagnostics: sv tests "+process.env.RID,branch:process.env.REF,content:Buffer.from(t.slice(-30000)).toString("base64")}));if(fs.existsSync("/tmp/compare.json"))fs.writeFileSync("../b2.json",JSON.stringify({message:"ci diagnostics: sv compare "+process.env.RID,branch:process.env.REF,content:fs.readFileSync("/tmp/compare.json").toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/sv-tests-${RID}.txt" --input ../b1.json >/dev/null || echo WARN1
+          [ -f ../b2.json ] && gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/sv-compare-${RID}.json" --input ../b2.json >/dev/null || echo WARN2
+          exit $((SV+CMP))
       - name: Build (verifies bundle; nothing is published)
         run: npm run build
