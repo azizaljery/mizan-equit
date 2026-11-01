@@ -179,3 +179,24 @@ test('screener evidence: volume statistics skip the not-confirmed bar; ATR and b
  const base=marketEvidence(prices,'2026-01-01T10:00:00.000Z'),fixed=marketEvidence(prices,'2026-01-01T10:00:00.000Z',{lastBarNotConfirmed:true});
  assert.equal(fixed.medianTradedValue20,100*100000);assert.equal(fixed.atrPct20,base.atrPct20);assert.equal(fixed.lastBarAgeDays,base.lastBarAgeDays);
 });
+
+// ---- FCST-0005 review fixes (#19) ----
+test('a provider window that advanced WITHOUT a trade in it is not evidence of completeness (observed: Saudi bar null-close ~10h after close)',()=>{
+ // Friday bar; the window already describes Monday 2026-10-26, but the last TRADE is Friday's close.
+ const MON={start:NY.start,end:NY.end,off:NY.off};
+ const fri=rep(()=>1000,quote(MON,{quoteTime:'2026-10-23T20:00:01.000Z'}),'2026-10-23');
+ const a=S(fri,MON.start+12*3600e3);assert.equal(a.state,'unverified');assert.equal(a.reasonCode,'window-ahead-no-trade');
+ // Same window, trade time inside Monday's session: complete.
+ const traded=rep(()=>1000,quote(MON,{quoteTime:new Date(MON.start+60e3).toISOString()}),'2026-10-23');
+ const b=S(traded,MON.start+3600e3);assert.equal(b.state,'complete');assert.equal(b.reasonCode,'later-session');
+ // Consumers follow: forecast conditions drop the unconfirmed bar and name the session used.
+ const r=rep((i,n)=>i===n-1?100:1000,quote(MON,{quoteTime:'2026-10-23T20:00:01.000Z'}),'2026-10-23');
+ const c=forecastConditions(r,MON.start+12*3600e3);assert.equal(c.volumeLastBar.state,'unverified');assert.ok(Math.abs(c.relativeVolume-1)<1e-9);
+});
+test('final decision parity is not vacuous: buy reaches true in the compared scenario',()=>{
+ const r0=rep((i,n)=>i===n-1?6e6:1.5e6),pr=technical(r0.prices.slice(0,-1)),atr=technical(r0.prices).atr.at(-1),res=pr.resistance??r0.prices.at(-1).close;
+ const scenario={reasons:[],incomplete:[],levels:{low:res+.1*atr,high:res+.35*atr,stop:res-.8*atr,target1:res+atr,target2:res+2*atr}};
+ const now=NY.start+3600e3,q={symbol:r0.company.symbol,currency:r0.currency,price:scenario.levels.low,quoteTime:new Date(now-60e3).toISOString(),isOpen:true,source:'test'};
+ const d=finalDecision(rep((i,n)=>i===n-1?6e6:1.5e6),scenario,q,now);
+ assert.equal(d.buy,true,'the parity scenario must reach buy=true or the identity check proves nothing');
+});

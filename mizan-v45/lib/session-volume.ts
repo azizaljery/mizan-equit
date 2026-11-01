@@ -2,8 +2,8 @@
 //
 // A daily bar can be read as a COMPLETE session only when there is evidence for it:
 //   historical-snapshot : the report is a historical snapshot, not a live read;
-//   later-session       : the provider's quote already describes a LATER session than the bar (so the bar's session is over and
-//                         the provider has moved on);
+//   later-session       : the LAST TRADE time of the quote lies inside a LATER session than the bar (so the bar's session is over).
+//                         A provider window that merely advanced, with no trade in it, is NOT evidence (window-ahead-no-trade);
 //   assumed-settlement  : OPT-IN policy only (assumeCompleteAfterMs, default null = never): N ms after the provider's session end.
 // Otherwise the bar is either 'in-session' (the provider's own session window contains `now`: certain) or 'unverified'
 // (the session is over by the calendar, but nothing shows that the source has finalised the bar's volume). There is
@@ -45,7 +45,14 @@ export function lastBarStatus(report: SessionReport, now = Date.now(), policy: S
   const anchors = [start ?? end - 1, end - 1];
   const dates = off !== null ? [day(anchors[1], off)] : [...new Set(anchors.map(a => day(a, 0)))];
   const tzNote = off === null ? ' (المنطقة الزمنية غير معروفة: قورن بتاريخ UTC)' : '';
-  if (dates.every(s => d < s)) return st('complete', d, 'later-session', `المزود يصف جلسة أحدث (${dates[0]}) من تاريخ الشمعة ${d}${tzNote}.`);
+  if (dates.every(s => d < s)) {
+    // The provider's window can advance past midnight with NO new trade (observed: Saudi bar still null-close ~10h after the close).
+    // So the window alone proves nothing. Evidence = the last TRADE time (quoteTime) lies inside that later window.
+    const qtl = typeof q.quoteTime === 'string' ? Date.parse(q.quoteTime) : NaN;
+    const tradeInLater = Number.isFinite(qtl) && (start !== null ? qtl >= start : off !== null ? day(qtl, off) > d : day(qtl, 0) > d);
+    if (tradeInLater) return st('complete', d, 'later-session', `آخر صفقة (${q.quoteTime}) تقع في جلسة أحدث (${dates[0]}) من تاريخ الشمعة ${d}${tzNote}.`);
+    return st('unverified', d, 'window-ahead-no-trade', `نافذة المزود تقدمت إلى ${dates[0]} لكن لا صفقة فيها بعد؛ لا دليل على اكتمال شمعة ${d}.`);
+  }
   if (!dates.includes(d)) return st('unverified', d, 'date-conflict', `تاريخ الشمعة ${d} لا يطابق جلسة السعر الحي ${dates.join('/')}${tzNote}.`);
   if (start !== null && now >= start && now < end) return st('in-session', d, 'session-open', `الجلسة ${d} مفتوحة الآن حسب نافذة المزود.`);
   if (start === null && now < end) return st('in-session', d, 'session-open', `الجلسة ${d} لم تنتهِ بعد حسب المزود.`);
