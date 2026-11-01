@@ -16,7 +16,7 @@ import {defineGate, fingerprint, maximumGate, minimumGate, readNumber, readStrin
 import type {CandidateEvidenceEnvelope, EvidenceRecord, JsonValue, SharaEvaluation, SharaGate, SharaStatus} from './shara/contracts';
 import type {ScreenerCandidate} from './screener-policy';
 import type {Price} from './analysis';
-import {lastBarIncomplete} from './session-volume';
+import {lastBarIncomplete, type SessionReport} from './session-volume';
 
 export const SHARA_SCREENER_VERSION = 'shara-screener-1';
 /** Switch to true only after the owner reviews the shadow report. Default keeps selection identical to before. */
@@ -31,7 +31,7 @@ export const SHARA_MARKET_THRESHOLDS = {
   maxLastBarAgeDays: 7,
 } as const;
 
-type Item = {candidate: ScreenerCandidate; report: {prices?: Price[]; retrievedAt?: string}};
+type Item = {candidate: ScreenerCandidate; report: {prices?: Price[]; retrievedAt?: string; liveQuote?: SessionReport['liveQuote']; mode?: string}};
 export type SharaVerdict = {symbol: string; parity: SharaStatus; parityRule?: string; market: SharaStatus | 'NOT_RUN'; marketRules: string[]};
 export type SharaScreenerSummary = {
   version: string; mode: 'shadow' | 'enforce'; provisionalThresholds: true;
@@ -72,7 +72,7 @@ export function candidateEnvelope(item: Item): CandidateEvidenceEnvelope {
   put('price', c.price); put('predictedPrice', c.predictedPrice); put('expectedChangePct', c.expectedChangePct);
   put('priceTime', c.priceTime); put('currency', c.currency);
   if (Array.isArray(c.range) && c.range.length === 2 && c.range.every(finite)) values.range = [c.range[0], c.range[1]];
-  Object.assign(values, marketEvidence(item.report.prices, item.report.retrievedAt, {lastBarIncomplete: lastBarIncomplete(item.report, Date.parse(item.report.retrievedAt ?? '') || Date.now())}));
+  Object.assign(values, marketEvidence(item.report.prices, item.report.retrievedAt, {lastBarIncomplete: lastBarIncomplete({prices: item.report.prices ?? [], liveQuote: item.report.liveQuote, mode: item.report.mode}, Date.parse(item.report.retrievedAt ?? '') || Date.now())}));
   const evidence: Record<string, EvidenceRecord> = {};
   for (const [key, value] of Object.entries(values)) {
     evidence[key] = {evidenceId: `${c.symbol}:${key}`, providerId: key in c ? 'screener-candidate' : 'market-report', providerVersion: '1', observedAt, value};
