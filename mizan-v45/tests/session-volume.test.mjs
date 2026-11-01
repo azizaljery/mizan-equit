@@ -160,14 +160,17 @@ test('trade scenario note states which bar and why it is a lower bound',()=>{
  const b=tradeScenario(early,NY.end+3600e3).executionPlan.liquidityConfirmation;assert.match(b.note,/غير مؤكد/);
  const small=rep((i,n)=>i===n-1?300:1000);assert.match(tradeScenario(small,NY.start+3600e3).executionPlan.liquidityConfirmation.note,/ليس حكمًا نهائيًا/);
 });
+const withFacts=r=>{const k={revenue:50000,netIncome:3000,operatingCashFlow:10000,capex:-2000,equity:20000,shares:1000,debt:5000,cash:4000,assets:40000,liabilities:20000,operatingIncome:6000,ebitda:8000};
+ r.facts=Object.entries(k).map(([key,value])=>({key,value,date:'2026-06-30',period:'annual',currency:r.currency,source:'https://www.sec.gov/fixture',publishedAt:'2026-08-01'}));return r}; // lets finalDecision pass its financial-readiness gate
 test('final decision: checks and buy are identical for every bar state; the evidence line names both dates',()=>{
  const r0=rep((i,n)=>i===n-1?6e6:1.5e6),pr=technical(r0.prices.slice(0,-1)),atr=technical(r0.prices).atr.at(-1),res=pr.resistance??r0.prices.at(-1).close;
  const scenario={reasons:[],incomplete:[],levels:{low:res+.1*atr,high:res+.35*atr,stop:res-.8*atr,target1:res+atr,target2:res+2*atr}};
  const now=NY.start+3600e3,q={symbol:r0.company.symbol,currency:r0.currency,price:scenario.levels.low,quoteTime:new Date(now-60e3).toISOString(),isOpen:true,source:'test'};
  const run=(rr,t)=>finalDecision(rr,scenario,q,t);
- const inS=run(rep((i,n)=>i===n-1?6e6:1.5e6),now);
- const unv=run(rep((i,n)=>i===n-1?6e6:1.5e6,quote({...NY,start:NY.start-86400e3,end:NY.end-86400e3}),'2026-10-26'),now);
- const done=run(rep((i,n)=>i===n-1?6e6:1.5e6,quote({...NY,start:NY.start+86400e3,end:NY.end+86400e3}),'2026-10-26'),now);
+ const inS=run(withFacts(rep((i,n)=>i===n-1?6e6:1.5e6)),now);
+ const unv=run(withFacts(rep((i,n)=>i===n-1?6e6:1.5e6,quote({...NY,start:NY.start-86400e3,end:NY.end-86400e3}),'2026-10-26')),now);
+ const done=run(withFacts(rep((i,n)=>i===n-1?6e6:1.5e6,quote({...NY,start:NY.start+86400e3,end:NY.end+86400e3}),'2026-10-26')),now);
+ assert.equal(inS.buy,true,'parity must be compared on a case that actually buys');
  const sig=x=>JSON.stringify([x.buy,x.checks.map(c=>c.ok)]);
  assert.equal(sig(inS),sig(unv));assert.equal(sig(inS),sig(done));
  const ev=inS.evidence.find(e=>e.includes('حجم نسبي'));assert.ok(ev);assert.match(ev,/\d{4}-\d{2}-\d{2}/);assert.match(ev,/لا تخص شمعة السعر/);
@@ -190,13 +193,14 @@ test('a provider window that advanced WITHOUT a trade in it is not evidence of c
  const traded=rep(()=>1000,quote(MON,{quoteTime:new Date(MON.start+60e3).toISOString()}),'2026-10-23');
  const b=S(traded,MON.start+3600e3);assert.equal(b.state,'complete');assert.equal(b.reasonCode,'later-session');
  // Consumers follow: forecast conditions drop the unconfirmed bar and name the session used.
- const r=rep((i,n)=>i===n-1?100:1000,quote(MON,{quoteTime:'2026-10-23T20:00:01.000Z'}),'2026-10-23');
- const c=forecastConditions(r,MON.start+12*3600e3);assert.equal(c.volumeLastBar.state,'unverified');assert.ok(Math.abs(c.relativeVolume-1)<1e-9);
+ const NEXT={start:NY.start+86400e3,end:NY.end+86400e3,off:NY.off};
+ const r=rep((i,n)=>i===n-1?100:1000,quote(NEXT,{quoteTime:new Date(NY.end+1e3).toISOString()}));
+ const c=forecastConditions(r,NEXT.start-3600e3);assert.equal(c.volumeLastBar.state,'unverified');assert.equal(c.volumeLastBar.reasonCode,'window-ahead-no-trade');assert.ok(Math.abs(c.relativeVolume-1)<1e-9);
 });
 test('final decision parity is not vacuous: buy reaches true in the compared scenario',()=>{
  const r0=rep((i,n)=>i===n-1?6e6:1.5e6),pr=technical(r0.prices.slice(0,-1)),atr=technical(r0.prices).atr.at(-1),res=pr.resistance??r0.prices.at(-1).close;
  const scenario={reasons:[],incomplete:[],levels:{low:res+.1*atr,high:res+.35*atr,stop:res-.8*atr,target1:res+atr,target2:res+2*atr}};
  const now=NY.start+3600e3,q={symbol:r0.company.symbol,currency:r0.currency,price:scenario.levels.low,quoteTime:new Date(now-60e3).toISOString(),isOpen:true,source:'test'};
- const d=finalDecision(rep((i,n)=>i===n-1?6e6:1.5e6),scenario,q,now);
+ const d=finalDecision(withFacts(rep((i,n)=>i===n-1?6e6:1.5e6)),scenario,q,now);
  assert.equal(d.buy,true,'the parity scenario must reach buy=true or the identity check proves nothing');
 });
