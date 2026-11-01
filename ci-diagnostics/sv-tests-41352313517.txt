@@ -1,0 +1,33 @@
+✔ timeline: state, session used by the volume statistics, and a visible lag whenever it is not the price bar (60.867391ms)
+✔ a previous session's volume never confirms a current breakout: weak last bar + strong previous bar stays unconfirmed in every state (71.393682ms)
+✔ a strong CURRENT bar still confirms, in every state (gate unchanged: partial volume is a lower bound) (47.594361ms)
+✔ missing completeness evidence: unverified for every kind of gap, volume statistics use the previous confirmed session (5.686379ms)
+✔ unavailable when needed: no confirmed ratio is invented, and the display says so (1.229273ms)
+✔ every place that shows the ratio names its session: research factor detail carries the label (5.957589ms)
+✔ in-session: the provider window contains now; both boundaries are exact (6.479051ms)
+✔ after the close: unverified for ANY elapsed time unless there is evidence; no hidden settlement rule (2.041681ms)
+✔ opt-in settlement policy is honoured, labelled an assumption, and off by default (1.300898ms)
+✔ later session at the provider = evidence the bar is final; weekend and holiday gaps are not (3.784591ms)
+✔ short session (early close) follows the provider window, not a fixed hour (1.363195ms)
+✔ time zones: the session date is the exchange-local date, also across the UTC date line (5.444364ms)
+✔ late data: a quote older than the close is unverified and says so; missing quote or window never claims completion (6.086181ms)
+✔ parseLiveQuote exposes the session window and offset that lastBarStatus relies on (0.72821ms)
+✔ technical: relative volume names its numerator session and denominator window; price indicators unchanged (8.66367ms)
+✔ zero volume: a zero in the not-confirmed bar still counts (conservative); a zero in a confirmed bar counts once (4.654497ms)
+✔ forecast conditions: unconfirmed bar is skipped and the session used is reported; a confirmed bar is used as is (12.459944ms)
+✔ trade scenario gate equals the legacy formula for in-session, unverified and complete bars (400 random volume vectors) (1559.847385ms)
+✔ trade scenario note states which bar and why it is a lower bound (4.058917ms)
+✔ final decision: checks and buy are identical for every bar state; the evidence line names both dates (8.432235ms)
+✔ screener evidence: volume statistics skip the not-confirmed bar; ATR and bar age still use it (0.291909ms)
+✔ a provider window that advanced WITHOUT a trade in it is not evidence of completeness (observed: Saudi bar null-close ~10h after close) (2.279098ms)
+✔ final decision parity is not vacuous: buy reaches true in the compared scenario (2.627373ms)
+✔ a quote time in the FUTURE is not evidence of a later-session trade (0.526901ms)
+✔ with a known offset the later-trade test is a local-date test (a skipped provider session does not hide a final bar) (0.537241ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1845.689595
