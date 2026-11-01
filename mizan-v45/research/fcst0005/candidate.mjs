@@ -87,6 +87,20 @@ export function blockBootstrapCI(d, block, B, seed, level = 0.95) {
   means.sort((a, b) => a - b); const lo = means[Math.floor((1 - level) / 2 * (B - 1))], hi = means[Math.ceil((1 + level) / 2 * (B - 1))];
   return { lo, hi, mean: d.reduce((a, b) => a + b, 0) / n };
 }
+/** Bootstrap distribution of the mean (same resampling as blockBootstrapCI). Returns sorted means. */
+export function blockBootstrapMeans(d, block, B, seed) {
+  const n = d.length, rnd = mulberry32(seed), means = [];
+  for (let b = 0; b < B; b++) { let s = 0, c = 0; while (c < n) { const st = Math.floor(rnd() * n); for (let k = 0; k < block && c < n; k++, c++) s += d[(st + k) % n]; } means.push(s / n); }
+  return means.sort((a, b) => a - b);
+}
+/** One-sided percentile p-value for H0: mean(d) >= 0 (candidate NOT better), from the bootstrap means. */
+export const bootstrapP = means => (means.filter(m => m >= 0).length + 1) / (means.length + 1);
+/** Holm step-down adjusted p-values for a FIXED family (input order preserved). Untestable cells enter with p = 1. */
+export function holmAdjust(ps) {
+  const m = ps.length, order = ps.map((p, i) => i).sort((a, b) => ps[a] - ps[b] || a - b), adj = Array(m).fill(1); let run = 0;
+  order.forEach((i, k) => { run = Math.max(run, Math.min(1, (m - k) * ps[i])); adj[i] = run; });
+  return adj;
+}
 export function normInv(p) { // Acklam's rational approximation
   const a = [-3.969683028665376e1, 2.209460984245205e2, -2.759285104469687e2, 1.383577518672690e2, -3.066479806614716e1, 2.506628277459239], b = [-5.447609879822406e1, 1.615858368580409e2, -1.556989798598866e2, 6.680131188771972e1, -1.328068155288572e1],
     c = [-7.784894002430293e-3, -3.223964580411365e-1, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783], d = [7.784695709041462e-3, 3.224671290700398e-1, 2.445134137142996, 3.754408661907416];
