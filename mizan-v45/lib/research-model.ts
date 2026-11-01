@@ -3,7 +3,7 @@ import {scenarioCenter,inspectScenarioRange,forecastDiagnostic,type ForecastBloc
 import {DEFAULT_SETTINGS,adjustedWeights,type SiteSettings} from './site-settings';
 import {forecastWindow} from './forecast-window';
 import {automaticAnalysis} from './automatic-analysis';
-import {finite,ageDays,fmt,technical} from './analysis';
+import {finite,ageDays,fmt,technical,volumeLabel} from './analysis';
 import type {MarketReport} from './market-data';
 import type {LiveQuote} from './live-quote';
 import {resolveFinancialSources} from './source-resolution';
@@ -55,7 +55,7 @@ export function researchFactors(report:MarketReport,now=Date.now()){
  add('valuation','التقييم مقابل النظراء',fsignal(a.pe&&a.peerPE&&a.peerCount>=2?clamp((a.peerPE/a.pe-1)/.5):null),`P/E ${fmt(a.pe)} مقابل ${fmt(a.peerPE)} لعينة ${a.peerCount} نظراء؛ لا تمثل القطاع كله.`,financial,a.ttmDate);
  const s50=t.sma50.at(-1),s200=t.sma200.at(-1),rsi=t.rsi.at(-1),macd=t.macdHist.at(-1);
  add('trend','اتجاه السعر',price&&finite(s50)&&finite(s200)?avg([norm(price/s50-1,.15),norm(s50/s200-1,.15)]):null,`السعر ${fmt(price)}؛ متوسط 50 ${fmt(s50)} ومتوسط 200 ${fmt(s200)}.`);
- add('momentum','الزخم والحجم النسبي',avg([finite(rsi)?norm(rsi-50,30):null,finite(macd)&&price?norm(macd/price,.01):null]),`RSI ${fmt(rsi)}؛ MACD ${fmt(macd)}؛ الحجم النسبي ${fmt(t.relativeVolume)}×.`);
+ add('momentum','الزخم والحجم النسبي',avg([finite(rsi)?norm(rsi-50,30):null,finite(macd)&&price?norm(macd/price,.01):null]),`RSI ${fmt(rsi)}؛ MACD ${fmt(macd)}؛ الحجم النسبي ${fmt(t.relativeVolume)}×${volumeLabel(t)?` (${volumeLabel(t)})`:''}.`);
  // Absolute turnover is used within the same market/currency; spread remains unknown if untimestamped.
  add('liquidity','السيولة واستمرارية التداول',finite(t.turnover)&&t.turnover>0&&t.zeroVolume!==null?avg([clamp((Math.log10(t.turnover)-6)/2),t.zeroVolume===0?.5:-1,finite(t.volumeRatio)?norm(t.volumeRatio-1):null]):null,`متوسط قيمة التداول التقريبي ${fmt(t.turnover)} ${report.currency}؛ أيام دون حجم ${t.zeroVolume??'—'}؛ الفارق المؤرخ غير متحقق.`);
  add('risk','التذبذب والهبوط',avg([norm(t.atrPct===null?null:3-t.atrPct,3),norm(t.maxDD===null?null:25-t.maxDD,25)]),`ATR ${fmt(t.atrPct)}%؛ أكبر هبوط في آخر 252 جلسة ${fmt(t.maxDD)}%.`);

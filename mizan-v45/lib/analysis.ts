@@ -84,6 +84,12 @@ export type TechnicalOptions={excludeLastVolume?:boolean};
 /** excludeLastVolume (FCST-0004): the last bar's session is still open/just closed, so its volume is partial. Volume statistics
  * (avgV20, priorV20, turnover, relativeVolume, volumeRatio, zeroVolume) are then taken from completed sessions only, and
  * volumeBasis says so. Price indicators are unchanged. */
+/** Short label for any place that shows a volume figure: null when the volume is the last bar's own; otherwise names the
+ * session it belongs to and says it is not the price bar's session (a previous session's volume is never shown as current). */
+export function volumeLabel(t:{volumeBasis:string;volumeSessionDate:string|null;priceBarDate:string|null;volumeLagSessions?:number}):string|null{
+ if(t.volumeBasis!=='previous-confirmed')return null;
+ return t.volumeSessionDate?`جلسة ${t.volumeSessionDate} المؤكدة (متأخرة ${t.volumeLagSessions??1} جلسة عن شمعة السعر ${t.priceBarDate}) — ليست حجم الجلسة الحالية`:`الحجم المؤكد غير متاح لشمعة السعر ${t.priceBarDate}`;
+}
 export function technical(prices:Price[],opts:TechnicalOptions={}){
  const close=prices.map(p=>p.close),a50=sma(close,50),a200=sma(close,200),r=rsi(close),a=atr(prices),e12=ema(close,12),e26=ema(close,26);
  const macd=close.map((_,i)=>finite(e12[i])&&finite(e26[i])?e12[i]!-e26[i]!:null);const mvals=macd.filter(finite);const signal=Array(Math.min(25,prices.length)).fill(null).concat(ema(mvals,9)) as (number|null)[];
@@ -92,7 +98,7 @@ export function technical(prices:Price[],opts:TechnicalOptions={}){
  const returns=close.slice(1).map((v,i)=>Math.log(v/close[i])).slice(-60);const mu=mean(returns);const vol=returns.length>=20?Math.sqrt(returns.reduce((s,v)=>s+(v-mu!)**2,0)/(returns.length-1))*Math.sqrt(252)*100:null;
  const p=last(prices),vp=opts.excludeLastVolume?prices.slice(0,-1):prices,vlast=last(vp),volumeBasis=opts.excludeLastVolume?'previous-confirmed' as const:'last-bar' as const,volumeWindow=vp.length>=1?{from:vp.slice(-20)[0].date,to:vp.at(-1)!.date,sessions:Math.min(20,vp.length)}:null,unconfirmedZero=opts.excludeLastVolume&&p&&p.volume===0?1:0,avgV20=mean(vp.slice(-20).map(p=>p.volume)),priorV20=vp.length>=40?mean(vp.slice(-40,-20).map(p=>p.volume)):null;
  const history=prices.slice(-122);const lows:number[]=[],highs:number[]=[];for(let i=2;i<history.length-2;i++){const v=history[i],window=history.slice(i-2,i+3);if(window.every(x=>x.low>=v.low))lows.push(v.low);if(window.every(x=>x.high<=v.high))highs.push(v.high)}const below=lows.filter(v=>p&&v<p.close),above=highs.filter(v=>p&&v>p.close);const support=below.length?Math.max(...below):null,resistance=above.length?Math.min(...above):null;
- return {sma50:a50,sma200:a200,rsi:r,atr:a,macd,signal,macdHist,last:p,atrPct:p&&finite(last(a))?last(a)!/p.close*100:null,maxDD:prices.length?maxDD:null,vol,avgV20,turnover:mean(vp.slice(-20).map(p=>p.close*p.volume)),volumeBasis,relativeVolume:vlast&&avgV20&&avgV20>0?vlast.volume/avgV20:null,volumeRatio:avgV20!==null&&priorV20&&priorV20>0?avgV20/priorV20:null,zeroVolume:vp.length>=20?vp.slice(-20).filter(p=>p.volume===0).length+unconfirmedZero:null,volumeSessionDate:vlast?.date??null,priceBarDate:p?.date??null,volumeWindow,support,resistance};
+ return {sma50:a50,sma200:a200,rsi:r,atr:a,macd,signal,macdHist,last:p,atrPct:p&&finite(last(a))?last(a)!/p.close*100:null,maxDD:prices.length?maxDD:null,vol,avgV20,turnover:mean(vp.slice(-20).map(p=>p.close*p.volume)),volumeBasis,relativeVolume:vlast&&avgV20&&avgV20>0?vlast.volume/avgV20:null,volumeRatio:avgV20!==null&&priorV20&&priorV20>0?avgV20/priorV20:null,zeroVolume:vp.length>=20?vp.slice(-20).filter(p=>p.volume===0).length+unconfirmedZero:null,volumeSessionDate:vlast?.date??null,priceBarDate:p?.date??null,volumeLagSessions:opts.excludeLastVolume&&p&&vlast?1:0,volumeWindow,support,resistance};
 }
 const ratio=(a:number|null,b:number|null)=>finite(a)&&finite(b)&&b>0?a/b:null;
 function weighted(f:Factor[]):number|null{const v=f.filter(x=>x.score!==null);return v.length?v.reduce((a,b)=>a+b.score!*b.weight,0)/v.reduce((a,b)=>a+b.weight,0):null}
