@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
 import {readFileSync,readdirSync} from 'node:fs';
 const m=await import(process.env.MIZAN_TEST_MODULE);
-const now=Date.parse('2026-09-10T20:00:00Z');
+const now=Date.parse('2026-09-11T14:00:00Z');
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
 function report(){
  const dates=[];let day=new Date('2026-09-10T00:00:00Z');
