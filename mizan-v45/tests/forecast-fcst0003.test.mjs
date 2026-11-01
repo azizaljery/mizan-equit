@@ -84,3 +84,19 @@ test('display rounding: distinct engine centres can print as the same 2-decimal 
  const p=10.81,a=p*Math.exp(.0003),b=p*Math.exp(.0004);
  assert.notEqual(a,b);assert.equal(fmt(a),fmt(b));
 });
+
+test('patch (shock-warning-2): partial in-progress session volume is not compared with complete sessions',async()=>{
+ const {forecastConditions}=await import('../lib/forecast-conditions.ts');
+ const rep=syntheticReport();rep.mode='current';
+ for(let i=0;i<rep.prices.length;i++)rep.prices[i].volume=1000000;
+ rep.prices.at(-1).volume=300000; // 30% of a normal session: mid-session partial bar
+ const closed=forecastConditions(rep,NOW);
+ assert.ok(Math.abs(closed.relativeVolume-.3)<1e-12,'no live quote: last bar treated as a complete session (unchanged)');
+ rep.liveQuote={symbol:rep.company.symbol,price:rep.prices.at(-1).close,currency:rep.currency,quoteTime:rep.asOf+'T15:00:00Z',isOpen:true};
+ const open=forecastConditions(rep,NOW);
+ assert.equal(open.relativeVolume,1,'session open: ratio uses the last 21 complete sessions');
+ rep.liveQuote={...rep.liveQuote,isOpen:false};
+ assert.ok(Math.abs(forecastConditions(rep,NOW).relativeVolume-.3)<1e-12,'session closed: unchanged');
+ rep.liveQuote={...rep.liveQuote,isOpen:true};rep.mode='historical';
+ assert.ok(Math.abs(forecastConditions(rep,NOW).relativeVolume-.3)<1e-12,'historical mode: unchanged');
+});

@@ -39,7 +39,12 @@ export function forecastConditions(report: MarketReport, now = Date.now()): Fore
   const regime = closes.length >= 60 ? RegimeEngine.detect(closes) : {
     ...RegimeEngine.detect([]), reason: 'لم تتوفر 60 جلسة صالحة لتطبيق شروط حالة السوق.'
   };
-  const volumes = pricesValid ? report.prices.slice(-21).map(p=>p.volume) : [];
+  // FCST-0003: while the live quote says the session is still open and the last bar IS that session, its volume is
+  // partial; comparing it with 20 complete sessions understates relative volume. Use the last 21 complete sessions.
+  const lastBar = report.prices.at(-1), liveQuote = report.liveQuote;
+  const sessionInProgress = report.mode!=='historical' && !!liveQuote && liveQuote.isOpen===true && !!lastBar
+    && typeof liveQuote.quoteTime==='string' && lastBar.date===liveQuote.quoteTime.slice(0,10);
+  const volumes = pricesValid ? (sessionInProgress ? report.prices.slice(-22,-1) : report.prices.slice(-21)).map(p=>p.volume) : [];
   const validVolumes = volumes.length===21 && volumes.every(v=>finite(v)&&v>=0);
   const average = validVolumes ? volumes.slice(0,20).reduce((s,v)=>s+v/20,0) : 0;
   const volumeRatio = average>0 ? volumes[20]/average : null;

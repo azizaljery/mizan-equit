@@ -12,7 +12,7 @@ import {calibrateForecastRange,CONFORMAL_RANGE_CALIBRATION_ENABLED,type RangeCal
 export {HORIZONS,type ForecastHorizon} from './forecast-horizons';
 import {HORIZONS,type ForecastHorizon} from './forecast-horizons';
 export type Horizon='short'|'medium'|'long';
-export const MODEL_VERSION='mizan-scenarios-7-shock-warning-1';
+export const MODEL_VERSION='mizan-scenarios-7-shock-warning-2';
 export type ResearchModelOutput=ReturnType<typeof forecasts>;
 const clamp=(v:number)=>Math.max(-1,Math.min(1,v));
 const avg=(v:(number|null)[])=>{const x=v.filter(finite);return x.length?x.reduce((s,n)=>s+n,0)/x.length:null};
