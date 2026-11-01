@@ -12,6 +12,7 @@ on:
       - forecast-repair
       - mo-robust
       - forecast-diagnosis
+      - fcst-0005-review
 
 permissions:
   contents: write
@@ -74,5 +75,7 @@ jobs:
       - name: Research experiments tests (PIT universe, holdout seal)
         working-directory: research/experiments
         run: node --test __tests__/*.test.cjs
+      - name: FCST-0005 candidate tests (synthetic data only)
+        run: node --test --test-reporter=spec --import tsx tests/fcst0005-candidate.test.mjs
       - name: Build (verifies bundle; nothing is published)
         run: npm run build
