@@ -19,6 +19,8 @@ function build({drift=.0004,amp=.006,jump=.01,lastDate,rLast,rPrev,asOf}){
  r.prices=r.prices.map((p,i)=>({...p,date:dates[i],volume:1e6}));r.prices[n-1].volume=rLast*1e6;r.prices[n-2].volume=rPrev*1e6;
  r.asOf=asOf;r.mode='current';return r}
 const quoteFor=(session,{now,isOpen,quoteTime,sessionKnown=true})=>({isOpen,sessionKnown,sessionStart:sessionKnown?win(session).start:null,sessionEnd:sessionKnown?win(session).end:null,gmtOffsetSeconds:OFF,quoteTime:quoteTime??new Date(now-60e3).toISOString()});
+// The head rule needs the quote bound to the prices (symbol, currency, fetch time); harmless extra fields for the base commit.
+const bind=(r,q)=>({...q,symbol:r.company.symbol,currency:r.currency,retrievedAt:r.retrievedAt});
 const liveQuote=(r,now,isOpen)=>({symbol:r.company.symbol,currency:r.currency,price:r.prices.at(-1).close,quoteTime:new Date(now-60e3).toISOString(),isOpen,source:'synthetic://fixture'});
 function run(L,r,now){
  const out={};
@@ -64,14 +66,14 @@ const E=[
 const usRows=[];
 for(const [pname,pv] of Object.entries(profiles))for(const [label,barDate,qs,when,open,qDate] of T){
  const now=Z(when),asOf=when.slice(0,10);const r=build({lastDate:barDate,...pv,asOf});
- r.liveQuote=quoteFor(qDate,{now,isOpen:open});
+ r.liveQuote=bind(r,quoteFor(qDate,{now,isOpen:open}));
  const st=await status(r,now),h=run(H,clone(r),now),b=run(B,clone(r),now);
  const vs=h.tech.volumeSession,ageH=Math.round((now-Z(vs+'T20:00:00Z'))/HOUR*10)/10;
  usRows.push({profile:pname,case:label,barDate,state:st.state,reason:st.reasonCode,volumeSessionUsedByStats:vs,priceBar:h.tech.priceBar,volumeAgeHours_afterNYClose:ageH,head:h,base:b});
 }
 for(const [pname,pv] of Object.entries(profiles))for(const [label,barDate,qs,when] of E){
  const now=Z(when),asOf=when.slice(0,10);const r=build({lastDate:barDate,...pv,asOf});
- if(qs)r.liveQuote=quoteFor(qs.session,{now,isOpen:qs.isOpen,quoteTime:qs.quoteTime ? qs.quoteTime : undefined,sessionKnown:qs.sessionKnown!==false});
+ if(qs)r.liveQuote=bind(r,quoteFor(qs.session,{now,isOpen:qs.isOpen,quoteTime:qs.quoteTime ? qs.quoteTime : undefined,sessionKnown:qs.sessionKnown!==false}));
  const st=await status(r,now),h=run(H,clone(r),now),b=run(B,clone(r),now);
  const vs=h.tech.volumeSession;
  usRows.push({profile:pname,case:label,barDate,state:st.state,reason:st.reasonCode,volumeSessionUsedByStats:vs,priceBar:h.tech.priceBar,volumeAgeHours_afterNYClose:Math.round((now-Z(vs+'T20:00:00Z'))/HOUR*10)/10,head:h,base:b});
@@ -95,7 +97,7 @@ const drifts=[.0003,.0006,.0009,.0012,.0015,.002],rPrevs=[.8,1.09,1.11,1.6,3.2],
 const stateCases={'complete':{qd:TUE,now:'2026-10-27T14:00:00Z',open:true},'unverified':{qd:MON,now:'2026-10-26T21:00:00Z',open:false},'in-session':{qd:MON,now:'2026-10-26T17:00:00Z',open:true}};
 const grid=[];
 for(const drift of drifts)for(const rPrev of rPrevs)for(const rLast of rLasts)for(const [sname,sc] of Object.entries(stateCases)){
- const now=Z(sc.now),r=build({drift,amp:.006,jump:.01,lastDate:MON,rLast,rPrev,asOf:sc.now.slice(0,10)});r.liveQuote=quoteFor(sc.qd,{now,isOpen:sc.open});
+ const now=Z(sc.now),r=build({drift,amp:.006,jump:.01,lastDate:MON,rLast,rPrev,asOf:sc.now.slice(0,10)});r.liveQuote=bind(r,quoteFor(sc.qd,{now,isOpen:sc.open}));
  const h=run(H,clone(r),now),b=run(B,clone(r),now);
  const changes=h.rows.map((x,i)=>({h:x.h,dirBase:b.rows[i].dir,dirHead:x.dir,pctBase:b.rows[i].pct,pctHead:x.pct,multBase:b.rows[i].mult,multHead:x.mult})).filter(c=>c.dirBase!==c.dirHead||c.pctBase!==c.pctHead||c.multBase!==c.multHead);
  grid.push({drift,rPrev,rLast,state:sname,fcRvBase:b.fc.rv,fcRvHead:h.fc.rv,sessionBase:b.fc.session,sessionHead:h.fc.session,gateSame:h.gate.confirmed===b.gate.confirmed&&h.gate.rvol===b.gate.rvol,decisionSame:h.decision.volumeCheck===b.decision.volumeCheck&&h.decision.buy===b.decision.buy,changes})}
