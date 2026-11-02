@@ -18,7 +18,7 @@ function build({lastDate,rLast,rPrev,q,now}){
  const r=syntheticReport({id:'BRK',drift:.0004,amplitude:.006,shock:.01}),n=r.prices.length,dates=[];
  for(let d=new Date(lastDate+'T00:00:00Z');dates.length<n;d.setUTCDate(d.getUTCDate()-1)){const w=d.getUTCDay();if(w!==0&&w!==6)dates.unshift(d.toISOString().slice(0,10))}
  r.prices=r.prices.map((p,i)=>({...p,date:dates[i],volume:1e6}));r.prices[n-1].volume=rLast*1e6;r.prices[n-2].volume=rPrev*1e6;
- r.asOf=new Date(now).toISOString().slice(0,10);r.mode='current';if(q)r.liveQuote=q;return r}
+ r.asOf=new Date(now).toISOString().slice(0,10);r.mode='current';if(q)r.liveQuote={...q,symbol:r.company.symbol,currency:r.currency,retrievedAt:r.retrievedAt};return r}
 const decide=(r,now)=>{const t=technical(r.prices),pr=technical(r.prices.slice(0,-1)),atr=t.atr.at(-1),res=pr.resistance;
  const sc={reasons:[],incomplete:[],levels:{low:res+.1*atr,high:res+.35*atr,stop:res-.8*atr,target1:res+atr,target2:res+2*atr}};
  const open=!!r.liveQuote?.isOpen,q={symbol:r.company.symbol,currency:r.currency,price:sc.levels.low+.05*atr,quoteTime:new Date(now-6e4).toISOString(),isOpen:open,source:'t'};

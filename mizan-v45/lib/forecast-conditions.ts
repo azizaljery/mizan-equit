@@ -12,6 +12,8 @@ export interface ForecastConditions {
   relativeVolume: number | null;
   /** Definition: volume(S) / mean(20 sessions strictly before S); S = last CONFIRMED session (volumeSessionDate), not necessarily today's. */
   volumeSessionDate: string | null;
+  /** Sessions the volume session is behind the price bar (0 when the last bar is complete). */
+  volumeLagSessions: number;
   volumeLastBar: {state: 'complete'|'in-session'|'unverified'; date: string | null; reasonCode: string};
   cashFlow: {
     freeCashFlow: number | null;
@@ -52,6 +54,7 @@ export function forecastConditions(report: MarketReport, now = Date.now()): Fore
   const volumeRatio = average>0 ? volumes[20]/average : null;
   const relativeVolume = finite(volumeRatio) ? volumeRatio : null;
   const volumeSessionDate = relativeVolume!==null ? confirmed.slice(-21).at(-1)?.date ?? null : null;
+  const volumeLagSessions = relativeVolume!==null && lastBar.state!=='complete' ? 1 : 0;
 
   // Source resolution retains authority/unit/conflict rules. Unknown publication time
   // cannot supply a new financial influence, even if other report factors remain usable.
@@ -94,7 +97,7 @@ export function forecastConditions(report: MarketReport, now = Date.now()): Fore
     reason,
     'لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين.'
   ];
-  return {version:'fcf-regime-volume-1',calibrated:false,pricesValid,regime,relativeVolume,volumeSessionDate,volumeLastBar:{state:lastBar.state,date:lastBar.barDate,reasonCode:lastBar.reasonCode},
+  return {version:'fcf-regime-volume-1',calibrated:false,pricesValid,regime,relativeVolume,volumeSessionDate,volumeLagSessions,volumeLastBar:{state:lastBar.state,date:lastBar.barDate,reasonCode:lastBar.reasonCode},
     cashFlow:{freeCashFlow,yieldPercent,marketCap,periodEnd,qualitySignal,
       sources:used.map(f=>({key:f.key,source:f.source,date:f.date,publishedAt:f.publishedAt!})),reason},notes};
 }

@@ -11,7 +11,7 @@ function report(){
  const prices=dates.map((date,i)=>{const close=100*Math.exp(i*.0004+.004*Math.sin(i*.81));return {date,open:close*.998,high:close*1.002,low:close*.996,close,volume:10000};});
  const facts=Object.entries({revenue:50000,netIncome:3000,operatingCashFlow:10000,capex:-2000,equity:20000,shares:1000}).map(([key,value])=>({key,value,date:'2026-06-30',period:'annual',currency:'USD',source:'https://www.sec.gov/fixture',publishedAt:'2026-08-01'}));
  // Evidence that the last bar is final: the last TRADE (quoteTime) already lies inside the NEXT session (2026-09-10); a window that merely advanced would not be enough.
- const liveQuote={isOpen:false,sessionKnown:true,sessionStart:Date.parse('2026-09-10T13:30:00Z'),sessionEnd:Date.parse('2026-09-10T20:00:00Z'),gmtOffsetSeconds:-14400,quoteTime:'2026-09-10T19:59:00.000Z'};
+ const liveQuote={symbol:'AAPL',currency:'USD',retrievedAt:new Date(now).toISOString(),isOpen:false,sessionKnown:true,sessionStart:Date.parse('2026-09-10T13:30:00Z'),sessionEnd:Date.parse('2026-09-10T20:00:00Z'),gmtOffsetSeconds:-14400,quoteTime:'2026-09-10T19:59:00.000Z'};
  return {liveQuote,company:{symbol:'AAPL',name:'Synthetic test only',exchange:'NASDAQ',sector:'Retail',industry:'Retail',source:'fixture'},currency:'USD',asOf:'2026-09-10',retrievedAt:new Date(now).toISOString(),quoteTime:null,priceSource:'fixture',prices,facts,official:null,news:[],peers:[],checks:[{name:'الأسعار اليومية',state:'ok'}],warnings:[],mode:'current'};
 }
 test('FCF uses matched, source-resolved base-unit amounts and explicitly dated shares',()=>{
@@ -95,4 +95,12 @@ test('new forecasts retain condition evidence and model version without rewritin
   assert.equal(sqlite.prepare('SELECT data FROM forecast_records WHERE id=?').get('old').data,oldData);
   for(const row of saved.rows){const stored=JSON.parse(sqlite.prepare('SELECT data FROM forecast_records WHERE id=?').get(row.id).data);assert.deepEqual(stored.modelCondition,row.modelCondition);assert.equal(stored.model,saved.version);}
  }finally{sqlite.close();}
+});
+
+test('regimeSummary names the volume session AND its lag in sessions (0 when the bar is final)',()=>{
+ const done=report(),open={...report(),liveQuote:null}; // no quote => completeness unproven => previous confirmed session used
+ const a=m.generateCalibratedForecast({report:done,now}).regimeSummary,b=m.generateCalibratedForecast({report:open,now}).regimeSummary;
+ assert.match(a,/جلسة شمعة السعر نفسها/);assert.doesNotMatch(a,/متأخرة/);
+ assert.match(b,/متأخرة 1 جلسة/);assert.match(b,/وليست الجلسة الحالية/);assert.match(b,/\d{4}-\d{2}-\d{2}/);
+ assert.equal(m.forecastConditions(done,now).volumeLagSessions,0);assert.equal(m.forecastConditions(open,now).volumeLagSessions,1);
 });

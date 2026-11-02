@@ -17,9 +17,21 @@
 //   price indicators: out of scope, not changed.
 import type {Price} from './analysis';
 
-type QuoteLike = {isOpen?: boolean; sessionKnown?: boolean; sessionStart?: number | null; sessionEnd?: number | null;
+type QuoteLike = {symbol?: string; currency?: string; retrievedAt?: string; isOpen?: boolean; sessionKnown?: boolean; sessionStart?: number | null; sessionEnd?: number | null;
   gmtOffsetSeconds?: number | null; quoteTime?: string} | null | undefined;
-export type SessionReport = {prices: Price[]; liveQuote?: QuoteLike; mode?: string};
+export type SessionReport = {prices: Price[]; liveQuote?: QuoteLike; mode?: string; retrievedAt?: string; currency?: string; company?: {symbol?: string}};
+/** Max gap between the quote's parse time and the report's fetch time. Both are stamped within one fetch (lib/market-data.ts: parseLiveQuote(chart.meta) of the SAME chart response as the prices). */
+export const QUOTE_BINDING_TOLERANCE_MS = 60_000;
+/** Why the quote cannot be shown to belong to this report's prices (null = bound). Used to REFUSE completeness evidence, never to grant it. */
+export function quoteBindingProblem(report: SessionReport, q: NonNullable<QuoteLike>): string | null {
+  const rs = report.company?.symbol, qs = q.symbol;
+  if (rs && qs && rs.toUpperCase() !== qs.toUpperCase()) return `رمز الاقتباس ${qs} لا يطابق رمز السلسلة ${rs}.`;
+  if (report.currency && q.currency && report.currency !== q.currency) return `عملة الاقتباس ${q.currency} لا تطابق عملة السلسلة ${report.currency}.`;
+  const a = Date.parse(q.retrievedAt ?? ''), b = Date.parse(report.retrievedAt ?? '');
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return 'وقت جلب الاقتباس أو السلسلة غير مسجل؛ لا يثبت أنهما من جلب واحد.';
+  if (Math.abs(a - b) > QUOTE_BINDING_TOLERANCE_MS) return 'وقت جلب الاقتباس يختلف عن وقت جلب السلسلة؛ قد يكونان من جلبين مختلفين.';
+  return null;
+}
 export type BarState = 'complete' | 'in-session' | 'unverified';
 export type BarStatus = {state: BarState; barDate: string | null; reasonCode: string; evidence: string};
 export type SessionPolicy = {assumeCompleteAfterMs?: number | null};
@@ -46,6 +58,8 @@ export function lastBarStatus(report: SessionReport, now = Date.now(), policy: S
   const dates = off !== null ? [day(anchors[1], off)] : [...new Set(anchors.map(a => day(a, 0)))];
   const tzNote = off === null ? ' (المنطقة الزمنية غير معروفة: قورن بتاريخ UTC)' : '';
   if (dates.every(s => d < s)) {
+    const unbound = quoteBindingProblem(report, q);
+    if (unbound) return st('unverified', d, 'quote-not-bound', unbound);
     // The provider's window can advance past midnight with NO new trade (observed: Saudi bar still null-close ~10h after the close).
     // So the window alone proves nothing. Evidence = the last TRADE time (quoteTime) lies inside that later window.
     const qtl = typeof q.quoteTime === 'string' ? Date.parse(q.quoteTime) : NaN;

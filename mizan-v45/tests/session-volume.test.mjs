@@ -9,12 +9,12 @@ import {finalDecision} from '../lib/final-decision.ts';
 import {forecastConditions} from '../lib/forecast-conditions.ts';
 import {marketEvidence} from '../lib/screener-shara.ts';
 import {parseLiveQuote} from '../lib/live-quote.ts';
-import {syntheticReport,AS_OF} from '../research/forecast-repair/fixtures.mjs';
+import {syntheticReport,AS_OF,NOW} from '../research/forecast-repair/fixtures.mjs';
 
 const Z=s=>Date.parse(s);
 // New York, EDT (UTC-4): regular session 09:30-16:00 local = 13:30-20:00Z on AS_OF (2026-10-26).
 const NY={start:Z('2026-10-26T13:30:00Z'),end:Z('2026-10-26T20:00:00Z'),off:-14400};
-const quote=(w=NY,over={})=>({isOpen:true,sessionKnown:true,sessionStart:w.start,sessionEnd:w.end,gmtOffsetSeconds:w.off,quoteTime:new Date(w.end-60e3).toISOString(),...over});
+const quote=(w=NY,over={})=>({symbol:'TEST_US_CALM',currency:'USD',retrievedAt:new Date(NOW).toISOString(),isOpen:true,sessionKnown:true,sessionStart:w.start,sessionEnd:w.end,gmtOffsetSeconds:w.off,quoteTime:new Date(w.end-60e3).toISOString(),...over});
 const rep=(vols=()=>1000,q=quote(),date=null)=>{const r=syntheticReport();const n=r.prices.length;r.prices=r.prices.map((p,i)=>({...p,volume:vols(i,n)}));if(date)r.prices.at(-1).date=date;r.liveQuote=q;r.mode='current';return r};
 const S=(r,now,policy)=>lastBarStatus(r,now,policy);
 
@@ -219,4 +219,22 @@ test('with a known offset the later-trade test is a local-date test (a skipped p
  const THU={start:Z('2026-10-22T13:30:00Z'),end:Z('2026-10-22T20:00:00Z'),off:-14400},MON={start:Z('2026-10-26T13:30:00Z'),end:Z('2026-10-26T20:00:00Z'),off:-14400};
  const r=rep(()=>1000,quote(MON,{quoteTime:'2026-10-25T09:00:00.000Z'}),'2026-10-22');
  assert.equal(S(r,Z('2026-10-26T12:00:00Z')).state,'complete');
+});
+
+// ---- #19 closure: the completeness evidence is only accepted when the quote is shown to belong to these prices ----
+test('later-session evidence is REFUSED when the quote is not bound to the price series (symbol, currency, fetch time)',()=>{
+ const NEXT={start:NY.start+86400e3,end:NY.end+86400e3,off:NY.off},now=NEXT.start+3600e3;
+ const good=rep(()=>1000,quote(NEXT,{quoteTime:new Date(now-6e4).toISOString()}),'2026-10-26');
+ assert.equal(S(good,now).state,'complete');
+ const bad=(over)=>{const r=rep(()=>1000,quote(NEXT,{quoteTime:new Date(now-6e4).toISOString(),...over}),'2026-10-26');return S(r,now)};
+ for(const [over,why] of [[{symbol:'OTHER'},'symbol'],[{currency:'SAR'},'currency'],[{retrievedAt:new Date(NOW+10*60e3).toISOString()},'fetch time 10 min apart'],[{retrievedAt:undefined},'no fetch time'],[{retrievedAt:'garbage'},'bad fetch time']]){
+  const x=bad(over);assert.equal(x.state,'unverified',why);assert.equal(x.reasonCode,'quote-not-bound',why);
+ }
+});
+test('final decision evidence: unavailable confirmed ratio says so, never "null" and never an invented number',()=>{
+ const r=withFacts(rep((i,n)=>i===n-1?6e6:1.5e6));r.prices=r.prices.slice(-1); // a single bar: it has its own ratio, but no confirmed session exists
+ const c=r.prices[0].close,scenario={reasons:[],incomplete:[],levels:{low:c,high:c*1.01,stop:c*.97,target1:c*1.02,target2:c*1.04}};
+ const now=NY.start+3600e3,q={symbol:r.company.symbol,currency:r.currency,price:c,quoteTime:new Date(now-6e4).toISOString(),isOpen:true,source:'test'};
+ const d=finalDecision(r,scenario,q,now),line=d.evidence.find(e=>e.includes('حجم نسبي'));
+ assert.ok(line,'volume evidence line present');assert.match(line,/غير متاحة/);assert.doesNotMatch(line,/null|undefined|NaN/);
 });

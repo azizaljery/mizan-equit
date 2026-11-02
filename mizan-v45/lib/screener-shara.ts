@@ -76,7 +76,7 @@ export function candidateEnvelope(item: Item): CandidateEvidenceEnvelope {
   put('price', c.price); put('predictedPrice', c.predictedPrice); put('expectedChangePct', c.expectedChangePct);
   put('priceTime', c.priceTime); put('currency', c.currency);
   if (Array.isArray(c.range) && c.range.length === 2 && c.range.every(finite)) values.range = [c.range[0], c.range[1]];
-  Object.assign(values, marketEvidence(item.report.prices, item.report.retrievedAt, {lastBarNotConfirmed: lastBarNotConfirmed({prices: item.report.prices ?? [], liveQuote: item.report.liveQuote, mode: item.report.mode}, Date.parse(item.report.retrievedAt ?? '') || Date.now())}));
+  Object.assign(values, marketEvidence(item.report.prices, item.report.retrievedAt, {lastBarNotConfirmed: lastBarNotConfirmed({prices: item.report.prices ?? [], liveQuote: item.report.liveQuote, mode: item.report.mode, retrievedAt: item.report.retrievedAt}, Date.parse(item.report.retrievedAt ?? '') || Date.now())}));
   const evidence: Record<string, EvidenceRecord> = {};
   for (const [key, value] of Object.entries(values)) {
     evidence[key] = {evidenceId: `${c.symbol}:${key}`, providerId: key in c ? 'screener-candidate' : 'market-report', providerVersion: '1', observedAt, value};
