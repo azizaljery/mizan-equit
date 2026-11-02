@@ -50,7 +50,7 @@ export function decisionBaseline(report:MarketReport,createdAt:string):DecisionB
   metric('cashConversion','التدفق التشغيلي / الربح',a.cashConversion,'×',a.annualDate,source('operatingCashFlow')),
   metric('debt','صافي الدين / EBITDA',a.netDebtEbitda,'×',a.annualDate,source('debt')),
   metric('pe','مكرر الربحية',a.pe,'×',a.ttmDate,report.priceSource),
-  metric('volume',a.tech.volumeBasis==='previous-confirmed'?`الحجم النسبي لجلسة ${a.tech.volumeSessionDate} (آخر جلسة مؤكدة؛ لا يخص شمعة السعر ${a.tech.priceBarDate})`:'الحجم النسبي',a.tech.relativeVolume,'×',report.asOf,report.priceSource),
+  metric('volume',a.tech.volumeBasis==='previous-confirmed'?`الحجم النسبي لجلسة ${a.tech.volumeSessionDate} (آخر جلسة مؤكدة، متأخرة ${a.tech.volumeLagSessions??1} جلسة؛ لا يخص شمعة السعر ${a.tech.priceBarDate})`:'الحجم النسبي',a.tech.relativeVolume,'×',report.asOf,report.priceSource),
   metric('support','الدعم',a.tech.support,report.currency,report.asOf,report.priceSource),
   metric('dataCoverage','تغطية فحوص البيانات',x.coverage,'%',report.asOf,'')
  ]};

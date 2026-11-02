@@ -244,7 +244,7 @@ export function generateCalibratedForecast(input: ForecastInput): ComprehensiveF
  return {symbol:report.company.symbol,anchorPrice:result.price,generatedAt:result.createdAt,
   modelVersion:result.version,calibrated:false,
   horizons:Object.fromEntries(entries) as Record<ForecastHorizon,HorizonForecast>,
-  regimeSummary:`بيئة السوق: ${label} | حجم نسبي: ${condition?.relativeVolume==null?'غير متحقق':condition.relativeVolume.toFixed(2)+'× لجلسة '+(condition.volumeSessionDate??'غير مؤرخة')}`,
+  regimeSummary:`بيئة السوق: ${label} | حجم نسبي: ${condition?.relativeVolume==null?'غير متحقق':condition.relativeVolume.toFixed(2)+'× لجلسة '+(condition.volumeSessionDate??'غير مؤرخة')+' (آخر جلسة مؤكدة؛ قد تتأخر عن الحالية)'}`,
   modelGovernanceNotes:[...(condition?.notes??[]),result.method,
    'المركز والنطاق تقديرات سيناريو؛ لم تثبت معايرتها كمئينات مستقبلية Q10/Q50/Q90.',
    'التدفق الحر يدخل في عامل الجودة؛ لا يُحوّل عائده إلى نمو سعري مضمون ولا تُفترض تكلفة رأس مال.',

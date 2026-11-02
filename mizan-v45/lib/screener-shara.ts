@@ -54,6 +54,9 @@ export function marketEvidence(prices: Price[] | undefined, retrievedAt: string 
   if (!last21.every((p) => finite(p.close) && finite(p.high) && finite(p.low) && finite(p.volume) && p.close > 0)) return out;
   // FCST-0004: volume statistics use completed sessions only; the (price-based) ATR and bar age below still use the last bar.
   const volBars = opts.lastBarNotConfirmed ? prices.slice(-21, -1) : last20;
+  // Basis of the two volume statistics below, so a reader of the envelope can tell which window was used.
+  out.volumeStatsBasis = opts.lastBarNotConfirmed ? 'previous-20-confirmed-sessions' : 'last-20-sessions';
+  out.zeroVolumeWindowSessions = opts.lastBarNotConfirmed ? 21 : 20; // 20 confirmed sessions + the unconfirmed bar when it is zero (conservative)
   out.medianTradedValue20 = median(volBars.map((p) => p.close * p.volume));
   // A zero in a not-confirmed bar still counts: the veto errs toward excluding (a transient false zero costs one candidate).
   out.zeroVolumeDays20 = volBars.filter((p) => p.volume <= 0).length + (opts.lastBarNotConfirmed && prices[prices.length - 1].volume <= 0 ? 1 : 0);

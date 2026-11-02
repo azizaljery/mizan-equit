@@ -90,7 +90,7 @@ export function forecastConditions(report: MarketReport, now = Date.now()): Fore
   const notes = [
     regime.available ? 'حالة السوق وصفية؛ ليست احتمالًا معايرًا أو دليلًا قاطعًا على الانكسار الهيكلي.' : regime.reason,
     relativeVolume===null ? 'الحجم النسبي غير متحقق؛ يلزم حجم الجلسة و20 جلسة سابقة صالحة.'
-      : `الحجم النسبي ${relativeVolume.toFixed(2)}× لجلسة ${volumeSessionDate} مقارنة بمتوسط 20 جلسة سابقة لها${lastBar.state!=='complete'?` (شمعة ${lastBar.barDate} غير مؤكدة الاكتمال فلم تُستخدم)`:''}.`,
+      : `الحجم النسبي ${relativeVolume.toFixed(2)}× لجلسة ${volumeSessionDate} مقارنة بمتوسط 20 جلسة سابقة لها${lastBar.state!=='complete'?` (شمعة ${lastBar.barDate} غير مؤكدة الاكتمال فلم تُستخدم؛ هذه الجلسة متأخرة جلسة واحدة عن شمعة السعر وليست حجم الجلسة الحالية)`:''}.`,
     reason,
     'لا تُستنتج احتمالات صعود أو درجة ثقة رقمية من نسبة فوز أو Brier افتراضيين.'
   ];
