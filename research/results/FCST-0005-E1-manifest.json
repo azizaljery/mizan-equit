@@ -1,7 +1,45 @@
 {
  "status": "DRAFT — not a freeze; regenerate and record at the freeze commit",
- "baseCommit": "fe837921640a9e1db7bcb908fe20bc27cae80e6d",
+ "baseCommit": "8dfbb7f11fe82d03d4542dd9f231fb6429867293",
  "workingTreeClean": true,
+ "designTools": [
+  {
+   "path": "mizan-v45/research/fcst0005/e1/variance-estimate.ts",
+   "sha256": "039be26d4cb028064865a82387d148811c57f3b8bc04eb3de44218da40a533e4"
+  },
+  {
+   "path": "mizan-v45/research/fcst0005/e1/power-core.mjs",
+   "sha256": "a11a5acb339431a3c11b5eac2855f3dc188454714ca1513fd2a308026160fa7f"
+  },
+  {
+   "path": "mizan-v45/research/fcst0005/e1/design.mjs",
+   "sha256": "c494b31a4ab2a9d97f6caf35cacc8b919e2681f8e1ff5f065b93669cf6ca72a9"
+  },
+  {
+   "path": "mizan-v45/research/fcst0005/e1/testable-cells.mjs",
+   "sha256": "952273ec52f5464ced0135766ee700ac4cd7fb7b184fdbd252214c7fc2cb6ab4"
+  },
+  {
+   "path": "mizan-v45/research/fcst0005/e1/coverage-check.mjs",
+   "sha256": "438cf47e0115d8bed4e79d8c3627fe8d0d2d1a6929ea0970446f10c78d86e5d2"
+  },
+  {
+   "path": "mizan-v45/research/fcst0005/e1/coverage-symbols.json",
+   "sha256": "f21b92e32c505223ba78e2aac8c5c893d734686ac42661abe17674fbb6bde57a"
+  },
+  {
+   "path": "mizan-v45/research/fcst0005/e1/source-profile.template.json",
+   "sha256": "e7b52c8e08e3746558dbc4cc781b44a2e316e36ab0df86da76b99d25541e0dd7"
+  },
+  {
+   "path": "mizan-v45/research/fcst0005/e0/range-coverage.ts",
+   "sha256": "2eaeed91e44d2d2505d51e82b4f8b70f85bd54a6ceb6153ad943f9da308729dd"
+  },
+  {
+   "path": "mizan-v45/research/fcst0005/e0/neutrality.ts",
+   "sha256": "831bfc77673fd150d70aaf6b7f94e0eb9cd49d691072f160867e5c833c4fd904"
+  }
+ ],
  "roots": [
   "mizan-v45/research/fcst0005/candidate.mjs",
   "mizan-v45/research/fcst0005/runner.mjs",
@@ -313,7 +351,7 @@
   "scale": "S = sigma63 * sqrt(h), sigma63 = sample sd of the last 63 daily log returns",
   "target": "z = ln(C[t+h]/C[t]) / S, estimand = conditional median, loss = pinball(0.5) = NAE",
   "ladIrls": {
-   "eps": 1e-06,
+   "eps": 0.000001,
    "iters": 200
   },
   "retrain": "once per calendar year; training rows need target index <= firstTestIndex - h - 1 (purge plus gap of h sessions); at least 30*h training dates",
@@ -328,6 +366,5 @@
    "R0": "zero centre",
    "C_pub": "production centre (researchFactors + forecastWeights + adjustedWeights + scenarioCenter) on price-only historical reports"
   }
- },
- "baseCommitNote": "code commit on fcst-0005-review that holds every file listed (later commits only add documents); a rebase changed the earlier local hash"
+ }
 }

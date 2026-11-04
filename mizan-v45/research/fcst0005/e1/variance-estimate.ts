@@ -32,7 +32,7 @@ for (const m of ['sa', 'us']) {
   engCache[m] = list.map(s => { const col: any[] = new Array(s.close.length).fill(null); for (let t = 252; t < s.close.length; t++) col[t] = engineAt(s, t, RUN_HORIZONS); return col; });
   const res = evaluateMarket({market: m, stocks, eng: (i: number, t: number, h: number) => engCache[m][i][t]?.[h] ?? null, calendar: calendars[m], gridStep: GRID, B: B_DEFAULT, variant: 'real'});
   for (const h of RUN_HORIZONS) {
-    const pm = res.out[h].perModel;
+    const pm: any = (res as any).out[h].perModel;
     for (const model of MODELS) for (const ref of ['R0', 'CPUB']) {
       const mc = byDate(pm[model]), mr = byDate(pm[ref]), dates = [...mc.keys()].filter(d => mr.has(d)).sort(); if (dates.length < 30) continue;
       const nc = dates.map(d => mean(mc.get(d)!)), nr = dates.map(d => mean(mr.get(d)!)), maeR = mean(nr), d = dates.map((_, i) => (nc[i] - nr[i]) / maeR);
