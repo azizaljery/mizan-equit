@@ -1,6 +1,6 @@
 {
  "status": "DRAFT — not a freeze; regenerate and record at the freeze commit",
- "baseCommit": "a980c89bd7b04d62c9558458ec6cf62956847b78",
+ "baseCommit": "fe837921640a9e1db7bcb908fe20bc27cae80e6d",
  "workingTreeClean": true,
  "roots": [
   "mizan-v45/research/fcst0005/candidate.mjs",
@@ -313,7 +313,7 @@
   "scale": "S = sigma63 * sqrt(h), sigma63 = sample sd of the last 63 daily log returns",
   "target": "z = ln(C[t+h]/C[t]) / S, estimand = conditional median, loss = pinball(0.5) = NAE",
   "ladIrls": {
-   "eps": 0.000001,
+   "eps": 1e-06,
    "iters": 200
   },
   "retrain": "once per calendar year; training rows need target index <= firstTestIndex - h - 1 (purge plus gap of h sessions); at least 30*h training dates",
@@ -328,5 +328,6 @@
    "R0": "zero centre",
    "C_pub": "production centre (researchFactors + forecastWeights + adjustedWeights + scenarioCenter) on price-only historical reports"
   }
- }
+ },
+ "baseCommitNote": "code commit on fcst-0005-review that holds every file listed (later commits only add documents); a rebase changed the earlier local hash"
 }
