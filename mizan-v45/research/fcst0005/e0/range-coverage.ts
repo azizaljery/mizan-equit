@@ -36,7 +36,7 @@ for (const f of files) {
     let out: any; try { out = forecasts(report, null, now, DEFAULT_SETTINGS, HZ); } catch { continue; }
     for (const r of out.rows) {
       const h = r.sessions, tgt = t + h;
-      const base: any = {m, sym, h, date: S.dates[t], year: +S.dates[t].slice(0, 4), avail: !!r.available, reason: r.available ? '' : (r.reasons?.[0] ?? 'unknown').slice(0, 60), inSample: null, covered: null, below: null, above: null, neutral: null, dir: r.direction, sample: r.sample ?? null, halfWidthLog: null};
+      const base: any = {m, sym, h, date: S.dates[t], year: +S.dates[t].slice(0, 4), avail: !!r.available, reason: r.available ? '' : String((r as any).reasons?.[0] ?? 'unknown').slice(0, 60), inSample: null, covered: null, below: null, above: null, neutral: null, dir: r.direction, sample: r.sample ?? null, halfWidthLog: null};
       if (r.available && r.range) {
         const [lo, hi] = r.range as [number, number], p0 = S.close[t];
         // A: historical h-returns inside the window the range was built from (same prices <= t), expressed against the origin price
