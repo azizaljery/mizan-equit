@@ -16,6 +16,7 @@ import {defineGate, fingerprint, maximumGate, minimumGate, readNumber, readStrin
 import type {CandidateEvidenceEnvelope, EvidenceRecord, JsonValue, SharaEvaluation, SharaGate, SharaStatus} from './shara/contracts';
 import type {ScreenerCandidate} from './screener-policy';
 import type {Price} from './analysis';
+import {lastBarNotConfirmed, type SessionReport} from './session-volume';
 
 export const SHARA_SCREENER_VERSION = 'shara-screener-1';
 /** Switch to true only after the owner reviews the shadow report. Default keeps selection identical to before. */
@@ -30,7 +31,7 @@ export const SHARA_MARKET_THRESHOLDS = {
   maxLastBarAgeDays: 7,
 } as const;
 
-type Item = {candidate: ScreenerCandidate; report: {prices?: Price[]; retrievedAt?: string}};
+type Item = {candidate: ScreenerCandidate; report: {prices?: Price[]; retrievedAt?: string; liveQuote?: SessionReport['liveQuote']; mode?: string}};
 export type SharaVerdict = {symbol: string; parity: SharaStatus; parityRule?: string; market: SharaStatus | 'NOT_RUN'; marketRules: string[]};
 export type SharaScreenerSummary = {
   version: string; mode: 'shadow' | 'enforce'; provisionalThresholds: true;
@@ -46,13 +47,19 @@ function median(values: number[]) {
   const s = [...values].sort((a, b) => a - b), m = s.length >> 1;
   return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
 }
-export function marketEvidence(prices: Price[] | undefined, retrievedAt: string | undefined): Record<string, JsonValue> {
+export function marketEvidence(prices: Price[] | undefined, retrievedAt: string | undefined, opts: {lastBarNotConfirmed?: boolean} = {}): Record<string, JsonValue> {
   const out: Record<string, JsonValue> = {};
   if (!Array.isArray(prices) || prices.length < 21) return out; // too short => evidence missing => SUSPEND
   const last21 = prices.slice(-21), last20 = last21.slice(1);
   if (!last21.every((p) => finite(p.close) && finite(p.high) && finite(p.low) && finite(p.volume) && p.close > 0)) return out;
-  out.medianTradedValue20 = median(last20.map((p) => p.close * p.volume));
-  out.zeroVolumeDays20 = last20.filter((p) => p.volume <= 0).length;
+  // FCST-0004: volume statistics use completed sessions only; the (price-based) ATR and bar age below still use the last bar.
+  const volBars = opts.lastBarNotConfirmed ? prices.slice(-21, -1) : last20;
+  // Basis of the two volume statistics below, so a reader of the envelope can tell which window was used.
+  out.volumeStatsBasis = opts.lastBarNotConfirmed ? 'previous-20-confirmed-sessions' : 'last-20-sessions';
+  out.zeroVolumeWindowSessions = opts.lastBarNotConfirmed ? 21 : 20; // 20 confirmed sessions + the unconfirmed bar when it is zero (conservative)
+  out.medianTradedValue20 = median(volBars.map((p) => p.close * p.volume));
+  // A zero in a not-confirmed bar still counts: the veto errs toward excluding (a transient false zero costs one candidate).
+  out.zeroVolumeDays20 = volBars.filter((p) => p.volume <= 0).length + (opts.lastBarNotConfirmed && prices[prices.length - 1].volume <= 0 ? 1 : 0);
   const tr = last20.map((p, i) => Math.max(p.high - p.low, Math.abs(p.high - last21[i].close), Math.abs(p.low - last21[i].close)));
   out.atrPct20 = (100 * tr.reduce((a, b) => a + b, 0) / tr.length) / prices[prices.length - 1].close;
   const t = Date.parse(retrievedAt ?? ''), b = Date.parse(prices[prices.length - 1].date);
@@ -69,7 +76,7 @@ export function candidateEnvelope(item: Item): CandidateEvidenceEnvelope {
   put('price', c.price); put('predictedPrice', c.predictedPrice); put('expectedChangePct', c.expectedChangePct);
   put('priceTime', c.priceTime); put('currency', c.currency);
   if (Array.isArray(c.range) && c.range.length === 2 && c.range.every(finite)) values.range = [c.range[0], c.range[1]];
-  Object.assign(values, marketEvidence(item.report.prices, item.report.retrievedAt));
+  Object.assign(values, marketEvidence(item.report.prices, item.report.retrievedAt, {lastBarNotConfirmed: lastBarNotConfirmed({prices: item.report.prices ?? [], liveQuote: item.report.liveQuote, mode: item.report.mode, retrievedAt: item.report.retrievedAt}, Date.parse(item.report.retrievedAt ?? '') || Date.now())}));
   const evidence: Record<string, EvidenceRecord> = {};
   for (const [key, value] of Object.entries(values)) {
     evidence[key] = {evidenceId: `${c.symbol}:${key}`, providerId: key in c ? 'screener-candidate' : 'market-report', providerVersion: '1', observedAt, value};

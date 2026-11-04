@@ -3,7 +3,7 @@ import {scenarioCenter,inspectScenarioRange,forecastDiagnostic,type ForecastBloc
 import {DEFAULT_SETTINGS,adjustedWeights,type SiteSettings} from './site-settings';
 import {forecastWindow} from './forecast-window';
 import {automaticAnalysis} from './automatic-analysis';
-import {finite,ageDays,fmt,technical} from './analysis';
+import {finite,ageDays,fmt,technical,volumeLabel} from './analysis';
 import type {MarketReport} from './market-data';
 import type {LiveQuote} from './live-quote';
 import {resolveFinancialSources} from './source-resolution';
@@ -12,7 +12,12 @@ import {calibrateForecastRange,CONFORMAL_RANGE_CALIBRATION_ENABLED,type RangeCal
 export {HORIZONS,type ForecastHorizon} from './forecast-horizons';
 import {HORIZONS,type ForecastHorizon} from './forecast-horizons';
 export type Horizon='short'|'medium'|'long';
-export const MODEL_VERSION='mizan-scenarios-7-shock-warning-1';
+// Version history (the stored model string is MODEL_VERSION + a hash of the settings, see forecastModelVersion();
+// forecast_records.model carries it and every evaluation query filters by it, so versions are never mixed):
+//   shock-warning-1  shock policy: short horizons issued with warning, wider capped range.
+//   shock-warning-2  FCST-0004: VOLUME statistics only. Volume is read from confirmed sessions (lib/session-volume.ts);
+//                    weights, centre formula, range and decision gates are unchanged. Not evidence of better accuracy.
+export const MODEL_VERSION='mizan-scenarios-7-shock-warning-2';
 export type ResearchModelOutput=ReturnType<typeof forecasts>;
 const clamp=(v:number)=>Math.max(-1,Math.min(1,v));
 const avg=(v:(number|null)[])=>{const x=v.filter(finite);return x.length?x.reduce((s,n)=>s+n,0)/x.length:null};
@@ -32,7 +37,7 @@ export function forecastWeights(sessions:number):Record<string,number>{
  return RESEARCH_WEIGHTS.long;
 }
 export function researchFactors(report:MarketReport,now=Date.now()){
- const a=automaticAnalysis(report);
+ const a=automaticAnalysis(report,'trader',now);
  const conditioning=forecastConditions(report,now);
  report={...report,facts:resolveFinancialSources(report).facts};
  const t=a.tech,price=a.price,source=report.priceSource,financial=report.facts.find(f=>f.key==='revenue')?.source||source,date=t.last?.date||'';
@@ -50,7 +55,7 @@ export function researchFactors(report:MarketReport,now=Date.now()){
  add('valuation','التقييم مقابل النظراء',fsignal(a.pe&&a.peerPE&&a.peerCount>=2?clamp((a.peerPE/a.pe-1)/.5):null),`P/E ${fmt(a.pe)} مقابل ${fmt(a.peerPE)} لعينة ${a.peerCount} نظراء؛ لا تمثل القطاع كله.`,financial,a.ttmDate);
  const s50=t.sma50.at(-1),s200=t.sma200.at(-1),rsi=t.rsi.at(-1),macd=t.macdHist.at(-1);
  add('trend','اتجاه السعر',price&&finite(s50)&&finite(s200)?avg([norm(price/s50-1,.15),norm(s50/s200-1,.15)]):null,`السعر ${fmt(price)}؛ متوسط 50 ${fmt(s50)} ومتوسط 200 ${fmt(s200)}.`);
- add('momentum','الزخم والحجم النسبي',avg([finite(rsi)?norm(rsi-50,30):null,finite(macd)&&price?norm(macd/price,.01):null]),`RSI ${fmt(rsi)}؛ MACD ${fmt(macd)}؛ الحجم النسبي ${fmt(t.relativeVolume)}×.`);
+ add('momentum','الزخم والحجم النسبي',avg([finite(rsi)?norm(rsi-50,30):null,finite(macd)&&price?norm(macd/price,.01):null]),`RSI ${fmt(rsi)}؛ MACD ${fmt(macd)}؛ الحجم النسبي ${fmt(t.relativeVolume)}×${volumeLabel(t)?` (${volumeLabel(t)})`:''}.`);
  // Absolute turnover is used within the same market/currency; spread remains unknown if untimestamped.
  add('liquidity','السيولة واستمرارية التداول',finite(t.turnover)&&t.turnover>0&&t.zeroVolume!==null?avg([clamp((Math.log10(t.turnover)-6)/2),t.zeroVolume===0?.5:-1,finite(t.volumeRatio)?norm(t.volumeRatio-1):null]):null,`متوسط قيمة التداول التقريبي ${fmt(t.turnover)} ${report.currency}؛ أيام دون حجم ${t.zeroVolume??'—'}؛ الفارق المؤرخ غير متحقق.`);
  add('risk','التذبذب والهبوط',avg([norm(t.atrPct===null?null:3-t.atrPct,3),norm(t.maxDD===null?null:25-t.maxDD,25)]),`ATR ${fmt(t.atrPct)}%؛ أكبر هبوط في آخر 252 جلسة ${fmt(t.maxDD)}%.`);
@@ -121,7 +126,7 @@ export function forecasts(report:MarketReport,quote:LiveQuote|null=null,now=Date
   const condition=horizonCondition(conditioning,h.sessions);
   // options.shockWarning===false is a RESEARCH/TEST counterfactual (same inputs, no shock widening, no warning); production callers never pass it.
   const shockWarning=options.shockWarning===false?null:condition.shockWarning;
-  const modelCondition={...condition,shockWarning,calibrated:false as const,regime:conditioning.regime.currentRegime,relativeVolume:conditioning.relativeVolume,cashFlow:conditioning.cashFlow,notes:conditioning.notes};
+  const modelCondition={...condition,shockWarning,calibrated:false as const,regime:conditioning.regime.currentRegime,relativeVolume:conditioning.relativeVolume,volumeSessionDate:conditioning.volumeSessionDate,volumeLagSessions:conditioning.volumeLagSessions,cashFlow:conditioning.cashFlow,notes:conditioning.notes};
   const window=forecastWindow(report.company.symbol,h.sessions,report.asOf,now,report.mode==='historical');
   const weights=adjustedWeights(forecastWeights(h.sessions),settings);
   const available=factors.filter(f=>f.signal!==null),coverage=available.reduce((s,f)=>s+weights[f.key],0);
@@ -239,7 +244,7 @@ export function generateCalibratedForecast(input: ForecastInput): ComprehensiveF
  return {symbol:report.company.symbol,anchorPrice:result.price,generatedAt:result.createdAt,
   modelVersion:result.version,calibrated:false,
   horizons:Object.fromEntries(entries) as Record<ForecastHorizon,HorizonForecast>,
-  regimeSummary:`بيئة السوق: ${label} | حجم نسبي: ${condition?.relativeVolume==null?'غير متحقق':condition.relativeVolume.toFixed(2)+'×'}`,
+  regimeSummary:`بيئة السوق: ${label} | حجم نسبي: ${condition?.relativeVolume==null?'غير متحقق':condition.relativeVolume.toFixed(2)+'× لجلسة '+(condition.volumeSessionDate??'غير مؤرخة')+' '+(condition.volumeLagSessions?`(آخر جلسة مؤكدة، متأخرة ${condition.volumeLagSessions} جلسة عن شمعة السعر، وليست الجلسة الحالية)`:'(جلسة شمعة السعر نفسها)')}`,
   modelGovernanceNotes:[...(condition?.notes??[]),result.method,
    'المركز والنطاق تقديرات سيناريو؛ لم تثبت معايرتها كمئينات مستقبلية Q10/Q50/Q90.',
    'التدفق الحر يدخل في عامل الجودة؛ لا يُحوّل عائده إلى نمو سعري مضمون ولا تُفترض تكلفة رأس مال.',

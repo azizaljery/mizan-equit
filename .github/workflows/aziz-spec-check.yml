@@ -12,6 +12,7 @@ on:
       - forecast-repair
       - mo-robust
       - forecast-diagnosis
+      - fix/session-volume
 
 permissions:
   contents: write
@@ -61,9 +62,9 @@ jobs:
           REF: ${{ github.ref_name }}
         run: |
           set +e
-          (node --test --import tsx tests/forecast-repair-regression.test.mjs tests/forecast-fcst0001.test.mjs; echo "exit=$?"; npm test; echo "exit=$?") > ../test-out.txt 2>&1
+          (node --test --import tsx tests/forecast-repair-regression.test.mjs tests/forecast-fcst0001.test.mjs tests/session-volume.test.mjs; echo "exit=$?"; npm test; echo "exit=$?") > ../test-out.txt 2>&1
           F=$(grep -c "exit=[1-9]" ../test-out.txt)
-          node -e 'const fs=require("fs");const t=fs.readFileSync("../test-out.txt","utf8");fs.writeFileSync("../tb.json",JSON.stringify({message:"ci diagnostics: tests "+process.env.RID,branch:process.env.REF,content:Buffer.from(t.slice(-60000)).toString("base64")}))'
+          node -e 'const fs=require("fs");const full=fs.readFileSync("../test-out.txt","utf8");const fl=full.split("\n").filter(l=>/^not ok|✖|failureType|error:|expected:|actual:|^exit=|location:/.test(l.trim())||/^\s*not ok/.test(l)).slice(0,120).join("\n");const t="FAILURES-EXTRACT\n"+fl+"\n=====\n"+full.slice(-30000);fs.writeFileSync("../tb.json",JSON.stringify({message:"ci diagnostics: tests "+process.env.RID,branch:process.env.REF,content:Buffer.from(t).toString("base64")}))'
           gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/tests-${RID}.txt" --input ../tb.json >/dev/null || echo WARN
           exit $F
       - name: Daily picks tests (unchanged behaviour)
@@ -74,5 +75,31 @@ jobs:
       - name: Research experiments tests (PIT universe, holdout seal)
         working-directory: research/experiments
         run: node --test __tests__/*.test.cjs
+      - name: FCST-0004 session-volume tests (spec reporter, published)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RID: ${{ github.run_id }}
+          REF: ${{ github.ref_name }}
+        run: |
+          set +e
+          node --test --test-reporter=spec --import tsx tests/session-volume.test.mjs tests/session-volume-us.test.mjs > ../sv-tests.txt 2>&1; SV=$?
+          node -e 'const fs=require("fs");const t=fs.readFileSync("../sv-tests.txt","utf8");fs.writeFileSync("../b1.json",JSON.stringify({message:"ci diagnostics: sv tests "+process.env.RID,branch:process.env.REF,content:Buffer.from(t.slice(-40000)).toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/sv-tests-${RID}.txt" --input ../b1.json >/dev/null || echo WARN1
+          exit $SV
+      - name: FCST-0004 final comparison, base vs head, synthetic inputs only (published)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RID: ${{ github.run_id }}
+          REF: ${{ github.ref_name }}
+        run: |
+          set +e
+          rm -rf /tmp/svbase2 && mkdir -p /tmp/svbase2 && git -C .. archive 0196966 mizan-v45 | tar -x -C /tmp/svbase2 && ln -s "$PWD/node_modules" /tmp/svbase2/mizan-v45/node_modules
+          node --import tsx research/fcst0004/compare-final.mjs /tmp/svbase2 ../cmp-final.json > ../cmp-final.log 2>&1; CMP=$?
+          cat ../cmp-final.log | head -60
+          node -e 'const fs=require("fs");const t=fs.readFileSync("../cmp-final.json","utf8");fs.writeFileSync("../b2.json",JSON.stringify({message:"ci diagnostics: fcst0004 final comparison "+process.env.RID,branch:process.env.REF,content:Buffer.from(t).toString("base64")}))'
+          gh api --method PUT "repos/${{ github.repository }}/contents/ci-diagnostics/fcst0004-final-compare-${RID}.json" --input ../b2.json >/dev/null || echo WARN2
+          exit $CMP
       - name: Build (verifies bundle; nothing is published)
         run: npm run build

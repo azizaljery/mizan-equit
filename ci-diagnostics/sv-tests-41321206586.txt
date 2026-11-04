@@ -1,0 +1,63 @@
+✔ lastBarIncomplete: open, just-closed (grace) and later; historical, no quote, previous-date bar (3.38679ms)
+✔ technical: excludeLastVolume gives the completed-session relative volume; price indicators are unchanged (5.761617ms)
+✔ forecast conditions: open or just-closed session uses completed sessions; a long-closed session uses the last bar (3.015892ms)
+✔ trade scenario: the confirmation gate is UNCHANGED (partial volume is a lower bound); only the note explains it (18.75204ms)
+✔ screener evidence: volume statistics skip the incomplete bar; ATR and bar age still use it (0.558403ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 145.353122
+base=019696602dfd93a121fac46a7c5c05393254218d
+
+  ../../../../../../tmp/new.mjs  194.8kb
+
+⚡ Done in 49ms
+{
+ "entries": 80,
+ "incompleteCount": 40,
+ "errorsOld": 0,
+ "errorsNew": 0,
+ "sa": {
+  "n": 40,
+  "incomplete": 40,
+  "medianRelVolOld_incomplete": 0.5003387180405385,
+  "medianRelVolNew_incomplete": 1.001631729056441,
+  "medianVolumeRatioOld_incomplete": 1.213962826445874,
+  "medianVolumeRatioNew_incomplete": 1.2074510952697324,
+  "zeroVolumeChanged": 0,
+  "turnoverChanged": 40,
+  "scenarioGateChanged": 0,
+  "finalDecisionChanged": 0,
+  "finalBuyOld": 0,
+  "finalBuyNew": 0,
+  "conditionRelVolChanged": 40,
+  "forecastRowsChanged": 240,
+  "forecastRowsTotal": 240,
+  "evidenceChanged": 12,
+  "newlyConfirmedScenario": 0
+ },
+ "us": {
+  "n": 40,
+  "incomplete": 0,
+  "medianRelVolOld_incomplete": null,
+  "medianRelVolNew_incomplete": null,
+  "medianVolumeRatioOld_incomplete": null,
+  "medianVolumeRatioNew_incomplete": null,
+  "zeroVolumeChanged": 0,
+  "turnoverChanged": 0,
+  "scenarioGateChanged": 0,
+  "finalDecisionChanged": 0,
+  "finalBuyOld": 0,
+  "finalBuyNew": 0,
+  "conditionRelVolChanged": 0,
+  "forecastRowsChanged": 240,
+  "forecastRowsTotal": 240,
+  "evidenceChanged": 0,
+  "newlyConfirmedScenario": 0
+ }
+}
+sv=0 cmp=0

@@ -66,7 +66,7 @@ export function requirementAnalysis(r:Requirements,h:YearRow[],f:Financials,p:Pr
  add('الموقع من متوسط 200','trader',finite(sma200),!!t.last&&sma200!==null&&t.last.close>sma200,finite(sma200)?`الإغلاق ${fmt(t.last?.close)} ومتوسط 200 = ${fmt(sma200)}.`:'يلزم 200 جلسة يومية لهذا الشرط.');
  add('أقرب دعم ومقاومة','trader',finite(t.support)&&finite(t.resistance),true,finite(t.support)?`نطاق مرجعي: دعم ${fmt(t.support)} ومقاومة ${fmt(t.resistance)}. أقرب قاع وقمة محليين حول الإغلاق، مؤكَدين بجلستين على كل جانب خلال 122 جلسة؛ راجع صلاحية المستوى.`:'يلزم تاريخ سعري كافٍ.');
  const volumeConfirm=t.relativeVolume!==null&&t.relativeVolume>1&&p.length>1&&p[p.length-1].close>p[p.length-2].close;
- add('الحجم وتأكيد الحركة','trader',t.relativeVolume!==null,volumeConfirm,`حجم آخر جلسة / متوسط 20 = ${fmt(t.relativeVolume)}×. فحص مبسط: إغلاق صاعد وحجم أعلى من المتوسط.`);
+ add('الحجم وتأكيد الحركة','trader',t.relativeVolume!==null,volumeConfirm,`حجم آخر شمعة${t.volumeSessionDate?` (${t.volumeSessionDate})`:''} في الملف المُدخل (قد يكون جزئيًا) / متوسط 20 = ${fmt(t.relativeVolume)}×. فحص مبسط: إغلاق صاعد وحجم أعلى من المتوسط.`);
  add('المحفز المتوقع','trader',!!r.catalyst.trim(),true,r.catalyst||'اكتب المحفز ومصدره، وافصل الحقيقة عن التوقع.');
  const deadlineValid=validDate(r.deadline)&&ageDays(r.deadline,m.asOf)>0;
  add('الأفق والمهلة الزمنية','trader',!!r.horizon.trim()&&validDate(r.deadline),deadlineValid,`${r.horizon||'أفق غير مسجل'}؛ موعد مراجعة عدم تحقق الحركة: ${r.deadline||'غير مسجل'}.`);
