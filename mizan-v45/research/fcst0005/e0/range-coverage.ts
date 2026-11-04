@@ -23,7 +23,7 @@ const HZ = H.map(s => ({name: 'h' + s, sessions: s}));
 type Row = {m: string; sym: string; h: number; date: string; year: number; avail: boolean; reason: string; inSample: number | null; covered: boolean | null; below: boolean | null; above: boolean | null; neutral: boolean | null; dir: string; sample: number | null; halfWidthLog: number | null};
 const rows: Row[] = [], manifest: any[] = [];
 for (const f of files) {
-  const L = loadTruncated(run(['show', `${REF}:${f}`]), CUTOFF), S = toSeries(L);
+  const L = loadTruncated(run(['show', `${REF}:${f}`]), CUTOFF), S: any = toSeries(L);
   manifest.push({file: f.split('/').pop(), digest: L.digest, rows: L.rows.length});
   if (S.close.length < 252 + 63 + 60) continue;
   const sym = L.symbol || f.split('/').pop()!.replace('.json', ''), m = sym.endsWith('.SR') ? 'sa' : 'us', cur = m === 'sa' ? 'SAR' : 'USD', n = S.close.length;
