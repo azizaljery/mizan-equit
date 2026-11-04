@@ -24,8 +24,10 @@ const git = (...a) => execFileSync('git', ['-C', APP, ...a]).toString().trim();
 const files = [...seen.entries()].map(([f, t]) => ({path: relative(resolve(APP, '..'), f), sha256: createHash('sha256').update(t).digest('hex'), gitBlob: git('hash-object', f), bytes: Buffer.byteLength(t)})).sort((a, b) => a.path < b.path ? -1 : 1);
 const aggregate = createHash('sha256').update(files.map(f => f.path + ':' + f.sha256).join('\n')).digest('hex');
 const engine = readFileSync(resolve(HERE, 'engine-bias.ts'), 'utf8');
+const toolPaths = ['e1/variance-estimate.ts', 'e1/power-core.mjs', 'e1/design.mjs', 'e1/testable-cells.mjs', 'e1/coverage-check.mjs', 'e1/coverage-symbols.json', 'e1/source-profile.template.json', 'e0/range-coverage.ts', 'e0/neutrality.ts'].map(f => resolve(HERE, f));
+const designTools = toolPaths.map(f => ({path: relative(resolve(APP, '..'), f), sha256: createHash('sha256').update(readFileSync(f, 'utf8')).digest('hex')}));
 const out = {status: 'DRAFT — not a freeze; regenerate and record at the freeze commit', baseCommit: git('rev-parse', 'HEAD'), workingTreeClean: git('status', '--porcelain', '--', '.').length === 0,
-  roots: roots.map(f => relative(resolve(APP, '..'), f)), fileCount: files.length, aggregateSha256: aggregate, files,
+  designTools, roots: roots.map(f => relative(resolve(APP, '..'), f)), fileCount: files.length, aggregateSha256: aggregate, files,
   frozenParameters: {kappa: C.KAPPA, delta: C.DELTA, horizonsRun: R.RUN_HORIZONS, models: R.MODELS, familyM_protocol: R.FAMILY_M, seeds: R.SEEDS, bootstrapB: R.B_DEFAULT,
     engineWindowSessions: +/WINDOW\s*=\s*(\d+)/.exec(engine)[1], features: ['mom126_5 = ln(C[t-5]/C[t-126])', 'trend50_200 = ln(SMA50/SMA200)', 'mom252_21 = ln(C[t-21]/C[t-252])'], featureWarmupSessions: 252,
     scale: 'S = sigma63 * sqrt(h), sigma63 = sample sd of the last 63 daily log returns', target: 'z = ln(C[t+h]/C[t]) / S, estimand = conditional median, loss = pinball(0.5) = NAE', ladIrls: {eps: 1e-6, iters: 200},

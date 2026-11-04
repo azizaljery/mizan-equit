@@ -76,6 +76,6 @@ jobs:
         working-directory: research/experiments
         run: node --test __tests__/*.test.cjs
       - name: FCST-0005 candidate tests (synthetic data only)
-        run: node --test --test-reporter=spec --import tsx tests/fcst0005-candidate.test.mjs tests/fcst0005-guard.test.mjs tests/fcst0005-runner.test.mjs tests/fcst0005-neutrality.test.ts
+        run: node --test --test-reporter=spec --import tsx tests/fcst0005-candidate.test.mjs tests/fcst0005-guard.test.mjs tests/fcst0005-runner.test.mjs tests/fcst0005-neutrality.test.ts tests/fcst0005-coverage-check.test.mjs
       - name: Build (verifies bundle; nothing is published)
         run: npm run build
