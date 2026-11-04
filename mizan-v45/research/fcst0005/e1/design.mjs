@@ -1,61 +1,69 @@
-// FCST-0005 E1 PLANNING (no V data is read; none is assumed to exist). Computes, from the exposed-window stage-1 result file only:
-//   (1) how many origin dates / non-overlapping periods an earlier window would give per market and horizon under the protocol's own split rule;
-//   (2) power and minimum detectable improvement under Holm families of size 24 / 8 / 4, INCLUDING the protocol's extra requirement
-//       that the point estimate be >= delta (so a true improvement of exactly delta can never exceed 50% power).
-// Planning estimates of noise come from the exposed window C and are labelled as such. Deterministic; no I/O except reading the result JSON.
+// FCST-0005 E1 PLANNING v2 (no V data is read; none is assumed to exist). From the exposed-window stage-1 result file only:
+//  (1) origin dates / non-overlapping periods an earlier window would give per market and horizon under the runner's split rule;
+//  (2) power of the JOINT acceptance test against BOTH references (intersection-union), Holm family fixed at m = 24 (Bonferroni critical value, exact for the best cell,
+//      conservative otherwise; untestable cells stay in the family), with the protocol's extra requirement estimate >= delta (1%, never lowered),
+//      under sensitivity to (a) the correlation between the two estimates and (b) under-estimated sampling variability (temporal dependence / regime change).
+// Planning estimates only: noise is taken from the EXPOSED window C. Deterministic (seeded Monte Carlo, common random numbers). Not a guarantee of any outcome.
 import {readFileSync, writeFileSync} from 'node:fs';
-import {normInv, DELTA} from '../candidate.mjs';
+import {normInv, DELTA, mulberry32} from '../candidate.mjs';
 
 const [, , resultPath, outPath] = process.argv;
 const R = JSON.parse(readFileSync(resultPath, 'utf8'));
-const Phi = x => { const t = 1 / (1 + 0.2316419 * Math.abs(x)), d = 0.3989423 * Math.exp(-x * x / 2), p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274)))); return x > 0 ? 1 - p : p; };
-const H = [1, 5, 21], MK = ['sa', 'us'], FAM = {fixed24: 24, perHorizon8: 8, perCell4: 4};
+const H = [1, 5, 21], MK = ['sa', 'us'], M_FAMILY = 24, N_SIM = 200000, SEED = 20261104;
+const C_CRIT = normInv(1 - 0.05 / M_FAMILY);
+const RHO = [0, 0.5, 0.9], INFLATE = [1, 1.5, 3];            // sensitivity grid; (inflate 3, rho 0) is the severe case (least favourable)
+const THETA = [0.01, 0.015, 0.02];
 
-// sessions per year per market, from the stored manifest (rows between 2019-10-14 and 2024-09-04 inclusive)
 const years = (Date.parse('2024-09-04') - Date.parse('2019-10-14')) / 864e5 / 365.25;
 const spy = {}; for (const m of MK) { const rows = R.manifest.filter(f => (f.file.endsWith('.SR.json')) === (m === 'sa')).map(f => f.rows).sort((a, b) => a - b); spy[m] = rows[Math.floor(rows.length / 2)] / years; }
-
-// noise: standard error of the mean relative improvement at the exposed window's own n (block bootstrap CI half-width / 1.96), worst of the two references, worst of the four models with a non-degenerate CI
 const noise = {};
 for (const m of MK) for (const h of H) {
-  const cs = R.cells.filter(c => c.market === m && c.h === h && c.vsR0 && c.vsCpub);
-  const ses = []; for (const c of cs) for (const k of ['vsR0', 'vsCpub']) { const w = (c[k].hi - c[k].lo) / 2 / 1.96; if (w > 1e-9) ses.push({model: c.model, ref: k, se: w}); }
+  const cs = R.cells.filter(c => c.market === m && c.h === h && c.vsR0 && c.vsCpub), ses = [];
+  for (const c of cs) for (const k of ['vsR0', 'vsCpub']) { const w = (c[k].hi - c[k].lo) / 2 / 1.96; if (w > 1e-9) ses.push({model: c.model, ref: k, se: w}); }
   const worst = ses.reduce((a, b) => b.se > a.se ? b : a, ses[0]);
-  noise[`${m}/${h}`] = {nDatesC: cs[0].nDates, seC: worst.se, from: `${worst.model} ${worst.ref}`, degenerate: cs.length - new Set(ses.map(s => s.model)).size};
+  noise[`${m}/${h}`] = {nDatesC: cs[0].nDates, seC: worst.se, from: `${worst.model} ${worst.ref}`};
 }
-// number of test origins for an earlier-window scenario under the runner's split rule: a test year Y is used only if
-// the training origins available before it (purged by 2h+1, warm-up 252) number at least 30*h.
 const ymd = (y, m, d) => Date.UTC(y, m - 1, d), V_END = ymd(2019, 10, 13);
 function scenario(start, m, h) {
-  const S = ymd(start, 1, 1), sp = spy[m], idx = t => Math.round((t - S) / 864e5 / 365.25 * sp), end = idx(V_END) - h;  // last origin whose target is still inside the window
+  const S = ymd(start, 1, 1), sp = spy[m], idx = t => Math.round((t - S) / 864e5 / 365.25 * sp), end = idx(V_END) - h;
   let n = 0, firstYear = null;
   for (let Y = start; Y <= 2019; Y++) {
     const f = idx(ymd(Y, 1, 1)), need = 252 + 32 * h, last = Math.min(idx(ymd(Y, 12, 31)), end);
-    if (f < need) continue;  // runner skips the year
+    if (f < need) continue;
     n += Math.max(0, last - f + 1); if (firstYear === null && last >= f) firstYear = Y;
   }
   return {nOrigins: n, nonOverlap: Math.floor(n / h), firstTestYear: firstYear};
 }
+// common random numbers for the bivariate normal: (g1, g2) iid N(0,1)
+const rnd = mulberry32(SEED), gauss = () => { let s = 0; for (let i = 0; i < 12; i++) s += rnd(); return s - 6; };
+const G1 = new Float64Array(N_SIM), G2 = new Float64Array(N_SIM); for (let i = 0; i < N_SIM; i++) { G1[i] = gauss(); G2[i] = gauss(); }
+/** P(both references pass): e_i ~ N(theta, (infl*se)^2) with corr rho; pass_i = e_i > crit*se (the analyst's se) AND e_i >= delta. */
+function jointPower(theta, se, rho, infl) {
+  const thr = Math.max(DELTA, C_CRIT * se), sd = infl * se, a = Math.sqrt(1 - rho * rho); let hit = 0;
+  for (let i = 0; i < N_SIM; i++) { const e1 = theta + sd * G1[i], e2 = theta + sd * (rho * G1[i] + a * G2[i]); if (e1 >= thr && e2 >= thr) hit++; }
+  return hit / N_SIM;
+}
+/** Smallest true improvement with joint power >= 0.8 (bisection; power is increasing in theta). */
+function mde80(se, rho, infl) { let lo = 0, hi = 0.2; for (let i = 0; i < 40; i++) { const mid = (lo + hi) / 2; if (jointPower(mid, se, rho, infl) >= 0.8) hi = mid; else lo = mid; } return hi; }
+/** Origins needed for joint power 0.8 at theta (se scales with 1/sqrt(n)); null if impossible. */
+function originsNeeded(theta, nC, seC, rho, infl) {
+  if (jointPower(theta, 1e-6, rho, infl) < 0.8) return null; let lo = 1e-6, hi = 0.2;
+  if (jointPower(theta, hi, rho, infl) >= 0.8) return Math.ceil(nC * (seC / hi) ** 2);
+  for (let i = 0; i < 40; i++) { const mid = (lo + hi) / 2; if (jointPower(theta, mid, rho, infl) >= 0.8) lo = mid; else hi = mid; }
+  return Math.ceil(nC * (seC / lo) ** 2);
+}
 const SCEN = {V_only_2015: 2015, A_plus_V_2010: 2010, A_plus_V_2005: 2005};
-const delta = DELTA, z80 = normInv(0.8);
-const out = {kind: 'planning only; noise estimated on the EXPOSED window C; no earlier data read', delta, sessionsPerYear: spy, noise, scenarios: {}};
+const out = {kind: 'planning only; noise estimated on the EXPOSED window C; no earlier data read; powers are model-based estimates, not guarantees', delta: DELTA, familyM: M_FAMILY, critZ: C_CRIT,
+  jointRule: 'both references: estimate >= max(delta, critZ*se); Bonferroni critical value for the fixed family of 24 (untestable cells stay in the family)', nSim: N_SIM, seed: SEED, rhoGrid: RHO, inflateGrid: INFLATE, thetaGrid: THETA,
+  sessionsPerYear: spy, noise, scenarios: {}};
 for (const [name, start] of Object.entries(SCEN)) {
   out.scenarios[name] = {};
   for (const m of MK) for (const h of H) {
-    const sc = scenario(start, m, h), nz = noise[`${m}/${h}`];
-    const se = sc.nOrigins > 0 ? nz.seC * Math.sqrt(nz.nDatesC / sc.nOrigins) : Infinity;
-    const fam = {};
-    for (const [fn, mm] of Object.entries(FAM)) {
-      const c = normInv(1 - 0.05 / mm), thr = Math.max(delta, c * se);               // 'proven' needs z > c (Bonferroni, conservative for Holm) AND estimate >= delta
-      const P = th => 1 - Phi((thr - th) / se);
-      fam[fn] = {critZ: c, power_true_0_5pct: P(0.005), power_true_1pct: P(0.01), power_true_1_5pct: P(0.015), power_true_2pct: P(0.02), mde80: thr + z80 * se,
-        rejectProb_true_0: Phi((delta - 1.96 * se - 0) / se), rejectProb_true_0_5pct: Phi((delta - 1.96 * se - 0.005) / se)};
-    }
-    // origins needed (on the exposed-window noise) for 80% power at a true improvement th, family of 8: smallest se* with mde(se*) = th, by bisection (mde is increasing in se)
-    const need = th => { const c = normInv(1 - 0.05 / 8), mde = s => Math.max(delta, c * s) + z80 * s; if (mde(1e-9) >= th) return null; let lo = 1e-9, hi = 1; for (let i = 0; i < 100; i++) { const mid = (lo + hi) / 2; if (mde(mid) <= th) lo = mid; else hi = mid; } return Math.ceil(nz.nDatesC * (nz.seC / lo) ** 2); };
-    out.scenarios[name][`${m}/${h}`] = {...sc, nonOverlapOk: sc.nonOverlap >= 60, se, families: fam, originsNeeded_80pct_at_1_5pct: need(0.015), originsNeeded_80pct_at_2pct: need(0.02)};
+    const sc = scenario(start, m, h), nz = noise[`${m}/${h}`], se = nz.seC * Math.sqrt(nz.nDatesC / sc.nOrigins), grid = {};
+    for (const infl of INFLATE) for (const rho of RHO) grid[`infl${infl}_rho${rho}`] = {...Object.fromEntries(THETA.map(t => ['power_' + t, jointPower(t, se, rho, infl)])), mde80: mde80(se, rho, infl)};
+    out.scenarios[name][`${m}/${h}`] = {...sc, testableByCount: sc.nonOverlap >= 60, se, grid, originsNeeded_severe_at_1_5pct: originsNeeded(0.015, nz.nDatesC, nz.seC, 0, 3), originsNeeded_optimistic_at_1_5pct: originsNeeded(0.015, nz.nDatesC, nz.seC, 0.9, 1)};
   }
 }
 writeFileSync(outPath, JSON.stringify(out, null, 1));
-const f = x => (100 * x).toFixed(2) + '%';
-for (const [n, s] of Object.entries(out.scenarios)) { console.log(n); for (const [k, v] of Object.entries(s)) console.log(' ', k, `origins=${v.nOrigins} no=${v.nonOverlap}${v.nonOverlapOk ? '' : '(<60)'} se=${v.se === Infinity ? 'inf' : f(v.se)} MDE80[24/8/4]=${['fixed24', 'perHorizon8', 'perCell4'].map(q => f(v.families[q].mde80)).join('/')} P(1%)@8=${(100 * v.families.perHorizon8.power_true_1pct).toFixed(0)}% P(2%)@8=${(100 * v.families.perHorizon8.power_true_2pct).toFixed(0)}%`); }
+const f = x => (100 * x).toFixed(1) + '%';
+for (const [n, s] of Object.entries(out.scenarios)) { console.log(n); for (const [k, v] of Object.entries(s)) console.log(' ', k, `origins=${v.nOrigins} no=${v.nonOverlap}${v.testableByCount ? '' : '(<60)'} se=${f(v.se)} P(1.5%) opt=${f(v.grid['infl1_rho0.9']['power_0.015'])} mid=${f(v.grid['infl1.5_rho0.5']['power_0.015'])} severe=${f(v.grid['infl3_rho0']['power_0.015'])} MDE80 opt=${f(v.grid['infl1_rho0.9'].mde80)} severe=${f(v.grid['infl3_rho0'].mde80)} need(severe,1.5%)=${v.originsNeeded_severe_at_1_5pct}`); }
