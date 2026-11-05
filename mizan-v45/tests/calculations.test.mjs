@@ -1347,3 +1347,13 @@ test('Owner gate: user switch to a non-owner account (403 OWNER_REQUIRED) and ba
  g.record(200);assert.equal(g.denied,null);assert.equal(g.allow('auto'),true);});
 test('Owner gate: other failures (500, 503 config, network-style 0) never block automatic retries',()=>{const g=gold.createOwnerFetchGate();
  for(const [s,c] of [[500,undefined],[503,'OWNER_CONFIG_UNAVAILABLE'],[0,undefined],[401,'SOMETHING_ELSE']]){g.record(s,c);assert.equal(g.allow('auto'),true,`${s} ${c}`);}});
+
+test('Live quote exposes session open, absolute change and percent change from the same 1-minute response',async()=>{
+ const {parseLiveQuote}=await import(process.env.MIZAN_TEST_MODULE),now=Date.UTC(2026,10,4,15,0,0),s=Math.floor(now/1000)-3600,e=s+23400;
+ const meta={symbol:'AAPL',instrumentType:'EQUITY',exchangeName:'NMS',currency:'USD',regularMarketPrice:110,regularMarketTime:now/1000-30,range:'1d',chartPreviousClose:100,currentTradingPeriod:{regular:{start:s,end:e}}};
+ const data={chart:{result:[{meta,timestamp:[s-60,s,s+60],indicators:{quote:[{open:[99,102,103],close:[99,103,104]}]}}]}};
+ const q=parseLiveQuote(data,'AAPL',now);
+ assert.equal(q.dayOpen,102);near(q.change,10);near(q.changePct,10);assert.equal(q.previousClose,100);
+ const noBars=parseLiveQuote({chart:{result:[{meta}]}},'AAPL',now);assert.equal(noBars.dayOpen,null);near(noBars.changePct,10);
+ const fiveYear=parseLiveQuote({chart:{result:[{meta:{...meta,range:'5y'}}]}},'AAPL',now);assert.equal(fiveYear.changePct,null);assert.equal(fiveYear.change,null);
+});
