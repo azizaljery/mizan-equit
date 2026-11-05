@@ -1,0 +1,949 @@
+{
+ "experiment": "FCST-0005-E0a",
+ "kind": "descriptive, exposed development window, no accuracy claim",
+ "cutoff": "2024-09-04",
+ "productionFunction": "forecasts() from lib/research-model.ts",
+ "settings": "DEFAULT_SETTINGS",
+ "conformalCalibrationEnabled": false,
+ "parameters": {
+  "grid": 5,
+  "engineWindow": 504,
+  "horizons": [
+   1,
+   5,
+   21
+  ],
+  "B": 2000,
+  "seed": 20261103
+ },
+ "manifest": [
+  {
+   "file": "1010.SR.json",
+   "digest": "76e92e3766da27d1664fb9112f304fe4ac860cdeefae9f4d07958de5e3b2ebde",
+   "rows": 1222
+  },
+  {
+   "file": "1020.SR.json",
+   "digest": "70eb6c8eef078c4c46a206c72abc97fb3a59bd7278d319677a09cccb66f40c20",
+   "rows": 1222
+  },
+  {
+   "file": "1030.SR.json",
+   "digest": "69073a4faef9a71a964a17936ca8f91a459fc975621c2a1f68e14b1c2d25881f",
+   "rows": 1222
+  },
+  {
+   "file": "1050.SR.json",
+   "digest": "e67969acaa1106823005e605408870dea69679ee3ad7ba252fe79ffa0ac31f3b",
+   "rows": 1222
+  },
+  {
+   "file": "1060.SR.json",
+   "digest": "63f4dfe34b25691ae3b0df9204b4f8e62f4e36470630f7e4f3ef7b418d2fcf39",
+   "rows": 1221
+  },
+  {
+   "file": "1120.SR.json",
+   "digest": "f3c53b50155011954e4fc75858e846e65c319d5ff033247a5be17969f3738ba6",
+   "rows": 1222
+  },
+  {
+   "file": "1140.SR.json",
+   "digest": "ffdbd5d844d095efa9bfb40ebd934e7543d89f97cdf521ac2df81ed0e1dd8c8a",
+   "rows": 1222
+  },
+  {
+   "file": "1150.SR.json",
+   "digest": "783d8c81ea3e3bc375ca591a45300547a8c292d4686d3b7154a08b625c162600",
+   "rows": 1222
+  },
+  {
+   "file": "1180.SR.json",
+   "digest": "730fd5b8f3b1d4066a0f86d079cb4befb1b212213e997ef8db813ae89215b2f5",
+   "rows": 1221
+  },
+  {
+   "file": "1211.SR.json",
+   "digest": "29be03463e75a90de32472bf569521c88adfcbe80552d0fda3b596568f00b2cb",
+   "rows": 1221
+  },
+  {
+   "file": "1303.SR.json",
+   "digest": "bf4ed56021609ff58459424158b80ad10240b229c0517605e6e90bdb138a66b0",
+   "rows": 1221
+  },
+  {
+   "file": "1304.SR.json",
+   "digest": "5729a97c991a8a16eea116235f1c67293f8117c1df09b590d82017b59412b750",
+   "rows": 1221
+  },
+  {
+   "file": "2010.SR.json",
+   "digest": "04ea343e0d3f18122f602c296b57eb0faae078fc318c4dee62d5dae944cc54ae",
+   "rows": 1221
+  },
+  {
+   "file": "2020.SR.json",
+   "digest": "dc908182e83a2cb8159856c057fe565207f3490e73b08f0e1eba11170193212d",
+   "rows": 1221
+  },
+  {
+   "file": "2050.SR.json",
+   "digest": "dd1860a9b495ad6ec1ebce3057bb882eace67d3f874eeb63a809b28e56571553",
+   "rows": 1222
+  },
+  {
+   "file": "2060.SR.json",
+   "digest": "3a9d3cdae1c9d86ecde8ab788c48a899c1314ca8e777921299d002665f01294d",
+   "rows": 1221
+  },
+  {
+   "file": "2082.SR.json",
+   "digest": "562268ae0ae725cb0e8c4ef124b1974ebc9a7a00544de9998555fb313f45c0ff",
+   "rows": 674
+  },
+  {
+   "file": "2222.SR.json",
+   "digest": "6de4d436bdc09f4d7bc896febebb28b538ec4f0ba24b3ae05ab9d14df9b22c6d",
+   "rows": 1180
+  },
+  {
+   "file": "2280.SR.json",
+   "digest": "4fb57b18184572cfd480b689d9391f4d295ca8dcdfa9c80802e0c37807cb832b",
+   "rows": 1221
+  },
+  {
+   "file": "2290.SR.json",
+   "digest": "a55aebaec7d6efbde72267fd1592d09970b978d6fc0b58f3a793a0c0ff3e0432",
+   "rows": 1221
+  },
+  {
+   "file": "2310.SR.json",
+   "digest": "9d1154124cc5f282ac66450aa7623fb86d54dc6acf0415e9d9f14ddc8878aad5",
+   "rows": 1221
+  },
+  {
+   "file": "2350.SR.json",
+   "digest": "95d3e5aa3d3b0290f7c3e3f181c3e1e60c54b26f321ba49e8be4f7b7a0535afd",
+   "rows": 1221
+  },
+  {
+   "file": "2380.SR.json",
+   "digest": "8136e4232b8cc9cfb82d30584571d13b87c1f994dd7651802a1494e1ed198ee3",
+   "rows": 1221
+  },
+  {
+   "file": "3030.SR.json",
+   "digest": "04d99544298823870b27ecb7072304fdf56871c302e73d5d4c9f2140292305ff",
+   "rows": 1221
+  },
+  {
+   "file": "4001.SR.json",
+   "digest": "7e0cb83827bd260d3264e7bd8c485b26b4bf909110e712743855c18fef036331",
+   "rows": 1221
+  },
+  {
+   "file": "4002.SR.json",
+   "digest": "93c56a83b7957e6042ff7e4079889d3fb80cfe74fb91e12c22798604288585e7",
+   "rows": 1221
+  },
+  {
+   "file": "4003.SR.json",
+   "digest": "3c5dec7bfd6e4663a3c1c7ef0227a5aabcfeefacc9aaeccfbe664b3de50951d7",
+   "rows": 1221
+  },
+  {
+   "file": "4005.SR.json",
+   "digest": "c5012835606c9e97e63a829f36f9f24ffc24a06335f5a0d2450d7d615568953e",
+   "rows": 1221
+  },
+  {
+   "file": "4013.SR.json",
+   "digest": "3b619c2fda3d8c7b0de6fb7ad432f722ee61e1e30adc0e255209038fe627c92c",
+   "rows": 1110
+  },
+  {
+   "file": "4030.SR.json",
+   "digest": "55499f2901feb5a146401a1310287def2a49bb24e92b18b8df7afca9caf35ffb",
+   "rows": 1222
+  },
+  {
+   "file": "4061.SR.json",
+   "digest": "c8ae94387685f417055369f9e564a8abeaa8a20b8dc3ec7fa296ec174b28f7df",
+   "rows": 1222
+  },
+  {
+   "file": "4190.SR.json",
+   "digest": "1a4259d7ddbcb425a59fea52ce97d452d7d4d567856bd76667c7bcbe4b8ed82f",
+   "rows": 1221
+  },
+  {
+   "file": "4200.SR.json",
+   "digest": "28cae6990f3f66428fe769b30d837456becfebda56b32ab54ce41fd60c5ba2b2",
+   "rows": 1222
+  },
+  {
+   "file": "4260.SR.json",
+   "digest": "485c6fcbfe08ac9f01a555c6a4a6f87c057485f09b628ee8183964a168cf81ca",
+   "rows": 1222
+  },
+  {
+   "file": "4263.SR.json",
+   "digest": "b077f1b1cf0bfd49d15ea2164293096cf7593fcc13fd8bbd3a5bf1602cc4b76f",
+   "rows": 209
+  },
+  {
+   "file": "4300.SR.json",
+   "digest": "424c4397da2e9fb72efaddd4a6ca75981f9a9b2f0f4ee7adbc44a34238eb526f",
+   "rows": 1221
+  },
+  {
+   "file": "5110.SR.json",
+   "digest": "d32a8e1d507e02e67b057b32d8920b06caf45554faea0fb7a63968d1c19e6334",
+   "rows": 1221
+  },
+  {
+   "file": "6010.SR.json",
+   "digest": "ed1e407f1264f2a31951458d17af87f50afe09927cf11451386786f495e3f076",
+   "rows": 1221
+  },
+  {
+   "file": "7010.SR.json",
+   "digest": "8d1258b27ce5fa7a1327d9ee59ce6c31a4ada45d6a00b214f563457da72cf27c",
+   "rows": 1222
+  },
+  {
+   "file": "7020.SR.json",
+   "digest": "99b559f6a366a8cc26881b14be1f3b9b7fb1c560e399bc9aac60b1282072fafc",
+   "rows": 1221
+  },
+  {
+   "file": "AAPL.json",
+   "digest": "7867b87fbcf0cf367a8e0a71ee547aca89fbd330d4bea261292f95effd58120a",
+   "rows": 1231
+  },
+  {
+   "file": "ABBV.json",
+   "digest": "2c6fcc21caecfb46bf07e54535b17517dae792a36c23fd0febea0126679c9478",
+   "rows": 1231
+  },
+  {
+   "file": "ACN.json",
+   "digest": "285489946ef19ebea2f073937d4b9c9730f225af9a978240da2517d104522652",
+   "rows": 1231
+  },
+  {
+   "file": "AMGN.json",
+   "digest": "ceb7843143e4b2fcf7eceaa759d3c9c0a914d0ddac170e55c23bdf6a0ab142f1",
+   "rows": 1231
+  },
+  {
+   "file": "AMZN.json",
+   "digest": "74a09fa6731d2e3eaae47156cd7040931af29117b2b02883a085de6c9c507c59",
+   "rows": 1231
+  },
+  {
+   "file": "BA.json",
+   "digest": "932f4e170ff7ff9de784c75b24d0b02d58b6f8100c17cbb470c96df7602738da",
+   "rows": 1231
+  },
+  {
+   "file": "CAT.json",
+   "digest": "d4cbc64ead9b34d52913e9faec2396cbb443a61d836f8474e06e20387f506f80",
+   "rows": 1231
+  },
+  {
+   "file": "COST.json",
+   "digest": "54e07b5ff6004a4c66de1497278c2098c4b38d836ef5f93fa8af3a8f55083675",
+   "rows": 1231
+  },
+  {
+   "file": "CRM.json",
+   "digest": "756f48044cde4c6e432f1a80bef4f820631a222b965a5592b2a77e96edd51ed7",
+   "rows": 1231
+  },
+  {
+   "file": "CSCO.json",
+   "digest": "3be17b8dfddd350945475fa0a12977fae6d96ee5d19465011fc2a30f9e058c88",
+   "rows": 1231
+  },
+  {
+   "file": "CVX.json",
+   "digest": "b22982e535cc0112af3fce28e6d3dec8663a8b5ccd6700f054d1f7bdc07311ee",
+   "rows": 1231
+  },
+  {
+   "file": "DHR.json",
+   "digest": "620534b4fee34a05a704930ac59ac92f3d1a1e53eece57fb99c2463f13e03a33",
+   "rows": 1231
+  },
+  {
+   "file": "GE.json",
+   "digest": "5c39760b2c92567d8565ac339fa0650cd5c61d67e5b2bd7c05ea261b3b34666e",
+   "rows": 1231
+  },
+  {
+   "file": "GOOGL.json",
+   "digest": "d3e8c5ec86d70fadb78a28006b297051c9cc2abed96c53f1ae40ce1f0853b782",
+   "rows": 1231
+  },
+  {
+   "file": "HD.json",
+   "digest": "e32bae2f53f8ecf0b02885c97ea415b669df8d1e64c23f8357aa81510558dfe5",
+   "rows": 1231
+  },
+  {
+   "file": "HON.json",
+   "digest": "f2fde31cf17f9ea130b7d08b3c11cc508513a847a30b7fc494c6e94ddd3c5af1",
+   "rows": 1231
+  },
+  {
+   "file": "IBM.json",
+   "digest": "8473b003adac93d4ffcf44e4f669b7213e1a898ae708638c65b790e43fec9fd8",
+   "rows": 1231
+  },
+  {
+   "file": "INTC.json",
+   "digest": "6178245217579a7a4b72492582ac52a02ef6f531c3940f0d6a26cbf90b32d4af",
+   "rows": 1231
+  },
+  {
+   "file": "JNJ.json",
+   "digest": "f88fd7efe37788eac7dbeb859b49db91ea3f17ff87926b57f5e4a2bb3993ef5a",
+   "rows": 1231
+  },
+  {
+   "file": "JPM.json",
+   "digest": "c22b8e1073ad275368943ded2772d15f9e0c3650fddd30a094e2dbf51f65aa3d",
+   "rows": 1231
+  },
+  {
+   "file": "KO.json",
+   "digest": "3894eb6c8814f99f852c6ba62d2e75af2dc5d799c21bcaeeebee4a91713b498f",
+   "rows": 1231
+  },
+  {
+   "file": "LIN.json",
+   "digest": "4db3d3c0ea1d1d74842d410dd0764606571012025f1137691dd38ede7452724d",
+   "rows": 1231
+  },
+  {
+   "file": "LOW.json",
+   "digest": "af658e79c241be635209bd2d86b8c7b5130facb393c377ae97d9f5fa9b2e9e9e",
+   "rows": 1231
+  },
+  {
+   "file": "MCD.json",
+   "digest": "332b02adec3cab0d4db4c97781142d39da0b745d04c84092dab31be942fc55b6",
+   "rows": 1231
+  },
+  {
+   "file": "META.json",
+   "digest": "22ae7df5605b39dd9a8ee0ad95b98d4b32effcf1e2617ec837ff1fe43c28cab7",
+   "rows": 1231
+  },
+  {
+   "file": "MMM.json",
+   "digest": "cf330c932d4c95b0c0ced8925f1581af00f43f9d3b19c7d3570922d6b9edd5b3",
+   "rows": 1231
+  },
+  {
+   "file": "MRK.json",
+   "digest": "f1c1c4bf21f70f3c1146c3b7684c6e2db0ef462538a4a6ef7e956ea48ac34f42",
+   "rows": 1231
+  },
+  {
+   "file": "MSFT.json",
+   "digest": "6bf5694742cf186fe0c83936213cbbdd800afad6094db07c0236abf88828b371",
+   "rows": 1231
+  },
+  {
+   "file": "NKE.json",
+   "digest": "7f7489a65a1669ec742268315a92709e9ea3b22b80d46430f3eef09f78202bc3",
+   "rows": 1231
+  },
+  {
+   "file": "NVDA.json",
+   "digest": "582c8c362bf6aad5778363402e9b7aea328ec9f4a780588596bbf4f109fbee83",
+   "rows": 1231
+  },
+  {
+   "file": "ORCL.json",
+   "digest": "fd79c2573a736f2a01b9d5aa89c6bcf010fedf7070b5d9ef4262d070a9f35b60",
+   "rows": 1231
+  },
+  {
+   "file": "PEP.json",
+   "digest": "a489993db42ffe797f29988a81b2dcc3bee4253b644952eac0b62a22fb9f2375",
+   "rows": 1231
+  },
+  {
+   "file": "PG.json",
+   "digest": "7878f54106fc77975cb429c0a1b4f212475e51b419f6b64bf62beb8b2d3d8285",
+   "rows": 1231
+  },
+  {
+   "file": "TMO.json",
+   "digest": "0ff5437abad7470f51f66d13b2f42a228b5d47d79559f99772c0a21de722eb25",
+   "rows": 1231
+  },
+  {
+   "file": "TXN.json",
+   "digest": "1bed33ca54a8ab3278a2ce0eccd4396baf41e42b52b8f2db9d77da48597d9918",
+   "rows": 1231
+  },
+  {
+   "file": "UNP.json",
+   "digest": "ab38ddf92cd04be2573c39325ae7a4f4eb30ef8386085433ac82dd09a9b044a8",
+   "rows": 1231
+  },
+  {
+   "file": "UPS.json",
+   "digest": "674b256988e71450b0feaebad0a6ecf51c7dd01187d985d97a98a43487d80ab9",
+   "rows": 1231
+  },
+  {
+   "file": "V.json",
+   "digest": "aa7ff90342542a7dbfb5101f876850553a1ad91aeb059464393f970416c0d471",
+   "rows": 1231
+  },
+  {
+   "file": "WMT.json",
+   "digest": "3e04aa6d37ada8e0563012d735468cc36edd54ad2ec8f5fff9d006c3661775f2",
+   "rows": 1231
+  },
+  {
+   "file": "XOM.json",
+   "digest": "6272d3bab49073df0855ff9c295642307e370c6deb337c5dde53d51db6b8ebea",
+   "rows": 1231
+  }
+ ],
+ "cells": [
+  {
+   "market": "sa",
+   "h": 1,
+   "originRows": 7427,
+   "availableShare": 0.9994614245321125,
+   "unavailableReasons": [
+    [
+     "رُصدت قفزة كبيرة؛ يلزم التحقق من الحدث أو تعديل رأس المال.",
+     4
+    ]
+   ],
+   "A_inSampleConstruction": {
+    "n": 636,
+    "mean": 0.8497805692030478,
+    "lo": 0.8468589078200853,
+    "hi": 0.852853312845744,
+    "block": 1
+   },
+   "B_rollingOrigin_exposed": {
+    "n": 636,
+    "mean": 0.855086732988702,
+    "lo": 0.8316523281658645,
+    "hi": 0.8774856155906205,
+    "block": 1
+   },
+   "B_belowShare": {
+    "n": 636,
+    "mean": 0.07354417223162103,
+    "lo": 0.05806257289030058,
+    "hi": 0.09188365981844245,
+    "block": 1
+   },
+   "B_aboveShare": {
+    "n": 636,
+    "mean": 0.07136909477967723,
+    "lo": 0.054670392272935395,
+    "hi": 0.0893939249763697,
+    "block": 1
+   },
+   "B_byYear": [
+    {
+     "year": 2020,
+     "n": 15,
+     "mean": 0.8944444444444444,
+     "lo": 0.7833333333333333,
+     "hi": 0.962962962962963,
+     "block": 1
+    },
+    {
+     "year": 2021,
+     "n": 139,
+     "mean": 0.8848920863309353,
+     "lo": 0.8397282174260592,
+     "hi": 0.9240607513988812,
+     "block": 1
+    },
+    {
+     "year": 2022,
+     "n": 151,
+     "mean": 0.8270787343635027,
+     "lo": 0.7755702722590142,
+     "hi": 0.8760117733627667,
+     "block": 1
+    },
+    {
+     "year": 2023,
+     "n": 199,
+     "mean": 0.8689917843184174,
+     "lo": 0.8246470447475474,
+     "hi": 0.9058187764217913,
+     "block": 1
+    },
+    {
+     "year": 2024,
+     "n": 132,
+     "mean": 0.8303048601961645,
+     "lo": 0.7753890634325417,
+     "hi": 0.8804826413522067,
+     "block": 1
+    }
+   ],
+   "medianHalfWidthLogPct": 2.283911144799919,
+   "neutralShare": 0.8488481745924829,
+   "exitShareUp": 0.10561767479455746,
+   "exitShareDown": 0.04553415061295972,
+   "nonNeutralRows": 1122
+  },
+  {
+   "market": "sa",
+   "h": 5,
+   "originRows": 7427,
+   "availableShare": 0.9994614245321125,
+   "unavailableReasons": [
+    [
+     "رُصدت قفزة كبيرة؛ يلزم التحقق من الحدث أو تعديل رأس المال.",
+     4
+    ]
+   ],
+   "A_inSampleConstruction": {
+    "n": 636,
+    "mean": 0.8507487987942421,
+    "lo": 0.848097796170552,
+    "hi": 0.8535148060937523,
+    "block": 1
+   },
+   "B_rollingOrigin_exposed": {
+    "n": 632,
+    "mean": 0.8727438230912358,
+    "lo": 0.852022447069228,
+    "hi": 0.8937290297912205,
+    "block": 1
+   },
+   "B_belowShare": {
+    "n": 632,
+    "mean": 0.048597746960432724,
+    "lo": 0.03564257205217582,
+    "hi": 0.062456501411509734,
+    "block": 1
+   },
+   "B_aboveShare": {
+    "n": 632,
+    "mean": 0.07865842994833096,
+    "lo": 0.06160255234278356,
+    "hi": 0.09630398075293514,
+    "block": 1
+   },
+   "B_byYear": [
+    {
+     "year": 2020,
+     "n": 15,
+     "mean": 0.9,
+     "lo": 0.7944444444444445,
+     "hi": 0.9648148148148148,
+     "block": 1
+    },
+    {
+     "year": 2021,
+     "n": 139,
+     "mean": 0.9074740207833736,
+     "lo": 0.8693045563549167,
+     "hi": 0.9422462030375705,
+     "block": 1
+    },
+    {
+     "year": 2022,
+     "n": 151,
+     "mean": 0.8140176600441502,
+     "lo": 0.7580941869021341,
+     "hi": 0.8671817512877117,
+     "block": 1
+    },
+    {
+     "year": 2023,
+     "n": 199,
+     "mean": 0.906436946637952,
+     "lo": 0.8697495413575819,
+     "hi": 0.9397662917763417,
+     "block": 1
+    },
+    {
+     "year": 2024,
+     "n": 128,
+     "mean": 0.8487311582590114,
+     "lo": 0.7959670255016719,
+     "hi": 0.8952229364083983,
+     "block": 1
+    }
+   ],
+   "medianHalfWidthLogPct": 5.470610715851365,
+   "neutralShare": 1,
+   "exitShareUp": 0,
+   "exitShareDown": 0,
+   "nonNeutralRows": 0
+  },
+  {
+   "market": "sa",
+   "h": 21,
+   "originRows": 7427,
+   "availableShare": 0.9994614245321125,
+   "unavailableReasons": [
+    [
+     "رُصدت قفزة كبيرة؛ يلزم التحقق من الحدث أو تعديل رأس المال.",
+     4
+    ]
+   ],
+   "A_inSampleConstruction": {
+    "n": 636,
+    "mean": 0.8432837626157714,
+    "lo": 0.8378086365567838,
+    "hi": 0.8492086873101506,
+    "block": 5
+   },
+   "B_rollingOrigin_exposed": {
+    "n": 620,
+    "mean": 0.8524274634513063,
+    "lo": 0.8256596489064939,
+    "hi": 0.8761269687146267,
+    "block": 5
+   },
+   "B_belowShare": {
+    "n": 620,
+    "mean": 0.04860985671644861,
+    "lo": 0.032696503278550997,
+    "hi": 0.0674192692145007,
+    "block": 5
+   },
+   "B_aboveShare": {
+    "n": 620,
+    "mean": 0.09896267983224515,
+    "lo": 0.0774384790058003,
+    "hi": 0.12195272002424887,
+    "block": 5
+   },
+   "B_byYear": [
+    {
+     "year": 2020,
+     "n": 15,
+     "mean": 0.9333333333333333,
+     "lo": 0.8796296296296297,
+     "hi": 0.9759259259259259,
+     "block": 5
+    },
+    {
+     "year": 2021,
+     "n": 139,
+     "mean": 0.8395283772981615,
+     "lo": 0.7709832134292567,
+     "hi": 0.8948840927258195,
+     "block": 5
+    },
+    {
+     "year": 2022,
+     "n": 151,
+     "mean": 0.8368285504047093,
+     "lo": 0.7897350993377483,
+     "hi": 0.8839220014716704,
+     "block": 5
+    },
+    {
+     "year": 2023,
+     "n": 199,
+     "mean": 0.8765693547100583,
+     "lo": 0.8267248943128341,
+     "hi": 0.9195102496610033,
+     "block": 5
+    },
+    {
+     "year": 2024,
+     "n": 116,
+     "mean": 0.8363118120426966,
+     "lo": 0.7857417445123592,
+     "hi": 0.8889233267981396,
+     "block": 5
+    }
+   ],
+   "medianHalfWidthLogPct": 11.745774995195845,
+   "neutralShare": 0.9994611343122727,
+   "exitShareUp": 0.000538865687727334,
+   "exitShareDown": 0,
+   "nonNeutralRows": 4
+  },
+  {
+   "market": "us",
+   "h": 1,
+   "originRows": 7840,
+   "availableShare": 0.9984693877551021,
+   "unavailableReasons": [
+    [
+     "رُصدت قفزة كبيرة؛ يلزم التحقق من الحدث أو تعديل رأس المال.",
+     12
+    ]
+   ],
+   "A_inSampleConstruction": {
+    "n": 196,
+    "mean": 0.8415763651296065,
+    "lo": 0.8376376269577749,
+    "hi": 0.8460295732285255,
+    "block": 1
+   },
+   "B_rollingOrigin_exposed": {
+    "n": 196,
+    "mean": 0.8909406070120354,
+    "lo": 0.8718799058084773,
+    "hi": 0.9080226321297745,
+    "block": 1
+   },
+   "B_belowShare": {
+    "n": 196,
+    "mean": 0.058886054421768724,
+    "lo": 0.044037807430664606,
+    "hi": 0.07559850863422299,
+    "block": 1
+   },
+   "B_aboveShare": {
+    "n": 196,
+    "mean": 0.05017333856619572,
+    "lo": 0.039838435374149696,
+    "hi": 0.061777210884353784,
+    "block": 1
+   },
+   "B_byYear": [
+    {
+     "year": 2020,
+     "n": 12,
+     "mean": 0.8458333333333333,
+     "lo": 0.7041666666666666,
+     "hi": 0.9500000000000001,
+     "block": 1
+    },
+    {
+     "year": 2021,
+     "n": 50,
+     "mean": 0.9100000000000001,
+     "lo": 0.8850000000000001,
+     "hi": 0.9314999999999998,
+     "block": 1
+    },
+    {
+     "year": 2022,
+     "n": 50,
+     "mean": 0.8525512820512821,
+     "lo": 0.8014871794871796,
+     "hi": 0.8996923076923079,
+     "block": 1
+    },
+    {
+     "year": 2023,
+     "n": 50,
+     "mean": 0.9150000000000003,
+     "lo": 0.8930000000000001,
+     "hi": 0.9345,
+     "block": 1
+    },
+    {
+     "year": 2024,
+     "n": 34,
+     "mean": 0.8999057315233787,
+     "lo": 0.8668740573152338,
+     "hi": 0.9286387631975869,
+     "block": 1
+    }
+   ],
+   "medianHalfWidthLogPct": 2.258077273250415,
+   "neutralShare": 0.8764690853346959,
+   "exitShareUp": 0.10500766479305058,
+   "exitShareDown": 0.01852324987225345,
+   "nonNeutralRows": 967
+  },
+  {
+   "market": "us",
+   "h": 5,
+   "originRows": 7840,
+   "availableShare": 0.9984693877551021,
+   "unavailableReasons": [
+    [
+     "رُصدت قفزة كبيرة؛ يلزم التحقق من الحدث أو تعديل رأس المال.",
+     12
+    ]
+   ],
+   "A_inSampleConstruction": {
+    "n": 196,
+    "mean": 0.8464222501249852,
+    "lo": 0.8425354709542178,
+    "hi": 0.8507995936524401,
+    "block": 1
+   },
+   "B_rollingOrigin_exposed": {
+    "n": 195,
+    "mean": 0.8754437869822479,
+    "lo": 0.8572320841551606,
+    "hi": 0.8908152531229449,
+    "block": 1
+   },
+   "B_belowShare": {
+    "n": 195,
+    "mean": 0.057636423405654225,
+    "lo": 0.04533201840894152,
+    "hi": 0.07235371466140703,
+    "block": 1
+   },
+   "B_aboveShare": {
+    "n": 195,
+    "mean": 0.06691978961209735,
+    "lo": 0.054003944773175584,
+    "hi": 0.07977975016436561,
+    "block": 1
+   },
+   "B_byYear": [
+    {
+     "year": 2020,
+     "n": 12,
+     "mean": 0.90625,
+     "lo": 0.8479166666666668,
+     "hi": 0.9520833333333333,
+     "block": 1
+    },
+    {
+     "year": 2021,
+     "n": 50,
+     "mean": 0.8954999999999999,
+     "lo": 0.8725000000000002,
+     "hi": 0.917,
+     "block": 1
+    },
+    {
+     "year": 2022,
+     "n": 50,
+     "mean": 0.8218461538461541,
+     "lo": 0.7714230769230771,
+     "hi": 0.8686153846153847,
+     "block": 1
+    },
+    {
+     "year": 2023,
+     "n": 50,
+     "mean": 0.8920000000000001,
+     "lo": 0.8649999999999999,
+     "hi": 0.9155000000000004,
+     "block": 1
+    },
+    {
+     "year": 2024,
+     "n": 33,
+     "mean": 0.8899766899766899,
+     "lo": 0.8642579642579644,
+     "hi": 0.9155788655788656,
+     "block": 1
+    }
+   ],
+   "medianHalfWidthLogPct": 5.202316624863499,
+   "neutralShare": 1,
+   "exitShareUp": 0,
+   "exitShareDown": 0,
+   "nonNeutralRows": 0
+  },
+  {
+   "market": "us",
+   "h": 21,
+   "originRows": 7840,
+   "availableShare": 0.9984693877551021,
+   "unavailableReasons": [
+    [
+     "رُصدت قفزة كبيرة؛ يلزم التحقق من الحدث أو تعديل رأس المال.",
+     12
+    ]
+   ],
+   "A_inSampleConstruction": {
+    "n": 196,
+    "mean": 0.8530851268683569,
+    "lo": 0.8421815627377806,
+    "hi": 0.8655472819620277,
+    "block": 5
+   },
+   "B_rollingOrigin_exposed": {
+    "n": 192,
+    "mean": 0.875667735042735,
+    "lo": 0.8525173611111118,
+    "hi": 0.8967314369658125,
+    "block": 5
+   },
+   "B_belowShare": {
+    "n": 192,
+    "mean": 0.052026575854700885,
+    "lo": 0.034738915598290614,
+    "hi": 0.07359441773504276,
+    "block": 5
+   },
+   "B_aboveShare": {
+    "n": 192,
+    "mean": 0.07230568910256412,
+    "lo": 0.05434361645299149,
+    "hi": 0.0939369658119658,
+    "block": 5
+   },
+   "B_byYear": [
+    {
+     "year": 2020,
+     "n": 12,
+     "mean": 0.90625,
+     "lo": 0.8291666666666667,
+     "hi": 0.975,
+     "block": 5
+    },
+    {
+     "year": 2021,
+     "n": 50,
+     "mean": 0.8885000000000002,
+     "lo": 0.8580000000000001,
+     "hi": 0.9190000000000002,
+     "block": 5
+    },
+    {
+     "year": 2022,
+     "n": 50,
+     "mean": 0.8330641025641025,
+     "lo": 0.7739487179487182,
+     "hi": 0.8866025641025638,
+     "block": 5
+    },
+    {
+     "year": 2023,
+     "n": 50,
+     "mean": 0.8935000000000001,
+     "lo": 0.8535000000000003,
+     "hi": 0.929,
+     "block": 5
+    },
+    {
+     "year": 2024,
+     "n": 30,
+     "mean": 0.8833333333333332,
+     "lo": 0.8541666666666663,
+     "hi": 0.9099999999999998,
+     "block": 5
+    }
+   ],
+   "medianHalfWidthLogPct": 11.102034949509704,
+   "neutralShare": 1,
+   "exitShareUp": 0,
+   "exitShareDown": 0,
+   "nonNeutralRows": 0
+  }
+ ],
+ "labels": {
+  "A": "in-sample construction coverage (property of how the range is built; not a test)",
+  "B": "rolling-origin coverage on an EXPOSED window (descriptive; not out-of-sample validation)"
+ }
+}

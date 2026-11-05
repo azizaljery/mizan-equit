@@ -1,0 +1,258 @@
+{
+ "inputBounds": {
+  "nSeries": 240,
+  "minSignal": -1,
+  "maxSignal": 1,
+  "withinUnit": true,
+  "factorKeys": [
+   "debt",
+   "events",
+   "growth",
+   "levels",
+   "liquidity",
+   "market",
+   "momentum",
+   "quality",
+   "risk",
+   "sector",
+   "trend",
+   "valuation"
+  ],
+  "priceOnlyLiveKeys": [
+   "levels",
+   "liquidity",
+   "momentum",
+   "risk",
+   "trend"
+  ],
+  "priceOnlyOnly": [
+   "debt",
+   "events",
+   "growth",
+   "market",
+   "quality",
+   "sector",
+   "valuation"
+  ]
+ },
+ "tiltMultipliers": {
+  "lowVolume": 0.6,
+  "normalVolume": 1,
+  "unavailableVolume": 1
+ },
+ "perHorizon": [
+  {
+   "h": 1,
+   "neutralThresholdPct": 0.1,
+   "weightsSum": 100,
+   "weightOfPriceOnlyFactors": 84,
+   "maxAbsBias_allFactors": 1,
+   "maxAbsBias_priceOnly": 0.84,
+   "rows": [
+    {
+     "dailySigma": 0.005,
+     "upBias_x1": 0.7996002664667385,
+     "upBias_x06": 1.3326671107778976,
+     "downBias_abs": 0.8004002668668275,
+     "upFeasible_all": true,
+     "upFeasible_x06_all": false,
+     "downFeasible_all": true,
+     "upFeasible_priceOnly": true,
+     "upFeasible_x06_priceOnly": false,
+     "downFeasible_priceOnly": true,
+     "clipHalfScaleNeededUp_x1": 0.0009995003330834232,
+     "clipHalfScaleNeededUp_x06": 0.001665833888472372,
+     "clipHalfScaleNeededDown": 0.0010005003335835344,
+     "minDailySigmaForClipUp_x06": 0.003331667776944744,
+     "minDailySigmaForClipDown": 0.0020010006671670687
+    },
+    {
+     "dailySigma": 0.01,
+     "upBias_x1": 0.39980013323336927,
+     "upBias_x06": 0.6663335553889488,
+     "downBias_abs": 0.40020013343341376,
+     "upFeasible_all": true,
+     "upFeasible_x06_all": true,
+     "downFeasible_all": true,
+     "upFeasible_priceOnly": true,
+     "upFeasible_x06_priceOnly": true,
+     "downFeasible_priceOnly": true,
+     "clipHalfScaleNeededUp_x1": 0.0009995003330834232,
+     "clipHalfScaleNeededUp_x06": 0.001665833888472372,
+     "clipHalfScaleNeededDown": 0.0010005003335835344,
+     "minDailySigmaForClipUp_x06": 0.003331667776944744,
+     "minDailySigmaForClipDown": 0.0020010006671670687
+    },
+    {
+     "dailySigma": 0.02,
+     "upBias_x1": 0.19990006661668464,
+     "upBias_x06": 0.3331667776944744,
+     "downBias_abs": 0.20010006671670688,
+     "upFeasible_all": true,
+     "upFeasible_x06_all": true,
+     "downFeasible_all": true,
+     "upFeasible_priceOnly": true,
+     "upFeasible_x06_priceOnly": true,
+     "downFeasible_priceOnly": true,
+     "clipHalfScaleNeededUp_x1": 0.0009995003330834232,
+     "clipHalfScaleNeededUp_x06": 0.001665833888472372,
+     "clipHalfScaleNeededDown": 0.0010005003335835344,
+     "minDailySigmaForClipUp_x06": 0.003331667776944744,
+     "minDailySigmaForClipDown": 0.0020010006671670687
+    },
+    {
+     "dailySigma": 0.03,
+     "upBias_x1": 0.13326671107778976,
+     "upBias_x06": 0.2221111851296496,
+     "downBias_abs": 0.1334000444778046,
+     "upFeasible_all": true,
+     "upFeasible_x06_all": true,
+     "downFeasible_all": true,
+     "upFeasible_priceOnly": true,
+     "upFeasible_x06_priceOnly": true,
+     "downFeasible_priceOnly": true,
+     "clipHalfScaleNeededUp_x1": 0.0009995003330834232,
+     "clipHalfScaleNeededUp_x06": 0.001665833888472372,
+     "clipHalfScaleNeededDown": 0.0010005003335835344,
+     "minDailySigmaForClipUp_x06": 0.003331667776944744,
+     "minDailySigmaForClipDown": 0.0020010006671670687
+    }
+   ]
+  },
+  {
+   "h": 5,
+   "neutralThresholdPct": 0.25,
+   "weightsSum": 100,
+   "weightOfPriceOnlyFactors": 72,
+   "maxAbsBias_allFactors": 1,
+   "maxAbsBias_priceOnly": 0.72,
+   "rows": [
+    {
+     "dailySigma": 0.01,
+     "upBias_x1": 0.8389517467252811,
+     "upBias_x06": 1.3982529112088018,
+     "downBias_abs": 0.8410517532878083,
+     "upFeasible_all": true,
+     "upFeasible_x06_all": false,
+     "downFeasible_all": true,
+     "upFeasible_priceOnly": false,
+     "upFeasible_x06_priceOnly": false,
+     "downFeasible_priceOnly": false,
+     "clipHalfScaleNeededUp_x1": 0.002496880198587146,
+     "clipHalfScaleNeededUp_x06": 0.004161466997645243,
+     "clipHalfScaleNeededDown": 0.002503130218118477,
+     "minDailySigmaForClipUp_x06": 0.003722129237142688,
+     "minDailySigmaForClipDown": 0.002238867729698716
+    }
+   ]
+  },
+  {
+   "h": 21,
+   "neutralThresholdPct": 0.5,
+   "weightsSum": 100,
+   "weightOfPriceOnlyFactors": 58,
+   "maxAbsBias_allFactors": 1,
+   "maxAbsBias_priceOnly": 0.58,
+   "rows": [
+    {
+     "dailySigma": 0.01,
+     "upBias_x1": 0.39900332088311746,
+     "upBias_x06": 0.6650055348051959,
+     "downBias_abs": 0.4010033458835429,
+     "upFeasible_all": true,
+     "upFeasible_x06_all": true,
+     "downFeasible_all": true,
+     "upFeasible_priceOnly": true,
+     "upFeasible_x06_priceOnly": false,
+     "downFeasible_priceOnly": true,
+     "clipHalfScaleNeededUp_x1": 0.004987541511038968,
+     "clipHalfScaleNeededUp_x06": 0.008312569185064947,
+     "clipHalfScaleNeededDown": 0.005012541823544286,
+     "minDailySigmaForClipUp_x06": 0.0036279026200111905,
+     "minDailySigmaForClipDown": 0.0021876526029070164
+    }
+   ]
+  },
+  {
+   "h": 63,
+   "neutralThresholdPct": 0.5,
+   "weightsSum": 100,
+   "weightOfPriceOnlyFactors": 36,
+   "maxAbsBias_allFactors": 1,
+   "maxAbsBias_priceOnly": 0.36,
+   "rows": [
+    {
+     "dailySigma": 0.01,
+     "upBias_x1": 0.13300110696103914,
+     "upBias_x06": 0.22166851160173193,
+     "downBias_abs": 0.13366778196118098,
+     "upFeasible_all": true,
+     "upFeasible_x06_all": true,
+     "downFeasible_all": true,
+     "upFeasible_priceOnly": true,
+     "upFeasible_x06_priceOnly": true,
+     "downFeasible_priceOnly": true,
+     "clipHalfScaleNeededUp_x1": 0.004987541511038968,
+     "clipHalfScaleNeededUp_x06": 0.008312569185064947,
+     "clipHalfScaleNeededDown": 0.005012541823544286,
+     "minDailySigmaForClipUp_x06": 0.002094570554257209,
+     "minDailySigmaForClipDown": 0.0012630418191817512
+    }
+   ]
+  },
+  {
+   "h": 126,
+   "neutralThresholdPct": 0.5,
+   "weightsSum": 100,
+   "weightOfPriceOnlyFactors": 26.5,
+   "maxAbsBias_allFactors": 1,
+   "maxAbsBias_priceOnly": 0.265,
+   "rows": [
+    {
+     "dailySigma": 0.01,
+     "upBias_x1": 0.06650055348051957,
+     "upBias_x06": 0.11083425580086596,
+     "downBias_abs": 0.06683389098059049,
+     "upFeasible_all": true,
+     "upFeasible_x06_all": true,
+     "downFeasible_all": true,
+     "upFeasible_priceOnly": true,
+     "upFeasible_x06_priceOnly": true,
+     "downFeasible_priceOnly": true,
+     "clipHalfScaleNeededUp_x1": 0.004987541511038968,
+     "clipHalfScaleNeededUp_x06": 0.008312569185064947,
+     "clipHalfScaleNeededDown": 0.005012541823544286,
+     "minDailySigmaForClipUp_x06": 0.001481085042588938,
+     "minDailySigmaForClipDown": 0.0008931054352656095
+    }
+   ]
+  },
+  {
+   "h": 252,
+   "neutralThresholdPct": 0.5,
+   "weightsSum": 100,
+   "weightOfPriceOnlyFactors": 17,
+   "maxAbsBias_allFactors": 1,
+   "maxAbsBias_priceOnly": 0.17,
+   "rows": [
+    {
+     "dailySigma": 0.01,
+     "upBias_x1": 0.033250276740259786,
+     "upBias_x06": 0.05541712790043298,
+     "downBias_abs": 0.033416945490295245,
+     "upFeasible_all": true,
+     "upFeasible_x06_all": true,
+     "downFeasible_all": true,
+     "upFeasible_priceOnly": true,
+     "upFeasible_x06_priceOnly": true,
+     "downFeasible_priceOnly": true,
+     "clipHalfScaleNeededUp_x1": 0.004987541511038968,
+     "clipHalfScaleNeededUp_x06": 0.008312569185064947,
+     "clipHalfScaleNeededDown": 0.005012541823544286,
+     "minDailySigmaForClipUp_x06": 0.0010472852771286046,
+     "minDailySigmaForClipDown": 0.0006315209095908756
+    }
+   ]
+  }
+ ]
+}

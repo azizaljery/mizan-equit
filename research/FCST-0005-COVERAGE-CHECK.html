@@ -1,0 +1,63 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FCST-0005 الفحص المحدود للتغطية</title><style>body{font-family:system-ui,"Segoe UI",Tahoma,sans-serif;direction:rtl;text-align:right;max-width:980px;margin:2rem auto;padding:0 16px;line-height:1.8;color:#1a1a1a;background:#fff}table{border-collapse:collapse;width:100%;direction:rtl;margin:1rem 0;font-size:.9rem;display:block;overflow-x:auto}th,td{border:1px solid #bbb;padding:5px 8px;text-align:right;vertical-align:top}th{background:#f1f1f1}code{direction:ltr;unicode-bidi:embed;background:#f4f4f4;padding:0 4px;border-radius:3px}blockquote{border-right:4px solid #999;margin:1rem 0;padding:0 1rem;color:#444}@media(prefers-color-scheme:dark){body{background:#161616;color:#e8e8e8}th{background:#262626}code{background:#262626}th,td{border-color:#555}blockquote{color:#bbb}}</style></head><body><h1>FCST-0005 — الفحص المحدود للتغطية التاريخية (أداة جاهزة، غير منفَّذة)</h1>
+<p><strong>الحالة:</strong> لم يُنفَّذ. لا اتصال بأي مصدر. لا شراء، لا قبول شروط نيابة عنك، لا تجاوز لقيود الشبكة، لا انتقال إلى مصدر بديل. الأداة: <code>mizan-v45/research/fcst0005/e1/coverage-check.mjs</code>، واختباراتها <code>tests/fcst0005-coverage-check.test.mjs</code> (9 اختبارات بمصدر وهمي بلا شبكة، ضمن خطوة CI الموجودة).</p>
+<h2>1. التصنيف الصريح</h2>
+<p><strong>قراءة آلية لأسعار V.</strong> الاستجابة كاملة (طوابع زمنية، إغلاقات، أحجام، أحداث) تصل إلى ذاكرة العملية. الشيفرة لا تقرأ منها إلا الحقول المحددة أدناه ولا تحفظ ولا تطبع سعرًا ولا حجمًا ولا عائدًا، <strong>لكن عدم الطباعة لا يجعلها «بيانات وصفية فقط».</strong> تُسجَّل في سجل التعرض كقراءة آلية لـV لم يطّلع عليها أحد، وتُستبعد من أي قرار تصميم (لا إعادة فتح للتصميم).</p>
+<h2>2. شروط ما قبل التنفيذ (كلها مطلوبة)</h2>
+<ol>
+<li><strong>توثيق ملاءمة شروط استخدام المصدر</strong> في ملف الملف التعريفي (<code>termsUrl</code>، <code>termsReviewedAt</code>، <code>termsSuitability</code>).</li>
+<li><strong>مسار وصول مسموح</strong> (<code>accessPathRef</code>) في بيئة تسمح سياستها بالمضيف. لا أفترض أن حسابك مؤسسي ولا أطلب توسيع صلاحيات غير لازمة.</li>
+<li><strong>موافقتك الصريحة</strong> (<code>approvedBy</code>، <code>approvedAt</code>) وتفعيل <code>COVERAGE_CHECK_ARMED=1</code> يدويًا عند التشغيل.
+الأداة ترفض التشغيل إن نقص أي حقل (مختبر).</li>
+</ol>
+<h2>3. توثيق شروط استخدام المصدر الحالي (Yahoo)</h2>
+<p>اطّلعت على «Yahoo Terms of Service» (legal.yahoo.com، اطلاع 2026-11-04، النص الإنجليزي كاملًا). ما وجدته:
+- <strong>البند 2(d)(ix):</strong> يمنع الوصول إلى الخدمات أو جمع البيانات منها «بوسائل آلية» (روبوتات، زواحف، كاشطات، أدوات تنقيب بيانات) دون إذن مسبق.
+- <strong>البند 2(d)(x):</strong> يمنع استخدام مواد الخدمة لبناء قاعدة بيانات أو أرشيف أو تغذية بيانات منافسة.
+- <strong>البند 2(e):</strong> يمنع الوصول للخدمات أو إعادة استخدامها لأي غرض تجاري، ما لم يُنص صراحة على غير ذلك، ويمنع استخدام طريقة غير الواجهة والتعليمات المقدَّمة.
+- لم أجد شروطًا خاصة بـYahoo Finance تجيز غير ذلك في النص المقروء (توجد إرشادات مجتمع منفصلة لم تُقرأ).
+<strong>الخلاصة:</strong> <strong>لا أقدّر أن هذا المصدر ملائم لتنفيذ هذا الفحص دون إذن كتابي من المزوّد.</strong> لست محاميًا، والقرار قانوني تجاري لك. لم أقبل أي شروط. ويستحق انتباهك أن التطبيق نفسه يستخدم هذه النقطة في الإنتاج، وهذا موضوع منفصل لم أبحثه.
+<strong>خياراتك:</strong> (أ) إذن كتابي من المزوّد؛ (ب) مصدر تجيز شروطه هذا الاستخدام فعلًا (قرارك، ولا شراء من جهتي)؛ (ج) عدم تنفيذ الفحص والاكتفاء بإجابات الموردين المكتوبة على أسئلة العمق.</p>
+<h2>4. قائمة الطلبات الدقيقة</h2>
+<ul>
+<li><strong>عدد الطلبات:</strong> 80 كحد أقصى (رموز <code>research-data</code> نفسها، <code>e1/coverage-symbols.json</code>)، بالتتابع، فاصل ثانية، لا تعدد خيوط.</li>
+<li><strong>الطلب:</strong> <code>GET</code> واحد لكل رمز إلى القالب في الملف التعريفي، <strong>ولا مضيف غيره</strong>:
+  <code>https://&lt;host&gt;/v8/finance/chart/{symbol}?interval=1d&amp;period1=788918400&amp;period2=1571011200&amp;events=splits%2Cdiv</code></li>
+<li><strong>حدود التواريخ (ثابتة في الشيفرة):</strong> <code>period1 = 788918400</code> (1995-01-01T00:00Z)، <code>period2 = 1571011200</code> (2019-10-14T00:00Z حصري، أي آخر يوم مشمول 2019-10-13). لا تُقبل قوالب فيها <code>range=</code>.</li>
+<li><strong>إعادة المحاولة:</strong> مرة واحدة على الرابط نفسه عند خطأ شبكة أو 5xx فقط. لا مصدر بديل، ولا اتباع لإعادة التوجيه (أي 3xx تُسجَّل «أُجهض»).</li>
+<li><strong>رفض الصفوف:</strong> أي طابع زمني ≥ 1571011200، أو تاريخ محلي (بإزاحة البورصة) &gt; 2019-10-13، يُجهض الرمز بالكامل ويُسجَّل الشذوذ دون قراءة ما بعده؛ وكذلك عدم تطابق الرمز أو ترتيب غير تصاعدي. مختبر.</li>
+<li><strong>ممنوع:</strong> جلب حديث، مقارنة بنافذة C أو الملفات المخزنة، أو أي حقل غير المذكور.</li>
+</ul>
+<h2>5. الحقول</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>الحقول</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>المقروءة</strong></td>
+<td>meta.symbol، meta.currency، meta.exchangeName، meta.exchangeTimezoneName، meta.gmtoffset • <code>timestamp[]</code> • <code>indicators.quote[0].close[]</code> لاختبار null فقط • وجود <code>indicators.adjclose</code> • عدد <code>events.splits</code> و<code>events.dividends</code></td>
+</tr>
+<tr>
+<td><strong>المحفوظة في التقرير</strong></td>
+<td>symbol، requestUrl، httpStatus، status، anomaly، firstDate، lastDate، rows، nullCloseCount، longestGapDays، hasAdjClose، splitCount، dividendCount، currency، exchangeName، exchangeTimezoneName • وإجمالي: عدد الرموز الناجحة والمُجهضة والفاشلة وعدد ما يبدأ ≤ 2005 و2010 و2015</td>
+</tr>
+<tr>
+<td><strong>لا تُحفظ ولا تُطبع</strong></td>
+<td>الاستجابات، الأسعار، الأحجام، العوائد، أي قيمة من المصفوفات</td>
+</tr>
+</tbody>
+</table>
+<h2>6. تعليمات التشغيل في بيئة مسموحة (لك أو لجهة تعتمدها)</h2>
+<ol>
+<li>على جهاز/بيئة تسمح سياستها بالمضيف الموثق، وفيها Node.js 18 أو أحدث.</li>
+<li>انسخ الملفات: <code>coverage-check.mjs</code>، <code>coverage-symbols.json</code>، <code>source-profile.template.json</code>.</li>
+<li>انسخ القالب إلى <code>source-profile.json</code> واملأ <strong>كل</strong> حقوله بعد مراجعتك لشروط المصدر وموافقتك. (لا أملأ حقولك ولا أقبل نيابةً عنك.)</li>
+<li>شغّل: <code>COVERAGE_CHECK_ARMED=1 node coverage-check.mjs --profile source-profile.json --symbols coverage-symbols.json --out coverage-report.json</code></li>
+<li>أرسل لي <code>coverage-report.json</code> فقط (يحتوي الحقول المحفوظة أعلاه). ثم يُنتج <code>testable-cells.mjs</code> جدول الخلايا آليًا.</li>
+<li>لا تشغّله بمصدر آخر غير الموثق في الملف التعريفي، ولا تعدّل الشيفرة (البصمة في الملف <code>FCST-0005-E1-DESIGN-FINAL.md</code>).</li>
+</ol>
+<h2>7. بعد التشغيل</h2>
+<p>يُقرأ التقرير آليًا لتحديد الخلايا القابلة للاختبار فقط (§5 في وثيقة التصميم). <strong>لا تغيير في التصميم</strong>، ولا إعادة اختيار للميزات أو الأسهم أو الآفاق بناءً عليه، ولا تجميد قبل إذن مستقل.</p></body></html>
