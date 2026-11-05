@@ -7,7 +7,7 @@ import {scenarioCenter,inspectScenarioRange} from '../lib/forecast-diagnostics.t
 import {syntheticReport,NOW} from '../research/forecast-repair/fixtures.mjs';
 test('missing predicted price is not replaced with the observed price',()=>{assert.equal(forecastPoint({available:false,price:100}),null);assert.equal(forecastPoint({available:true,price:100}),null);});
 test('forecast labels contain no buy recommendation',()=>{assert.doesNotMatch(forecastDisplayStatus({available:true,direction:'صاعد'}).label,/نوصي|شراء/);});
-test('all six horizons carry numeric diagnostic evidence',()=>{const r=forecasts(syntheticReport(),null,NOW);assert.equal(r.rows.length,6);for(const row of r.rows)assert.equal(row.diagnostics.sessions,row.sessions);assert.match(MODEL_VERSION,/shock-warning-1/);});
+test('all six horizons carry numeric diagnostic evidence',()=>{const r=forecasts(syntheticReport(),null,NOW);assert.equal(r.rows.length,6);for(const row of r.rows)assert.equal(row.diagnostics.sessions,row.sessions);assert.match(MODEL_VERSION,/shock-warning-2/);});
 test('shock policy: short horizons are issued WITH a warning, low confidence, and no shock blocker',()=>{
  const r=forecasts(syntheticReport({shock:-.025}),null,NOW);
  for(const row of r.rows.filter(x=>x.sessions<=21)){assert.equal(row.available,true,'sessions '+row.sessions);assert.match(row.shockWarning,/صدمة تقلب|كسر هيكلي/);assert.equal(row.confidence,'منخفض');assert.ok(!row.diagnostics.blockers.some(x=>x.code==='volatility_shock_policy'));assert.ok(Number.isFinite(row.predictedPrice)&&row.range&&row.range[0]<row.range[1]);}

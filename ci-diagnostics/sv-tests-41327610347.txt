@@ -1,0 +1,23 @@
+✔ in-session: the provider window contains now; both boundaries are exact (2.941308ms)
+✔ after the close: unverified for ANY elapsed time unless there is evidence; no hidden settlement rule (2.148737ms)
+✔ opt-in settlement policy is honoured, labelled an assumption, and off by default (0.757286ms)
+✔ later session at the provider = evidence the bar is final; weekend and holiday gaps are not (1.78653ms)
+✔ short session (early close) follows the provider window, not a fixed hour (0.801528ms)
+✔ time zones: the session date is the exchange-local date, also across the UTC date line (3.047247ms)
+✔ late data: a quote older than the close is unverified and says so; missing quote or window never claims completion (3.400356ms)
+✔ parseLiveQuote exposes the session window and offset that lastBarStatus relies on (0.594622ms)
+✔ technical: relative volume names its numerator session and denominator window; price indicators unchanged (9.169131ms)
+✔ zero volume: a zero in the not-confirmed bar still counts (conservative); a zero in a confirmed bar counts once (3.509491ms)
+✔ forecast conditions: unconfirmed bar is skipped and the session used is reported; a confirmed bar is used as is (6.721505ms)
+✔ trade scenario gate equals the legacy formula for in-session, unverified and complete bars (400 random volume vectors) (1506.254569ms)
+✔ trade scenario note states which bar and why it is a lower bound (4.390007ms)
+✔ final decision: checks and buy are identical for every bar state; the evidence line names both dates (5.233523ms)
+✔ screener evidence: volume statistics skip the not-confirmed bar; ATR and bar age still use it (0.266628ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1729.349247
