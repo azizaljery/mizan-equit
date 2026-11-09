@@ -1,7 +1,7 @@
 // FCST-0005 E1 power/count library (pure, deterministic). Used by design.mjs (scenarios) and testable-cells.mjs (actual coverage).
 // Nothing here reads price data. Planning noise comes from variance-estimate.ts (development slice C only) or from the declared conservative fallback.
 import {normInv, DELTA, mulberry32} from '../candidate.mjs';
-export const H = [1, 5, 21], MK = ['sa', 'us'], M_FAMILY = 24, N_SIM = 200000, SEED = 20261104;
+export const H = [1, 5, 21], MK = ['sa', 'us'], M_FAMILY = 30, N_SIM = 200000, SEED = 20261104;
 export const C_CRIT = normInv(1 - 0.05 / M_FAMILY);
 export const CASES = {optimistic: {infl: 1, rho: 0.9}, moderate: {infl: 1.5, rho: 0.5}, severe: {infl: 3, rho: 0}};
 export const THETA = [0.01, 0.015, 0.02], TARGET = {theta: 0.015, power: 0.8};

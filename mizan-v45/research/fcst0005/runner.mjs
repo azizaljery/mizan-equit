@@ -1,12 +1,12 @@
 // FCST-0005 evaluation runner (research only; NOT imported by production). Implements PROTOCOL-FCST-0005 sections 2-8 exactly:
 // frozen candidates, yearly rolling-origin retrain with purge, common cases, paired per-date differences, circular block bootstrap,
-// intersection-union over {R0, C_pub}, Holm over a FIXED family (m = 24), per-horizon decision, negative controls.
+// intersection-union over {R0, C_pub}, Holm over a FIXED family (m = 30), per-horizon decision, negative controls.
 // Pure and deterministic: no clock, no Math.random, no I/O. Data arrive as arguments (see run-c.mjs for the guarded loading).
 import * as C from './candidate.mjs';
 
 export const RUN_HORIZONS = [1, 5, 21];
-export const MODELS = ['Q0', 'Q1', 'Q2', 'QE'];
-export const FAMILY_M = 24;                  // 4 models x 2 markets x 3 horizons, fixed in advance
+export const MODELS = ['Q0', 'Q1', 'Q2', 'QE', 'MZ1'];
+export const FAMILY_M = 30;                  // 5 candidates (Q0, Q1, Q2, QE, MZ1) x 2 markets x 3 horizons, fixed in advance (AMEND-2)
 export const SEEDS = {boot: 20261101, shuffle: 20261102};
 export const B_DEFAULT = 2000;
 const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
@@ -26,10 +26,13 @@ export function buildRows(stocks, {gridStep = 5} = {}) {
         if (t + h >= n) continue;
         const y = Math.log(s.close[t + h] / s.close[t]), S = sig * Math.sqrt(h);
         const y2 = t + 2 * h < n ? Math.log(s.close[t + 2 * h] / s.close[t + h]) : null; // displaced target (control only)
-        rows.push({si, market: s.market, t, h, date: s.dates[t], tdate: s.dates[t + h], S, y, z: y / S, z2: y2 === null ? null : y2 / S, x, grid: t % gridStep === 0});
+        rows.push({si, market: s.market, t, h, date: s.dates[t], tdate: s.dates[t + h], S, sig, y, z: y / S, z2: y2 === null ? null : y2 / S, x, xr: 0, grid: t % gridStep === 0});
       }
     }
   });
+  // QM input: cross-sectional rank of mom252_21 among the rows of the same (market, h, date); uses only prices up to t.
+  const groups = new Map(); rows.forEach((r, i) => { const k = r.market + '|' + r.h + '|' + r.date; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(i); });
+  for (const idx of groups.values()) { const rk = C.rankFeature(idx.map(i => rows[i].x[2])); idx.forEach((ri, k) => { rows[ri].xr = rk[k]; }); }
   return rows;
 }
 function weightByDate(rows) { // each origin date has total weight 1 inside its (market, h) block
@@ -39,12 +42,12 @@ function weightByDate(rows) { // each origin date has total weight 1 inside its 
 function shuffleWithinDate(rows, seed) { // negative control A: features permuted across stocks inside each date
   const rnd = C.mulberry32(seed), byDate = new Map();
   rows.forEach((r, i) => { if (!byDate.has(r.date)) byDate.set(r.date, []); byDate.get(r.date).push(i); });
-  const xs = rows.map(r => r.x);
+  const xs = rows.map(r => r.x), xrs = rows.map(r => r.xr);
   for (const idx of [...byDate.keys()].sort().map(d => byDate.get(d))) {
     const perm = idx.slice(); for (let i = perm.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [perm[i], perm[j]] = [perm[j], perm[i]]; }
-    idx.forEach((ri, k) => { xs[ri] = rows[perm[k]].x; });
+    idx.forEach((ri, k) => { xs[ri] = rows[perm[k]].x; xrs[ri] = rows[perm[k]].xr; });
   }
-  return rows.map((r, i) => ({...r, x: xs[i]}));
+  return rows.map((r, i) => ({...r, x: xs[i], xr: xrs[i]}));
 }
 
 /** Core evaluation for ONE market. Returns per-horizon results. eng provides C_pub and the engine bias for QE. */
@@ -59,7 +62,7 @@ export function evaluateMarket({market, stocks, eng, calendar, gridStep = 5, B =
     const rowsH = all.filter(r => r.h === h);
     const zOf = r => variant === 'displace' ? r.z2 : r.z;
     const usable = rowsH.filter(r => zOf(r) !== null);
-    const perModel = {R0: [], CPUB: [], Q0: [], Q1: [], Q2: [], QE: []}; // arrays of {date, nae, year, si}
+    const perModel = {R0: [], CPUB: [], Q0: [], Q1: [], Q2: [], QE: [], MZ1: []}; // arrays of {date, nae, year, si}
     const testYears = []; let trainStats = null;
     for (const Y of years) {
       const test = usable.filter(r => year(r.date) === Y && r.grid);
@@ -78,6 +81,7 @@ export function evaluateMarket({market, stocks, eng, calendar, gridStep = 5, B =
         const wh = weightByDate(rh); rh.forEach((r, i) => pool.push({h: hh, z: variant === 'displace' ? r.z2 : r.z, x: r.x, w: wh[i]}));
       }
       const q2 = C.fitQ2(pool);
+      const qm = C.fitQ1(train.map(r => [r.xr]), train.map(zOf), w), sigTrainMed = C.weightedMedian(train.map(r => r.sig), w);
       // QE: z ~ a + b * engine_bias on GRID training rows only
       const gtrain = train.filter(r => r.grid), eb = gtrain.map(r => eng(r.si, r.t, h)), keep = gtrain.map((r, i) => i).filter(i => eb[i]);
       let qe = null;
@@ -93,6 +97,7 @@ export function evaluateMarket({market, stocks, eng, calendar, gridStep = 5, B =
         const z = zOf(r), cpub = e.centre / r.S;
         const rec = (k, zh) => perModel[k].push({date: r.date, nae: Math.abs(z - zh), year: Y, si: r.si});
         rec('R0', 0); rec('CPUB', cpub); rec('Q0', q0.predict()); rec('Q1', q1.predict(r.x)); rec('Q2', q2.predict(r.x, h)); rec('QE', qe.predict([e.bias]));
+        rec('MZ1', C.mz1Combine([q0.predict(), q1.predict(r.x), q2.predict(r.x, h), qm.predict([r.xr])], r.sig, sigTrainMed));
       }
     }
     out[h] = {perModel, testYears, trainStats};

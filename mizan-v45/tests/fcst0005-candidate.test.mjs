@@ -69,3 +69,13 @@ test('display: only a proven horizon shows an approved price',()=>{
  assert.equal(C.displayStatus({status:'proven'}).showApprovedPrice,true);
  for(const s of ['undecided','rejected',undefined])assert.equal(C.displayStatus(s&&{status:s}).showApprovedPrice,false);
 });
+
+test('MZ-1: fixed combination rule (median of four, regime factor clipped), rank feature in [-0.5,0.5]', async () => {
+  const C = await import('../research/fcst0005/candidate.mjs');
+  assert.equal(C.medianOf([3, 1, 2]), 2); assert.equal(C.medianOf([4, 1, 2, 3]), 2.5);
+  assert.equal(C.mz1Combine([0.1, 0.2, 0.3, 0.4], 0.02, 0.02), 0.25);          // factor 1: no change
+  assert.equal(C.mz1Combine([0.1, 0.2, 0.3, 0.4], 0.08, 0.02), 0.25 * 0.5);    // high volatility: clipped at 0.5
+  assert.equal(C.mz1Combine([0.1, 0.2, 0.3, 0.4], 0.01, 0.02), 0.25);          // low volatility never amplifies
+  const r = C.rankFeature([5, 1, 3]); assert.deepEqual(r, [0.5, -0.5, 0]);
+  assert.deepEqual(C.rankFeature([7]), [0]);
+});

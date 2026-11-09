@@ -135,3 +135,21 @@ export function decideHorizon({ testable, cleanData, holmP, relImprovement, ciUp
 export function displayStatus(decision) {
   return decision?.status === 'proven' ? { showApprovedPrice: true, label: 'معتمد' } : { showApprovedPrice: false, label: decision?.status === 'rejected' ? 'مرفوض' : 'غير معتمد' };
 }
+
+// ---------- MZ-1 ("Mizan-1"): the merged, fixed-rule candidate (PROTOCOL-FCST-0005-AMEND-2) ----------
+// Components (all fitted on TRAINING rows only, like Q1): Q0, Q1, Q2 and QM (LAD of z on the cross-sectional rank of mom252_21 within the market on that date).
+// Combination rule, fixed in advance, NOT fitted and never tuned: median of the four kappa-scaled component predictions
+// (even count -> mean of the two middle values), times the regime factor v = clip(medianTrainSigma63 / sigma63_t, 0.5, 1).
+// Neither the component list, the rule, the clip bounds, nor kappa may change after any result is seen.
+export const MZ1_CLIP = [0.5, 1];
+export function medianOf(v) { const a = v.slice().sort((x, y) => x - y), n = a.length; return n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2; }
+export function mz1Combine(preds, sigmaNow, sigmaTrainMedian, clip = MZ1_CLIP) {
+  const f = Math.min(clip[1], Math.max(clip[0], sigmaTrainMedian / sigmaNow));
+  return medianOf(preds) * f;
+}
+/** Cross-sectional rank feature in [-0.5, 0.5]: ties broken by stock index; rows must be the rows of ONE (market, h, date). */
+export function rankFeature(values) {
+  const idx = values.map((_, i) => i).sort((a, b) => values[a] - values[b] || a - b), n = values.length, out = Array(n).fill(0);
+  idx.forEach((i, r) => { out[i] = n > 1 ? r / (n - 1) - 0.5 : 0; });
+  return out;
+}

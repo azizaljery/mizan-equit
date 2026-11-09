@@ -14,7 +14,7 @@ function makeStocks(nStocks, n, planted, seed) {
   })};
 }
 const engFor = () => (si, t, h) => ({bias: 0.0, centre: 0.0});
-test('runAll: fixed family of 24 cells, deterministic, exposed data can never be PROVEN', () => {
+test('runAll: fixed family of 30 cells, deterministic, exposed data can never be PROVEN', () => {
   const {dates, stocks} = makeStocks(6, 900, true, 7);
   // second market: relabel a copy so both markets exist
   const sa = stocks.map(s => ({...s, market: 'sa', symbol: s.symbol + '.SR'}));
