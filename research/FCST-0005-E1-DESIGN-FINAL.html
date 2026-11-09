@@ -1,7 +1,7 @@
 <!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FCST-0005 E1 التصميم النهائي</title><style>body{font-family:system-ui,"Segoe UI",Tahoma,sans-serif;direction:rtl;text-align:right;max-width:980px;margin:2rem auto;padding:0 16px;line-height:1.8;color:#1a1a1a;background:#fff}table{border-collapse:collapse;width:100%;direction:rtl;margin:1rem 0;font-size:.9rem;display:block;overflow-x:auto}th,td{border:1px solid #bbb;padding:5px 8px;text-align:right;vertical-align:top}th{background:#f1f1f1}code{direction:ltr;unicode-bidi:embed;background:#f4f4f4;padding:0 4px;border-radius:3px}blockquote{border-right:4px solid #999;margin:1rem 0;padding:0 1rem;color:#444}@media(prefers-color-scheme:dark){body{background:#161616;color:#e8e8e8}th{background:#262626}code{background:#262626}th,td{border-color:#555}blockquote{color:#bbb}}</style></head><body><h1>FCST-0005 — E1: التصميم النهائي (مسودة نهائية)، وجدول التغطية، والخلايا القابلة للاختبار، والبصمات</h1>
 <p><strong>الحالة:</strong> تصميم تجربة <strong>غير مجمَّد وغير مشغَّل</strong>. التجميد وتشغيل E1 بإذن مستقل. لا شراء، لا قبول شروط نيابة عنك، لا تجاوز لقيود الشبكة، لا نشر ولا جدولة، ولا فتح لـV أو F أو الفترة المقيدة. هذه الوثيقة تحل محل <code>FCST-0005-E1-PREREG-DRAFT.md</code> (تبقى للأرشيف). الأساس القانوني للتغييرات: <code>PROTOCOL-FCST-0005-AMEND-1.md</code>.</p>
 <blockquote>
-<p><strong>لا إعادة فتح للتصميم.</strong> كل ما هو مثبت هنا (الميزات، المرشحون، κ، δ، B، البذور، عائلة Holm = 24، الاختبار المشترك، هدف القوة، الحالات، منهج التباين) <strong>لا يتغير بنتيجة فحص التغطية</strong>. أثر نتيجة التغطية الوحيد آلي: يحدد أي الخلايا «قابلة للاختبار» بالقاعدة المثبتة في §5.</p>
+<p><strong>لا إعادة فتح للتصميم.</strong> كل ما هو مثبت هنا (الميزات، المرشحون، κ، δ، B، البذور، عائلة Holm = 30، الاختبار المشترك، هدف القوة، الحالات، منهج التباين) <strong>لا يتغير بنتيجة فحص التغطية</strong>. أثر نتيجة التغطية الوحيد آلي: يحدد أي الخلايا «قابلة للاختبار» بالقاعدة المثبتة في §5.</p>
 </blockquote>
 <h2>1. أهداف القوة (الفرق بين الرقمين)</h2>
 <table>
@@ -24,7 +24,7 @@
 <td>هدف تصميم يحدد قابلية الخلية؛ ليس معيار قبول</td>
 </tr>
 <tr>
-<td>- الاختبار مشترك ضد R0 وC_pub؛ Holm ثابتة على 24 مقارنة (z = 2.865)؛ الخلايا غير القابلة تبقى في العائلة بـp=1 ولكل خلية نتيجتها.</td>
+<td>- الاختبار مشترك ضد R0 وC_pub؛ Holm ثابتة على 30 مقارنة (5 مرشحين × سوقان × 3 آفاق، بعد إضافة MZ1 في التعديل 2) (z = 2.935)؛ الخلايا غير القابلة تبقى في العائلة بـp=1 ولكل خلية نتيجتها.</td>
 <td></td>
 <td></td>
 </tr>
@@ -233,8 +233,8 @@
 <td>السعودي</td>
 <td>21</td>
 <td>8</td>
-<td>42% / <strong>33%</strong> / 25%</td>
-<td>2.44% / 3.50%</td>
+<td>39% / <strong>31%</strong> / 24%</td>
+<td>2.48% / 3.54%</td>
 <td>غير قابلة</td>
 </tr>
 <tr>
@@ -251,8 +251,8 @@
 <td>الأمريكي</td>
 <td>5</td>
 <td>139</td>
-<td>85% / <strong>67%</strong> / 43%</td>
-<td>1.71% / 2.44%</td>
+<td>83% / <strong>65%</strong> / 42%</td>
+<td>1.73% / 2.47%</td>
 <td>غير قابلة</td>
 </tr>
 <tr>
@@ -260,8 +260,8 @@
 <td>الأمريكي</td>
 <td>21</td>
 <td>8</td>
-<td>42% / <strong>33%</strong> / 25%</td>
-<td>2.45% / 3.51%</td>
+<td>39% / <strong>31%</strong> / 24%</td>
+<td>2.48% / 3.54%</td>
 <td>غير قابلة</td>
 </tr>
 <tr>
@@ -374,18 +374,18 @@
 </tr>
 </tbody>
 </table>
-<p><strong>قراءة:</strong> من 2015 وحدها: الأفق 21 غير قابل في السوقين (8 فترات)، والأمريكي 5 جلسات غير قابل بالقوة. من 2010: كل الخلايا قابلة تحت المتوسطة لكن الأفق 21 على حافة 60 فترة (67–68)، وتحت القاسية تهبط الخلايا الأبطأ إلى نحو 60%–66%. الاحتمالات تقديرات نموذجية لا ضمانات؛ ≥ 99% تعني قرب 100% تحت الافتراضات لا يقينًا. لم يُنمذج الاستقرار السنوي ولا الضوابط السلبية.</p>
+<p><strong>قراءة:</strong> من 2015 وحدها: الأفق 21 غير قابل في السوقين (8 فترات)، والأمريكي 5 جلسات غير قابل بالقوة. من 2010: كل الخلايا قابلة تحت المتوسطة لكن الأفق 21 على حافة 60 فترة (67–68)، وتحت الحالة القاسية تنخفض قوة الخلايا الأبطأ (الأرقام في الجدول). الاحتمالات تقديرات نموذجية لا ضمانات؛ ≥ 99% تعني قرب 100% تحت الافتراضات لا يقينًا. لم يُنمذج الاستقرار السنوي ولا الضوابط السلبية.</p>
 <h2>5. القاعدة الآلية المثبتة لربط التغطية بالخلايا (لا حكم بشري)</h2>
 <p><code>e1/testable-cells.mjs</code> يقرأ تقرير التغطية ويُخرج الجدول بلا اجتهاد: <strong>بداية كل سوق = الوسيط لأول تاريخ لرموز ذلك السوق التي نجح طلبها</strong> (لا أقل من 1995-01-01)، والرموز المتأخرة تدخل من بدايتها. اختبار وحدة ثابت يفحص الحتمية.</p>
 <h2>6. التصميم والبصمات</h2>
 <ul>
 <li><strong>المقدّر:</strong> وسيط شرطي لـ y = ln(C[t+h]/C[t])؛ الخسارة pinball(0.5) على z = y/(σ63√h) = NAE.</li>
-<li><strong>المرشحون:</strong> Q0 = κ×الوسيط الموزون؛ Q1 = κ×LAD(z ~ 1 + 3 ميزات موحدة) لكل أفق؛ Q2 = κ×√h×LAD مجمعة للآفاق 1 و5 و21؛ QE = κ×LAD(z ~ 1 + ميل المحرك المنشور بالأسعار فقط). <strong>المراجع:</strong> R0 مركز صفر؛ C_pub دوال الإنتاج على تقارير بالأسعار فقط.</li>
+<li><strong>المرشحون:</strong> Q0 = κ×الوسيط الموزون؛ Q1 = κ×LAD(z ~ 1 + 3 ميزات موحدة) لكل أفق؛ Q2 = κ×√h×LAD مجمعة للآفاق 1 و5 و21؛ QE = κ×LAD(z ~ 1 + ميل المحرك المنشور بالأسعار فقط)؛ <strong>MZ1 («ميزان-1»)</strong> = وسيط تنبؤات Q0 وQ1 وQ2 وQM (QM: LAD على الترتيب المقطعي لـmom252_21) مضروبًا في معامل نظام التذبذب clip(وسيط σ63 تدريب ÷ σ63 الحالي، 0.5، 1)، بلا أوزان مقدّرة (انظر <code>PROTOCOL-FCST-0005-AMEND-2</code>). <strong>المراجع:</strong> R0 مركز صفر؛ C_pub دوال الإنتاج على تقارير بالأسعار فقط.</li>
 <li><strong>الميزات:</strong> mom126_5 وtrend50_200 وmom252_21. <strong>معاملات:</strong> κ = 0.5، δ = 0.01، الآفاق [1, 5, 21]، B = 2000، بذور {"boot": 20261101, "shuffle": 20261102}، نافذة المحرك 504، تسخين 252.</li>
 <li><strong>الفصل:</strong> ميزات من إغلاقات ≤ t فقط، مقياس موحِّد على التدريب فقط؛ إعادة تدريب سنوية بتنقية وفجوة h؛ لا معايرة (κ ثابتة)؛ الاختبار داخل V فقط وهدف كل أصل ≤ 2019-10-13؛ مستبعد: C وH.</li>
 <li><strong>الأحكام:</strong> لكل خلية: «واعد للأمامي» أو «غير محسوم» أو «لم يحقق معيار القبول». لا «مثبت» ولا اعتماد إنتاجي من V؛ وF لا يمنح الاعتماد تلقائيًا.</li>
 </ul>
-<p><strong>الإيداع الأساسي للشيفرة:</strong> <code>f9bad7cc9c2dc699e99a0b1a876c87b726886897</code> (الشجرة نظيفة وقت التوليد: نعم). <strong>البصمة المجمعة لملفات التنفيذ (45 ملفًا): <code>92b808433daeb8b79a556fae923b4185009bf440e4c1e78fbdd3798398355fa6</code>.</strong></p>
+<p><strong>الإيداع الأساسي للشيفرة:</strong> <code>28021b70a929fbdcf8743addbbea715364cf2a5e</code> (الشجرة نظيفة وقت التوليد: نعم). <strong>البصمة المجمعة لملفات التنفيذ (46 ملفًا): <code>3f56947ab69e9ac55da88b21694cbc6a5f9ca51e528515d7ddd8f444019bafa2</code>.</strong></p>
 <table>
 <thead>
 <tr>
@@ -396,7 +396,7 @@
 <tbody>
 <tr>
 <td><code>lib/forecast-conditions.ts</code></td>
-<td><code>e11feeb9142d799fa243e72827a03ac0364a4ec6c679ba3e6be49307c67c8076</code></td>
+<td><code>5f9da8d3939ea61c0487ab0a9c044409ffc51006e47fcbad2e00ea297e077f7b</code></td>
 </tr>
 <tr>
 <td><code>lib/forecast-diagnostics.ts</code></td>
@@ -408,7 +408,7 @@
 </tr>
 <tr>
 <td><code>lib/research-model.ts</code></td>
-<td><code>cd3377841d6c509947680015dfa258ac766952fa572b4a72fc305e808bb47221</code></td>
+<td><code>d4e00d81e394a6604ba3954ca6d1497c23dc078d4ca3f391315bc5c1fc903438</code></td>
 </tr>
 <tr>
 <td><code>lib/site-settings.ts</code></td>
@@ -416,7 +416,7 @@
 </tr>
 <tr>
 <td><code>research/fcst0005/candidate.mjs</code></td>
-<td><code>313d5103a1bdf1ab963ddf8d1af0b7061f306ee69e8b1884e44c166d529014fe</code></td>
+<td><code>81df54c7fc9e7507de7a6c925b186cf209f0faac4fdfc3da83e9a409edf16b2d</code></td>
 </tr>
 <tr>
 <td><code>research/fcst0005/dev-input-guard.mjs</code></td>
@@ -432,7 +432,7 @@
 </tr>
 <tr>
 <td><code>research/fcst0005/runner.mjs</code></td>
-<td><code>5d038cdb3d26ddbad6214d813ed6a33476e0c3a827346d9742d39501ce7995d5</code></td>
+<td><code>d2b003fadcc2a3abd60dc190e8e08315a70ff00a242806de95763d5619400863</code></td>
 </tr>
 </tbody>
 </table>
@@ -450,7 +450,7 @@
 </tr>
 <tr>
 <td><code>research/fcst0005/e1/power-core.mjs</code></td>
-<td><code>a11a5acb339431a3c11b5eac2855f3dc188454714ca1513fd2a308026160fa7f</code></td>
+<td><code>3771dd53a06b3d2a7a15208546553ce89799701f94e3533698ff36cdf7f3187b</code></td>
 </tr>
 <tr>
 <td><code>research/fcst0005/e1/design.mjs</code></td>
@@ -485,6 +485,69 @@
 <blockquote>
 <p>مسودة لا تجميد: أي تعديل يغيّر البصمات. عند التجميد يُعاد توليد <code>manifest.mjs</code> ويُسجَّل إيداع التجميد بإذن مستقل.</p>
 </blockquote>
+<h2>6ب. نتيجة وصفية لـMZ-1 على النافذة المكشوفة C (لا تغيّر التعريف)</h2>
+<table>
+<thead>
+<tr>
+<th>السوق</th>
+<th>الأفق</th>
+<th>التحسن المقدَّر (الأقل بين المرجعين)</th>
+<th>القابلية</th>
+<th>Holm p</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>السعودي</td>
+<td>1</td>
+<td>−0.03%</td>
+<td>غير قابلة</td>
+<td>1</td>
+</tr>
+<tr>
+<td>السعودي</td>
+<td>5</td>
+<td>−0.06%</td>
+<td>قابلة</td>
+<td>1</td>
+</tr>
+<tr>
+<td>السعودي</td>
+<td>21</td>
+<td>−0.24%</td>
+<td>غير قابلة</td>
+<td>1</td>
+</tr>
+<tr>
+<td>الأمريكي</td>
+<td>1</td>
+<td>−0.02%</td>
+<td>قابلة</td>
+<td>1</td>
+</tr>
+<tr>
+<td>الأمريكي</td>
+<td>5</td>
+<td>+0.02%</td>
+<td>قابلة</td>
+<td>1</td>
+</tr>
+<tr>
+<td>الأمريكي</td>
+<td>21</td>
+<td>+0.53%</td>
+<td>غير قابلة</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>القراءة:</strong> MZ-1 لم يتجاوز عتبة 1% في أي خلية على C، ولا يختلف عمليًا عن المرشحين الأبسط. هذا وصفي على نافذة مكشوفة ولا يثبت شيئًا ولا ينفي أداءه على V. <strong>لا يُعدَّل التعريف بناءً عليه</strong> (التزام التعديل 2 §4).</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <h2>7. ما يبقى بانتظارك</h2>
 <ol>
 <li>حسم مسار الوصول وشروط المصدر لتنفيذ الفحص المحدود (<code>FCST-0005-COVERAGE-CHECK.md</code>)، أو قرار بعدم تنفيذه.</li>
