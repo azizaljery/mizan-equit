@@ -1,0 +1,15 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FCST-0005 تعديل البروتوكول 2 MZ-1</title><style>body{font-family:system-ui,"Segoe UI",Tahoma,sans-serif;direction:rtl;text-align:right;max-width:980px;margin:2rem auto;padding:0 16px;line-height:1.8;color:#1a1a1a;background:#fff}table{border-collapse:collapse;width:100%;direction:rtl;margin:1rem 0;font-size:.9rem;display:block;overflow-x:auto}th,td{border:1px solid #bbb;padding:5px 8px;text-align:right;vertical-align:top}th{background:#f1f1f1}code{direction:ltr;unicode-bidi:embed;background:#f4f4f4;padding:0 4px;border-radius:3px}blockquote{border-right:4px solid #999;margin:1rem 0;padding:0 1rem;color:#444}@media(prefers-color-scheme:dark){body{background:#161616;color:#e8e8e8}th{background:#262626}code{background:#262626}th,td{border-color:#555}blockquote{color:#bbb}}</style></head><body><h1>PROTOCOL-FCST-0005 — تعديل 2: المرشح المدمج «ميزان-1» (MZ-1)</h1>
+<p><strong>التاريخ:</strong> 2026-11-09. <strong>الحالة:</strong> اختيار المالك بالتفويض («اختر بالنيابة عني»)، ويُسجَّل كتصميم بحث وليس قبولًا لنموذج. كُتب وثُبِّت في الشيفرة <strong>قبل</strong> أي تشغيل لـMZ-1 على أي بيانات. لا يفتح V ولا F ولا الفترة المقيدة. الأصل والتعديل 1 لم يُعدَّلا.</p>
+<h2>1. التعريف (ثابت، لا يُضبط ولا يُعدَّل بعد رؤية أي نتيجة)</h2>
+<ul>
+<li><strong>المكونات (كلها تُدرَّب على صفوف التدريب فقط):</strong> Q0 وQ1 وQ2 كما عُرّفت، وQM = LAD لـz على <strong>الترتيب المقطعي</strong> لعائد mom252_21 داخل السوق في تاريخ الأصل نفسه (قيمة في [-0.5، 0.5]، تعادل الترتيب بفهرس السهم، وتستخدم الأسعار حتى t فقط).</li>
+<li><strong>القاعدة:</strong> وسيط التنبؤات الأربعة المقيّسة بـκ=0.5 (عدد زوجي → متوسط الوسطيين)، مضروبًا في معامل النظام v = clip(وسيط σ63 في التدريب ÷ σ63 عند t، 0.5، 1). المعامل لا يضخّم أبدًا.</li>
+<li><strong>لا أوزان مقدّرة ولا تدريب إضافي ولا معاملات حرة.</strong> QE لا يدخل (مرجع مقارنة). QS مستبعد (يحتاج سلسلة مؤشر جديدة)، وQV مدمج كمعامل لا كمرشح.</li>
+<li><strong>المكونات الفرعية</strong> ليست خلايا في العائلة ولا يُنقل منها شيء إلى MZ-1 بعد النتيجة.</li>
+</ul>
+<h2>2. الأثر الإحصائي</h2>
+<p>المرشحون: Q0 وQ1 وQ2 وQE وMZ1 = 5 × سوقان × 3 آفاق = <strong>30 مقارنة</strong>. عتبة z = 2.935 (كانت 2.865 عند 24). الباقي كما في التعديل 1: δ=1%، اختبار مشترك ضد R0 وC_pub، هدف القوة 80% عند 1.5%، الخلايا غير القابلة تبقى بـp=1.</p>
+<h2>3. ما يتغير في المسودة</h2>
+<p>عائلة Holm، المانيفست والبصمات، تخطيط القوة، وتقدير التباين (يُعاد على C فقط بعد إضافة MZ1). التصميم <strong>غير مجمَّد</strong>. الوثيقة <code>FCST-0005-E1-DESIGN-FINAL</code> تحل محلها نسخة محدّثة.</p>
+<h2>4. التزام</h2>
+<p>أي نتيجة وصفية لـMZ-1 على C تُعرض كما هي ولا تُبرر تعديل التعريف. من يرغب بتعديله فذلك مرشح جديد وتجربة جديدة.</p></body></html>
