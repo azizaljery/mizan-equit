@@ -33,7 +33,7 @@ for (const f of files) {
     const report: any = {company: {symbol: sym, name: sym, exchange: 'RESEARCH', sector: 'x', industry: 'x', source: 'research://truncated'}, currency: cur, asOf: last.date, retrievedAt: last.date + 'T20:00:00.000Z',
       quoteTime: null, priceSource: 'research://truncated', prices, facts: [], official: null, news: [], peers: [], checks: [], warnings: [], mode: 'historical'};
     let out: any; try { out = forecasts(report, null, now, DEFAULT_SETTINGS, HZ); } catch { continue; }
-    const p0 = S.close[t], s63 = sigma63(S.close, t);
+    const p0 = S.close[t], s63 = sigma63(S.close, t) as number;
     for (const r of out.rows) {
       const h = r.sessions as number, hf = har[h](t);                                   // always advance HAR state, in order
       if (!r.available || !r.range || !(r.predictedPrice > 0)) continue;
