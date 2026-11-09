@@ -1,0 +1,25 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FCST-0005 E1 سجل التجميد</title><style>body{font-family:system-ui,"Segoe UI",Tahoma,sans-serif;direction:rtl;text-align:right;max-width:980px;margin:2rem auto;padding:0 16px;line-height:1.8;color:#1a1a1a;background:#fff}table{border-collapse:collapse;width:100%;direction:rtl;margin:1rem 0;font-size:.9rem;display:block;overflow-x:auto}th,td{border:1px solid #bbb;padding:5px 8px;text-align:right;vertical-align:top}th{background:#f1f1f1}code{direction:ltr;unicode-bidi:embed;background:#f4f4f4;padding:0 4px;border-radius:3px}blockquote{border-right:4px solid #999;margin:1rem 0;padding:0 1rem;color:#444}@media(prefers-color-scheme:dark){body{background:#161616;color:#e8e8e8}th{background:#262626}code{background:#262626}th,td{border-color:#555}blockquote{color:#bbb}}</style></head><body><h1>FCST-0005 — E1: سجل التجميد</h1>
+<p><strong>تاريخ التجميد:</strong> 2026-11-09، بإذن المالك الصريح («لك الإذن المستقل للتجميد وتشغيل E1»). <strong>التشغيل لم يحدث</strong> (انظر §3).</p>
+<h2>1. ما جُمِّد</h2>
+<ul>
+<li><strong>الشيفرة:</strong> إيداع <code>ebbd2044ece046f521db6bf05aeed71131e18b27</code> على <code>mizan-aziz-deploy</code>. بصمة 46 ملف تنفيذ المجمعة: <code>3f56947ab69e9ac55da88b21694cbc6a5f9ca51e528515d7ddd8f444019bafa2</code> (التفاصيل في <code>research/results/FCST-0005-E1-manifest.json</code>).</li>
+<li><strong>التصميم:</strong> <code>FCST-0005-E1-DESIGN-FINAL</code>، التعديلان 1 و2 على البروتوكول: المرشحون Q0 وQ1 وQ2 وQE وMZ1، κ=0.5، δ=1%، B=2000، البذور المجمدة، عائلة Holm = 30، اختبار مشترك ضد R0 وC_pub، هدف القوة 80% عند 1.5%، الحالات المتفائلة والمتوسطة والقاسية.</li>
+<li><strong>الوسم:</strong> <code>fcst-0005-e1-freeze</code> على إيداع التجميد.</li>
+<li><strong>لا يتغير بعد الآن</strong> أي من ذلك. أي تعديل يعني تجربة جديدة ببصمات جديدة.</li>
+</ul>
+<h2>2. قواعد ما بعد التجميد</h2>
+<ol>
+<li>تُقرأ بيانات V (قبل 2019-10-14 فقط) مرة واحدة عبر أداة الحارس بعد توثيق مصدرها، وتُحفظ ببصمة SHA-256 قبل النظر في أي صف.</li>
+<li>بداية كل سوق تُحدَّد بالقاعدة الآلية في <code>testable-cells.mjs</code>، والخلايا غير القابلة تبقى في العائلة بـp=1.</li>
+<li>لا يُستعمل V لانتقاء ميزات أو معاملات أو مرشحين. لا فتح لـH.</li>
+<li>الأحكام الممكنة لكل خلية: «واعد للأمامي» أو «غير محسوم» أو «لم يحقق معيار القبول». لا اعتماد إنتاجي من V، وF لا يمنحه تلقائيًا.</li>
+<li>لا ادعاء دقة أو عوائد من النتيجة.</li>
+</ol>
+<h2>3. حالة التشغيل: <strong>لم يُشغَّل</strong></h2>
+<ul>
+<li>لا توجد بيانات أسعار قبل 2019-10-14: المخزَّن يبدأ في 2019-10.</li>
+<li>بيئتي ترفض كل مصادر الأسعار (403) ولن أتجاوز ذلك.</li>
+<li>شروط Yahoo تمنع الوصول الآلي دون إذن، ولم تُوثَّق ملاءمة أي مصدر بديل.</li>
+<li>إذنك بالتشغيل لا يحل مشكلة غياب البيانات، ولا يشمل قبول شروط مصدر نيابة عنك.</li>
+</ul>
+<p><strong>المطلوب لتشغيل E1:</strong> ملفات أسعار يومية قبل 2019-10-14 تقدمها (عندك أو من مصدر تثبت ملاءمة شروطه)، أو مسار وصول مسموح (انظر <code>FCST-0005-COVERAGE-CHECK</code>). عند وصولها: أحفظها وأبصمها، ثم أشغّل E1 دون أي تعديل.</p></body></html>
