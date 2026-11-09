@@ -16,12 +16,13 @@ const mean = (a: number[]) => a.reduce((s, v) => s + v, 0) / a.length;
 const HZ = R.H.map(s => ({name: 'h' + s, sessions: s}));
 type Rng = [number, number] | null;
 type Row = {m: string; h: number; date: string; year: number; y: number; S: number; P: Rng; R1: Rng; R2: Rng; R3: Rng};
-const rows: Row[] = [], manifest: any[] = [];
+const rows: Row[] = [], manifest: any[] = [], calendar: Record<string, Set<string>> = {sa: new Set(), us: new Set()};
 for (const f of files) {
   const L = loadTruncated(run(['show', `${REF}:${f}`]), CUTOFF), S: any = toSeries(L);
   manifest.push({file: f.split('/').pop(), digest: L.digest, rows: L.rows.length});
   const n = S.close.length; if (n < 252 + 63 + 60) continue;
   const sym = L.symbol || f.split('/').pop()!.replace('.json', ''), m = sym.endsWith('.SR') ? 'sa' : 'us', cur = m === 'sa' ? 'SAR' : 'USD';
+  for (const d of S.dates) calendar[m].add(d);
   const pk: number[] = S.high.map((hi: number, i: number) => R.parkinson(hi, S.low[i]));
   const har: any = Object.fromEntries(R.H.map(h => [h, R.harForecaster(pk, h)]));
   const hist: any = Object.fromEntries(R.H.map(h => [h, {P: [] as any[], R1: [] as any[]}]));   // entries {t, lo, mid, hi, y|null}
@@ -52,7 +53,11 @@ for (const f of files) {
 const cells: any[] = [], tests: {key: string; p: number}[] = [];
 for (const m of ['sa', 'us']) for (const h of R.H) {
   const xs = rows.filter(r => r.m === m && r.h === h), common = xs.filter(r => r.R1 && r.R2 && r.R3);
-  const dates = [...new Set(common.map(r => r.date))].sort(), block = Math.max(1, Math.ceil(h / R.GRID)), nonOverlap = Math.floor(dates.length * R.GRID / h);
+  const dates = [...new Set(common.map(r => r.date))].sort();
+  // CORRECTION after run 1 (disclosed in FCST-0006-RANGE-RESULTS): origin grids are per stock, so distinct dates are NOT spaced GRID sessions apart when calendars differ.
+  // Span is now counted in market trading sessions between the first and last common date; this can only make testability and the block length stricter.
+  const spanSessions = dates.length ? [...calendar[m]].filter(d => d >= dates[0] && d <= dates[dates.length - 1]).length : 0;
+  const perSession = spanSessions ? dates.length / spanSessions : 0, block = Math.max(1, Math.ceil(h * perSession)), nonOverlap = Math.floor(spanSessions / h);
   const testable = nonOverlap >= R.MIN_NONOVERLAP && dates.length >= 30;
   const byDate = (pick: (r: Row) => number) => { const g = new Map<string, number[]>(); for (const r of common) (g.get(r.date) ?? g.set(r.date, []).get(r.date)!).push(pick(r)); return dates.map(d => mean(g.get(d)!)); };
   const stat = (k: typeof ALL[number]) => {
@@ -71,7 +76,7 @@ for (const m of ['sa', 'us']) for (const h of R.H) {
       coverage: s.coverage, below: s.below, above: s.above, years: s.years, yearSpread: s.yearSpread, medianWidthNorm: s.medianWidthNorm};
     tests.push({key: `${m}/${h}/${c}`, p});
   }
-  cells.push({market: m, h, originRows: xs.length, commonRows: common.length, dates: dates.length, firstDate: dates[0], lastDate: dates[dates.length - 1], block, nonOverlap, testable,
+  cells.push({market: m, h, originRows: xs.length, commonRows: common.length, dates: dates.length, firstDate: dates[0], lastDate: dates[dates.length - 1], spanSessions, block, nonOverlap, testable,
     P: {meanScore: P.meanScore, coverage: P.coverage, below: P.below, above: P.above, years: P.years, yearSpread: P.yearSpread, medianWidthNorm: P.medianWidthNorm}, candidates: cand});
 }
 const adj = holmAdjust(tests.map(t => t.p)); tests.forEach((t, i) => { const [m, h, c] = t.key.split('/'); const cell = cells.find(x => x.market === m && String(x.h) === h); if (cell?.candidates) cell.candidates[c].holmP = adj[i]; });
