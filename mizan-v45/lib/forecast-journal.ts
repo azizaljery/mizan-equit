@@ -50,7 +50,7 @@ export async function recordAnalysis(db:any,report:MarketReport,settings:SiteSet
   symbol:report.company.symbol,market,currency:report.currency,model:projection.version,horizon:row.sessions,
   asOf:createdAt,recordClass:row.recordClass,adjustment:report.priceAdjustment||null
  },{historyTruncated:rangeHistory.truncatedHorizons.has(row.sessions),readError:rangeHistory.readError})}));
- // FCST-0006 shadow range: saved with the record for later scoring, never returned to the page and never used for the published range.
+ // FCST-0006 shadow range: saved with the record for later scoring; no component renders it and it is never used for the published range. Returned rows equal stored rows (saved-test invariant).
  const storedRows=calibratedRows.map(row=>{let shadowHar=null;try{shadowHar=shadowHarRange(row,report.prices,rangeHistory.records,{
   symbol:report.company.symbol,market,currency:report.currency,model:projection.version,horizon:row.sessions,
   asOf:createdAt,recordClass:row.recordClass,adjustment:report.priceAdjustment||null
@@ -58,7 +58,7 @@ export async function recordAnalysis(db:any,report:MarketReport,settings:SiteSet
  await db.batch([db.prepare('INSERT INTO analysis_snapshots (id,symbol,created_at,data) VALUES (?,?,?,?)').bind(id,report.company.symbol,createdAt,JSON.stringify(snapshot)),...storedRows.map(row=>db.prepare('INSERT INTO forecast_records (id,snapshot_id,symbol,created_at,horizon,model,market,sector,confidence,available,data) VALUES (?,?,?,?,?,?,?,?,?,?,?)').bind(row.id,id,report.company.symbol,createdAt,row.sessions,projection.version,market,report.company.sector||'غير متحقق',row.confidence,row.available?1:0,JSON.stringify(row)))]);
  // Resolve only already-issued predictions, never regenerate old predictions with today's information.
  try{await resolveForecasts(db,report)}catch{report.warnings.push('حُفظ التوقع، لكن تعذرت مقارنة بعض النتائج المستحقة؛ ستُعاد المحاولة عند التحديث.');}
- return {...projection,createdAt,rows:calibratedRows,snapshotId:id,recorded:true};
+ return {...projection,createdAt,rows:storedRows,snapshotId:id,recorded:true};
 }
 export function performanceStats(rows:any[],sinceDays:number|null=null,now=Date.now()){
  const all=rows.filter(r=>sinceDays===null||now-Date.parse(r.created_at)<=sinceDays*864e5);

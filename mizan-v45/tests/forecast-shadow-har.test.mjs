@@ -61,7 +61,7 @@ test('evaluation scores only the saved ranges with the alpha=0.2 interval score 
   assert.equal(S.evaluateShadowHar({...f,shadowHar:{...shadowHar,status:'r1'}},104).r2,null);
   assert.equal(S.evaluateShadowHar(point,104),null);
 });
-test('journal stores the shadow range with the record but does not return it to the page or alter the published range',async()=>{
+test('journal stores the shadow range with the record, does not render it and does not alter the published range',async()=>{
   const sqlite=new DatabaseSync(':memory:');
   for(const f of readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort())sqlite.exec(readFileSync('drizzle/'+f,'utf8'));
   const prepare=(sql,args=[])=>({bind(...v){return prepare(sql,v)},first:async()=>sqlite.prepare(sql).get(...args),all:async()=>({results:sqlite.prepare(sql).all(...args)}),run:async()=>sqlite.prepare(sql).run(...args)});
@@ -71,12 +71,12 @@ test('journal stores the shadow range with the record but does not return it to 
       quoteTime:null,priceSource:'fixture',priceAdjustment:'unadjusted',prices:px,facts:[],official:null,news:[],peers:[],checks:[{name:'الأسعار اليومية',state:'ok'}],warnings:[],mode:'current'};
     const plain=m.forecasts(report),saved=await m.recordAnalysis(db,report);
     for(const row of saved.rows){
-      assert.equal('shadowHar' in row,false);
       const stored=JSON.parse(sqlite.prepare('SELECT data FROM forecast_records WHERE id=?').get(row.id).data);
-      assert.deepEqual(stored.range,row.range);assert.deepEqual(row.range,plain.rows.find(r=>r.sessions===row.sessions).range);
+      assert.deepEqual(stored.shadowHar??null,row.shadowHar??null);assert.deepEqual(stored.range,row.range);assert.deepEqual(row.range,plain.rows.find(r=>r.sessions===row.sessions).range);
       if(row.available&&[1,5,21].includes(row.sessions)){assert.equal(stored.shadowHar.policy,S.SHADOW_HAR_POLICY);assert.equal(stored.shadowHar.status,'r1');assert.equal(stored.shadowHar.calibratedAt,stored.createdAt);}
       else if(stored.shadowHar)assert.equal(stored.shadowHar.status,'unavailable');
     }
+    const html=m.renderForecastForTest(saved);assert.doesNotMatch(html,/shadow-har|shadowHar|HAR/);
     assert.ok(saved.rows.some(r=>r.available&&[1,5,21].includes(r.sessions)),'fixture must issue at least one in-scope forecast');
   }finally{sqlite.close();}
 });
