@@ -57,7 +57,7 @@ export async function GET(req:Request){try{
  // A failed performance/history query must not prevent access to the ledger.
  const results=await Promise.allSettled([
   historyQuery.all(),
-  DB.prepare('SELECT f.id,f.symbol,f.created_at,f.horizon,f.model,f.market,f.sector,f.confidence,f.available,COALESCE(json_extract(f.data,\'$.recordClass\'),\'legacy-unverified\') AS recordClass,o.data AS outcome_data FROM forecast_records f LEFT JOIN forecast_outcomes o ON o.id=f.id').all(),
+  DB.prepare('SELECT f.id,f.symbol,f.created_at,f.horizon,f.model,f.market,f.sector,f.confidence,f.available,COALESCE(json_extract(f.data,\'$.recordClass\'),\'legacy-unverified\') AS recordClass,json_extract(f.data,\'$.direction\') AS forecastDirection,o.data AS outcome_data FROM forecast_records f LEFT JOIN forecast_outcomes o ON o.id=f.id').all(),
   DB.prepare("SELECT w.data,(SELECT f.data FROM forecast_records f WHERE f.symbol=w.symbol ORDER BY f.created_at DESC,f.horizon ASC LIMIT 1) AS forecast_data FROM watchlist w ORDER BY w.created_at DESC").all(),
   DB.prepare('SELECT data FROM backtest_runs ORDER BY created_at DESC LIMIT 20').all(),
   openData(DB,portfolioId,token(req))

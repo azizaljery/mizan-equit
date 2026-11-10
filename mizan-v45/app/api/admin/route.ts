@@ -13,7 +13,7 @@ async function dashboard(db:any){
    COALESCE(SUM(CASE WHEN ${OUTCOME_STATE}='excluded' THEN 1 ELSE 0 END),0) AS excluded,
    COALESCE(SUM(CASE WHEN ${OUTCOME_STATE}='complete' AND ${RECORD_CLASS}='prospective-public' THEN 1 ELSE 0 END),0) AS completed
    FROM forecast_records f LEFT JOIN forecast_outcomes o ON o.id=f.id`).first(),
-  db.prepare(`SELECT f.id,f.symbol,f.created_at,f.horizon,f.model,f.market,f.sector,f.confidence,f.available,${RECORD_CLASS} AS recordClass,o.data AS outcome_data
+  db.prepare(`SELECT f.id,f.symbol,f.created_at,f.horizon,f.model,f.market,f.sector,f.confidence,f.available,${RECORD_CLASS} AS recordClass,json_extract(f.data,'$.direction') AS forecastDirection,o.data AS outcome_data
    FROM forecast_records f JOIN forecast_outcomes o ON o.id=f.id WHERE ${OUTCOME_STATE}='complete' AND ${RECORD_CLASS}='prospective-public'
    ORDER BY f.rowid DESC LIMIT ?`).bind(PERFORMANCE_SAMPLE_CAP).all(),
   db.prepare('SELECT * FROM admin_audit ORDER BY created_at DESC, rowid DESC LIMIT 100').all()]);
