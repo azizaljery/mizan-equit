@@ -5,10 +5,11 @@ import {DECISION_VERSION,decisionBaseline,compareDecisionBaselines,publicBaselin
 import {forecastMetrics,EVALUATION_POLICY} from './forecast-metrics';
 import {fingerprint} from './evidence-ledger';
 import {calibrateForecastRange,evaluateConformalRange,loadConformalHistory,type RangeComparison} from './forecast-conformal';
+import {shadowHarRange,evaluateShadowHar,type ShadowHarComparison} from './forecast-shadow-har';
 // Candidate filter only. Actual maturity is decided from market sessions below.
 export const MATURITY_PREDICATE = 'julianday(?) - julianday(f.created_at) >= f.horizon * 7.0/5';
 export function researchMarket(report:MarketReport){return report.company.symbol.endsWith('.SR')?'sa':/nasdaq|nyse|amex|arca|bats|^NMS$|^NGM$|^NCM$|^NYQ$|^PCX$|^ASE$|^BTS$/i.test(report.company.exchange)?'us':'other';}
-export type Outcome={state:'complete'|'excluded';actualDate?:string;actualPrice?:number;actualDirection?:string|null;directionCorrect?:boolean|null;priceErrorPct?:number|null;rangeHit?:boolean|null;source:string;reason?:string;metrics?:ReturnType<typeof forecastMetrics>;evaluationPolicy?:string;rangeComparison?:RangeComparison|null};
+export type Outcome={state:'complete'|'excluded';actualDate?:string;actualPrice?:number;actualDirection?:string|null;directionCorrect?:boolean|null;priceErrorPct?:number|null;rangeHit?:boolean|null;source:string;reason?:string;metrics?:ReturnType<typeof forecastMetrics>;evaluationPolicy?:string;rangeComparison?:RangeComparison|null;shadowHarComparison?:ShadowHarComparison|null};
 export function evaluateForecast(record:any,report:MarketReport):Outcome|null{
  if(!record.available)return null;let data:any;try{data=typeof record.data==='string'?JSON.parse(record.data):record.data;}catch{return null;}if(!data||typeof data!=='object')return null;
  // A truncated/invalid old record must not invalidate other records of the symbol.
@@ -26,7 +27,8 @@ export function evaluateForecast(record:any,report:MarketReport):Outcome|null{
  if(!data.price||!Array.isArray(data.range)||!data.range.every(Number.isFinite))return null;
  const metrics=forecastMetrics({reference:data.price,predicted:data.predictedPrice,actual:actual.close,range:data.range,direction:data.direction,neutralThresholdPct:data.neutralThresholdPct??1});
  const rangeComparison=evaluateConformalRange(data,actual.close);
- return {state:'complete',actualDate:actual.date,actualPrice:actual.close,actualDirection:metrics.actualDirection,directionCorrect:metrics.directionCorrect,priceErrorPct:metrics.relativeErrorPct,rangeHit:metrics.endRangeHit,source:report.priceSource,metrics,evaluationPolicy:EVALUATION_POLICY,...(rangeComparison?{rangeComparison}:{})};
+ const shadowHarComparison=evaluateShadowHar(data,actual.close);
+ return {state:'complete',actualDate:actual.date,actualPrice:actual.close,actualDirection:metrics.actualDirection,directionCorrect:metrics.directionCorrect,priceErrorPct:metrics.relativeErrorPct,rangeHit:metrics.endRangeHit,source:report.priceSource,metrics,evaluationPolicy:EVALUATION_POLICY,...(rangeComparison?{rangeComparison}:{}),...(shadowHarComparison?{shadowHarComparison}:{})};
 }
 export async function recordAnalysis(db:any,report:MarketReport,settings:SiteSettings=DEFAULT_SETTINGS,accountKey:string|null=null){
  const projection=forecasts(report,report.liveQuote||null,Date.now(),settings),createdAt=new Date().toISOString(),id=crypto.randomUUID();
@@ -48,10 +50,15 @@ export async function recordAnalysis(db:any,report:MarketReport,settings:SiteSet
   symbol:report.company.symbol,market,currency:report.currency,model:projection.version,horizon:row.sessions,
   asOf:createdAt,recordClass:row.recordClass,adjustment:report.priceAdjustment||null
  },{historyTruncated:rangeHistory.truncatedHorizons.has(row.sessions),readError:rangeHistory.readError})}));
- await db.batch([db.prepare('INSERT INTO analysis_snapshots (id,symbol,created_at,data) VALUES (?,?,?,?)').bind(id,report.company.symbol,createdAt,JSON.stringify(snapshot)),...calibratedRows.map(row=>db.prepare('INSERT INTO forecast_records (id,snapshot_id,symbol,created_at,horizon,model,market,sector,confidence,available,data) VALUES (?,?,?,?,?,?,?,?,?,?,?)').bind(row.id,id,report.company.symbol,createdAt,row.sessions,projection.version,market,report.company.sector||'غير متحقق',row.confidence,row.available?1:0,JSON.stringify(row)))]);
+ // FCST-0006 shadow range: saved with the record for later scoring; no component renders it and it is never used for the published range. Returned rows equal stored rows (saved-test invariant).
+ const storedRows=calibratedRows.map(row=>{let shadowHar=null;try{shadowHar=shadowHarRange(row,report.prices,rangeHistory.records,{
+  symbol:report.company.symbol,market,currency:report.currency,model:projection.version,horizon:row.sessions,
+  asOf:createdAt,recordClass:row.recordClass,adjustment:report.priceAdjustment||null
+ },{readError:rangeHistory.readError});}catch{shadowHar=null;}return shadowHar?{...row,shadowHar}:row;});
+ await db.batch([db.prepare('INSERT INTO analysis_snapshots (id,symbol,created_at,data) VALUES (?,?,?,?)').bind(id,report.company.symbol,createdAt,JSON.stringify(snapshot)),...storedRows.map(row=>db.prepare('INSERT INTO forecast_records (id,snapshot_id,symbol,created_at,horizon,model,market,sector,confidence,available,data) VALUES (?,?,?,?,?,?,?,?,?,?,?)').bind(row.id,id,report.company.symbol,createdAt,row.sessions,projection.version,market,report.company.sector||'غير متحقق',row.confidence,row.available?1:0,JSON.stringify(row)))]);
  // Resolve only already-issued predictions, never regenerate old predictions with today's information.
  try{await resolveForecasts(db,report)}catch{report.warnings.push('حُفظ التوقع، لكن تعذرت مقارنة بعض النتائج المستحقة؛ ستُعاد المحاولة عند التحديث.');}
- return {...projection,createdAt,rows:calibratedRows,snapshotId:id,recorded:true};
+ return {...projection,createdAt,rows:storedRows,snapshotId:id,recorded:true};
 }
 export function performanceStats(rows:any[],sinceDays:number|null=null,now=Date.now()){
  const all=rows.filter(r=>sinceDays===null||now-Date.parse(r.created_at)<=sinceDays*864e5);

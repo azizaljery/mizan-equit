@@ -91,7 +91,7 @@ function observed(rows:any[]):ObservedComparison {
 }
 
 /** Select only completed, known-at-cutoff observations with compatible saved units. */
-function eligibleHistory(records:any[],ctx:ConformalContext) {
+export function eligibleHistory(records:any[],ctx:ConformalContext) {
   if(!instant(ctx.asOf))return [];
   const cutoff=Date.parse(ctx.asOf),cutoffDate=ctx.asOf.slice(0,10),candidates:any[]=[];
   for(const r of records){
@@ -170,7 +170,7 @@ export async function loadConformalHistory(db:any,symbol:string,market:string,mo
         'anchorDate',json_extract(data,'$.anchorDate'),'createdAt',json_extract(data,'$.createdAt'),'range',json_extract(data,'$.range'),
         'rangeCheck',json_extract(data,'$.rangeCheck'),'rangeMeaning',json_extract(data,'$.rangeMeaning'),
         'evaluationPolicy',json_extract(data,'$.evaluationPolicy'),'seriesBasis',json_extract(data,'$.seriesBasis'),
-        'rangeCalibration',json_extract(data,'$.rangeCalibration')) AS forecast_data,
+        'rangeCalibration',json_extract(data,'$.rangeCalibration'),'shadowHar',json_extract(data,'$.shadowHar')) AS forecast_data,
       rn FROM ranked WHERE rn<=? ORDER BY created_at,id`).bind(symbol,market,model,asOf,asOf,QUERY_PER_HORIZON+1).all();
     const rows=result.results||[];
     return {records:rows.filter((r:any)=>r.rn<=QUERY_PER_HORIZON),truncatedHorizons:new Set<number>(rows.filter((r:any)=>r.rn>QUERY_PER_HORIZON).map((r:any)=>r.horizon)),readError:false};
