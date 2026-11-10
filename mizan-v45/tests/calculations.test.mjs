@@ -1357,3 +1357,15 @@ test('Live quote exposes session open, absolute change and percent change from t
  const noBars=parseLiveQuote({chart:{result:[{meta}]}},'AAPL',now);assert.equal(noBars.dayOpen,null);near(noBars.changePct,10);
  const fiveYear=parseLiveQuote({chart:{result:[{meta:{...meta,range:'5y'}}]}},'AAPL',now);assert.equal(fiveYear.changePct,null);assert.equal(fiveYear.change,null);
 });
+
+test('Direction breakdown separates neutral forecasts from issued directional calls',async()=>{
+ const {directionBreakdown,performanceStats}=await import(process.env.MIZAN_TEST_MODULE);
+ const row=(f,a)=>({forecastDirection:f,outcome:{state:'complete',actualDirection:a,directionCorrect:f===a,actualDate:'2026-01-02'}});
+ const b=directionBreakdown([row('محايد','صاعد'),row('محايد','هابط'),row('محايد','محايد'),row('صاعد','صاعد'),row('صاعد','هابط'),row('هابط','هابط'),row('هابط','محايد'),row('صاعد','صاعد')]);
+ assert.equal(b.directionKnownCount,8);assert.equal(b.neutralForecastCount,3);near(b.neutralForecastShare,37.5);
+ assert.equal(b.directionalCallCount,5);assert.equal(b.directionalCallCorrectCount,3);near(b.directionalCallAccuracy,60);
+ assert.equal(b.actualUpCount,3);assert.equal(b.actualDownCount,3);assert.equal(b.actualNeutralCount,2);near(b.majorityDirectionShare,37.5);
+ const none=directionBreakdown([{outcome:{directionCorrect:true,actualDirection:'صاعد'}}]);assert.equal(none.directionKnownCount,0);assert.equal(none.directionalCallAccuracy,null);
+ const s=performanceStats([{symbol:'A',model:'m',horizon:1,created_at:'2026-01-01T00:00:00.000Z',available:1,recordClass:'prospective-public',forecastDirection:'صاعد',outcome:{state:'complete',actualDate:'2026-01-02',directionCorrect:true,actualDirection:'صاعد'}}]);
+ near(s.directionalCallAccuracy,100);near(s.directionAccuracy,100);
+});
