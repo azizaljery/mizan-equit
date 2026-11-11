@@ -5,7 +5,7 @@ import {selectPicks,validPicksRequest,trackRecord,rowToCandidate,type PickRow} f
 const row=(symbol:string,o:Record<string,unknown>={},extra:Partial<PickRow>={}):PickRow=>({id:symbol+(extra.created_at||'1'),symbol,created_at:'2026-10-16T10:00:00Z',horizon:5,market:'sa',confidence:String(o.confidence??'متوسط'),available:1,
  data:JSON.stringify({recordClass:'prospective-public',available:true,direction:'صاعد',confidence:'متوسط',price:10,predictedPrice:10.5,expectedChangePct:5,range:[9.8,11],priceTime:'2026-10-15',currency:'SAR',coverage:80,sample:100,independent:40,...o}),...extra});
 test('only screener-eligible rising forecasts qualify; ranked by screener order',()=>{
-  const rows=[row('1111'),row('2222',{confidence:'مرتفع',predictedPrice:10.3,expectedChangePct:3}),row('3333',{direction:'هابط'}),row('4444',{confidence:'منخفض'}),
+  const rows=[row('1111'),row('2222',{confidence:'مرتفع',predictedPrice:10.3,expectedChangePct:3}),row('3333',{direction:'هابط'}),row('4444',{confidence:'غير متاحة'}),
    row('5555',{predictedPrice:12,expectedChangePct:20,range:[9,11]}),row('6666',{recordClass:'private'})];
   const r=selectPicks(rows,'أسبوعي',3);
   assert.deepEqual(r.picks.map(p=>p.symbol),['2222','1111']);

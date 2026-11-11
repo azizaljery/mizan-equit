@@ -18,6 +18,6 @@ export async function GET(request:Request){
   const sel=selectPicks((rows.results||[]) as PickRow[],req.horizon.name,req.count);
   return Response.json({market:req.market,horizon:req.horizon.sessions,horizonName:req.horizon.name,since,generatedAt:new Date().toISOString(),
    ...sel,trackRecord:trackRecord((outcomes.results||[]) as {data:string}[]),
-   policy:'نفس شروط فرز التوقعات: متاح، صاعد، ثقة متوسطة أو مرتفعة، نطاق صالح، وسعر مركزي متسق. ترتيب: جودة البيانات ثم الثقة ثم تغطية العوامل ثم العينة ثم التغير المتوقع.'},{headers});
+   policy:'نفس شروط فرز التوقعات: متاح، صاعد، نطاق صالح (الثقة ترتّب المرشحين ولا تستبعدهم)، وسعر مركزي متسق. ترتيب: جودة البيانات ثم الثقة ثم تغطية العوامل ثم العينة ثم التغير المتوقع.'},{headers});
  }catch{return Response.json({error:'تعذر قراءة التوقعات المحفوظة الآن؛ أعد المحاولة.'},{status:503,headers:{'Cache-Control':'no-store'}});}
 }
