@@ -26,7 +26,9 @@ async function verifyRun(db:any,kind:'cron'|'manual',now:number):Promise<VerifyC
     return {...base,status:'invalid',reason:'هوية التشغيل أو قفله أو تأكيد حفظه غير مكتمل.'};
   if(kind==='cron'){
     const scheduled=fields.scheduledTime;
-    if(fields.cron!==EVALUATE_DUE_CRON||!integer(scheduled)||scheduled>start||start-scheduled>3600000||scheduled%21600000!==0)
+    // The platform reports the actual dispatch time, up to tens of seconds after the slot boundary (observed 53.7 s in production);
+    // demanding an exact multiple of six hours marked every real run invalid. Accept a dispatch within five minutes after the boundary.
+    if(fields.cron!==EVALUATE_DUE_CRON||!integer(scheduled)||scheduled>start||start-scheduled>3600000||scheduled%21600000>=300000)
       return {...base,status:'invalid',reason:'لا تطابق بين موعد التشغيل المسجل والجدولة المطلوبة.'};
   }
   const counts=['symbolsScanned','symbolsResolved','symbolsSkipped','symbolsFailed','evaluationsSaved'];

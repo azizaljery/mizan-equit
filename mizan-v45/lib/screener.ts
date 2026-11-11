@@ -5,9 +5,10 @@ import {readSettings,type SiteSettings} from './site-settings';
 import {eligibleSaudiCompanies} from './saudi-directory';
 import {eligibleUSCompanies} from './us-directory';
 import {assertCurrentInstrument} from './listing-lifecycle';
+import {SA_UNIVERSE,US_UNIVERSE} from './daily-picks-universe';
 import type {ScreenerEvidence} from './screener-snapshot';
 import {evaluateScreenerShara,type SharaScreenerSummary} from './screener-shara';
-import {validateScreenerRequest,selectScreenerSymbols,selectScreenerCandidates,candidateExclusion,
+import {validateScreenerRequest,selectScreenerSymbols,selectScreenerCandidates,candidateExclusion,nominationView,
  SCREENER_BATCH_SIZE,SCREENER_RANKING,SCREENER_SCOPE,
  type ScreenerRequest,type ScreenerResult,type ScreenerCandidate,type ScreenerFailure} from './screener-policy';
 export type {ScreenerRequest,ScreenerResult,ScreenerCandidate,ScreenerFailure,ScreenerMarket} from './screener-policy';
@@ -27,9 +28,12 @@ async function prepare(db:any,input:ScreenerRequest){
  if(req.expectedVersion&&req.expectedVersion!==modelVersion)throw new Error('تغيرت إعدادات النموذج أثناء المسح؛ أعد المسح بدل خلط نسختين.');
  return {req,settings,modelVersion};
 }
+// Liquid large caps first (the fixed daily-picks universe), then the rest of the directory in its own order: a bounded scan
+// then starts with tradable names instead of the first tickers of the alphabet.
+const liquidFirst=(all:string[],head:readonly string[])=>{const set=new Set(all),first=head.filter(s=>set.has(s)),seen=new Set(first);return [...first,...all.filter(s=>!seen.has(s))];};
 function universe(market:ScreenerRequest['market']){
- return {sa:market==='us'?[]:eligibleSaudiCompanies('current').map(c=>c.symbol),
-  us:market==='sa'?[]:eligibleUSCompanies().map(c=>c.symbol)};
+ return {sa:market==='us'?[]:liquidFirst(eligibleSaudiCompanies('current').map(c=>c.symbol),SA_UNIVERSE),
+  us:market==='sa'?[]:liquidFirst(eligibleUSCompanies().map(c=>c.symbol),US_UNIVERSE)};
 }
 export async function planScreener(db:any,input:ScreenerRequest):Promise<ScreenerPlan>{
  const {req,modelVersion}=await prepare(db,input),all=universe(req.market);
@@ -57,10 +61,10 @@ async function analyzeSymbol(symbol:string,req:ReturnType<typeof validateScreene
   const result=forecasts(report,quote,Date.now(),settings,[horizon]);
   const row=result.rows.find(r=>r.sessions===req.horizonSessions);
   if(!row)throw new Error('لم يُنتج النموذج الأفق المطلوب.');
-  const r=row as any;
+  const r=row as any,view=nominationView(r);
   const candidate:ScreenerCandidate={symbol,name:report.company.name||symbol,exchange:report.company.exchange||'',market,currency:report.currency,
-   price:numberOrNull(r.price),predictedPrice:numberOrNull(r.predictedPrice),direction:String(r.direction||'غير متاح'),
-   expectedChangePct:numberOrNull(r.expectedChangePct),range:Array.isArray(r.range)&&r.range.length===2?r.range as [number,number]:null,
+   price:numberOrNull(r.price),predictedPrice:view.predictedPrice,direction:view.direction,
+   expectedChangePct:view.expectedChangePct,...(view.callVotes!==undefined?{callVotes:view.callVotes}:{}),range:Array.isArray(r.range)&&r.range.length===2?r.range as [number,number]:null,
    confidence:String(r.confidence||'غير متاحة'),dataQuality:String(r.dataQuality||result.dataQuality||'غير متاحة'),
    coverage:numberOrNull(r.coverage)??0,sample:numberOrNull(r.sample)??0,independent:numberOrNull(r.independent)??0,
    riskLevel:String(r.riskLevel||'غير متاح'),available:r.available===true,

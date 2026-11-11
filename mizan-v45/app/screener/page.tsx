@@ -22,7 +22,7 @@ type ArchiveView={runId:string;status:string;createdAt:string;nominatedAt:string
  picks:{id:string;symbol:string;market:string;rank:number;issuedAt:string;priceTime:string;referencePrice:number;predictedPrice:number;estimatedEndAt:string|null;evaluationState:string;actualChangePct:number|null;outcome:{actualDate?:string;actualPrice?:number;directionCorrect?:boolean;rangeHit?:boolean;reason?:string}|null}[];pendingNote:string};
 async function loadJSON(url:string,init?:RequestInit,retry?:FetchRetryOptions){let res:Response;try{res=retry?await fetchWithRetry(url,init,retry):await fetch(url,init);}catch(e){if(retry&&!retry.signal?.aborted)throw Error('تعذر الاتصال بالخادم بعد إعادة المحاولة.');throw e;}const data=await res.json().catch(()=>({error:'تعذر قراءة استجابة الخادم.'}));if(!res.ok)throw Error(data.error||'تعذر الاتصال.');return data;}
 export default function ScreenerPage(){
- const [market,setMarket]=useState<ScreenerMarket>('sa'),[horizon,setHorizon]=useState(5),[resultCount,setResultCount]=useState(5),[scanLimit,setScanLimit]=useState(200);
+ const [market,setMarket]=useState<ScreenerMarket>('sa'),[horizon,setHorizon]=useState(5),[resultCount,setResultCount]=useState(5),[scanLimit,setScanLimit]=useState(40);
  const [loading,setLoading]=useState(false),[phase,setPhase]=useState(''),[plan,setPlan]=useState<ScreenerPlan|null>(null),[result,setResult]=useState<ScreenerResult|null>(null),[error,setError]=useState<string|null>(null);
  const [archive,setArchive]=useState<ArchiveView|null>(null),[archiveError,setArchiveError]=useState(''),[history,setHistory]=useState<any[]>([]),[ownerSignin,setOwnerSignin]=useState(false);
  const controller=useRef<AbortController|null>(null),activeArchive=useRef<Handle|null>(null);
