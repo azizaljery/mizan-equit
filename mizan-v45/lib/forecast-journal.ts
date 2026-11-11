@@ -6,10 +6,11 @@ import {forecastMetrics,EVALUATION_POLICY} from './forecast-metrics';
 import {fingerprint} from './evidence-ledger';
 import {calibrateForecastRange,evaluateConformalRange,loadConformalHistory,type RangeComparison} from './forecast-conformal';
 import {shadowHarRange,evaluateShadowHar,type ShadowHarComparison} from './forecast-shadow-har';
+import {evaluateDirectionCall} from './direction-engine';
 // Candidate filter only. Actual maturity is decided from market sessions below.
 export const MATURITY_PREDICATE = 'julianday(?) - julianday(f.created_at) >= f.horizon * 7.0/5';
 export function researchMarket(report:MarketReport){return report.company.symbol.endsWith('.SR')?'sa':/nasdaq|nyse|amex|arca|bats|^NMS$|^NGM$|^NCM$|^NYQ$|^PCX$|^ASE$|^BTS$/i.test(report.company.exchange)?'us':'other';}
-export type Outcome={state:'complete'|'excluded';actualDate?:string;actualPrice?:number;actualDirection?:string|null;directionCorrect?:boolean|null;priceErrorPct?:number|null;rangeHit?:boolean|null;source:string;reason?:string;metrics?:ReturnType<typeof forecastMetrics>;evaluationPolicy?:string;rangeComparison?:RangeComparison|null;shadowHarComparison?:ShadowHarComparison|null};
+export type Outcome={state:'complete'|'excluded';actualDate?:string;actualPrice?:number;actualDirection?:string|null;directionCorrect?:boolean|null;priceErrorPct?:number|null;rangeHit?:boolean|null;source:string;reason?:string;metrics?:ReturnType<typeof forecastMetrics>;evaluationPolicy?:string;rangeComparison?:RangeComparison|null;shadowHarComparison?:ShadowHarComparison|null;call?:ReturnType<typeof evaluateDirectionCall>};
 export function evaluateForecast(record:any,report:MarketReport):Outcome|null{
  if(!record.available)return null;let data:any;try{data=typeof record.data==='string'?JSON.parse(record.data):record.data;}catch{return null;}if(!data||typeof data!=='object')return null;
  // A truncated/invalid old record must not invalidate other records of the symbol.
@@ -28,7 +29,8 @@ export function evaluateForecast(record:any,report:MarketReport):Outcome|null{
  const metrics=forecastMetrics({reference:data.price,predicted:data.predictedPrice,actual:actual.close,range:data.range,direction:data.direction,neutralThresholdPct:data.neutralThresholdPct??1});
  const rangeComparison=evaluateConformalRange(data,actual.close);
  const shadowHarComparison=evaluateShadowHar(data,actual.close);
- return {state:'complete',actualDate:actual.date,actualPrice:actual.close,actualDirection:metrics.actualDirection,directionCorrect:metrics.directionCorrect,priceErrorPct:metrics.relativeErrorPct,rangeHit:metrics.endRangeHit,source:report.priceSource,metrics,evaluationPolicy:EVALUATION_POLICY,...(rangeComparison?{rangeComparison}:{}),...(shadowHarComparison?{shadowHarComparison}:{})};
+ const call=evaluateDirectionCall(data,actual.close);
+ return {state:'complete',actualDate:actual.date,actualPrice:actual.close,actualDirection:metrics.actualDirection,directionCorrect:metrics.directionCorrect,priceErrorPct:metrics.relativeErrorPct,rangeHit:metrics.endRangeHit,source:report.priceSource,metrics,evaluationPolicy:EVALUATION_POLICY,...(rangeComparison?{rangeComparison}:{}),...(shadowHarComparison?{shadowHarComparison}:{}),...(call?{call}:{})};
 }
 export async function recordAnalysis(db:any,report:MarketReport,settings:SiteSettings=DEFAULT_SETTINGS,accountKey:string|null=null){
  const projection=forecasts(report,report.liveQuote||null,Date.now(),settings),createdAt=new Date().toISOString(),id=crypto.randomUUID();
@@ -70,13 +72,20 @@ export function directionBreakdown(directions:any[]){
  return {directionKnownCount:known.length,neutralForecastCount:neutral,neutralForecastShare:neutral/known.length*100,directionalCallCount:calls.length,directionalCallCorrectCount:correct,
   directionalCallAccuracy:calls.length?correct/calls.length*100:null,actualUpCount:up,actualDownCount:down,actualNeutralCount:flat,majorityDirectionShare:Math.max(up,down,flat)/known.length*100};
 }
+/** Live score of the experimental binary call (direction-engine v1), overall and by vote strength. */
+export function callBreakdown(rows:any[]){
+ const scored=rows.filter(x=>typeof x.outcome?.call?.correct==='boolean'),acc=(v:any[])=>v.length?v.filter(x=>x.outcome.call.correct).length/v.length*100:null;
+ const by=(s:string)=>scored.filter(x=>x.outcome.call.strength===s);
+ return {callCount:scored.length,callCorrectCount:scored.filter(x=>x.outcome.call.correct).length,callAccuracy:acc(scored),
+  callStrongCount:by('قوية').length,callStrongAccuracy:acc(by('قوية')),callMediumCount:by('متوسطة').length,callMediumAccuracy:acc(by('متوسطة')),callWeakCount:by('ضعيفة').length,callWeakAccuracy:acc(by('ضعيفة'))};
+}
 export function performanceStats(rows:any[],sinceDays:number|null=null,now=Date.now()){
  const all=rows.filter(r=>sinceDays===null||now-Date.parse(r.created_at)<=sinceDays*864e5);
  const completed=all.filter(r=>r.outcome?.state==='complete'&&(!r.recordClass||r.recordClass==='prospective-public'));
  // One issued forecast per stock/model/horizon/date. Further overlapping holdings are de-clustered below.
  const groups=new Map<string,any[]>();for(const r of completed){const k=`${r.symbol}|${r.model}|${r.horizon}`;const g=groups.get(k);if(g)g.push(r);else groups.set(k,[r]);}
  const independent:any[]=[];for(const group of groups.values()){let end='';for(const r of group.sort((a,b)=>a.created_at.localeCompare(b.created_at))){if(r.created_at.slice(0,10)>end){independent.push(r);end=r.outcome.actualDate}}}
- const summarize=(r:any[])=>{const directions=r.filter(x=>typeof x.outcome.directionCorrect==='boolean'),ranges=r.filter(x=>typeof x.outcome.rangeHit==='boolean'),errors=r.filter(x=>typeof x.outcome.priceErrorPct==='number'&&Number.isFinite(x.outcome.priceErrorPct)),baseline=errors.filter(x=>Number.isFinite(x.outcome.metrics?.baselineErrorPct)),movement=r.filter(x=>Number.isFinite(x.outcome.metrics?.movementErrorPp));return {count:r.length,directionCorrectCount:directions.filter(x=>x.outcome.directionCorrect).length,directionCount:directions.length,directionAccuracy:directions.length?directions.filter(x=>x.outcome.directionCorrect).length/directions.length*100:null,pointCount:errors.length,meanPriceError:errors.length?errors.reduce((s,x)=>s+x.outcome.priceErrorPct,0)/errors.length:null,pairedCount:baseline.length,pairedMeanPriceError:baseline.length?baseline.reduce((s,x)=>s+x.outcome.priceErrorPct,0)/baseline.length:null,meanBaselineError:baseline.length?baseline.reduce((s,x)=>s+x.outcome.metrics.baselineErrorPct,0)/baseline.length:null,meanMovementError:movement.length?movement.reduce((s,x)=>s+x.outcome.metrics.movementErrorPp,0)/movement.length:null,rangeCount:ranges.length,rangeCoverage:ranges.length?ranges.filter(x=>x.outcome.rangeHit).length/ranges.length*100:null,...directionBreakdown(directions)};};
+ const summarize=(r:any[])=>{const directions=r.filter(x=>typeof x.outcome.directionCorrect==='boolean'),ranges=r.filter(x=>typeof x.outcome.rangeHit==='boolean'),errors=r.filter(x=>typeof x.outcome.priceErrorPct==='number'&&Number.isFinite(x.outcome.priceErrorPct)),baseline=errors.filter(x=>Number.isFinite(x.outcome.metrics?.baselineErrorPct)),movement=r.filter(x=>Number.isFinite(x.outcome.metrics?.movementErrorPp));return {count:r.length,directionCorrectCount:directions.filter(x=>x.outcome.directionCorrect).length,directionCount:directions.length,directionAccuracy:directions.length?directions.filter(x=>x.outcome.directionCorrect).length/directions.length*100:null,pointCount:errors.length,meanPriceError:errors.length?errors.reduce((s,x)=>s+x.outcome.priceErrorPct,0)/errors.length:null,pairedCount:baseline.length,pairedMeanPriceError:baseline.length?baseline.reduce((s,x)=>s+x.outcome.priceErrorPct,0)/baseline.length:null,meanBaselineError:baseline.length?baseline.reduce((s,x)=>s+x.outcome.metrics.baselineErrorPct,0)/baseline.length:null,meanMovementError:movement.length?movement.reduce((s,x)=>s+x.outcome.metrics.movementErrorPp,0)/movement.length:null,rangeCount:ranges.length,rangeCoverage:ranges.length?ranges.filter(x=>x.outcome.rangeHit).length/ranges.length*100:null,...directionBreakdown(directions),...callBreakdown(r)};};
  const breakdown=(key:string)=>Object.entries(Object.groupBy(independent,r=>String(r[key]))).map(([name,v])=>({name,...summarize(v||[])}));
  const byHorizon=breakdown('horizon'),bySector=breakdown('sector');
  const leaders=(values:ReturnType<typeof breakdown>)=>{const qualified=values.filter(v=>v.count>=30&&v.name!=='غير متحقق').sort((a,b)=>b.directionAccuracy!-a.directionAccuracy!);return qualified.length>=2?{best:qualified[0],worst:qualified.at(-1)!}:null;};

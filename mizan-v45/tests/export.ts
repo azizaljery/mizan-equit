@@ -156,3 +156,4 @@ export * from '../lib/source-blocking';
 export * from '../lib/owner-fetch-gate';
 
 export * as shadowHar from '../lib/forecast-shadow-har';
+export * as directionEngine from '../lib/direction-engine';
