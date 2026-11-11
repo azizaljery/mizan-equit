@@ -102,10 +102,10 @@ export function parityGates(): SharaGate[] {
       if (!r.ok) return suspend(r.finding);
       return r.value === 'صاعد' ? PASS : kill('not_rising', 'forecast direction is not rising', r.value, 'صاعد');
     }}),
-    defineGate({id: 'low_or_unknown_confidence', description: 'Confidence must be medium or high', run: (c) => {
+    defineGate({id: 'low_or_unknown_confidence', description: 'Confidence label must be known (low ranks last, it does not exclude)', run: (c) => {
       const r = readString(c, 'confidence');
       if (!r.ok) return suspend(r.finding);
-      return ['متوسط', 'مرتفع'].includes(r.value) ? PASS : kill('low_or_unknown_confidence', 'confidence below medium', r.value, ['متوسط', 'مرتفع']);
+      return ['منخفض', 'متوسط', 'مرتفع'].includes(r.value) ? PASS : kill('low_or_unknown_confidence', 'confidence label is unknown', r.value, ['منخفض', 'متوسط', 'مرتفع']);
     }}),
     defineGate({id: 'invalid_range', description: 'Range must be a valid ascending positive pair', run: (c) => {
       const r = readValue(c, 'range');

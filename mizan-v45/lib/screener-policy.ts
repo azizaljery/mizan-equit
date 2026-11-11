@@ -68,7 +68,8 @@ export function validScreenerRange(value:unknown):value is [number,number]{retur
 export function candidateExclusion(c:ScreenerCandidate):string|null{
  if(!c.available)return 'model_unavailable';
  if(c.direction!=='صاعد')return 'not_rising';
- if(!['متوسط','مرتفع'].includes(c.confidence))return 'low_or_unknown_confidence';
+ // Confidence is structurally «منخفض» for nearly every live record (secondary financial sources), so it ranks candidates instead of excluding them; only an unknown label is rejected.
+ if(!['منخفض','متوسط','مرتفع'].includes(c.confidence))return 'low_or_unknown_confidence';
  if(!validScreenerRange(c.range))return 'invalid_range';
  if(!finite(c.price)||c.price<=0||!finite(c.predictedPrice)||c.predictedPrice<=c.price||!finite(c.expectedChangePct)||c.expectedChangePct<=0)return 'invalid_positive_target';
  if(c.predictedPrice<c.range[0]||c.predictedPrice>c.range[1])return 'target_outside_range';
