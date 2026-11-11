@@ -26,10 +26,10 @@ function policy(options={}){
  return Object.freeze(p);
 }
 
-function validateDataset(data){
+function validateDataset(data,exploratory=false){
  if(data?.schemaVersion!==1||!['SA','US'].includes(data.market)||!nonempty(data.symbol)
   ||!nonempty(data.currency)||!nonempty(data.priceBasis)||!nonempty(data.calendarId)
-  ||!nonempty(data.provenance?.source)||data.provenance.pointInTime!==true
+  ||!nonempty(data.provenance?.source)||!(data.provenance.pointInTime===true||exploratory&&data.provenance.pointInTime===false&&data.provenance.basis==='retrieval_time_only')
   ||!nonempty(data.provenance.adjustmentPolicy)||!Array.isArray(data.bars))throw Error('point-in-time dataset contract required');
  // Sessions must be supplied by the actual exchange calendar, never inferred from weekdays.
  let last=-Infinity,lastAvailable=-Infinity;
@@ -119,8 +119,8 @@ function metrics(rows,alpha){
  * The caller declares PIT provenance; the replay does not independently certify it.
  * Outputs never authorize live forecast routing, regardless of apparent gains.
  */
-export function runAzizHybridReplay(data,{horizon=5,evaluationAsOf,options={}}={}){
- validateDataset(data);if(![5,21].includes(horizon))throw Error('only full 5/21-session horizons supported');
+export function runAzizHybridReplay(data,{horizon=5,evaluationAsOf,options={},exploratory=false}={}){
+ validateDataset(data,exploratory===true);if(![5,21].includes(horizon))throw Error('only full 5/21-session horizons supported');
  const evaluationCut=stamp(evaluationAsOf),p=policy(options);
  const identity={algorithm:HYBRID_VERSION,market:data.market,symbol:data.symbol,currency:data.currency,
   priceBasis:data.priceBasis,calendarId:data.calendarId,horizon,policy:p,
@@ -180,7 +180,7 @@ export function runAzizHybridReplay(data,{horizon=5,evaluationAsOf,options={}}={
   return label?[{...r,actualLogReturn:label.y,targetAt:label.targetAt,outcomeAvailableAt:label.availableAt}]:[];
  });
  return {schemaVersion:1,algorithm:HYBRID_VERSION,modelVersion,market:data.market,symbol:data.symbol,horizon,
-  evaluationAsOf,policy:p,mode:'REPLAY',canActivate:false,provenance:'caller_declared_not_independently_verified',
+  evaluationAsOf,policy:p,mode:'REPLAY',canActivate:false,exploratory:exploratory===true,provenance:exploratory===true?'retrieval_time_only_exploratory':'caller_declared_not_independently_verified',
   inputProvenance:{...data.provenance},calendarId:data.calendarId,priceBasis:data.priceBasis,
   comparator:'historical_mean_return_not_live_mizan',issued,evaluated,pending:issued.length-evaluated.length,skipped,
   metrics:metrics(evaluated,p.alpha),promotion:{approved:false,reasons:['real_SA_US_PIT_validation_required',

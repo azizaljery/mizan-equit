@@ -10,8 +10,13 @@ const yes=(b:boolean)=>b?'نعم':'لا';
 async function read(url:string,options?:RequestInit){const r=await fetch(url,options);const b=await r.json();if(!r.ok)throw Error(b.error||'تعذر الطلب.');return b;}
 
 export default function RequestPanel(){
- const [market,setMarket]=useState('sa'),[query,setQuery]=useState(''),[companies,setCompanies]=useState<Company[]>([]),[selected,setSelected]=useState<Company|null>(null),[selection,setSelection]=useState<any>(null),[result,setResult]=useState<Result|null>(null),[busy,setBusy]=useState(''),[error,setError]=useState('');
- function clear(){setCompanies([]);setSelected(null);setSelection(null);setResult(null);setError('');}
+ const [market,setMarket]=useState('sa'),[query,setQuery]=useState(''),[companies,setCompanies]=useState<Company[]>([]),[selected,setSelected]=useState<Company|null>(null),[selection,setSelection]=useState<any>(null),[result,setResult]=useState<Result|null>(null),[reading,setReading]=useState<any>(null),[busy,setBusy]=useState(''),[error,setError]=useState('');
+ function clear(){setCompanies([]);setSelected(null);setSelection(null);setResult(null);setReading(null);setError('');}
+ async function readAziz(horizon:5|21){if(!selected)return;setBusy('تشغيل قراءة عزيز التجريبية… قد تستغرق عدة ثوانٍ');setReading(null);setError('');try{
+  const r=await read('/api/aziz/reading?market='+market+'&symbol='+encodeURIComponent(selected.symbol)+'&horizon='+horizon);
+  if(r.engine!=='aziz'||r.operation!=='experimental-reading'||r.recorded!==false||r.reading?.symbol!==selected.symbol)throw Error('استجابة قراءة غير متوقعة.');setReading({...r.reading,currency:r.currency});
+ }catch(e){setError(e instanceof Error?e.message:'تعذر تشغيل القراءة.');}finally{setBusy('');}}
+ const n=(v:any,d=2)=>typeof v==='number'&&Number.isFinite(v)?new Intl.NumberFormat('en-US',{maximumFractionDigits:d}).format(v):'—';
  async function choose(random=false){setBusy(random?'اختيار شركة من الدليل…':'البحث عن الشركة…');clear();try{
   if(random){const r=await read('/api/aziz/company?market='+market);setSelected(r.company);setSelection(r.selection);}
   else{const r=await read('/api/company/search?market='+market+'&q='+encodeURIComponent(query));if(r.suggestedMarket)throw Error('الشركة تتبع سوقًا آخر؛ غيّر السوق ثم ابحث.');setCompanies(r.companies);if(!r.companies.length)setError('لا توجد شركة مطابقة في الدليل.');}
@@ -34,7 +39,28 @@ export default function RequestPanel(){
   {!!companies.length&&<ul className="bullet-list">{companies.map(c=><li key={c.symbol}><button disabled={!!busy||c.analysisAvailable===false} onClick={()=>{setSelected(c);setSelection({method:'manual'});setResult(null);setError('');}}>{c.name} — {c.symbol}</button></li>)}</ul>}
   {selected&&<div style={{marginTop:20}}><h3>{selected.name} <span dir="ltr">{selected.symbol}</span></h3>
    {selection?.method==='random-directory'&&<p>اختيرت من {selection.poolCount} شركة في الدليل. تبقى الشركة المختارة كما هي إذا تعذر جلب بياناتها.</p>}
-   <button disabled={!!busy} onClick={()=>void checkReadiness()}>فحص جاهزية عزيز</button>
+   <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+    <button disabled={!!busy} onClick={()=>void readAziz(5)}>قراءة عزيز التجريبية — أسبوع</button>
+    <button disabled={!!busy} onClick={()=>void readAziz(21)}>قراءة عزيز التجريبية — شهر</button>
+    <button disabled={!!busy} onClick={()=>void checkReadiness()}>فحص جاهزية عزيز</button>
+   </div>
+  </div>}
+  {reading&&<div aria-live="polite" style={{marginTop:24}}>
+   <h3>قراءة عزيز التجريبية — {reading.horizon===5?'أسبوع (5 جلسات)':'شهر (21 جلسة)'}</h3>
+   {reading.status==='available'?<div style={{overflowX:'auto'}}><table className="auto-table" dir="rtl"><tbody>
+    <tr><td>الاتجاه</td><td><strong>{reading.direction}</strong></td></tr>
+    <tr><td>السعر الحالي ({reading.asOf})</td><td dir="ltr">{n(reading.price)} {reading.currency}</td></tr>
+    <tr><td>السعر المتوقع</td><td dir="ltr">{n(reading.pointPrice)} {reading.currency} ({reading.changePct>0?'+':''}{n(reading.changePct)}%)</td></tr>
+    <tr><td>النطاق{reading.rangeTarget?` (هدف تغطية ${n(reading.rangeTarget,0)}%)`:''}</td><td dir="ltr">{reading.range?n(reading.range[0])+' – '+n(reading.range[1]):'غير متاح بعد'}</td></tr>
+   </tbody></table></div>:<p role="status">{reading.reason||'لم تصدر قراءة.'}</p>}
+   <h4>أداء القراءة نفسها على ماضي هذا السهم</h4>
+   {reading.history?.evaluated?<div style={{overflowX:'auto'}}><table className="auto-table" dir="rtl"><tbody>
+    <tr><td>عدد القراءات المقيَّمة</td><td>{reading.history.evaluated}</td></tr>
+    <tr><td>صحة الاتجاه</td><td>{n(reading.history.directionAccuracyPct,1)}% (المرجع البسيط {n(reading.history.baselineDirectionAccuracyPct,1)}%)</td></tr>
+    <tr><td>وقوع السعر داخل النطاق</td><td>{n(reading.history.coveragePct,1)}%</td></tr>
+    <tr><td>متوسط الخطأ</td><td>{n(reading.history.maeLogPct)}% (المرجع البسيط {n(reading.history.baselineMaeLogPct)}%)</td></tr>
+   </tbody></table></div>:<p>لا توجد قراءات سابقة مقيَّمة لهذا السهم.</p>}
+   <p>قراءة تجريبية غير معتمدة: تُحسب عند الطلب من آخر {reading.barsUsed} جلسة للسهم، ولا تُحفظ، ولا تدخل في توقعات ميزان أو ترشيحاته. الأسعار بتاريخ الجلب لا تاريخ النشر، فالأرقام استكشافية. قارن صحة الاتجاه بالمرجع البسيط قبل الاعتماد عليها.</p>
   </div>}
   {busy&&<p role="status">{busy}</p>}{error&&<p role="alert">{error}</p>}
   {result&&<div aria-live="polite" style={{marginTop:24}}>
