@@ -158,3 +158,4 @@ export * from '../lib/owner-fetch-gate';
 export * as shadowHar from '../lib/forecast-shadow-har';
 export * as directionEngine from '../lib/direction-engine';
 export {azizExperimentalReading,AZIZ_READING_POLICY} from '../lib/aziz/experimental-reading';
+export * as botEngine from '../lib/bot/engine';
