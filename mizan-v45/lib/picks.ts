@@ -1,4 +1,4 @@
-import {candidateExclusion,compareScreenerCandidates,type ScreenerCandidate} from './screener-policy';
+import {candidateExclusion,compareScreenerCandidates,nominationView,type ScreenerCandidate} from './screener-policy';
 
 /**
  * «توصيات الشركات»: the strongest rising forecasts the site has ALREADY recorded (daily archive + screener + user
@@ -32,8 +32,9 @@ export function rowToCandidate(row:PickRow,horizonName:string):Pick|null{
  if(!d||typeof d!=='object')return null;
  if(d.recordClass&&d.recordClass!=='prospective-public')return null;
  const market=row.market==='us'?'us':row.market==='sa'?'sa':null;if(!market)return null;
+ const view=nominationView(d);
  return {id:row.id,symbol:row.symbol,name:String(row.name||d.companyName||row.symbol),exchange:String(row.exchange||''),market,currency:String(d.currency||(market==='sa'?'SAR':'USD')),
-  price:num(d.price),predictedPrice:num(d.predictedPrice),direction:String(d.direction||'غير متاح'),expectedChangePct:num(d.expectedChangePct),
+  price:num(d.price),predictedPrice:view.predictedPrice,direction:view.direction,expectedChangePct:view.expectedChangePct,...(view.callVotes!==undefined?{callVotes:view.callVotes}:{}),
   range:Array.isArray(d.range)&&d.range.length===2&&d.range.every((x:unknown)=>num(x)!==null)?[d.range[0],d.range[1]]:null,
   confidence:String(d.confidence||row.confidence||'غير متاحة'),dataQuality:String(d.dataQuality||'غير متاحة'),coverage:num(d.coverage)??0,sample:num(d.sample)??0,independent:num(d.independent)??0,
   riskLevel:String(d.riskLevel||'غير متاح'),available:row.available===1&&d.available!==false,reasons:strs(d.reasons),basis:strs(d.basis),risks:strs(d.risks),

@@ -9,6 +9,8 @@ export type ScreenerCandidate={
  range:[number,number]|null;confidence:string;dataQuality:string;coverage:number;sample:number;
  independent:number;riskLevel:string;available:boolean;reasons:string[];basis:string[];risks:string[];
  invalidation:string[];priceTime:string;retrievedAt:string;source:string;
+ /** Size of the direction-call vote (0..4) when the forecast carries a direction call; used for ranking only. */
+ callVotes?:number;
  forecastId?:string;forecastIssuedAt?:string;estimatedEndAt?:string|null;calendarVerified?:boolean;
 };
 export type ScreenerFailure={symbol:string;reason:string};
@@ -23,7 +25,7 @@ export type ScreenerResult={market:ScreenerMarket;horizonSessions:number;horizon
 // Keep each Worker request below source/D1 resource pressure; full scans progress through more small immutable batches.
 export const SCREENER_BATCH_SIZE=2;
 export const SCREENER_MAX_SCAN=200;
-export const SCREENER_RANKING='data-quality / confidence / factor-coverage / historical-windows / expected-change';
+export const SCREENER_RANKING='direction-votes / data-quality / confidence / factor-coverage / historical-windows / expected-change';
 export const SCREENER_SCOPE='bounded-directory-sample';
 const finite=(v:unknown):v is number=>typeof v==='number'&&Number.isFinite(v);
 export function validateScreenerRequest(input:any){
@@ -54,6 +56,14 @@ export function selectScreenerSymbols(sa:string[],us:string[],market:ScreenerMar
  else for(const s of market==='sa'?sa:us)add(s);
  return output;
 }
+/** Selection view of a forecast row: when the row carries the binary direction call (mizan-direction-v1), nomination uses the call's
+ *  direction and its target; otherwise the three-way direction and statistical centre, exactly as before. */
+export function nominationView(row:any):{direction:string;predictedPrice:number|null;expectedChangePct:number|null;callVotes?:number}{
+ const c=row?.call,n=(v:unknown)=>finite(v)?v:null;
+ if(c&&c.policy==='mizan-direction-v1'&&(c.direction==='صاعد'||c.direction==='هابط')&&finite(c.targetPrice)&&finite(c.targetChangePct))
+  return {direction:c.direction,predictedPrice:c.targetPrice,expectedChangePct:c.targetChangePct,callVotes:finite(c.votes)?Math.abs(c.votes):0};
+ return {direction:String(row?.direction||'غير متاح'),predictedPrice:n(row?.predictedPrice),expectedChangePct:n(row?.expectedChangePct)};
+}
 export function validScreenerRange(value:unknown):value is [number,number]{return Array.isArray(value)&&value.length===2&&value.every(finite)&&value[0]>0&&value[1]>value[0];}
 export function candidateExclusion(c:ScreenerCandidate):string|null{
  if(!c.available)return 'model_unavailable';
@@ -69,7 +79,7 @@ export function candidateExclusion(c:ScreenerCandidate):string|null{
 }
 const confidenceRank:Record<string,number>={مرتفع:3,متوسط:2,منخفض:1};
 const qualityRank:Record<string,number>={ممتازة:4,جيدة:3,متوسطة:2,ضعيفة:1,'غير صالحة':0};
-export function compareScreenerCandidates(a:ScreenerCandidate,b:ScreenerCandidate){return (qualityRank[b.dataQuality]||0)-(qualityRank[a.dataQuality]||0)||(confidenceRank[b.confidence]||0)-(confidenceRank[a.confidence]||0)||b.coverage-a.coverage||b.independent-a.independent||(b.expectedChangePct??-Infinity)-(a.expectedChangePct??-Infinity)||a.symbol.localeCompare(b.symbol,'en');}
+export function compareScreenerCandidates(a:ScreenerCandidate,b:ScreenerCandidate){return (b.callVotes??0)-(a.callVotes??0)||(qualityRank[b.dataQuality]||0)-(qualityRank[a.dataQuality]||0)||(confidenceRank[b.confidence]||0)-(confidenceRank[a.confidence]||0)||b.coverage-a.coverage||b.independent-a.independent||(b.expectedChangePct??-Infinity)-(a.expectedChangePct??-Infinity)||a.symbol.localeCompare(b.symbol,'en');}
 export function selectScreenerCandidates(rows:ScreenerCandidate[],count:number,market?:ScreenerMarket){
  if(!Number.isInteger(count)||count<5||count>10)throw new Error('invalid-result-count');
  const distinct=new Map<string,ScreenerCandidate>();

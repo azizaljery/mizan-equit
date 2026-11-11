@@ -23,3 +23,15 @@ test('candidates are distinct and never backfilled',()=>assert.equal(selectScree
 function batch(rows:ScreenerCandidate[]):ScreenerResult{const selected=selectScreenerCandidates(rows,10);return {market:'us',horizonSessions:5,horizonName:'أسبوع',scanned:rows.length,analyzed:rows.length,eligible:selected.eligible,failed:0,excluded:0,requestedResultCount:10,returned:selected.candidates.length,missingCount:Math.max(0,10-selected.candidates.length),candidates:selected.candidates,failures:[],exclusionCounts:{},durationMs:1,generatedAt:'2026-09-25',modelVersion:'m1',rankingPolicy:'quality-first',scope:'sample'};}
 test('merging disjoint batches preserves the exact global top ten',()=>{const rows=Array.from({length:50},(_,i)=>candidate(i));let r:ScreenerResult|null=null;for(let i=0;i<50;i+=5)r=mergeScreenerResults(r,batch(rows.slice(i,i+5)));assert.equal(r!.scanned,50);assert.equal(r!.eligible,50);assert.deepEqual(r!.candidates.map(c=>c.symbol),selectScreenerCandidates(rows,10).candidates.map(c=>c.symbol));});
 test('different model versions horizons and counts cannot mix',()=>{const a=batch([candidate(0)]);for(const b of [{...a,modelVersion:'m2'},{...a,horizonSessions:21},{...a,requestedResultCount:5}])assert.throws(()=>mergeScreenerResults(a,b));});
+
+test('nomination uses the direction call when the row carries one, the legacy fields otherwise',async()=>{
+ const {nominationView,compareScreenerCandidates}=await import('../lib/screener-policy');
+ const legacy={direction:'محايد',predictedPrice:40.01,expectedChangePct:.025};
+ assert.deepEqual(nominationView(legacy),{direction:'محايد',predictedPrice:40.01,expectedChangePct:.025});
+ const row={...legacy,call:{policy:'mizan-direction-v1',direction:'صاعد',votes:-3,targetPrice:41,targetChangePct:2.5}};
+ assert.deepEqual(nominationView(row),{direction:'صاعد',predictedPrice:41,expectedChangePct:2.5,callVotes:3});
+ assert.equal(nominationView({...row,call:{...row.call,policy:'other'}}).direction,'محايد');
+ assert.equal(nominationView({...row,call:{...row.call,targetPrice:null}}).predictedPrice,40.01);
+ const base={symbol:'A',dataQuality:'جيدة',confidence:'متوسط',coverage:50,independent:10,expectedChangePct:1} as any;
+ assert.ok(compareScreenerCandidates({...base,callVotes:4},{...base,symbol:'B',callVotes:2,dataQuality:'ممتازة'})<0);
+});
