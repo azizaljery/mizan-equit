@@ -54,9 +54,10 @@ export async function recordedSignals(db:any,market:Market,now:number):Promise<B
 }
 
 /** Resolves matured signals into append-only outcomes (separate from whether the bot traded). Bounded per run. */
-export async function resolveSignalOutcomes(db:any,market:Market,fetchBars:(symbol:string)=>Promise<BarLite[]>,maxSymbols=25):Promise<{checked:number;resolved:number}>{
+export async function resolveSignalOutcomes(db:any,market:Market,fetchBars:(symbol:string)=>Promise<BarLite[]>,maxSymbols=25,now=Date.now()):Promise<{checked:number;resolved:number}>{
  const pend=await pendingSignals(db,market,500),bySym=new Map<string,typeof pend>();
- for(const p of pend)bySym.set(p.symbol,[...(bySym.get(p.symbol)||[]),p]);
+ // Only signals whose horizon can have elapsed (sessions ≈ calendar days × 5/7, with slack): no chart is fetched for a signal that cannot resolve yet.
+ for(const p of pend){if(now-Date.parse(p.issuedAt)<p.horizon*1.4*86400000)continue;bySym.set(p.symbol,[...(bySym.get(p.symbol)||[]),p]);}
  let checked=0,resolved=0;
  for(const [sym,list] of bySym){
   if(checked>=maxSymbols)break;checked++;

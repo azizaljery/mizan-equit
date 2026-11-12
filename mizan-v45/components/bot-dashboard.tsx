@@ -18,6 +18,12 @@ export function BotDashboard(){
  const [experiments,setExperiments]=useState<any[]|null>(null),[id,setId]=useState(''),[data,setData]=useState<any>(null),[error,setError]=useState(''),[loading,setLoading]=useState(false);
  useEffect(()=>{(async()=>{try{const r=await fetch('/api/admin/bot'),d=await r.json();if(!r.ok)throw Error(d.error);setExperiments(d.experiments);const want=new URLSearchParams(location.search).get('experiment');setId(want&&d.experiments.some((e:any)=>e.id===want)?want:d.experiments[0]?.id||'');}catch(e){setError(e instanceof Error?e.message:'تعذر الاتصال.');}})();},[]);
  useEffect(()=>{if(!id)return;setLoading(true);(async()=>{try{const r=await fetch('/api/admin/bot?experiment='+encodeURIComponent(id)),d=await r.json();if(!r.ok)throw Error(d.error);setData(d);setError('');}catch(e){setError(e instanceof Error?e.message:'تعذر الاتصال.');}finally{setLoading(false);}})();},[id]);
+ const [runMsg,setRunMsg]=useState(''),[running,setRunning]=useState(false);
+ const runNow=async()=>{setRunning(true);setRunMsg('جارٍ تنفيذ خطوة الآن… قد تستغرق حتى دقيقتين.');
+  try{const r=await fetch('/api/admin/bot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'run-now',id})}),x=await r.json();if(!r.ok)throw Error(x.error);
+   const s=x.step?.experiments?.[0];setRunMsg(x.status==='locked'?'خطوة أخرى قيد التشغيل الآن؛ أعد المحاولة بعد دقائق.':`اكتملت الخطوة ${t(x.finishedAt)}: قرارات ${s?.decisions??0}، أوامر جديدة ${s?.orders??0}، تنفيذات ${s?.fills??0}، معلقة ${s?.stillPending??0}`+(x.errors?.length?` — أخطاء: ${x.errors.join('؛ ')}`:''));
+   const q=await fetch('/api/admin/bot?experiment='+encodeURIComponent(id)),dd=await q.json();if(q.ok)setData(dd);}
+  catch(err){setRunMsg(err instanceof Error?err.message:'تعذر الاتصال.');}finally{setRunning(false);}};
  if(error&&!experiments)return <section className="panel"><p role="alert">{error}</p><p className="muted">اللوحة خاصة بالمالك: سجّل الدخول من <a href="/#mizan-admin">إدارة ميزان</a> ثم عد إلى هذه الصفحة.</p></section>;
  if(!experiments)return <section className="panel"><p>جارٍ التحميل…</p></section>;
  if(!experiments.length)return <section className="panel"><h2>لا توجد تجارب</h2><p className="muted">أنشئ تجربة من <a href="/#mizan-admin">إدارة ميزان</a> ← قسم «البوت الورقي» ← إنشاء ثم ابدأ.</p></section>;
@@ -25,6 +31,9 @@ export function BotDashboard(){
  return <>
   <section className="panel"><div className="panel-head"><h2>التجربة</h2><select value={id} onChange={x=>setId(x.target.value)} aria-label="اختيار التجربة">{experiments.map(x=><option key={x.id} value={x.id}>{x.name} — {x.market==='sa'?'السعودي':'الأمريكي'} — {STATUS[x.status]}</option>)}</select></div>
    {e&&<p className="muted">{e.mode==='dry_run'?'تشغيل جاف':'تجربة ورقية'} · النسخة <span dir="ltr">{e.strategyVersion}</span> · بدأت {t(e.startedAt)}{e.stoppedAt?` · توقفت ${t(e.stoppedAt)}`:''} · أموال افتراضية فقط، بلا ربط بوسيط.</p>}
+   {e?.status==='running'&&<p><button type="button" className="secondary-btn" disabled={running} onClick={()=>void runNow()}>نفّذ الآن</button> <span className="muted">خطوة فورية بالقواعد نفسها: لا شراء والسوق مغلق، ولا تجاوز للسيولة والمخاطرة. كرّر الضغط إن بقيت أوامر معلقة.</span></p>}
+   {runMsg&&<p role="status">{runMsg}</p>}
+   {e&&/^bot-strategy-1/.test(String(e.strategyVersion))&&<p className="warning-box">هذه التجربة على الإصدار 1: حد عمر السعر 900 ثانية، وأسعار تداول تصل متأخرة نحو 15 دقيقة، فستُرفض أوامرها السعودية بسبب «السعر قديم». أوقفها وأنشئ تجربة جديدة (تُبنى على الإصدار 2) من <a href="/#mizan-admin">إدارة ميزان</a>.</p>}
    {error&&<p role="alert">{error}</p>}{loading&&<p className="muted">تحديث…</p>}
   </section>
   {d&&<>
