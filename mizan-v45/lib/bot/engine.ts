@@ -27,6 +27,13 @@ export const STRATEGY_V1:StrategyConfig=Object.freeze({version:BOT_STRATEGY_VERS
  costs:{sa:{commissionBps:15.5,minCommission:0,halfSpreadTiers:[{minAdvValue:187_500_000,bps:3},{minAdvValue:18_750_000,bps:7},{minAdvValue:3_750_000,bps:15},{minAdvValue:0,bps:40}],impactCoef:.5,priceDecimals:2},
   us:{commissionBps:1,minCommission:0,halfSpreadTiers:[{minAdvValue:50_000_000,bps:2},{minAdvValue:5_000_000,bps:5},{minAdvValue:1_000_000,bps:15},{minAdvValue:0,bps:40}],impactCoef:.5,priceDecimals:2}}}) as StrategyConfig;
 
+/** Version 2 (2026-11-12): identical to v1 except the accepted quote age. The provider's Tadawul quotes arrive about 15 minutes behind (measured: 944-956 s),
+ *  so v1's 900 s limit rejected every Saudi order as stale. The delay is not hidden: each fill stores quote time, age and source. Sizing, liquidity, costs and exits are unchanged. */
+export const BOT_STRATEGY_VERSION_2='bot-strategy-2';
+export const STRATEGY_V2:StrategyConfig=Object.freeze({...STRATEGY_V1,version:BOT_STRATEGY_VERSION_2,execution:{...STRATEGY_V1.execution,maxQuoteAgeSeconds:1500}}) as StrategyConfig;
+/** The version new experiments start from. */
+export const CURRENT_STRATEGY:StrategyConfig=STRATEGY_V2;
+
 const fin=(v:unknown):v is number=>typeof v==='number'&&Number.isFinite(v);
 const pos=(v:unknown):v is number=>fin(v)&&v>0;
 export type ForecastView={id:string;symbol:string;horizon:number;createdAt:string;available:boolean;recordClass:string;model:string;price:number|null;range:[number,number]|null;

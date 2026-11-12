@@ -70,3 +70,12 @@ test('performance: return, maximum drawdown, win rate and benchmark over the sam
   assert.equal(B.haltedToday(S,1000,970),true);assert.equal(B.haltedToday(S,1000,971),false);assert.equal(B.haltedToday(S,null,1),false);
   assert.equal(B.decisionKey('e','AAA',5,'f1','buy','2026-11-12'),'e|AAA|5|f1|buy|2026-11-12');assert.equal(B.orderKey('e','AAA',5,null,'sell'),'e|AAA|5|none|sell');
 });
+
+test('strategy v2: accepts the provider\'s ~15-minute Tadawul delay (recorded), still rejects older quotes; v1 is untouched',()=>{
+  const V2=B.STRATEGY_V2,q=a=>({price:100,quoteTime:'2026-11-12T09:15:00Z',isOpen:true,ageSeconds:a,delayAccepted:true,source:'t'}),liq={advValue:50_000_000,dailyVol:.02};
+  assert.equal(B.STRATEGY_V1.execution.maxQuoteAgeSeconds,900);assert.equal(B.BOT_STRATEGY_VERSION,'bot-strategy-1');
+  assert.equal(B.simulateFill(S,'sa','buy',100,q(956),liq).reason,'quote_stale');
+  const r=B.simulateFill(V2,'sa','buy',100,q(956),liq);assert.equal(r.filled,true);assert.equal(r.quoteAgeSeconds,956);
+  assert.equal(B.simulateFill(V2,'sa','buy',100,q(1501),liq).reason,'quote_stale');
+  assert.equal(V2.sizing.positionPctOfEquity,S.sizing.positionPctOfEquity);assert.equal(B.CURRENT_STRATEGY.version,'bot-strategy-2');
+});

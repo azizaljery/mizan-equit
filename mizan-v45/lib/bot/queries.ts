@@ -1,6 +1,6 @@
 // BOT-0001 dashboard/admin queries. Reads are side-effect free; the only writes are the experiment lifecycle helpers
 // (create / start / pause / stop), which respect the append-only triggers of drizzle/0018_paper_bot.sql.
-import {STRATEGY_V1,ledger,performance,valuation,type Fill,type Market,type StrategyConfig} from './engine';
+import {CURRENT_STRATEGY,STRATEGY_V1,ledger,performance,valuation,type Fill,type Market,type StrategyConfig} from './engine';
 
 type Db=any;
 const all=async(db:Db,sql:string,...args:unknown[])=>((await db.prepare(sql).bind(...args).all()).results||[]) as any[];
@@ -118,14 +118,14 @@ export async function createExperiment(db:Db,input:CreateInput,now=new Date()){
   if(input.mode!=='dry_run'&&input.mode!=='paper')throw new BotInputError('الوضع: dry_run أو paper.');
   const cap=CAPITAL[input.market],cash=input.initialCash===undefined?cap.cash:input.initialCash;
   if(!inRange(cash,1000,1e10))throw new BotInputError('رأس المال خارج النطاق.');
-  const pct=input.positionPct??STRATEGY_V1.sizing.positionPctOfEquity,maxPos=input.maxPositionsPerHorizon??STRATEGY_V1.sizing.maxPositionsPerHorizon,halt=input.dailyLossHaltPct??STRATEGY_V1.risk.dailyLossHaltPct;
+  const pct=input.positionPct??CURRENT_STRATEGY.sizing.positionPctOfEquity,maxPos=input.maxPositionsPerHorizon??CURRENT_STRATEGY.sizing.maxPositionsPerHorizon,halt=input.dailyLossHaltPct??CURRENT_STRATEGY.risk.dailyLossHaltPct;
   if(!inRange(pct,.1,10))throw new BotInputError('حجم الصفقة بين 0.1% و10% من قيمة المحفظة.');
   if(!Number.isInteger(maxPos)||!inRange(maxPos,1,50))throw new BotInputError('أقصى عدد مراكز لكل أفق بين 1 و50.');
   if(!inRange(halt,.5,20))throw new BotInputError('حد إيقاف الشراء اليومي بين 0.5% و20%.');
-  const cfg:StrategyConfig={...STRATEGY_V1,sizing:{positionPctOfEquity:pct,maxPositionsPerHorizon:maxPos},risk:{dailyLossHaltPct:halt}} as StrategyConfig;
-  const custom=pct!==STRATEGY_V1.sizing.positionPctOfEquity||maxPos!==STRATEGY_V1.sizing.maxPositionsPerHorizon||halt!==STRATEGY_V1.risk.dailyLossHaltPct;
+  const cfg:StrategyConfig={...CURRENT_STRATEGY,sizing:{positionPctOfEquity:pct,maxPositionsPerHorizon:maxPos},risk:{dailyLossHaltPct:halt}} as StrategyConfig;
+  const custom=pct!==CURRENT_STRATEGY.sizing.positionPctOfEquity||maxPos!==CURRENT_STRATEGY.sizing.maxPositionsPerHorizon||halt!==CURRENT_STRATEGY.risk.dailyLossHaltPct;
   const fingerprint=await sha256(stable({...cfg,version:undefined}));
-  const version=custom?`${STRATEGY_V1.version}+${fingerprint.slice(0,8)}`:STRATEGY_V1.version;
+  const version=custom?`${CURRENT_STRATEGY.version}+${fingerprint.slice(0,8)}`:CURRENT_STRATEGY.version;
   const stamp=now.toISOString(),strategyId='strat-'+version,expId='exp-'+(await sha256(name+'|'+stamp)).slice(0,16);
   const running=input.start!==false;
   const stmts=[

@@ -8,7 +8,7 @@
  *   fills (only when the simulation's conditions hold), order expiry/cancel, and at most one equity snapshot per day.
  * Resumption: a candidate that already has a terminal decision today is skipped; a candidate cut off by the call budget is retried next step.
  */
-import {STRATEGY_V1,BOT_STRATEGY_VERSION,decideEntry,decideExit,simulateFill,ledger,valuation,haltedToday,decisionKey,orderKey,
+import {STRATEGY_V1,STRATEGY_V2,BOT_STRATEGY_VERSION,BOT_STRATEGY_VERSION_2,decideEntry,decideExit,simulateFill,ledger,valuation,haltedToday,decisionKey,orderKey,
  type StrategyConfig,type ForecastView,type Liquidity,type Quote,type Market,type Fill,type Decision} from './engine';
 import {US_BENCHMARK_SYMBOL,US_BENCHMARK_NAME,SA_BENCHMARK_NAME,basketReturn,chainBasket} from './benchmark';
 
@@ -69,7 +69,7 @@ export async function runBotStep(db:any,now:number,opts:RunnerOptions):Promise<B
 
 async function runExperiment(db:any,now:number,opts:RunnerOptions,e:any,sum:ExperimentSummary){
  const market=e.market as Market,exp=e.id as string,iso=new Date(now).toISOString(),today=dayOf(now),startedMs=Math.max(Date.parse(e.started_at),Date.parse(String(parse(e.status_json)?.resumedAt??''))||0);
- const cfg=parse(e.config_json) as StrategyConfig|null,S:StrategyConfig=cfg&&cfg.version===e.version&&cfg.entry&&cfg.costs?cfg:(e.version===BOT_STRATEGY_VERSION?STRATEGY_V1:(()=>{throw new Error('strategy_config_unreadable')})());
+ const cfg=parse(e.config_json) as StrategyConfig|null,S:StrategyConfig=cfg&&cfg.version===e.version&&cfg.entry&&cfg.costs?cfg:(e.version===BOT_STRATEGY_VERSION?STRATEGY_V1:e.version===BOT_STRATEGY_VERSION_2?STRATEGY_V2:(()=>{throw new Error('strategy_config_unreadable')})());
  const maxFetches=opts.maxFetches??60,maxDecisions=opts.maxDecisions??400;
  const quotes=new Map<string,RunnerQuote|null>(),liqs=new Map<string,Liquidity>();
  const exhausted=()=>sum.fetches>=maxFetches;
