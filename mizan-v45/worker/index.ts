@@ -8,6 +8,7 @@ import { scheduledMarketCollection, scheduledForecastSeed } from './market-colle
 import { scheduledCouncil } from './council-scheduled';
 import { scheduledScreenerFollowup } from './screener-followup';
 import { scheduledDailyPicks } from './daily-picks-scheduled';
+import { scheduledPaperBot } from './paper-bot-scheduled';
 import { withVerifiedIdentity } from './owner-identity';
 
 interface Env {
@@ -43,7 +44,7 @@ const worker = {
     // once unless it owns this trigger, so each invocation runs exactly ONE heavy job within its CPU budget:
     //   '0 */6'   resolution · '0 3' accuracy sample · '*/5' daily archive · '2,7,...,57' screener followup
     //   MAINTENANCE_SLOT_CRON: market collection (00/06/12/18:30), market watch (01/07/13/19:30), council (04:30),
-    //   daily picks ledger (21:30, PROTOCOL-DIR-0002).
+    //   daily picks ledger (21:30, PROTOCOL-DIR-0002), BOT-0001 paper-trading step (09:30 and 16:30).
     ctx.waitUntil(scheduledResolution(controller, env));
     ctx.waitUntil(scheduledAccuracySample(controller, env));
     ctx.waitUntil(scheduledMarketWatch(controller, env));
@@ -52,6 +53,7 @@ const worker = {
     ctx.waitUntil(scheduledCouncil(controller, env));
     ctx.waitUntil(scheduledScreenerFollowup(controller, env));
     ctx.waitUntil(scheduledDailyPicks(controller, env));
+    ctx.waitUntil(scheduledPaperBot(controller, env));
   },
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
