@@ -1,6 +1,6 @@
 import {runPaperBot} from '@/worker/paper-bot-scheduled';
 import {botGuard,botError,botHeaders} from './guard';
-import {BotInputError,createExperiment,experimentDashboard,listDecisions,listExperiments,listFills,listOrders,vosaSummary,setExperimentStatus,sourceScorecard} from '@/lib/bot/queries';
+import {BotInputError,createExperiment,experimentDashboard,listDecisions,listExperiments,listFills,listOrders,vosaSummary,vosaSilenceCheck,setExperimentStatus,sourceScorecard} from '@/lib/bot/queries';
 
 const CREATE_KEYS=['action','name','market','mode','initialCash','positionPct','maxPositionsPerHorizon','dailyLossHaltPct','start','note'];
 
@@ -12,7 +12,8 @@ export async function GET(req:Request){
     const dashboard=await experimentDashboard(g.db,id);
     if(!dashboard)return botError('التجربة غير موجودة.',404);
     const [orders,decisions,fills,scorecard,vosa]=await Promise.all([listOrders(g.db,id,200),listDecisions(g.db,id,200),listFills(g.db,id,200),sourceScorecard(g.db),vosaSummary(g.db,id)]);
-    return Response.json({dashboard,orders,decisions,fills,scorecard,vosa},{headers:botHeaders});
+    const silence=await vosaSilenceCheck(g.db,id);
+    return Response.json({dashboard,orders,decisions,fills,scorecard,vosa,silence},{headers:botHeaders});
   }catch{return botError('تعذر قراءة بيانات البوت من قاعدة البيانات.',503);}
 }
 
