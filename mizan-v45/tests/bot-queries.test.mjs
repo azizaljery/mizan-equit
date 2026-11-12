@@ -15,12 +15,12 @@ const NOW=new Date('2026-11-12T10:00:00Z');
 test('create: defaults pin the frozen v1 strategy and per-market capital; customised risk makes a NEW dated version; bad input and duplicates are refused',async()=>{
   const {raw,db}=make();
   const a=await Q.createExperiment(db,{name:'us-test-1',market:'us',mode:'dry_run'},NOW);
-  assert.equal(a.strategyVersion,'bot-strategy-1');assert.equal(a.status,'running');
+  assert.equal(a.strategyVersion,'bot-strategy-2');assert.equal(a.status,'running');
   const sa=await Q.createExperiment(db,{name:'sa-test-1',market:'sa',mode:'paper',start:false},NOW);
   const rows=await Q.listExperiments(db);assert.equal(rows.length,2);
   assert.equal(rows.find(r=>r.market==='us').initialCash,1_000_000);assert.equal(rows.find(r=>r.market==='sa').initialCash,3_750_000);assert.equal(rows.find(r=>r.market==='sa').currency,'SAR');assert.equal(sa.status,'paused');
   const c=await Q.createExperiment(db,{name:'us-test-2',market:'us',mode:'dry_run',positionPct:1},NOW);
-  assert.match(c.strategyVersion,/^bot-strategy-1\+[0-9a-f]{8}$/);
+  assert.match(c.strategyVersion,/^bot-strategy-2\+[0-9a-f]{8}$/);
   assert.equal(raw.prepare('SELECT COUNT(*) n FROM bot_strategies').get().n,2);
   const stored=JSON.parse(raw.prepare('SELECT config_json FROM bot_strategies WHERE version=?').get(c.strategyVersion).config_json);assert.equal(stored.sizing.positionPctOfEquity,1);assert.equal(stored.entry.minVotes,2);
   await assert.rejects(()=>Q.createExperiment(db,{name:'us-test-1',market:'us',mode:'dry_run'},NOW),/مستخدم/);
