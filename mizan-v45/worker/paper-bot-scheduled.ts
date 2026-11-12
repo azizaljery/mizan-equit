@@ -18,14 +18,14 @@ const errorText=(e:unknown)=>(e instanceof Error?e.message:String(e)).slice(0,20
 export type PaperBotSummary={runId:string;startedAt:string;finishedAt:string;durationMs:number;triggeredBy:'cron'|'manual';status:'completed'|'partial'|'failed'|'locked';
  step:BotStepSummary|null;errors:string[];stateSaved:boolean};
 
-export async function runPaperBot(db:any,options:{triggeredBy:'cron'|'manual';now?:number;read?:any;collectSignals?:(db:any,market:'sa'|'us',now:number)=>Promise<BotSignal[]>}):Promise<PaperBotSummary>{
+export async function runPaperBot(db:any,options:{triggeredBy:'cron'|'manual';now?:number;experimentId?:string;maxFetches?:number;read?:any;collectSignals?:(db:any,market:'sa'|'us',now:number)=>Promise<BotSignal[]>}):Promise<PaperBotSummary>{
  const start=Date.now(),now=options.now??start,s:PaperBotSummary={runId:crypto.randomUUID(),startedAt:new Date(start).toISOString(),finishedAt:'',durationMs:0,triggeredBy:options.triggeredBy,status:'completed',step:null,errors:[],stateSaved:false};
  let token:string|null=null;
  try{
   token=await tryAcquireLock(db,LOCK_ID,LOCK_MS);
   if(!token){s.status='locked';s.finishedAt=new Date().toISOString();s.durationMs=Date.now()-start;return s;}
   const read=options.read??await configuredReader(db,await readSettings(db)),f=liveFetchers(read,new Date(now).toISOString().slice(0,10));
-  s.step=await runBotStep(db,now,{collectSignals:options.collectSignals??((d,m,n)=>recordedSignals(d,m,n)),fetchQuote:f.fetchQuote,fetchBars:f.fetchBars});
+  s.step=await runBotStep(db,now,{experimentId:options.experimentId,maxFetches:options.maxFetches,collectSignals:options.collectSignals??((d,m,n)=>recordedSignals(d,m,n)),fetchQuote:f.fetchQuote,fetchBars:f.fetchBars});
   try{for(const m of ['sa','us'] as const)await resolveSignalOutcomes(db,m,f.fetchBars);}catch(e){s.errors.push('outcomes: '+errorText(e));}
   for(const e of s.step.experiments)if(e.error){s.errors.push(`${e.id}: ${e.error}`);s.status='partial';}
  }catch(e){console.error('[mizan-paper-bot]','cycle',errorText(e));s.status='failed';s.errors.push(errorText(e));}

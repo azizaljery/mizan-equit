@@ -175,3 +175,12 @@ test('integration: every source is stored as its own signal before the decision;
   const c = fixture(); experiment(c.sqlite); await R.runBotStep(c.db, NOW, deps([sig('BBB', {issued_at: '2026-11-11T23:30:00.000Z'})]));
   assert.equal(c.sqlite.prepare("SELECT COUNT(*) c FROM bot_orders").get().c, 1);
 });
+
+test('run now for one experiment touches only that experiment (same rules, closed market still gives no fill)', async () => {
+  const {db, sqlite} = fixture(); experiment(sqlite, 'e1'); experiment(sqlite, 'e2');
+  await R.runBotStep(db, NOW, {...deps([sig('AAA')]), experimentId: 'e1'});
+  assert.equal(sqlite.prepare("SELECT COUNT(*) c FROM bot_decisions WHERE experiment_id='e2'").get().c, 0);
+  assert.ok(sqlite.prepare("SELECT COUNT(*) c FROM bot_decisions WHERE experiment_id='e1'").get().c > 0);
+  const c = fixture(); experiment(c.sqlite); await R.runBotStep(c.db, NOW, {...deps([sig('AAA')], {open: false}), experimentId: 'e1'});
+  assert.equal(c.sqlite.prepare('SELECT COUNT(*) c FROM bot_fills').get().c, 0);
+});
