@@ -18,7 +18,7 @@ export function BotDashboard(){
  useEffect(()=>{if(!id)return;setLoading(true);(async()=>{try{const r=await fetch('/api/admin/bot?experiment='+encodeURIComponent(id)),d=await r.json();if(!r.ok)throw Error(d.error);setData(d);setError('');}catch(e){setError(e instanceof Error?e.message:'تعذر الاتصال.');}finally{setLoading(false);}})();},[id]);
  if(error&&!experiments)return <section className="panel"><p role="alert">{error}</p><p className="muted">اللوحة خاصة بالمالك: سجّل الدخول من <a href="/#mizan-admin">إدارة ميزان</a> ثم عد إلى هذه الصفحة.</p></section>;
  if(!experiments)return <section className="panel"><p>جارٍ التحميل…</p></section>;
- if(!experiments.length)return <section className="panel"><h2>لا توجد تجارب</h2><p className="muted">أنشئ تجربة من إدارة ميزان ← «البوت الورقي».</p></section>;
+ if(!experiments.length)return <section className="panel"><h2>لا توجد تجارب</h2><p className="muted">أنشئ تجربة من <a href="/#mizan-admin">إدارة ميزان</a> ← قسم «البوت الورقي» ← إنشاء ثم ابدأ.</p></section>;
  const d=data?.dashboard,e=d?.experiment,p=d?.performance,cur=e?.currency||'';
  return <>
   <section className="panel"><div className="panel-head"><h2>التجربة</h2><select value={id} onChange={x=>setId(x.target.value)} aria-label="اختيار التجربة">{experiments.map(x=><option key={x.id} value={x.id}>{x.name} — {x.market==='sa'?'السعودي':'الأمريكي'} — {STATUS[x.status]}</option>)}</select></div>
