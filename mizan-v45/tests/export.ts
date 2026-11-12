@@ -163,3 +163,4 @@ export * as botSignals from '../lib/bot/signals';
 export * as botRunner from '../lib/bot/runner';
 export * as botBenchmark from '../lib/bot/benchmark';
 export {runPaperBot,scheduledPaperBot,PAPER_BOT_CRON,PAPER_BOT_STATE_ID} from '../worker/paper-bot-scheduled';
+export * as botQueries from '../lib/bot/queries';
