@@ -8,7 +8,7 @@ const one=async(db:Db,sql:string,...args:unknown[])=>(await db.prepare(sql).bind
 /** A table that the migration has not created yet (or is empty) reads as "no data", never as an error. */
 const safe=async<T>(f:()=>Promise<T>,fallback:T):Promise<T>=>{try{return await f();}catch{return fallback;}};
 
-export const EXPORT_TABLES=['experiments','orders','fills','decisions','snapshots','signals','scorecard'] as const;
+export const EXPORT_TABLES=['experiments','orders','fills','decisions','snapshots','signals','scorecard','vosa'] as const;
 export type ExportTable=typeof EXPORT_TABLES[number];
 const LIMIT=500;
 const clampLimit=(n:unknown,max=5000)=>Math.min(Math.max(Math.trunc(Number(n))||LIMIT,1),max);
@@ -88,6 +88,7 @@ export async function exportRows(db:Db,table:ExportTable,experimentId?:string):P
   if(table==='experiments')return listExperiments(db);
   if(table==='signals')return listSignals(db,5000);
   if(table==='scorecard')return sourceScorecard(db);
+  if(table==='vosa'){if(!experimentId)throw new Error('experiment_required');return safe(()=>all(db,`SELECT created_at AS createdAt,symbol,horizon,forecast_id AS forecastId,pipeline_version AS pipelineVersion,vosa_status AS vosaStatus,bot_action AS botAction,bot_reason AS botReason,relation,blocking_gates AS blockingGates,candidate_hash AS candidateHash FROM bot_vosa_audit WHERE experiment_id=? ORDER BY created_at DESC LIMIT 5000`,experimentId),[]);}
   if(!experimentId)throw new Error('experiment_required');
   if(table==='orders')return listOrders(db,experimentId,5000);
   if(table==='fills')return listFills(db,experimentId,5000);
@@ -145,4 +146,15 @@ export async function setExperimentStatus(db:Db,id:string,action:'start'|'pause'
   if(action==='start'){if(e.status==='running')return {status:'running'};await db.prepare("UPDATE bot_experiments SET status='running',status_json=? WHERE id=? AND status='paused'").bind(JSON.stringify({...sj,resumedAt:stamp}),id).run();return {status:'running'};}
   if(action==='pause'){if(e.status==='paused')return {status:'paused'};await db.prepare("UPDATE bot_experiments SET status='paused',status_json=? WHERE id=? AND status='running'").bind(JSON.stringify({...sj,pausedAt:stamp}),id).run();return {status:'paused'};}
   await db.prepare("UPDATE bot_experiments SET status='stopped',stopped_at=?,status_json=? WHERE id=? AND status<>'stopped'").bind(stamp,JSON.stringify({...sj,stoppedAt:stamp}),id).run();return {status:'stopped'};
+}
+
+/** VOSA shadow summary: how often each gate would have vetoed, and where the shadow verdict differs from the bot's own decision. No performance claim: that needs outcomes. */
+export async function vosaSummary(db:Db,experimentId:string){
+  return safe(async()=>{
+    const rows=await all(db,`SELECT vosa_status AS status,relation,blocking_gates AS blocking,bot_action AS botAction FROM bot_vosa_audit WHERE experiment_id=?`,experimentId);
+    const byStatus:Record<string,number>={},byRelation:Record<string,number>={},byGate:Record<string,number>={};
+    for(const r of rows as any[]){byStatus[r.status]=(byStatus[r.status]||0)+1;byRelation[r.relation]=(byRelation[r.relation]||0)+1;
+      for(const g of String(r.blocking||'').split(',').filter(Boolean))byGate[g]=(byGate[g]||0)+1;}
+    return {total:rows.length,byStatus,byRelation,byGate};
+  },{total:0,byStatus:{},byRelation:{},byGate:{}});
 }
