@@ -197,3 +197,16 @@ test('VOSA shadow: records its own verdict next to the decision, never changes i
   assert.throws(() => sqlite.prepare('DELETE FROM bot_vosa_audit').run(), /append_only/);
   assert.ok(withShadow.experiments[0].decisions >= 1);
 });
+
+test('silence check: groups vetoed vs passed from resolved outcomes only, one row per forecast, flagged as insufficient below the minimum', async () => {
+  const {db, sqlite} = fixture(); experiment(sqlite);
+  const Q = m.botQueries, S = m.botSignals;
+  sqlite.prepare(`INSERT INTO bot_signals VALUES('sg1','k1','mizan-direction','v1','us','AAA',5,'up',NULL,3,'2026-11-12T10:00:00Z','f1','{}','2026-11-12T10:00:00Z')`).run();
+  sqlite.prepare(`INSERT INTO bot_signals VALUES('sg2','k2','mizan-direction','v1','us','BBB',5,'up',NULL,3,'2026-11-12T10:00:00Z','f2','{}','2026-11-12T10:00:00Z')`).run();
+  for (const [id, s, e] of [['sg1', 100, 110], ['sg2', 100, 90]]) sqlite.prepare('INSERT INTO bot_signal_outcomes VALUES(?,?,?,?,?,?)').run(id, '2026-11-20T00:00:00Z', s, e, e > s ? 1 : 0, 5);
+  const ins = (id, fid, status, action, rel) => sqlite.prepare(`INSERT INTO bot_vosa_audit VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(id, 'e1', id, '2026-11-12T12:00:00Z', 'X', 5, fid, 'vosa-mizan-1', 'h', status, action, 'r', rel, '', '[]', '[]');
+  ins('a1', 'f1', 'PASS', 'buy', 'same'); ins('a1b', 'f1', 'PASS', 'buy', 'same'); ins('a2', 'f2', 'KILL', 'buy', 'vosa_stricter');
+  const r = await Q.vosaSilenceCheck(db, 'e1'), by = Object.fromEntries(r.groups.map(x => [x.group, x]));
+  assert.equal(by.bought_and_passed.resolved, 1); assert.equal(by.bought_and_passed.meanReturnPct, 10); assert.equal(by.bought_but_vetoed.meanReturnPct, -10);
+  assert.equal(by.bought_but_vetoed.enough, false); assert.equal(r.minGroup, 30);
+});

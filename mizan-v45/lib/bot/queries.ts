@@ -158,3 +158,26 @@ export async function vosaSummary(db:Db,experimentId:string){
     return {total:rows.length,byStatus,byRelation,byGate};
   },{total:0,byStatus:{},byRelation:{},byGate:{}});
 }
+
+/**
+ * First look at the value of silence (SV in the VOSA document), from resolved signal outcomes only: for the candidates the bot would have bought, did the ones a gate vetoed
+ * do worse than the ones that passed? Raw price change over the horizon, NOT after costs and NOT a performance claim: it is a diagnostic until there are enough resolved
+ * rows (minimum 30 per group) and an out-of-sample, after-cost test. One row per forecast.
+ */
+export const VOSA_MIN_GROUP=30;
+export async function vosaSilenceCheck(db:Db,experimentId?:string){
+  return safe(async()=>{
+    const rows=await all(db,`SELECT a.forecast_id AS fid,a.horizon,a.vosa_status AS status,a.bot_action AS botAction,a.relation,o.start_price AS sp,o.end_price AS ep
+      FROM bot_vosa_audit a JOIN bot_signals s ON s.forecast_id=a.forecast_id AND s.horizon=a.horizon
+      JOIN bot_signal_outcomes o ON o.signal_id=s.id ${experimentId?'WHERE a.experiment_id=?':''}`,...(experimentId?[experimentId]:[]));
+    const seen=new Set<string>(),g:Record<string,{n:number;up:number;sum:number}>={};
+    for(const r of rows as any[]){
+      const k=r.fid+'|'+r.horizon;if(seen.has(k))continue;seen.add(k);
+      const group=r.botAction==='buy'?(r.status==='PASS'?'bought_and_passed':'bought_but_vetoed'):(r.status==='PASS'?'declined_but_passed':null);
+      if(!group)continue;const ret=Number(r.ep)/Number(r.sp)-1;if(!Number.isFinite(ret))continue;
+      const x=g[group]||(g[group]={n:0,up:0,sum:0});x.n++;if(ret>0)x.up++;x.sum+=ret;
+    }
+    const out=Object.entries(g).map(([group,x])=>({group,resolved:x.n,upRatePct:x.n?+(100*x.up/x.n).toFixed(1):null,meanReturnPct:x.n?+(100*x.sum/x.n).toFixed(2):null,enough:x.n>=VOSA_MIN_GROUP}));
+    return {groups:out,minGroup:VOSA_MIN_GROUP};
+  },{groups:[] as any[],minGroup:VOSA_MIN_GROUP});
+}

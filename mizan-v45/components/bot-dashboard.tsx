@@ -83,6 +83,11 @@ export function BotDashboard(){
     {Object.entries(data.vosa.byRelation||{}).map(([k,v])=><tr key={'r'+k}><td>مقارنة بالبوت: {k==='same'?'متطابق':k==='vosa_stricter'?'VOSA أشد':'VOSA أخف'}</td><td>{String(v)}</td></tr>)}
     {Object.entries(data.vosa.byGate||{}).map(([k,v])=><tr key={'g'+k}><td dir="ltr">{k}</td><td>{String(v)}</td></tr>)}
    </tbody></table></div>:<p className="muted">لا تقييمات VOSA بعد؛ تظهر بعد أول خطوة تصل لسعر مرشح.</p>}
+   <h4>قيمة الصمت (فحص أولي)</h4>
+   <p className="muted">من نتائج الإشارات المحسومة فقط: تغيّر السعر الخام عبر الأفق، بلا تكاليف، ولا يُعد ادعاء أداء. تُعتمد الأرقام بعد {data?.silence?.minGroup??30} نتيجة محسومة على الأقل في كل مجموعة، ثم اختبار خارج العينة بعد التكاليف.</p>
+   {data?.silence?.groups?.length?<div className="wide-table"><table className="auto-table" dir="rtl"><thead><tr><th>المجموعة</th><th>محسوم</th><th>نسبة الصعود %</th><th>متوسط التغيّر %</th><th>العينة</th></tr></thead><tbody>
+    {data.silence.groups.map((x:any)=><tr key={x.group}><td>{x.group==='bought_and_passed'?'اشتراه البوت ومرّ من البوابات':x.group==='bought_but_vetoed'?'اشتراه البوت ونقضته بوابة':'امتنع البوت ومرّ من البوابات'}</td><td>{x.resolved}</td><td>{x.upRatePct??'—'}</td><td>{x.meanReturnPct??'—'}</td><td>{x.enough?'كافية':'غير كافية'}</td></tr>)}
+   </tbody></table></div>:<p className="muted">لا نتائج محسومة بعد لمرشحات قيّمتها البوابات.</p>}
    <p><a className="link-btn" href={exportHref('vosa',id)}>تصدير تدقيق VOSA CSV</a></p>
    <p><a className="link-btn" href={exportHref('scorecard')}>تصدير دقة المصادر CSV</a> · <a className="link-btn" href={exportHref('signals')}>تصدير الإشارات CSV</a> · <a className="link-btn" href={exportHref('experiments')}>تصدير التجارب CSV</a></p></section>
  </>;
