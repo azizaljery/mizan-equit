@@ -109,7 +109,7 @@ async function runExperiment(db:any,now:number,opts:RunnerOptions,e:any,sum:Expe
 
  // 2. Signals known now (each source kept on its own).
  const signals=(await opts.collectSignals(db,market,now)).filter(s=>s.market===market&&Date.parse(s.issued_at)<=now);
- const fresh=signals.filter(s=>(now-Date.parse(s.issued_at))/3600000<=S.entry.maxForecastAgeHours&&Date.parse(s.issued_at)>=startedMs);
+ const fresh=signals.filter(s=>(now-Date.parse(s.issued_at))/3600000<=S.entry.maxForecastAgeHours);
  const group=new Map<string,BotSignal[]>();for(const s of signals){const k=s.symbol+'|'+s.horizon;(group.get(k)??group.set(k,[]).get(k)!).push(s);}
  const doneToday=new Set(((await db.prepare(`SELECT symbol,horizon,forecast_id FROM bot_decisions WHERE experiment_id=? AND created_at>=? AND action<>'suspend'`).bind(exp,today+'T00:00:00.000Z').all()).results||[])
   .map((r:any)=>r.symbol+'|'+r.horizon+'|'+(r.forecast_id??'none')));
@@ -152,7 +152,7 @@ async function runExperiment(db:any,now:number,opts:RunnerOptions,e:any,sum:Expe
    agreement=conflict?'disagree':new Set(freshList.map(s=>s.source)).size>1?'agree':'single';
   const data:any={view:f,primarySource:primary.source,agreement,sources:(group.get(c.k)||[]).map(srcRec)};
   if(conflict){await record({action:'suspend',reason:'pending_sources_conflict',detail:{agreement}},sym,h,f.id,primary.issued_at,f.model,data);continue;}
-  const equity=val.equity,cash=book.cash,base={now,experimentStartedAt:startedMs,holdsSymbol:false,hasOpenOrder:pendingKeys.has(c.k),openPositionsInHorizon:openByHorizon(h),equity,cash,haltedToday:halted};
+  const equity=val.equity,cash=book.cash,base={now,experimentStartedAt:startedMs-S.entry.maxForecastAgeHours*3600000,holdsSymbol:false,hasOpenOrder:pendingKeys.has(c.k),openPositionsInHorizon:openByHorizon(h),equity,cash,haltedToday:halted};
   let d=decideEntry(S,market,f,{...base,price:null,liquidity:{advValue:null,dailyVol:null}});
   let price:number|null=null,liq:Liquidity={advValue:null,dailyVol:null};
   if(d.action==='suspend'&&d.reason==='price_unavailable'){

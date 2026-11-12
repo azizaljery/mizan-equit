@@ -111,9 +111,9 @@ test('missing liquidity, stale or pre-experiment forecasts, weak calls: recorded
   await R.runBotStep(db, NOW, deps([sig('AAA')], {noBars: true}));
   assert.equal(sqlite.prepare('SELECT reason FROM bot_decisions').get().reason, 'liquidity_unavailable'); assert.equal(count(sqlite, 'bot_orders'), 0);
   const {db: d2, sqlite: s2} = fixture(); experiment(s2);
-  await R.runBotStep(d2, NOW, deps([sig('OLD', {issued_at: '2026-11-11T10:00:00.000Z'}), sig('PRE', {issued_at: '2026-11-11T23:30:00.000Z'}), sig('WEAK', {strength: 1}), sig('DOWN', {direction: 'down'})]));
+  await R.runBotStep(d2, NOW, deps([sig('OLD', {issued_at: '2026-11-10T10:00:00.000Z'}), sig('WEAK', {strength: 1}), sig('DOWN', {direction: 'down'})]));
   const reasons = Object.fromEntries(s2.prepare('SELECT symbol,reason FROM bot_decisions').all().map(r => [r.symbol, r.reason]));
-  assert.equal(reasons.OLD, 'forecast_predates_experiment'); assert.equal(reasons.PRE, 'forecast_predates_experiment'); assert.equal(reasons.WEAK, 'signal_too_weak'); assert.equal(reasons.DOWN, undefined);
+  assert.equal(reasons.OLD, 'forecast_predates_experiment'); assert.equal(reasons.WEAK, 'signal_too_weak'); assert.equal(reasons.DOWN, undefined);
   assert.equal(count(s2, 'bot_orders'), 0); assert.equal(count(s2, 'bot_fills'), 0);
 });
 
@@ -169,6 +169,9 @@ test('integration: every source is stored as its own signal before the decision;
   assert.equal(sqlite.prepare("SELECT COUNT(*) c FROM bot_decisions WHERE action='buy' AND forecast_id='fr1'").get().c, 1);
   // resumed after the call was issued: the call predates the resumption, so no entry
   const b = fixture(); experiment(b.sqlite); b.sqlite.prepare("UPDATE bot_experiments SET status_json=? WHERE id='e1'").run(JSON.stringify({resumedAt: '2026-11-12T12:00:00.000Z'}));
-  await R.runBotStep(b.db, NOW, deps([sig('AAA')]));
+  await R.runBotStep(b.db, NOW, deps([sig('AAA', {issued_at: '2026-11-11T10:00:00.000Z'})]));
   assert.equal(b.sqlite.prepare("SELECT COUNT(*) c FROM bot_orders").get().c, 0);
+  // a fresh call issued shortly before the start (inside the age window) is a valid prospective forecast and trades
+  const c = fixture(); experiment(c.sqlite); await R.runBotStep(c.db, NOW, deps([sig('BBB', {issued_at: '2026-11-11T23:30:00.000Z'})]));
+  assert.equal(c.sqlite.prepare("SELECT COUNT(*) c FROM bot_orders").get().c, 1);
 });
