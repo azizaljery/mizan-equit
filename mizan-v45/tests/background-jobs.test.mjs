@@ -243,10 +243,10 @@ test('Each cron invocation starts exactly one heavy job; at most 5 distinct trig
   assert.equal(m.DAILY_ARCHIVE_CRON, '*/5 * * * *'); // scripts/verify-daily-archive.mjs observes this exact string
   assert.notEqual(m.SCREENER_FOLLOWUP_CRON, m.DAILY_ARCHIVE_CRON);
   assert.equal(m.RESOLUTION_CRON, m.EVALUATE_DUE_CRON); assert.equal(m.FORECAST_SEED_CRON, m.DAILY_ARCHIVE_CRON);
-  for (const c of [m.MARKET_COLLECTION_CRON, m.MARKET_WATCH_CRON, m.COUNCIL_CRON, m.DAILY_PICKS_CRON]) assert.equal(c, m.MAINTENANCE_SLOT_CRON);
-  assert.equal(m.MAINTENANCE_SLOT_CRON, '30 0,1,4,6,7,12,13,18,19,21 * * *');
+  for (const c of [m.MARKET_COLLECTION_CRON, m.MARKET_WATCH_CRON, m.COUNCIL_CRON, m.DAILY_PICKS_CRON, m.PAPER_BOT_CRON]) assert.equal(c, m.MAINTENANCE_SLOT_CRON);
+  assert.equal(m.MAINTENANCE_SLOT_CRON, '30 0,1,4,6,7,9,12,13,16,18,19,21 * * *');
   const handlers = {resolution: m.scheduledResolution, accuracy: m.scheduledAccuracySample, watch: m.scheduledMarketWatch, collection: m.scheduledMarketCollection,
-    seed: m.scheduledForecastSeed, council: m.scheduledCouncil, screener: m.scheduledScreenerFollowup, picks: m.scheduledDailyPicks};
+    seed: m.scheduledForecastSeed, council: m.scheduledCouncil, screener: m.scheduledScreenerFollowup, picks: m.scheduledDailyPicks, bot: m.scheduledPaperBot};
   // A DB that throws on first use: proves a handler started, without network or real work.
   async function started(controller) {
     const names = [];
@@ -267,6 +267,7 @@ test('Each cron invocation starts exactly one heavy job; at most 5 distinct trig
   for (const h of ['01', '07', '13', '19']) assert.deepEqual(await started({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: at(`2026-10-17T${h}:30:00Z`)}), ['watch'], h);
   assert.deepEqual(await started({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: at('2026-10-17T04:30:00Z')}), ['council']);
   assert.deepEqual(await started({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: at('2026-10-17T21:30:00Z')}), ['picks']);
+  for (const h of ['09', '16']) assert.deepEqual(await started({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: at(`2026-10-17T${h}:30:00Z`)}), ['bot'], h);
   assert.deepEqual(await started({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: at('2026-10-17T05:30:00Z')}), []);
   assert.deepEqual(await started({cron: m.MAINTENANCE_SLOT_CRON}), []);
   // Every hour listed in the slot expression maps to a job, and every job hour is listed.

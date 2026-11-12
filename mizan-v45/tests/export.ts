@@ -159,3 +159,6 @@ export * as shadowHar from '../lib/forecast-shadow-har';
 export * as directionEngine from '../lib/direction-engine';
 export {azizExperimentalReading,AZIZ_READING_POLICY} from '../lib/aziz/experimental-reading';
 export * as botEngine from '../lib/bot/engine';
+export * as botRunner from '../lib/bot/runner';
+export * as botBenchmark from '../lib/bot/benchmark';
+export {runPaperBot,scheduledPaperBot,PAPER_BOT_CRON,PAPER_BOT_STATE_ID} from '../worker/paper-bot-scheduled';
