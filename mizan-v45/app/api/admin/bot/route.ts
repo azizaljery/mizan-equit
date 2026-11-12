@@ -1,3 +1,4 @@
+import {runPaperBot} from '@/worker/paper-bot-scheduled';
 import {botGuard,botError,botHeaders} from './guard';
 import {BotInputError,createExperiment,experimentDashboard,listDecisions,listExperiments,listFills,listOrders,setExperimentStatus,sourceScorecard} from '@/lib/bot/queries';
 
@@ -30,6 +31,14 @@ export async function POST(req:Request){
     if(['start','pause','stop'].includes(body.action)){
       if(typeof body.id!=='string'||Object.keys(body).some(k=>!['action','id'].includes(k)))return botError('الطلب يقبل action وid فقط.',400);
       return Response.json(await setExperimentStatus(g.db,body.id,body.action),{headers:botHeaders});
+    }
+    if(body.action==='run-now'){
+      if(typeof body.id!=='string'||Object.keys(body).some(k=>!['action','id'].includes(k)))return botError('الطلب يقبل action وid فقط.',400);
+      const exp=await g.db.prepare('SELECT status FROM bot_experiments WHERE id=?').bind(body.id).first();
+      if(!exp)return botError('التجربة غير موجودة.',404);
+      if(exp.status!=='running')return botError('التجربة غير مشغّلة؛ شغّلها أولًا.',409);
+      // Same step, same rules and lock as the schedule; bounded so the request stays under the edge time limit (repeat to continue).
+      return Response.json(await runPaperBot(g.db,{triggeredBy:'manual',experimentId:body.id,maxFetches:14}),{headers:botHeaders});
     }
     return botError('إجراء غير معروف.',400);
   }catch(e){

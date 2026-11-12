@@ -6,7 +6,9 @@ const ACTION:Record<string,string>={buy:'شراء',sell:'بيع',hold:'إبقا�
 const HORIZON:Record<number,string>={1:'يومي',5:'أسبوعي',21:'شهري'};
 const n=(v:unknown,d=2)=>typeof v==='number'&&Number.isFinite(v)?v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
 const pct=(v:unknown)=>typeof v==='number'&&Number.isFinite(v)?n(v)+'%':'—';
-const t=(v:unknown)=>v?String(v).slice(0,16).replace('T',' '):'—';
+/** All times are shown in Makkah/Riyadh time (UTC+3); stored values stay UTC. */
+const RIYADH=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
+const t=(v:unknown)=>{if(!v)return '—';const d=new Date(String(v));return Number.isNaN(d.getTime())?String(v).slice(0,16).replace('T',' '):RIYADH.format(d);};
 const Empty=()=><p className="muted">لا بيانات بعد.</p>;
 const Metric=({title,value,hint}:{title:string;value:string;hint?:string})=><div className="metric"><div className="title">{title}</div><div className="value">{value}</div>{hint&&<div className="hint">{hint}</div>}</div>;
 const exportHref=(table:string,exp?:string)=>`/api/admin/bot/export?table=${table}${exp?`&experiment=${encodeURIComponent(exp)}`:''}`;
