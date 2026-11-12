@@ -8,6 +8,7 @@
  *   fills (only when the simulation's conditions hold), order expiry/cancel, and at most one equity snapshot per day.
  * Resumption: a candidate that already has a terminal decision today is skipped; a candidate cut off by the call budget is retried next step.
  */
+import {shadowVosa} from './vosa-shadow';
 import {STRATEGY_V1,STRATEGY_V2,BOT_STRATEGY_VERSION,BOT_STRATEGY_VERSION_2,decideEntry,decideExit,simulateFill,ledger,valuation,haltedToday,decisionKey,orderKey,
  type StrategyConfig,type ForecastView,type Liquidity,type Quote,type Market,type Fill,type Decision} from './engine';
 import {US_BENCHMARK_SYMBOL,US_BENCHMARK_NAME,SA_BENCHMARK_NAME,basketReturn,chainBasket} from './benchmark';
@@ -154,14 +155,17 @@ async function runExperiment(db:any,now:number,opts:RunnerOptions,e:any,sum:Expe
   if(conflict){await record({action:'suspend',reason:'pending_sources_conflict',detail:{agreement}},sym,h,f.id,primary.issued_at,f.model,data);continue;}
   const equity=val.equity,cash=book.cash,base={now,experimentStartedAt:startedMs-S.entry.maxForecastAgeHours*3600000,holdsSymbol:false,hasOpenOrder:pendingKeys.has(c.k),openPositionsInHorizon:openByHorizon(h),equity,cash,haltedToday:halted};
   let d=decideEntry(S,market,f,{...base,price:null,liquidity:{advValue:null,dailyVol:null}});
-  let price:number|null=null,liq:Liquidity={advValue:null,dailyVol:null};
+  let price:number|null=null,liq:Liquidity={advValue:null,dailyVol:null},qq:RunnerQuote|null=null;
   if(d.action==='suspend'&&d.reason==='price_unavailable'){
-   const q=await quoteOf(sym);price=q?.price??null;liq=await liqOf(sym);
+   const q=await quoteOf(sym);qq=q;price=q?.price??null;liq=await liqOf(sym);
    d=decideEntry(S,market,f,{...base,price,liquidity:liq});
    data.entry={price,quoteTime:q?.quoteTime??null,liquidity:liq};
    if(!q&&exhausted()){continue;} // cut off by the call budget: retried next step, nothing recorded
   }
   if(d.action==='buy'&&(await db.prepare('SELECT 1 AS x FROM bot_orders WHERE order_key=?').bind(orderKey(exp,sym,h,f.id,'buy')).first())){d={action:'hold',reason:'order_already_recorded'};}
+  if(price!==null)await shadowVosa({db,experimentId:exp,day:today,nowMs:now,iso,S,market,symbol:sym,horizon:h,f,votes:fin(primary.strength)?Math.abs(primary.strength):null,
+   signals:freshList.map(x=>({source:x.source,direction:x.direction,issuedAt:x.issued_at})),price,liq,orderValue:equity*S.sizing.positionPctOfEquity/100,
+   quote:qq?{ageSeconds:qq.ageSeconds,isOpen:qq.isOpen}:null,botAction:d.action,botReason:d.reason});
   if(!await record(d,sym,h,f.id,primary.issued_at,f.model,data,d.action==='buy'?{side:'buy',quantity:d.quantity!}:undefined))break;
   if(d.action==='buy')pendingKeys.add(c.k);
  }

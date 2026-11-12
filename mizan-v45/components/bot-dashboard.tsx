@@ -75,6 +75,15 @@ export function BotDashboard(){
   <section className="panel"><h2>دقة التوقع لكل مصدر ومحرك</h2>
    <p className="muted">مقياس مستقل عن أرباح البوت: هل ارتفع السعر ضمن الأفق بعد نداء «صاعد»؟ يُقارَن بنسبة صعود الأسهم نفسها في السوق والأفق نفسيهما. لا دمج للمصادر في رقم واحد.</p>
    {data?.scorecard?.length?<div className="wide-table"><table className="auto-table" dir="rtl"><thead><tr><th>المصدر</th><th>النسخة</th><th>السوق</th><th>الأفق</th><th>إشارات</th><th>نداءات صاعدة</th><th>ناضجة</th><th>تحقق الصعود</th><th>خط الأساس</th><th>الفرق</th></tr></thead><tbody>{data.scorecard.map((s:any)=><tr key={[s.source,s.sourceVersion,s.market,s.horizon].join('|')}><td dir="ltr">{s.source}</td><td dir="ltr">{s.sourceVersion}</td><td>{s.market==='sa'?'السعودي':'الأمريكي'}</td><td>{HORIZON[s.horizon]}</td><td>{s.signals}</td><td>{s.upCalls}</td><td>{s.resolved}</td><td>{pct(s.hitRatePct)}</td><td>{pct(s.baselineUpPct)}</td><td>{pct(s.edgePct)}</td></tr>)}</tbody></table></div>:<Empty/>}
+   <h3>بوابات النقض VOSA (وضع الظل)</h3>
+   <p className="muted">تُقيَّم بجانب قرار البوت ولا تغيّره. «أشد» = كان البوت سيشتري وبوابة تنقض؛ «أخف» = البوت امتنع وكل البوابات مرّت. لا حكم على الجدوى قبل قياس النتائج بعد التكاليف.</p>
+   {data?.vosa?.total?<div className="wide-table"><table className="auto-table" dir="rtl"><thead><tr><th>البند</th><th>العدد</th></tr></thead><tbody>
+    <tr><td>مرشحات قُيِّمت</td><td>{data.vosa.total}</td></tr>
+    {Object.entries(data.vosa.byStatus||{}).map(([k,v])=><tr key={'s'+k}><td>حكم VOSA: {k==='PASS'?'نجاة':k==='KILL'?'نقض':'تعليق'}</td><td>{String(v)}</td></tr>)}
+    {Object.entries(data.vosa.byRelation||{}).map(([k,v])=><tr key={'r'+k}><td>مقارنة بالبوت: {k==='same'?'متطابق':k==='vosa_stricter'?'VOSA أشد':'VOSA أخف'}</td><td>{String(v)}</td></tr>)}
+    {Object.entries(data.vosa.byGate||{}).map(([k,v])=><tr key={'g'+k}><td dir="ltr">{k}</td><td>{String(v)}</td></tr>)}
+   </tbody></table></div>:<p className="muted">لا تقييمات VOSA بعد؛ تظهر بعد أول خطوة تصل لسعر مرشح.</p>}
+   <p><a className="link-btn" href={exportHref('vosa',id)}>تصدير تدقيق VOSA CSV</a></p>
    <p><a className="link-btn" href={exportHref('scorecard')}>تصدير دقة المصادر CSV</a> · <a className="link-btn" href={exportHref('signals')}>تصدير الإشارات CSV</a> · <a className="link-btn" href={exportHref('experiments')}>تصدير التجارب CSV</a></p></section>
  </>;
 }

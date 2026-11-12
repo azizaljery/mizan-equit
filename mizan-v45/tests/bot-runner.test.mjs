@@ -184,3 +184,16 @@ test('run now for one experiment touches only that experiment (same rules, close
   const c = fixture(); experiment(c.sqlite); await R.runBotStep(c.db, NOW, {...deps([sig('AAA')], {open: false}), experimentId: 'e1'});
   assert.equal(c.sqlite.prepare('SELECT COUNT(*) c FROM bot_fills').get().c, 0);
 });
+
+test('VOSA shadow: records its own verdict next to the decision, never changes it, and the audit rows are immutable', async () => {
+  const {db, sqlite} = fixture(); experiment(sqlite);
+  const withShadow = await R.runBotStep(db, NOW, deps([sig('AAA')]));
+  const rows = sqlite.prepare('SELECT * FROM bot_vosa_audit').all();
+  assert.equal(rows.length, 1); assert.equal(rows[0].symbol, 'AAA'); assert.match(rows[0].vosa_status, /^(PASS|KILL|SUSPEND)$/); assert.ok(['same', 'vosa_stricter', 'vosa_looser'].includes(rows[0].relation));
+  assert.equal(JSON.parse(rows[0].audit_json).length >= 1, true); assert.equal(rows[0].bot_action, 'buy');
+  assert.equal(count(sqlite, 'bot_orders'), 1);                         // the bot's own decision is untouched by the verdict
+  await R.runBotStep(db, NOW, deps([sig('AAA')])); assert.equal(count(sqlite, 'bot_vosa_audit'), 1);   // idempotent
+  assert.throws(() => sqlite.prepare('UPDATE bot_vosa_audit SET vosa_status=?').run('PASS'), /immutable/);
+  assert.throws(() => sqlite.prepare('DELETE FROM bot_vosa_audit').run(), /append_only/);
+  assert.ok(withShadow.experiments[0].decisions >= 1);
+});
