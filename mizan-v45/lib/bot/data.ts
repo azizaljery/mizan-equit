@@ -5,6 +5,7 @@
 import {fetchLiveQuote,dailyChartURL,parseChart} from '../market-data';
 import {validateMarketIdentity} from '../market-identity';
 import type {Market} from './engine';
+import {collectAllSignals,recordSignals,pendingSignals,recordOutcome} from './signals';
 import type {BotSignal,BarLite,RunnerQuote} from './runner';
 
 type Reader=(url:string,json?:boolean,ttl?:number,purpose?:'quote')=>Promise<any>;
@@ -42,4 +43,26 @@ export function liveFetchers(read:Reader,today:string){
   return parseChart(data,today).prices.map((p:{date:string;close:number;volume:number})=>({date:p.date,close:p.close,volume:p.volume}));
  };
  return {fetchQuote,fetchBars};
+}
+
+/** All sources (Mizan, picks, screener, Aziz) collected, each stored as its own append-only signal BEFORE any decision uses it. */
+export async function recordedSignals(db:any,market:Market,now:number):Promise<BotSignal[]>{
+ const all=await collectAllSignals(db,market,now);
+ const {stored}=await recordSignals(db,all,new Date(now).toISOString());
+ return stored.map(s=>({source:s.source,source_version:s.sourceVersion,market:s.market as Market,symbol:s.symbol,horizon:s.horizon,direction:s.direction,confidence:s.confidence,
+  strength:s.strength,issued_at:s.issuedAt,forecast_id:s.forecastId,basis_json:JSON.stringify(s.basis??{}),signal_key:s.signalKey}));
+}
+
+/** Resolves matured signals into append-only outcomes (separate from whether the bot traded). Bounded per run. */
+export async function resolveSignalOutcomes(db:any,market:Market,fetchBars:(symbol:string)=>Promise<BarLite[]>,maxSymbols=25):Promise<{checked:number;resolved:number}>{
+ const pend=await pendingSignals(db,market,500),bySym=new Map<string,typeof pend>();
+ for(const p of pend)bySym.set(p.symbol,[...(bySym.get(p.symbol)||[]),p]);
+ let checked=0,resolved=0;
+ for(const [sym,list] of bySym){
+  if(checked>=maxSymbols)break;checked++;
+  let bars:BarLite[];try{bars=await fetchBars(sym);}catch{continue;}
+  const prices=bars.map(b=>({date:b.date,close:b.close}));
+  for(const sg of list)if(await recordOutcome(db,sg.id,sg,prices))resolved++;
+ }
+ return {checked,resolved};
 }

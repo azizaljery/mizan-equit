@@ -57,7 +57,7 @@ const INSERT_FILL=`INSERT INTO bot_fills(id,experiment_id,order_id,created_at,sy
 
 export async function runBotStep(db:any,now:number,opts:RunnerOptions):Promise<BotStepSummary>{
  const out:BotStepSummary={startedAt:new Date(now).toISOString(),experiments:[]};
- const rows=(await db.prepare(`SELECT e.id,e.market,e.currency,e.initial_cash,e.mode,e.started_at,e.strategy_id,s.config_json,s.version FROM bot_experiments e JOIN bot_strategies s ON s.id=e.strategy_id
+ const rows=(await db.prepare(`SELECT e.id,e.market,e.currency,e.initial_cash,e.mode,e.started_at,e.status_json,e.strategy_id,s.config_json,s.version FROM bot_experiments e JOIN bot_strategies s ON s.id=e.strategy_id
   WHERE e.status='running' ${opts.experimentId?'AND e.id=?':''} ORDER BY e.id`).bind(...(opts.experimentId?[opts.experimentId]:[])).all()).results||[];
  for(const e of rows){
   const sum:ExperimentSummary={id:e.id,market:e.market,mode:e.mode,decisions:0,orders:0,fills:0,expired:0,cancelled:0,stillPending:0,abstained:0,suspended:0,skippedToday:0,fetches:0,budgetExhausted:false,snapshot:'skipped'};
@@ -68,7 +68,7 @@ export async function runBotStep(db:any,now:number,opts:RunnerOptions):Promise<B
 }
 
 async function runExperiment(db:any,now:number,opts:RunnerOptions,e:any,sum:ExperimentSummary){
- const market=e.market as Market,exp=e.id as string,iso=new Date(now).toISOString(),today=dayOf(now),startedMs=Date.parse(e.started_at);
+ const market=e.market as Market,exp=e.id as string,iso=new Date(now).toISOString(),today=dayOf(now),startedMs=Math.max(Date.parse(e.started_at),Date.parse(String(parse(e.status_json)?.resumedAt??''))||0);
  const cfg=parse(e.config_json) as StrategyConfig|null,S:StrategyConfig=cfg&&cfg.version===e.version&&cfg.entry&&cfg.costs?cfg:(e.version===BOT_STRATEGY_VERSION?STRATEGY_V1:(()=>{throw new Error('strategy_config_unreadable')})());
  const maxFetches=opts.maxFetches??60,maxDecisions=opts.maxDecisions??400;
  const quotes=new Map<string,RunnerQuote|null>(),liqs=new Map<string,Liquidity>();

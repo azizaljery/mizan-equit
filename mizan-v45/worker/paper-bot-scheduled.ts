@@ -8,7 +8,7 @@ import {configuredReader} from '../lib/source-status';
 import {readSettings} from '../lib/site-settings';
 import {tryAcquireLock,releaseLock} from './scheduled';
 import {runBotStep,type BotSignal,type BotStepSummary} from '../lib/bot/runner';
-import {mizanSignals,liveFetchers} from '../lib/bot/data';
+import {recordedSignals,resolveSignalOutcomes,liveFetchers} from '../lib/bot/data';
 
 export const PAPER_BOT_CRON=MAINTENANCE_SLOT_CRON;
 export const PAPER_BOT_STATE_ID='job:paper-bot:last';
@@ -25,7 +25,8 @@ export async function runPaperBot(db:any,options:{triggeredBy:'cron'|'manual';no
   token=await tryAcquireLock(db,LOCK_ID,LOCK_MS);
   if(!token){s.status='locked';s.finishedAt=new Date().toISOString();s.durationMs=Date.now()-start;return s;}
   const read=options.read??await configuredReader(db,await readSettings(db)),f=liveFetchers(read,new Date(now).toISOString().slice(0,10));
-  s.step=await runBotStep(db,now,{collectSignals:options.collectSignals??((d,m,n)=>mizanSignals(d,m,n)),fetchQuote:f.fetchQuote,fetchBars:f.fetchBars});
+  s.step=await runBotStep(db,now,{collectSignals:options.collectSignals??((d,m,n)=>recordedSignals(d,m,n)),fetchQuote:f.fetchQuote,fetchBars:f.fetchBars});
+  try{for(const m of ['sa','us'] as const)await resolveSignalOutcomes(db,m,f.fetchBars);}catch(e){s.errors.push('outcomes: '+errorText(e));}
   for(const e of s.step.experiments)if(e.error){s.errors.push(`${e.id}: ${e.error}`);s.status='partial';}
  }catch(e){console.error('[mizan-paper-bot]','cycle',errorText(e));s.status='failed';s.errors.push(errorText(e));}
  finally{

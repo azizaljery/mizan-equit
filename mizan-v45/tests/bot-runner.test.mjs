@@ -155,3 +155,20 @@ test('the scheduled worker: lock, summary state, and no run unless enabled and i
   await m.scheduledPaperBot({cron: m.PAPER_BOT_CRON, scheduledTime: Date.parse('2026-10-17T09:30:00Z')}, {DB}); assert.equal(used, false);          // not enabled
   await m.scheduledPaperBot({cron: m.PAPER_BOT_CRON, scheduledTime: Date.parse('2026-10-17T10:30:00Z')}, {DB, MIZAN_BACKGROUND_CRON_ENABLED: 'true'}); assert.equal(used, false); // not its hour
 });
+
+test('integration: every source is stored as its own signal before the decision; a resumed experiment ignores calls issued before resumption', async () => {
+  const {db, sqlite} = fixture(); experiment(sqlite);
+  const call = {policy: 'mizan-direction-v1', direction: 'صاعد', votes: 3, strength: 'متوسطة', targetPrice: 103};
+  sqlite.prepare('INSERT INTO forecast_records VALUES(?,?,?,?,?,?,?,?,?,?,?)').run('fr1', 'snap', 'AAA', '2026-11-12T10:00:00.000Z', 5, 'm', 'us', 's', 'منخفض', 1,
+    JSON.stringify({recordClass: 'prospective-public', call, price: 100, range: [95, 106]}));
+  const d = m.botData;
+  const s = await R.runBotStep(db, NOW, deps([], {extra: {collectSignals: d.recordedSignals}}));
+  assert.equal(s.experiments[0].error, undefined);
+  const sg = sqlite.prepare('SELECT * FROM bot_signals').all();
+  assert.equal(sg.length, 1); assert.equal(sg[0].source_version, 'mizan-direction-v1'); assert.equal(sg[0].forecast_id, 'fr1'); assert.equal(sg[0].direction, 'up');
+  assert.equal(sqlite.prepare("SELECT COUNT(*) c FROM bot_decisions WHERE action='buy' AND forecast_id='fr1'").get().c, 1);
+  // resumed after the call was issued: the call predates the resumption, so no entry
+  const b = fixture(); experiment(b.sqlite); b.sqlite.prepare("UPDATE bot_experiments SET status_json=? WHERE id='e1'").run(JSON.stringify({resumedAt: '2026-11-12T12:00:00.000Z'}));
+  await R.runBotStep(b.db, NOW, deps([sig('AAA')]));
+  assert.equal(b.sqlite.prepare("SELECT COUNT(*) c FROM bot_orders").get().c, 0);
+});
