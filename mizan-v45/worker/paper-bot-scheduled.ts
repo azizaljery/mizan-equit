@@ -27,7 +27,7 @@ export async function runPaperBot(db:any,options:{triggeredBy:'cron'|'manual';no
   // Marker written before any work: a run that dies (CPU/time limit) leaves this newer than the summary, so the failure is visible.
   try{await db.prepare('INSERT INTO research_state(id,data,updated_at) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data,updated_at=excluded.updated_at').bind(PAPER_BOT_STATE_ID+':started',JSON.stringify({runId:s.runId,triggeredBy:s.triggeredBy,experimentId:options.experimentId??null}),s.startedAt).run();}catch{}
   const read=options.read??await configuredReader(db,await readSettings(db)),f=liveFetchers(read,new Date(now).toISOString().slice(0,10));
-  s.step=await runBotStep(db,now,{experimentId:options.experimentId,maxFetches:options.maxFetches??30,collectSignals:options.collectSignals??((d,m,n)=>recordedSignals(d,m,n)),fetchQuote:f.fetchQuote,fetchBars:f.fetchBars});
+  s.step=await runBotStep(db,now,{experimentId:options.experimentId,maxFetches:options.maxFetches??40,deadlineMs:start+(options.triggeredBy==='cron'?90000:50000),collectSignals:options.collectSignals??((d,m,n)=>recordedSignals(d,m,n)),fetchQuote:f.fetchQuote,fetchBars:f.fetchBars});
   // Outcomes only on scheduled runs, only after a quick step, and bounded: they must never starve the trading step.
   if(options.triggeredBy==='cron'&&Date.now()-start<60000){try{for(const m of ['sa','us'] as const)await resolveSignalOutcomes(db,m,f.fetchBars,6,now);}catch(e){s.errors.push('outcomes: '+errorText(e));}}
   for(const e of s.step.experiments)if(e.error){s.errors.push(`${e.id}: ${e.error}`);s.status='partial';}
