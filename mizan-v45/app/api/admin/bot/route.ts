@@ -1,4 +1,8 @@
 import {runPaperBot} from '@/worker/paper-bot-scheduled';
+import {manualOrder,ManualInputError} from '@/lib/bot/manual';
+import {liveFetchers} from '@/lib/bot/data';
+import {configuredReader} from '@/lib/source-status';
+import {readSettings} from '@/lib/site-settings';
 import {botGuard,botError,botHeaders} from './guard';
 import {BotInputError,createExperiment,experimentDashboard,listDecisions,listExperiments,listFills,listOrders,vosaSummary,vosaSilenceCheck,setExperimentStatus,sourceScorecard} from '@/lib/bot/queries';
 
@@ -41,8 +45,17 @@ export async function POST(req:Request){
       // Same step, same rules and lock as the schedule; bounded so the request stays under the edge time limit (repeat to continue).
       return Response.json(await runPaperBot(g.db,{triggeredBy:'manual',experimentId:body.id,maxFetches:24}),{headers:botHeaders});
     }
+    if(body.action==='manual-order'){
+      const ALLOWED=['action','id','symbol','side','horizon','amount','requestId'];
+      if(typeof body.id!=='string'||typeof body.symbol!=='string'||typeof body.requestId!=='string'||Object.keys(body).some(k=>!ALLOWED.includes(k)))return botError('حقول الطلب غير صحيحة.',400);
+      const now=Date.now(),read=await configuredReader(g.db,await readSettings(g.db)),f=liveFetchers(read,new Date(now).toISOString().slice(0,10));
+      // Paper money only: same frozen strategy, costs and quote rules as the scheduled step; refusals are recorded with their reason.
+      const r=await manualOrder(g.db,now,{experimentId:body.id,symbol:body.symbol,side:body.side,horizon:body.horizon===undefined?undefined:Number(body.horizon),amount:body.amount===undefined||body.amount===''?undefined:Number(body.amount),requestId:body.requestId},f);
+      return Response.json(r,{headers:botHeaders});
+    }
     return botError('إجراء غير معروف.',400);
   }catch(e){
+    if(e instanceof ManualInputError)return botError(e.message,e.status);
     if(e instanceof BotInputError)return botError(e.message,400);
     return botError('تعذر تنفيذ الإجراء؛ لم يُحفظ شيء مؤكد.',503);
   }
