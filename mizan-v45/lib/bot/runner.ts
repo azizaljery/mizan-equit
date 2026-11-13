@@ -18,7 +18,7 @@ export type BotSignal={source:string;source_version:string;market:Market;symbol:
 export type BarLite={date:string;close:number;volume:number};
 export type RunnerQuote=Quote&{previousClose:number|null};
 export type RunnerOptions={collectSignals:(db:any,market:Market,now:number)=>Promise<BotSignal[]>;fetchQuote:(symbol:string)=>Promise<RunnerQuote|null>;
- fetchBars:(symbol:string)=>Promise<BarLite[]>;experimentId?:string;maxFetches?:number;maxDecisions?:number};
+ fetchBars:(symbol:string)=>Promise<BarLite[]>;experimentId?:string;maxFetches?:number;maxDecisions?:number;deadlineMs?:number};
 export type ExperimentSummary={id:string;market:Market;mode:string;decisions:number;orders:number;fills:number;expired:number;cancelled:number;stillPending:number;
  abstained:number;suspended:number;skippedToday:number;fetches:number;budgetExhausted:boolean;snapshot:'written'|'exists'|'skipped';error?:string};
 export type BotStepSummary={startedAt:string;experiments:ExperimentSummary[]};
@@ -73,7 +73,7 @@ async function runExperiment(db:any,now:number,opts:RunnerOptions,e:any,sum:Expe
  const cfg=parse(e.config_json) as StrategyConfig|null,S:StrategyConfig=cfg&&cfg.version===e.version&&cfg.entry&&cfg.costs?cfg:(e.version===BOT_STRATEGY_VERSION?STRATEGY_V1:e.version===BOT_STRATEGY_VERSION_2?STRATEGY_V2:(()=>{throw new Error('strategy_config_unreadable')})());
  const maxFetches=opts.maxFetches??60,maxDecisions=opts.maxDecisions??400;
  const quotes=new Map<string,RunnerQuote|null>(),liqs=new Map<string,Liquidity>();
- const exhausted=()=>sum.fetches>=maxFetches;
+ const exhausted=()=>sum.fetches>=maxFetches||(opts.deadlineMs!==undefined&&Date.now()>opts.deadlineMs);
  const quoteOf=async(sym:string):Promise<RunnerQuote|null>=>{
   if(quotes.has(sym))return quotes.get(sym)!;
   if(exhausted()){sum.budgetExhausted=true;return null;}
@@ -145,6 +145,10 @@ async function runExperiment(db:any,now:number,opts:RunnerOptions,e:any,sum:Expe
  }
  cands.sort((a,b)=>(b.ups[0].strength??0)-(a.ups[0].strength??0)||a.k.localeCompare(b.k));
  const heldKeys=new Set(book.positions.map(p=>p.symbol+'|'+p.horizon));
+ // Prefetch quotes and liquidity in parallel, 6 at a time (the Workers connection limit). Fetching one by one made a step outlive its time limit and die without a summary.
+ {const warm=[...new Set([...pending0.map((o:any)=>String(o.symbol)),...cands.filter(c=>!heldKeys.has(c.k)).map(c=>c.k.split('|')[0])])];
+  // A symbol needs two fetches (quote + bars); a batch never exceeds what the call budget still allows, so no symbol is left half-fetched.
+  for(let i=0;i<warm.length&&!exhausted();){const n=Math.min(6,Math.floor((maxFetches-sum.fetches)/2));if(n<1)break;await Promise.all(warm.slice(i,i+n).map(async x=>{await quoteOf(x);await liqOf(x);}));i+=n;}}
  for(const c of cands){
   const primary=c.ups[0],f=view(primary),[sym,hs]=c.k.split('|'),h=Number(hs);
   if(doneToday.has(c.k+'|'+f.id)){sum.skippedToday++;continue;}

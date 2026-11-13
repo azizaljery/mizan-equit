@@ -210,3 +210,15 @@ test('silence check: groups vetoed vs passed from resolved outcomes only, one ro
   assert.equal(by.bought_and_passed.resolved, 1); assert.equal(by.bought_and_passed.meanReturnPct, 10); assert.equal(by.bought_but_vetoed.meanReturnPct, -10);
   assert.equal(by.bought_but_vetoed.enough, false); assert.equal(r.minGroup, 30);
 });
+
+test('prefetch is parallel (never more than 6 in flight) and a passed deadline stops fetching without losing the step', async () => {
+  const {db, sqlite} = fixture(); experiment(sqlite);
+  const sigs = Array.from({length: 14}, (_, i) => sig('S' + String(i).padStart(2, '0')));
+  let inflight = 0, peak = 0;
+  const d = deps(sigs), slow = async s => { inflight++; peak = Math.max(peak, inflight); await new Promise(r => setTimeout(r, 15)); inflight--; return d.fetchQuote(s); };
+  const sum = await R.runBotStep(db, NOW, {...d, fetchQuote: slow});
+  assert.ok(peak > 1 && peak <= 6, 'peak in flight ' + peak); assert.equal(sum.experiments[0].error, undefined);
+  const c = fixture(); experiment(c.sqlite);
+  const late = await R.runBotStep(c.db, NOW, {...deps(sigs), deadlineMs: Date.now() - 1});
+  assert.equal(late.experiments[0].error, undefined); assert.equal(count(c.sqlite, 'bot_fills'), 0);
+});
