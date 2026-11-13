@@ -165,4 +165,5 @@ export * as botBenchmark from '../lib/bot/benchmark';
 export {runPaperBot,scheduledPaperBot,PAPER_BOT_CRON,PAPER_BOT_STATE_ID} from '../worker/paper-bot-scheduled';
 export * as botQueries from '../lib/bot/queries';
 export * as botData from '../lib/bot/data';
+export * as botManual from '../lib/bot/manual';
 export * as vosa from '../lib/vosa';

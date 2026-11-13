@@ -16,7 +16,7 @@ const exportHref=(table:string,exp?:string)=>`/api/admin/bot/export?table=${tabl
 /** Private dashboard (owner + admin session). Paper money only. Performance and forecast accuracy are shown separately. */
 export function BotDashboard(){
  const [experiments,setExperiments]=useState<any[]|null>(null),[id,setId]=useState(''),[data,setData]=useState<any>(null),[error,setError]=useState(''),[loading,setLoading]=useState(false);
- useEffect(()=>{(async()=>{try{const r=await fetch('/api/admin/bot'),d=await r.json();if(!r.ok)throw Error(d.error);setExperiments(d.experiments);const want=new URLSearchParams(location.search).get('experiment');setId(want&&d.experiments.some((e:any)=>e.id===want)?want:d.experiments[0]?.id||'');}catch(e){setError(e instanceof Error?e.message:'تعذر الاتصال.');}})();},[]);
+ useEffect(()=>{(async()=>{try{const r=await fetch('/api/admin/bot'),d=await r.json();if(!r.ok)throw Error(d.error);setExperiments(d.experiments);const want=new URLSearchParams(location.search).get('experiment');let saved='';try{saved=localStorage.getItem('sara:exp')||'';}catch{}setId(want&&d.experiments.some((e:any)=>e.id===want)?want:d.experiments.some((e:any)=>e.id===saved)?saved:d.experiments[0]?.id||'');}catch(e){setError(e instanceof Error?e.message:'تعذر الاتصال.');}})();},[]);
  useEffect(()=>{if(!id)return;setLoading(true);(async()=>{try{const r=await fetch('/api/admin/bot?experiment='+encodeURIComponent(id)),d=await r.json();if(!r.ok)throw Error(d.error);setData(d);setError('');}catch(e){setError(e instanceof Error?e.message:'تعذر الاتصال.');}finally{setLoading(false);}})();},[id]);
  const [runMsg,setRunMsg]=useState(''),[running,setRunning]=useState(false);
  const runNow=async()=>{setRunning(true);setRunMsg('جارٍ تنفيذ خطوة الآن… قد تستغرق حتى دقيقتين.');
@@ -24,15 +24,37 @@ export function BotDashboard(){
    const s=x.step?.experiments?.[0];setRunMsg(x.status==='locked'?'خطوة أخرى قيد التشغيل الآن؛ أعد المحاولة بعد دقائق.':`اكتملت الخطوة ${t(x.finishedAt)}: قرارات ${s?.decisions??0}، أوامر جديدة ${s?.orders??0}، تنفيذات ${s?.fills??0}، معلقة ${s?.stillPending??0}`+(x.errors?.length?` — أخطاء: ${x.errors.join('؛ ')}`:''));
    const q=await fetch('/api/admin/bot?experiment='+encodeURIComponent(id)),dd=await q.json();if(q.ok)setData(dd);}
   catch(err){setRunMsg(err instanceof Error?err.message:'تعذر الاتصال.');}finally{setRunning(false);}};
+ const [sym,setSym]=useState(''),[hz,setHz]=useState('5'),[amt,setAmt]=useState(''),[confirm,setConfirm]=useState<''|'buy'|'sell'>(''),[tradeMsg,setTradeMsg]=useState(''),[trading,setTrading]=useState(false);
+ useEffect(()=>{if(!id)return;try{setSym(localStorage.getItem('sara:sym:'+id)||'');}catch{setSym('');}setConfirm('');setTradeMsg('');},[id]);
+ const trade=async(side:'buy'|'sell')=>{setTrading(true);setConfirm('');setTradeMsg('جارٍ التنفيذ الورقي…');
+  try{const body:any={action:'manual-order',id,symbol:sym.trim().toUpperCase(),side,horizon:Number(hz),requestId:crypto.randomUUID()};if(amt.trim())body.amount=Number(amt);
+   const r=await fetch('/api/admin/bot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),x=await r.json();if(!r.ok)throw Error(x.error);
+   const REASON:Record<string,string>={no_quote:'لا يوجد سعر متاح',market_closed:'السوق مغلق',quote_stale:'السعر قديم',liquidity_unavailable:'بيانات السيولة غير متاحة',no_position:'لا يوجد مركز مفتوح لهذا السهم',insufficient_cash:'النقد لا يكفي',amount_below_one_share:'المبلغ أقل من سعر سهم واحد',liquidity_limit:'يتجاوز حد السيولة',order_exceeds_liquidity_limit:'يتجاوز حد السيولة',horizon_not_allowed:'أفق غير مسموح',duplicate_request:'الطلب نُفّذ سابقًا'};
+   setTradeMsg(x.status==='filled'?(side==='buy'?'تم الشراء الورقي: ':'تم البيع الورقي: ')+x.fills.map((f:any)=>`${f.quantity} سهم بسعر ${n(f.fillPrice)} (عمولة ${n(f.commission)}) أفق ${f.horizon}`).join('، '):x.status==='duplicate'?'هذا الطلب نُفّذ سابقًا.':'لم يُنفَّذ: '+(REASON[x.reason]||x.reason)+' — سُجّل الرفض في سجل القرارات.');
+   const q=await fetch('/api/admin/bot?experiment='+encodeURIComponent(id)),dd=await q.json();if(q.ok)setData(dd);}
+  catch(err){setTradeMsg(err instanceof Error?err.message:'تعذر الاتصال.');}finally{setTrading(false);}};
  if(error&&!experiments)return <section className="panel"><p role="alert">{error}</p><p className="muted">اللوحة خاصة بالمالك: سجّل الدخول من <a href="/#mizan-admin">إدارة ميزان</a> ثم عد إلى هذه الصفحة.</p></section>;
  if(!experiments)return <section className="panel"><p>جارٍ التحميل…</p></section>;
  if(!experiments.length)return <section className="panel"><h2>لا توجد تجارب</h2><p className="muted">أنشئ تجربة من <a href="/#mizan-admin">إدارة ميزان</a> ← قسم «البوت الورقي» ← إنشاء ثم ابدأ.</p></section>;
  const d=data?.dashboard,e=d?.experiment,p=d?.performance,cur=e?.currency||'';
  return <>
-  <section className="panel"><div className="panel-head"><h2>التجربة</h2><select value={id} onChange={x=>setId(x.target.value)} aria-label="اختيار التجربة">{experiments.map(x=><option key={x.id} value={x.id}>{x.name} — {x.market==='sa'?'السعودي':'الأمريكي'} — {STATUS[x.status]}</option>)}</select></div>
+  <section className="panel"><div className="panel-head"><h2>التجربة</h2><select value={id} onChange={x=>{setId(x.target.value);try{localStorage.setItem('sara:exp',x.target.value);}catch{}}} aria-label="اختيار التجربة">{experiments.map(x=><option key={x.id} value={x.id}>{x.name} — {x.market==='sa'?'السعودي':'الأمريكي'} — {STATUS[x.status]}</option>)}</select></div>
    {e&&<p className="muted">{e.mode==='dry_run'?'تشغيل جاف':'تجربة ورقية'} · النسخة <span dir="ltr">{e.strategyVersion}</span> · بدأت {t(e.startedAt)}{e.stoppedAt?` · توقفت ${t(e.stoppedAt)}`:''} · أموال افتراضية فقط، بلا ربط بوسيط.</p>}
    {e?.status==='running'&&<p><button type="button" className="secondary-btn" disabled={running} onClick={()=>void runNow()}>نفّذ الآن</button> <span className="muted">خطوة فورية بالقواعد نفسها: لا شراء والسوق مغلق، ولا تجاوز للسيولة والمخاطرة. كرّر الضغط إن بقيت أوامر معلقة.</span></p>}
    {runMsg&&<p role="status">{runMsg}</p>}
+   {e?.status==='running'&&<div className="panel" style={{marginTop:12}}>
+    <h3>شراء / بيع الآن (ورقي)</h3>
+    <p className="muted">أموال افتراضية فقط. يُنفَّذ بسعر السوق الحالي مع التكاليف والسيولة نفسها؛ لا شراء والسوق مغلق. {e.market==='sa'?'رمز سعودي مثل 2222.SR':'رمز أمريكي مثل AAPL'}. اختيارك لهذه التجربة وللسهم محفوظ في هذا المتصفح فقط.</p>
+    <p>
+     <input value={sym} dir="ltr" placeholder={e.market==='sa'?'2222.SR':'AAPL'} aria-label="رمز السهم" onChange={x=>{setSym(x.target.value);setConfirm('');try{localStorage.setItem('sara:sym:'+id,x.target.value);}catch{}}}/>{' '}
+     <select value={hz} aria-label="الأفق" onChange={x=>setHz(x.target.value)}><option value="1">يومي</option><option value="5">أسبوعي</option><option value="21">شهري</option></select>{' '}
+     <input value={amt} dir="ltr" inputMode="decimal" placeholder={'المبلغ بـ'+cur+' (اختياري)'} aria-label="المبلغ" onChange={x=>setAmt(x.target.value.replace(/[^0-9.]/g,''))}/>
+    </p>
+    {confirm?<p role="alert">تأكيد {confirm==='buy'?'شراء':'بيع'} <span dir="ltr">{sym.trim().toUpperCase()}</span> ورقيًا؟ {confirm==='buy'?'':'(يغلق كل مراكز هذا السهم) '}<button type="button" className="secondary-btn" disabled={trading} onClick={()=>void trade(confirm)}>نعم، نفّذ</button> <button type="button" className="secondary-btn" onClick={()=>setConfirm('')}>إلغاء</button></p>
+     :<p><button type="button" className="secondary-btn" disabled={trading||!sym.trim()} onClick={()=>setConfirm('buy')}>اشترِ الآن</button> <button type="button" className="secondary-btn" disabled={trading||!sym.trim()} onClick={()=>setConfirm('sell')}>بِع الآن</button></p>}
+    {tradeMsg&&<p role="status">{tradeMsg}</p>}
+    <p className="muted">الشراء اليدوي موسوم «يدوي» ولا يُحسب إصابة توقع؛ ويخضع لاحقًا لقواعد الخروج نفسها (انتهاء الأفق أو انقلاب التوقع للهبوط).</p>
+   </div>}
    {e&&/^bot-strategy-1/.test(String(e.strategyVersion))&&<p className="warning-box">هذه التجربة على الإصدار 1: حد عمر السعر 900 ثانية، وأسعار تداول تصل متأخرة نحو 15 دقيقة، فستُرفض أوامرها السعودية بسبب «السعر قديم». أوقفها وأنشئ تجربة جديدة (تُبنى على الإصدار 2) من <a href="/#mizan-admin">إدارة ميزان</a>.</p>}
    {error&&<p role="alert">{error}</p>}{loading&&<p className="muted">تحديث…</p>}
   </section>
