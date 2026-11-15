@@ -64,7 +64,7 @@ test('Wyckoff: SOS needs a close above the range on 1.5x volume held next bar', 
   const w = S.wyckoffAudit(p);
   assert.deepEqual(w.events.map(x => x.name), ['SOS']);
   near(w.events[0].evidence.volumeRatio, 2);
-  p[45] = bar('d45', 114, 105, 109, 100); // not held
+  p[45] = bar('d45', 109.5, 105, 109, 100); // not held
   assert.deepEqual(S.wyckoffAudit(p).events.map(x => x.name), ['Upthrust']); // failed breakout is an upthrust, not an SOS
 });
 
