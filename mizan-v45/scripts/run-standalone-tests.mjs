@@ -1,5 +1,5 @@
 // Runs every test file that is not part of `npm test` (listed in scripts/standalone-tests.txt), one file per process,
-// and prints a pass/fail line per file so unregistered suites can be promoted into `npm test` with evidence.
+// and fails the run if any file fails; prints a pass/fail line per file so unregistered suites can be promoted into `npm test` with evidence.
 import {readFileSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 const files=readFileSync(new URL('./standalone-tests.txt',import.meta.url),'utf8').split('\n').filter(Boolean);
@@ -11,4 +11,4 @@ for(const f of files){
   console.log(`STANDALONE ${ok?'PASS':'FAIL'} ${f} tests=${m('tests')} pass=${m('pass')} fail=${m('fail')} skipped=${m('skipped')}${ok?'':' status='+r.status}`);
 }
 console.log(`STANDALONE SUMMARY files=${files.length} failed=${failed}`);
-process.exitCode=0; // informational: promotion into npm test is a separate, reviewed change
+process.exitCode=failed?1:0; // blocking: every listed file passed in CI before it was added; known failures live in standalone-known-failing.txt
