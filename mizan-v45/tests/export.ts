@@ -167,3 +167,7 @@ export * as botQueries from '../lib/bot/queries';
 export * as botData from '../lib/bot/data';
 export * as botManual from '../lib/bot/manual';
 export * as vosa from '../lib/vosa';
+export * as macroCollect from '../lib/macro/collect';
+export * as macroParse from '../lib/macro/parse';
+export * as macroSeries from '../lib/macro/series';
+export {runMacro} from '../worker/macro-scheduled';
