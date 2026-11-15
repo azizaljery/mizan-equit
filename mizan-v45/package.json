@@ -11,6 +11,7 @@
     "build": "bash scripts/build-verified.sh",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "node scripts/test-analysis.mjs",
+    "test:standalone": "node scripts/run-standalone-tests.mjs",
     "test:quant": "node --test --import tsx tests/quant-core.test.ts",
     "test:shara": "node --test --import tsx tests/shara-integrity.test.ts tests/shara-screener.test.ts tests/screener-policy.test.ts",
     "test:identity": "node --test --import tsx tests/owner-identity.test.ts",
