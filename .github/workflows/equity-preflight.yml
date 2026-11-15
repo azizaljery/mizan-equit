@@ -26,6 +26,8 @@ jobs:
           cache-dependency-path: mizan-v45/package-lock.json
       - run: npm run install:ci
       - run: npm test
+      - run: npm run test:standalone
+        continue-on-error: true
       - run: npm run build
         env:
           GITHUB_SHA: ${{ github.sha }}
