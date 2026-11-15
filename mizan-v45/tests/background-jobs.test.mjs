@@ -244,7 +244,7 @@ test('Each cron invocation starts exactly one heavy job; at most 5 distinct trig
   assert.notEqual(m.SCREENER_FOLLOWUP_CRON, m.DAILY_ARCHIVE_CRON);
   assert.equal(m.RESOLUTION_CRON, m.EVALUATE_DUE_CRON); assert.equal(m.FORECAST_SEED_CRON, m.DAILY_ARCHIVE_CRON);
   for (const c of [m.MARKET_COLLECTION_CRON, m.MARKET_WATCH_CRON, m.COUNCIL_CRON, m.DAILY_PICKS_CRON, m.PAPER_BOT_CRON]) assert.equal(c, m.MAINTENANCE_SLOT_CRON);
-  assert.equal(m.MAINTENANCE_SLOT_CRON, '30 0,1,4,6,7,8,9,11,12,13,15,16,17,18,19,20,21 * * *');
+  assert.equal(m.MAINTENANCE_SLOT_CRON, '30 0,1,3,4,6,7,8,9,11,12,13,15,16,17,18,19,20,21 * * *');
   const handlers = {resolution: m.scheduledResolution, accuracy: m.scheduledAccuracySample, watch: m.scheduledMarketWatch, collection: m.scheduledMarketCollection,
     seed: m.scheduledForecastSeed, council: m.scheduledCouncil, screener: m.scheduledScreenerFollowup, picks: m.scheduledDailyPicks, bot: m.scheduledPaperBot};
   // A DB that throws on first use: proves a handler started, without network or real work.
