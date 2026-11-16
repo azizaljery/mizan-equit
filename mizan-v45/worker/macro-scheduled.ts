@@ -2,6 +2,7 @@
 import {MAINTENANCE_SLOT_CRON,slotJob} from '../lib/jobs/cron-slots';
 import {tryAcquireLock,releaseLock} from './scheduled';
 import {collectMacro,type MacroSummary} from '../lib/macro/collect';
+import {configuredReader} from '../lib/source-status';
 
 export const MACRO_CRON=MAINTENANCE_SLOT_CRON;
 export const MACRO_STATE_ID='job:macro:last';
@@ -28,7 +29,13 @@ export async function runMacro(db:any,options:{now?:number;fetchText?:(u:string)
  try{
   token=await tryAcquireLock(db,LOCK_ID,LOCK_MS);
   if(!token){res.status='locked';return res;}
-  res.summary=await collectMacro(db,now,options.fetchText??http);
+  let fetchText=options.fetchText;
+  if(!fetchText){
+   // Yahoo goes through the site's configured reader (same source rules, pauses and headers as prices); FRED and the World Bank use plain fetch.
+   const read=await configuredReader(db);
+   fetchText=async(url:string)=>url.includes('finance.yahoo.com')?JSON.stringify(await read(url,true,300000)):http(url);
+  }
+  res.summary=await collectMacro(db,now,fetchText);
   for(const s of res.summary.series)if(s.error){res.errors.push(`${s.id}: ${s.error}`);res.status='partial';}
  }catch(e){res.status='failed';res.errors.push(errorText(e));}
  finally{

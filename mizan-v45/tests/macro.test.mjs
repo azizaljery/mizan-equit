@@ -15,6 +15,7 @@ function fixture() {
   return {sqlite, db: {prepare, async batch(st) { sqlite.exec('BEGIN'); try { const r = st.map(s => s.execute()); sqlite.exec('COMMIT'); return r; } catch (e) { sqlite.exec('ROLLBACK'); throw e; } }}};
 }
 const NOW = Date.parse('2026-11-15T03:30:00Z');
+const yahoo = (rows, off = 0) => ({chart: {result: [{meta: {gmtoffset: off}, timestamp: rows.map(r => Date.parse(r[0] + 'T12:00:00Z') / 1000), indicators: {quote: [{close: rows.map(r => r[1])}]}}]}});
 const csv = (id, rows) => `observation_date,${id}\n` + rows.map(r => r.join(',')).join('\n') + '\n';
 
 test('FRED CSV: skips blanks and "." and old rows, rejects a mismatched header, never invents a value', () => {
@@ -64,7 +65,26 @@ test('03:30 UTC runs the macro job only on the maintenance cron, and the job is 
   assert.equal(m.slotJob({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: Date.UTC(2026, 10, 15, 3, 30)}), 'macro');
   assert.equal(m.slotJob({cron: '0 3 * * *', scheduledTime: Date.UTC(2026, 10, 15, 3, 30)}), null);
   const {db, sqlite} = fixture();
-  const r = await m.runMacro(db, {now: NOW, fetchText: async url => url.includes('worldbank') ? JSON.stringify([{}, [{date: '2024', value: 1.2}]]) : csv(url.split('id=')[1].split('&')[0], [['2026-11-10', '1.5']])});
-  assert.ok(['completed', 'partial'].includes(r.status)); assert.ok(Number(sqlite.prepare('SELECT COUNT(*) c FROM macro_observations').get().c) >= 9);
+  const r = await m.runMacro(db, {now: NOW, fetchText: async url => url.includes('finance.yahoo') ? JSON.stringify(yahoo([['2026-11-10', 80], ['2026-11-13', 81]])) : url.includes('worldbank') ? JSON.stringify([{}, [{date: '2024', value: 1.2}]]) : csv(url.split('id=')[1].split('&')[0], [['2026-11-10', '1.5']])});
+  assert.ok(['completed', 'partial'].includes(r.status)); assert.ok(Number(sqlite.prepare('SELECT COUNT(*) c FROM macro_observations').get().c) >= 13);
   assert.ok(sqlite.prepare("SELECT data FROM research_state WHERE id='job:macro:last'").get());
+});
+
+test('Yahoo chart parser: closes by date, null skipped, today and earlier-than-since excluded', () => {
+  const j = yahoo([['2023-12-29', 70], ['2026-11-10', 80.5], ['2026-11-11', null], ['2026-11-13', 81], ['2026-11-15', 99]]);
+  assert.deepEqual(P.parseYahooChart(j, 'YH:BZ=F', '2024-01-01', '2026-11-15'), [{seriesId: 'YH:BZ=F', date: '2026-11-10', value: 80.5}, {seriesId: 'YH:BZ=F', date: '2026-11-13', value: 81}]);
+  assert.deepEqual(P.parseYahooChart({chart: {result: null}}, 'x'), []);
+  assert.deepEqual(P.parseYahooChart(yahoo([['2026-11-10', 5]], 10800), 'x')[0].date, '2026-11-10');
+});
+test('Yahoo series are collected, keyed by their YH: id, with the chart URL for the bare symbol', async () => {
+  const {db, sqlite} = fixture();
+  const series = S.MACRO_SERIES.filter(s => s.provider === 'yahoo');
+  assert.deepEqual(series.map(s => s.id), ['YH:BZ=F', 'YH:DX-Y.NYB', 'YH:^VIX', 'YH:^TASI.SR']);
+  const urls = [];
+  const r = await C.collectMacro(db, NOW, async url => { urls.push(url); return JSON.stringify(yahoo([['2026-11-10', 80], ['2026-11-13', 81], ['2026-11-15', 90]])); }, {series});
+  assert.equal(r.inserted, 8);
+  assert.ok(urls.every(u => u.startsWith('https://query1.finance.yahoo.com/v8/finance/chart/') && u.endsWith('?interval=1d&range=2y')));
+  assert.ok(urls[2].includes('%5EVIX'));
+  assert.equal(Number(sqlite.prepare("SELECT COUNT(*) c FROM macro_observations WHERE obs_date='2026-11-15'").get().c), 0);
+  assert.equal(sqlite.prepare("SELECT source s FROM macro_observations WHERE series_id='YH:^VIX' LIMIT 1").get().s, 'yahoo');
 });
