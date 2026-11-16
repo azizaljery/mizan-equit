@@ -64,7 +64,7 @@ test('03:30 UTC runs the macro job only on the maintenance cron, and the job is 
   assert.equal(m.slotJob({cron: m.MAINTENANCE_SLOT_CRON, scheduledTime: Date.UTC(2026, 10, 15, 3, 30)}), 'macro');
   assert.equal(m.slotJob({cron: '0 3 * * *', scheduledTime: Date.UTC(2026, 10, 15, 3, 30)}), null);
   const {db, sqlite} = fixture();
-  const r = await m.runMacro(db, {now: NOW, fetchText: async url => url.includes('worldbank') ? JSON.stringify([{}, [{date: '2024', value: 1.2}]]) : csv(url.split('id=')[1], [['2026-11-10', '1.5']])});
+  const r = await m.runMacro(db, {now: NOW, fetchText: async url => url.includes('worldbank') ? JSON.stringify([{}, [{date: '2024', value: 1.2}]]) : csv(url.split('id=')[1].split('&')[0], [['2026-11-10', '1.5']])});
   assert.ok(['completed', 'partial'].includes(r.status)); assert.ok(Number(sqlite.prepare('SELECT COUNT(*) c FROM macro_observations').get().c) >= 9);
   assert.ok(sqlite.prepare("SELECT data FROM research_state WHERE id='job:macro:last'").get());
 });
