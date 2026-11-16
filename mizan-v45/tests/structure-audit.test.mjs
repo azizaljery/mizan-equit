@@ -172,3 +172,9 @@ test('retest: first return to the level, held or failed', () => {
   assert.equal(S.retestAudit(down, 0, 100, 'down').result, 'held');
   assert.equal(S.retestAudit([up[0], up[1]], 0, 100, 'up'), null);
 });
+
+test('a trend poking just above its own old high is not an upthrust', () => {
+  const p = Array.from({length: 300}, (_, i) => { const c = 100 + i * 0.5; return bar('d' + i, c + 1, c - 1, c, 100 + i); });
+  const w = S.wyckoffAudit(p);
+  assert.equal(w.status, 'ok'); assert.deepEqual(w.events, []);
+});
