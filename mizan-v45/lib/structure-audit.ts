@@ -113,3 +113,125 @@ export function resolveHypothesis(h:Hypothesis,after:Price[]):'confirmed'|'inval
  }
  return after.length>=h.confirmWithinBars?'expired':'open';
 }
+
+/* ------------------------------------------------------------------ batch 2: climaxes, follow-ups, Elliott corrections/extensions/alternation, retest ------------------------------------------------------------------ */
+export const CLIMAX_PARAMS=Object.freeze({
+ lookback:40,           // climax bar must be the extreme of this many prior bars
+ avgBars:20,
+ volumeMultiple:2,      // volume >= this multiple of the 20-bar average
+ rangeMultiple:2,       // bar range >= this multiple of the 20-bar average range
+ reboundBars:5,         // confirmation window
+ reboundFrac:0.5,       // reversal of at least this fraction of the climax bar range (measured from its close)
+ arBars:10,             // window to find the automatic rally/reaction
+ arMultiple:1,          // AR must move at least one climax-bar range beyond the climax close
+ stBars:20,             // window after AR for the secondary test
+ stVolumeMax:0.7,       // ST volume <= this multiple of climax volume
+ psBars:10,psVolume:1.5,psTrend:20, // preliminary support/supply: up to 10 bars before, volume 1.5x, against the 20-bar drift
+});
+export type ClimaxSequence={side:'sell'|'buy';climax:StructureEvent;confirmedAt:number;ps:StructureEvent|null;ar:StructureEvent|null;st:StructureEvent|null};
+/** SC/AR/ST/PS (selling side) and BC/AR/ST/PSY (buying side) as pre-declared numeric rules. Each stage lists its evidence; a missing stage is null and is a normal answer. */
+export function wyckoffClimaxes(prices:Price[],p=CLIMAX_PARAMS):ClimaxSequence[]{
+ const out:ClimaxSequence[]=[],n=prices.length;
+ const win=(i:number)=>prices.slice(Math.max(0,i-p.avgBars),i);
+ for(let i=p.lookback;i<n;i++){
+  const b=prices[i];if(!okBar(b))continue;
+  const prev=win(i);if(prev.length<p.avgBars||prev.some(x=>!okBar(x)))continue;
+  const av=avg(prev.map(x=>x.volume)),ar=avg(prev.map(x=>x.high-x.low)),range=b.high-b.low;
+  if(!(av>0)||!(ar>0)||b.volume<p.volumeMultiple*av||range<p.rangeMultiple*ar)continue;
+  const look=prices.slice(i-p.lookback,i);
+  for(const side of ['sell','buy'] as const){
+   const sell=side==='sell';
+   const extreme=sell?look.every(x=>b.low<=x.low):look.every(x=>b.high>=x.high);if(!extreme)continue;
+   let conf=-1;
+   for(let j=i+1;j<=i+p.reboundBars&&j<n;j++){const c=prices[j].close;if(sell?c>=b.close+p.reboundFrac*range:c<=b.close-p.reboundFrac*range){conf=j;break;}}
+   if(conf<0)continue;
+   const mk=(id:string,name:string,index:number,evidence:Record<string,number|string>):StructureEvent=>({id,name,index,date:prices[index].date,evidence});
+   const climax=mk(sell?'W-010':'W-018',sell?'SC':'BC',i,{volumeRatio:b.volume/av,rangeRatio:range/ar,extreme:sell?b.low:b.high,confirmedAtIndex:conf});
+   let ps:StructureEvent|null=null;
+   for(let j=Math.max(p.psTrend,i-p.psBars);j<i;j++){const x=prices[j],a=avg(prices.slice(Math.max(0,j-p.avgBars),j).map(y=>y.volume)),mid=(x.high+x.low)/2;
+    if(a>0&&x.volume>=p.psVolume*a&&(sell?x.close>=mid&&x.close<prices[j-p.psTrend].close:x.close<=mid&&x.close>prices[j-p.psTrend].close)){ps=mk(sell?'W-009':'W-017',sell?'PS':'PSY',j,{volumeRatio:x.volume/a});break;}}
+   let arEv:StructureEvent|null=null;
+   let best=-1;for(let j=i+1;j<=i+p.arBars&&j<n;j++){if(best<0||(sell?prices[j].high>prices[best].high:prices[j].low<prices[best].low))best=j;}
+   if(best>=0&&(sell?prices[best].high>=b.close+p.arMultiple*range:prices[best].low<=b.close-p.arMultiple*range))arEv=mk('W-011','AR',best,{level:sell?prices[best].high:prices[best].low,moveInClimaxRanges:Math.abs((sell?prices[best].high-b.close:b.close-prices[best].low))/range});
+   let st:StructureEvent|null=null;
+   if(arEv)for(let j=arEv.index+1;j<=arEv.index+p.stBars&&j<n;j++){const x=prices[j];
+    const inZone=sell?x.low>=b.low-0.25*range&&x.low<=b.low+0.5*range:x.high<=b.high+0.25*range&&x.high>=b.high-0.5*range;
+    if(inZone&&x.volume<=p.stVolumeMax*b.volume){st=mk('W-012','ST',j,{volumeVsClimax:x.volume/b.volume,extreme:sell?x.low:x.high});break;}}
+   out.push({side,climax,confirmedAt:conf,ps,ar:arEv,st});
+  }
+ }
+ return out;
+}
+
+const FOLLOW={maxBars:10,zoneFrac:0.25,volumeMax:1,testVolumeMax:0.7,utadBars:3};
+/** W-016 LPS: after an SOS, a limited pullback that stays above the old range high (within 25% of the range height) on lower volume than the SOS bar. */
+export function lpsAfterSos(prices:Price[],sosIndex:number,rangeHigh:number,rangeLow:number):StructureEvent|null{
+ const h=rangeHigh-rangeLow,s=prices[sosIndex];if(!s||!(h>0))return null;
+ for(let j=sosIndex+1;j<=sosIndex+FOLLOW.maxBars&&j<prices.length;j++){const x=prices[j];
+  if(x.low>=rangeHigh&&x.low<=rangeHigh+FOLLOW.zoneFrac*h&&x.volume<s.volume*FOLLOW.volumeMax)return {id:'W-016',name:'LPS',index:j,date:x.date,evidence:{low:x.low,rangeHigh,volumeVsSos:x.volume/s.volume}};}
+ return null;
+}
+/** W-022 LPSY: after an SOW, a weak rally that stays below the old range low (within 25% of the range height) on lower volume than the SOW bar. */
+export function lpsyAfterSow(prices:Price[],sowIndex:number,rangeHigh:number,rangeLow:number):StructureEvent|null{
+ const h=rangeHigh-rangeLow,s=prices[sowIndex];if(!s||!(h>0))return null;
+ for(let j=sowIndex+1;j<=sowIndex+FOLLOW.maxBars&&j<prices.length;j++){const x=prices[j];
+  if(x.high<=rangeLow&&x.high>=rangeLow-FOLLOW.zoneFrac*h&&x.volume<s.volume*FOLLOW.volumeMax)return {id:'W-022',name:'LPSY',index:j,date:x.date,evidence:{high:x.high,rangeLow,volumeVsSow:x.volume/s.volume}};}
+ return null;
+}
+/** W-014 Test: after a Spring, a later bar that holds above the spring low, inside the lower quarter of the range, on <= 70% of the spring volume. */
+export function testAfterSpring(prices:Price[],springIndex:number,rangeLow:number,rangeHigh:number):StructureEvent|null{
+ const h=rangeHigh-rangeLow,s=prices[springIndex];if(!s||!(h>0))return null;
+ for(let j=springIndex+1;j<=springIndex+FOLLOW.maxBars&&j<prices.length;j++){const x=prices[j];
+  if(x.low>s.low&&x.low<=rangeLow+FOLLOW.zoneFrac*h&&x.volume<=s.volume*FOLLOW.testVolumeMax)return {id:'W-014',name:'Test',index:j,date:x.date,evidence:{low:x.low,springLow:s.low,volumeVsSpring:x.volume/s.volume}};}
+ return null;
+}
+/** W-020 UTAD: an upthrust that is followed within 3 bars by a close below the range midpoint (the failure a distribution needs). */
+export function utadConfirm(prices:Price[],upthrustIndex:number,rangeLow:number,rangeHigh:number):StructureEvent|null{
+ const mid=(rangeLow+rangeHigh)/2;
+ for(let j=upthrustIndex+1;j<=upthrustIndex+FOLLOW.utadBars&&j<prices.length;j++)if(prices[j].close<mid)return {id:'W-020',name:'UTAD',index:j,date:prices[j].date,evidence:{rangeMid:mid,close:prices[j].close,barsAfterUpthrust:j-upthrustIndex}};
+ return null;
+}
+
+/** W-035: A-B-C against a trend from four points (start, A end, B end, C end). Labels are rule outputs; "unclassified" is a valid answer and nothing is forced into a pattern. */
+export function correctionAudit(points:number[],againstTrend:'down'|'up'){
+ if(points.length!==4||points.some(v=>!fin(v)))return null;
+ const s=againstTrend==='down'?1:-1,q=points.map(v=>s*v),a=q[0]-q[1];
+ const shape=a>0&&q[2]>q[1]&&q[3]<q[2];
+ if(!shape)return {valid:false,label:'invalid_shape' as const,bRetracement:NaN,cBeyondAEnd:false};
+ const bRet=(q[2]-q[1])/a,beyond=q[3]<q[1],nearA=Math.abs(q[3]-q[1])<=0.1*a;
+ const label=bRet<=0.786&&beyond?'zigzag' as const:bRet>=0.9&&bRet<=1&&nearA?'flat' as const:bRet>1&&beyond?'expanded_flat' as const:'unclassified' as const;
+ return {valid:true,label,bRetracement:bRet,cBeyondAEnd:beyond};
+}
+/** W-036: wave-length ratios only. Which of waves 1/3/5 is longest and whether it is at least 1.618x the longer of the other two. No target is produced. */
+export function extensionAudit(points:number[]){
+ if(points.length!==6||points.some(v=>!fin(v)))return null;
+ const w=[Math.abs(points[1]-points[0]),Math.abs(points[3]-points[2]),Math.abs(points[5]-points[4])],longest=w.indexOf(Math.max(...w));
+ const others=w.filter((_,i)=>i!==longest),ratio=Math.max(...others)>0?w[longest]/Math.max(...others):NaN;
+ return {lengths:w,longestWave:[1,3,5][longest],ratioToNext:ratio,extended:ratio>=1.618,w3OverW1:w[0]>0?w[1]/w[0]:NaN,w5OverW1:w[0]>0?w[2]/w[0]:NaN};
+}
+/** W-037: compares correction 2 and 4 by depth (fraction of the preceding impulse leg retraced) and duration (bars). Descriptive; exceptions are normal. */
+export function alternationAudit(points:number[],indices:number[]){
+ if(points.length!==6||indices.length!==6||points.some(v=>!fin(v))||indices.some(v=>!fin(v)))return null;
+ const w1=Math.abs(points[1]-points[0]),w3=Math.abs(points[3]-points[2]);if(!(w1>0)||!(w3>0))return null;
+ const d2=Math.abs(points[1]-points[2])/w1,d4=Math.abs(points[3]-points[4])/w3,t2=indices[2]-indices[1],t4=indices[4]-indices[3];
+ const timeRatio=t4>0?t2/t4:NaN,depthDiffers=Math.abs(d2-d4)>=0.2,timeDiffers=timeRatio>=1.5||timeRatio<=2/3;
+ return {depth2:d2,depth4:d4,bars2:t2,bars4:t4,depthDiffers,timeDiffers,alternates:depthDiffers||timeDiffers};
+}
+/** W-034: an ending-diagonal candidate needs wave 4 to overlap wave 1 while 1,3,5 contract (w3<w1 and w5<w3). Named explicitly, never merged into the standard impulse. */
+export function diagonalCandidate(points:number[],direction:'up'|'down'){
+ const a=elliottImpulseAudit(points,direction);if(!a)return null;
+ const w1=Math.abs(points[1]-points[0]),w3=Math.abs(points[3]-points[2]),w5=Math.abs(points[5]-points[4]);
+ const byId=(id:string)=>a.rules.find(r=>r.id===id)!.passed;
+ const candidate=byId('W-030')&&byId('W-031')&&!byId('W-033')&&w3<w1&&w5<w3;
+ return {candidate,overlap:!byId('W-033'),contracting:w3<w1&&w5<w3,lengths:[w1,w3,w5]};
+}
+/** W-042: first return to a broken level within `maxBars` bars (1% tolerance); result "held" when it closes back on the breakout side, else "failed". */
+export function retestAudit(prices:Price[],breakIndex:number,level:number,direction:'up'|'down',maxBars=10,tolPct=1){
+ const b=prices[breakIndex];if(!b||!fin(level)||!(level>0))return null;
+ const tol=level*tolPct/100;
+ for(let j=breakIndex+1;j<=breakIndex+maxBars&&j<prices.length;j++){const x=prices[j];
+  const touched=direction==='up'?x.low<=level+tol:x.high>=level-tol;
+  if(touched){const held=direction==='up'?x.close>=level:x.close<=level;return {index:j,date:x.date,result:held?'held' as const:'failed' as const,barsAfterBreak:j-breakIndex,volumeVsBreak:b.volume>0?x.volume/b.volume:NaN};}
+ }
+ return null;
+}
