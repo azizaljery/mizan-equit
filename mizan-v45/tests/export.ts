@@ -173,3 +173,4 @@ export * as macroSeries from '../lib/macro/series';
 export {runMacro} from '../worker/macro-scheduled';
 export * as indicatorsExtra from '../lib/indicators-extra';
 export * as structureAudit from '../lib/structure-audit';
+export * as pulseAudit from '../lib/pulse-audit';
