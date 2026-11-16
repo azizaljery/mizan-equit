@@ -1,3 +1,5 @@
+# Investigated 2026-11-16 in CI (diagnostic run after build); excluded from the blocking list, not deleted.
+# tests/rendered-html.test.mjs: imports dist/server/index.js, which needs the `cloudflare:` module scheme; Node cannot load it (needs workerd). Starter-template test about a "codex-preview" meta tag, unrelated to Mizan features.
+# tests/ui-components.test.mjs: first test fails on the built CSS lacking starter-catalog utilities (`scrollbar-width: thin`...); second test ("forwards progress semantics") passes. Fix = drop the catalog assertions or add the utilities; decision pending.
 tests/rendered-html.test.mjs
 tests/ui-components.test.mjs
-# Failing in CI on 2026-11-15 (not investigated yet); excluded so the rest can block regressions.
