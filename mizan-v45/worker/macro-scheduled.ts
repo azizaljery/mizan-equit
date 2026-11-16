@@ -7,7 +7,20 @@ export const MACRO_CRON=MAINTENANCE_SLOT_CRON;
 export const MACRO_STATE_ID='job:macro:last';
 const LOCK_ID='cron:macro:v1',LOCK_MS=5*60*1000;
 const errorText=(e:unknown)=>(e instanceof Error?e.message:String(e)).slice(0,200);
-const http=async(url:string)=>{const r=await fetch(url,{headers:{'user-agent':'mizan-macro/1.0'},signal:AbortSignal.timeout(30000)});if(!r.ok)throw new Error('http_'+r.status);return r.text();};
+const sleep=(ms:number)=>new Promise(r=>setTimeout(r,ms));
+/** Up to 3 attempts (1 s, 2 s pause) on timeouts and 5xx; browser-like headers because some hosts reject unknown clients. 4xx is not retried. */
+const http=async(url:string)=>{
+ let last='';
+ for(let a=0;a<3;a++){
+  if(a)await sleep(1000*a);
+  try{
+   const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 (compatible; mizan-macro/1.1)','accept':'text/csv,application/json;q=0.9,*/*;q=0.8','accept-language':'en-US,en;q=0.9'},signal:AbortSignal.timeout(25000)});
+   if(r.ok)return r.text();
+   last='http_'+r.status;if(r.status<500)break;
+  }catch(e){last=errorText(e);}
+ }
+ throw new Error(last);
+};
 
 export async function runMacro(db:any,options:{now?:number;fetchText?:(u:string)=>Promise<string>}={}){
  const start=Date.now(),now=options.now??start,res:{status:'completed'|'partial'|'failed'|'locked';summary:MacroSummary|null;errors:string[]}={status:'completed',summary:null,errors:[]};
