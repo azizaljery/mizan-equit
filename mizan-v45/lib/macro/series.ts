@@ -11,5 +11,5 @@ export const MACRO_SERIES:MacroSeries[]=[
  {id:'SAU:FP.CPI.TOTL.ZG',name:'التضخم السنوي في السعودية',unit:'%',frequency:'annual',provider:'worldbank',market:'sa',note:'البنك الدولي؛ سنوي ويتأخر النشر.'},
  {id:'SAU:NY.GDP.MKTP.KD.ZG',name:'نمو الناتج المحلي في السعودية',unit:'%',frequency:'annual',provider:'worldbank',market:'sa',note:'البنك الدولي؛ سنوي ويتأخر النشر.'},
 ];
-export const FRED_URL=(id:string)=>`https://fred.stlouisfed.org/graph/fredgraph.csv?id=${encodeURIComponent(id)}`;
+export const FRED_URL=(id:string)=>`https://fred.stlouisfed.org/graph/fredgraph.csv?id=${encodeURIComponent(id)}&cosd=2024-01-01`;
 export const WB_URL=(id:string)=>{const [c,i]=id.replace(/^[A-Z]{3}:/,m=>m).split(':');return `https://api.worldbank.org/v2/country/${c}/indicator/${i}?format=json&per_page=30`;};
