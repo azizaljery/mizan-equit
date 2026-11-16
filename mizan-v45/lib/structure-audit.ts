@@ -9,6 +9,7 @@ import type {Price} from './analysis';
 export const STRUCTURE_PARAMS=Object.freeze({
  pivotK:3,                 // bars each side for a swing high/low (confirmed k bars later)
  rangeBars:40,             // bars used to define the trading range (before the evaluation zone)
+ minPierceFrac:0.05,      // a spring/upthrust must pierce the bound by at least this fraction of the range height (a trend poking 0.2% above its own old high is not one)
  evalBars:5,               // most recent bars checked for events
  maxRangeWidthPct:25,      // (high-low)/mid above this is not treated as a range
  volumeLookback:20,
@@ -81,8 +82,8 @@ export function wyckoffAudit(prices:Price[],params:P=STRUCTURE_PARAMS){
   for(let i=total-e;i<total;i++){
    const p=prices[i],next=prices[i+1],v=volAvg(i),vr=v>0?p.volume/v:NaN;
    const inside=(c:number)=>c>=low&&c<=high;
-   if(p.low<low){const back=inside(p.close)||(next&&inside(next.close));if(back)out.events.push({id:'W-013',name:'Spring',index:i,date:p.date,evidence:{rangeLow:low,barLow:p.low,penetrationPct:100*(low-p.low)/low,closeBackInside:inside(p.close)?'same_bar':'next_bar',volumeRatio:vr}});}
-   if(p.high>high){const back=inside(p.close)||(next&&inside(next.close));if(back)out.events.push({id:'W-019',name:'Upthrust',index:i,date:p.date,evidence:{rangeHigh:high,barHigh:p.high,penetrationPct:100*(p.high-high)/high,closeBackInside:inside(p.close)?'same_bar':'next_bar',volumeRatio:vr}});}
+   if(low-p.low>=params.minPierceFrac*(high-low)&&p.low<low){const back=inside(p.close)||(next&&inside(next.close));if(back)out.events.push({id:'W-013',name:'Spring',index:i,date:p.date,evidence:{rangeLow:low,barLow:p.low,penetrationPct:100*(low-p.low)/low,closeBackInside:inside(p.close)?'same_bar':'next_bar',volumeRatio:vr}});}
+   if(p.high-high>=params.minPierceFrac*(high-low)&&p.high>high){const back=inside(p.close)||(next&&inside(next.close));if(back)out.events.push({id:'W-019',name:'Upthrust',index:i,date:p.date,evidence:{rangeHigh:high,barHigh:p.high,penetrationPct:100*(p.high-high)/high,closeBackInside:inside(p.close)?'same_bar':'next_bar',volumeRatio:vr}});}
    if(next&&p.close>high&&vr>=params.sosVolumeMultiple&&next.close>high)out.events.push({id:'W-015',name:'SOS',index:i,date:p.date,evidence:{rangeHigh:high,close:p.close,volumeRatio:vr,heldNextClose:next.close}});
    if(next&&p.close<low&&vr>=params.sosVolumeMultiple&&next.close<low)out.events.push({id:'W-021',name:'SOW',index:i,date:p.date,evidence:{rangeLow:low,close:p.close,volumeRatio:vr,heldNextClose:next.close}});
   }
