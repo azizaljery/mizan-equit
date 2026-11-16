@@ -15,3 +15,17 @@ export function parseWorldBank(json:unknown,seriesId:string):MacroRow[]{
  for(const r of json[1] as any[]){const y=String(r?.date??'');if(!/^\d{4}$/.test(y)||r?.value===null||r?.value===undefined)continue;const n=Number(r.value);if(Number.isFinite(n))out.push({seriesId,date:`${y}-12-31`,value:n});}
  return out;
 }
+/** Yahoo chart JSON: daily closes. Bars dated on or after `beforeDate` (today, still forming) and null closes are skipped, never filled. */
+export function parseYahooChart(json:any,seriesId:string,sinceDate='1900-01-01',beforeDate='9999-12-31'):MacroRow[]{
+ const r=json?.chart?.result?.[0],ts=r?.timestamp,close=r?.indicators?.quote?.[0]?.close;
+ if(!Array.isArray(ts)||!Array.isArray(close))return [];
+ const off=Number(r?.meta?.gmtoffset)||0,out:MacroRow[]=[];
+ for(let i=0;i<ts.length;i++){
+  const t=Number(ts[i]),v=close[i];if(!Number.isFinite(t)||t<=0||v===null||v===undefined)continue;
+  const n=Number(v);if(!Number.isFinite(n))continue;
+  const date=new Date((t+off)*1000).toISOString().slice(0,10);
+  if(date<sinceDate||date>=beforeDate)continue;
+  out.push({seriesId,date,value:n});
+ }
+ return out;
+}
