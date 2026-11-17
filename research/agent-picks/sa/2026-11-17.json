@@ -1,0 +1,2080 @@
+{
+ "schema": "mizan-agent-picks-run/1",
+ "market": "sa",
+ "runDate": "2026-11-17",
+ "marketLocalDate": "2026-11-17",
+ "sessionToday": true,
+ "startedAt": "2026-11-17T16:56:10.600Z",
+ "finishedAt": "2026-11-17T16:59:36.020Z",
+ "gitSha": "9c3d6d5706b5b9ddd01cf56592c14170c600a185",
+ "workflowSha": "65350905a13c4a539abe6f4c642fdba43fcd2e6d",
+ "trigger": "schedule",
+ "ciRun": "44131352767/1",
+ "site": "https://mizan-aziz.aljeryabod.workers.dev",
+ "status": "written",
+ "governance": "سجل وصفي استكشافي (EXPLORATORY). ليس سجل DIR-0002 ولا اختباره الرسمي، ولا يثبت دقة أي نموذج؛ لا يُتخذ قرار قبل n_eff ≥ 60 (AMEND-1).",
+ "selection": {
+  "version": "agent-picks-mom126_5-rank-v1",
+  "feature": "mom126_5 = close[t-5]/close[t-131] - 1 (t = last daily bar from Yahoo chart range=1y, exchange-local dates; identity validated)",
+  "rule": "top 20 by mom126_5 (desc; ties by symbol)",
+  "requestedCount": 20,
+  "universeSize": 40,
+  "rankedCount": 40,
+  "coverage": 1,
+  "coverageOk": true,
+  "excluded": []
+ },
+ "modelVersions": [
+  "mizan-scenarios-7-shock-warning-2-a3434e85"
+ ],
+ "counts": {
+  "selected": 20,
+  "ok": 20,
+  "failed": 0,
+  "failures": []
+ },
+ "universeRanking": [
+  {
+   "symbol": "4190.SR",
+   "mom126_5": 0.15456360156211968,
+   "rank": 1,
+   "percentile": 100,
+   "top20": true,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "4061.SR",
+   "mom126_5": 0.08850367369093615,
+   "rank": 2,
+   "percentile": 97.43589743589743,
+   "top20": true,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "2280.SR",
+   "mom126_5": 0.05352800108556455,
+   "rank": 3,
+   "percentile": 94.87179487179488,
+   "top20": true,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "4300.SR",
+   "mom126_5": 0.045197695060872345,
+   "rank": 4,
+   "percentile": 92.3076923076923,
+   "top20": true,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "4030.SR",
+   "mom126_5": 0.025264412080531873,
+   "rank": 5,
+   "percentile": 89.74358974358974,
+   "top20": true,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "1030.SR",
+   "mom126_5": 0.023582175159862828,
+   "rank": 6,
+   "percentile": 87.17948717948718,
+   "top20": true,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "1050.SR",
+   "mom126_5": 0.02268044034585137,
+   "rank": 7,
+   "percentile": 84.61538461538461,
+   "top20": true,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "2380.SR",
+   "mom126_5": -0.005714280264718208,
+   "rank": 8,
+   "percentile": 82.05128205128206,
+   "top20": true,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "4263.SR",
+   "mom126_5": -0.020618520450757072,
+   "rank": 9,
+   "percentile": 79.48717948717949,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "1180.SR",
+   "mom126_5": -0.031043191595163777,
+   "rank": 10,
+   "percentile": 76.92307692307692,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "1010.SR",
+   "mom126_5": -0.032629572946108576,
+   "rank": 11,
+   "percentile": 74.35897435897436,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "7010.SR",
+   "mom126_5": -0.039907133802768335,
+   "rank": 12,
+   "percentile": 71.7948717948718,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "2222.SR",
+   "mom126_5": -0.040441189360865715,
+   "rank": 13,
+   "percentile": 69.23076923076923,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "4013.SR",
+   "mom126_5": -0.041610751909430976,
+   "rank": 14,
+   "percentile": 66.66666666666667,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "4200.SR",
+   "mom126_5": -0.041880354922041896,
+   "rank": 15,
+   "percentile": 64.1025641025641,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "1060.SR",
+   "mom126_5": -0.050907011788508205,
+   "rank": 16,
+   "percentile": 61.53846153846154,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "1020.SR",
+   "mom126_5": -0.057142842988136544,
+   "rank": 17,
+   "percentile": 58.97435897435897,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "4005.SR",
+   "mom126_5": -0.06487889358994237,
+   "rank": 18,
+   "percentile": 56.41025641025641,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "1120.SR",
+   "mom126_5": -0.06531529390066548,
+   "rank": 19,
+   "percentile": 53.84615384615385,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "2050.SR",
+   "mom126_5": -0.06974855328456109,
+   "rank": 20,
+   "percentile": 51.282051282051285,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "5110.SR",
+   "mom126_5": -0.07774483026465284,
+   "rank": 21,
+   "percentile": 48.717948717948715,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "1150.SR",
+   "mom126_5": -0.0824479590924393,
+   "rank": 22,
+   "percentile": 46.15384615384615,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "2290.SR",
+   "mom126_5": -0.0900584752923067,
+   "rank": 23,
+   "percentile": 43.58974358974359,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "7020.SR",
+   "mom126_5": -0.10070264278402252,
+   "rank": 24,
+   "percentile": 41.02564102564103,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "2082.SR",
+   "mom126_5": -0.11092812482141523,
+   "rank": 25,
+   "percentile": 38.46153846153846,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "1211.SR",
+   "mom126_5": -0.11515149203213781,
+   "rank": 26,
+   "percentile": 35.8974358974359,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "1140.SR",
+   "mom126_5": -0.14274061723729736,
+   "rank": 27,
+   "percentile": 33.333333333333336,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "2350.SR",
+   "mom126_5": -0.14583335402938968,
+   "rank": 28,
+   "percentile": 30.76923076923077,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "4002.SR",
+   "mom126_5": -0.16328064668794706,
+   "rank": 29,
+   "percentile": 28.205128205128204,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "2010.SR",
+   "mom126_5": -0.18959730748931336,
+   "rank": 30,
+   "percentile": 25.641025641025642,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "2020.SR",
+   "mom126_5": -0.20943132862257896,
+   "rank": 31,
+   "percentile": 23.076923076923077,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "4260.SR",
+   "mom126_5": -0.23770039549279498,
+   "rank": 32,
+   "percentile": 20.512820512820515,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "1304.SR",
+   "mom126_5": -0.239825579246272,
+   "rank": 33,
+   "percentile": 17.94871794871795,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "6010.SR",
+   "mom126_5": -0.24300258165457034,
+   "rank": 34,
+   "percentile": 15.384615384615385,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "2060.SR",
+   "mom126_5": -0.2494887164625742,
+   "rank": 35,
+   "percentile": 12.820512820512821,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "4003.SR",
+   "mom126_5": -0.2496878948938014,
+   "rank": 36,
+   "percentile": 10.256410256410257,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "3030.SR",
+   "mom126_5": -0.25649541556345845,
+   "rank": 37,
+   "percentile": 7.6923076923076925,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "2310.SR",
+   "mom126_5": -0.2576530537770124,
+   "rank": 38,
+   "percentile": 5.128205128205129,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "4001.SR",
+   "mom126_5": -0.3655737793339867,
+   "rank": 39,
+   "percentile": 2.5641025641025643,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  },
+  {
+   "symbol": "1303.SR",
+   "mom126_5": -0.39589438993367354,
+   "rank": 40,
+   "percentile": 0,
+   "top20": false,
+   "lastBarDate": "2026-11-17",
+   "excludedReason": null
+  }
+ ],
+ "picks": [
+  {
+   "symbol": "4190.SR",
+   "momentum": {
+    "mom126_5": 0.15456360156211968,
+    "rank": 1,
+    "percentile": 100,
+    "top20": true,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 6636,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "abe743e3-7884-4df6-a14c-47250ff21235",
+    "price": 17.719999313354492,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "صاعد",
+     "available": true,
+     "price": 17.719999313354492,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 17.74896654894305,
+     "expectedChangePct": 0.16347199046856367,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      17.257211656218402,
+      18.25473430071677
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 17.719999313354492,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 17.734222068191116,
+     "expectedChangePct": 0.08026385659002129,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      16.641858231461576,
+      18.898288159272187
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 17.719999313354492,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 17.7708697010391,
+     "expectedChangePct": 0.28707894839628906,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      15.596006445357709,
+      20.24901765960165
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "4061.SR",
+   "momentum": {
+    "mom126_5": 0.08850367369093615,
+    "rank": 2,
+    "percentile": 97.43589743589743,
+    "top20": true,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 6398,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "4f5028ea-0980-49dc-8081-2109eecc81f3",
+    "price": 11.170000076293945,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "صاعد",
+     "available": true,
+     "price": 11.170000076293945,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 11.190415452018781,
+     "expectedChangePct": 0.1827697008540176,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      10.80347451524335,
+      11.591215197674765
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 11.170000076293945,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 11.175288391666674,
+     "expectedChangePct": 0.047343915278500105,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      10.316778193780769,
+      12.10523947410299
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 11.170000076293945,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 11.177518231826522,
+     "expectedChangePct": 0.0673066739590454,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      9.467400719119368,
+      13.196538049826582
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "2280.SR",
+   "momentum": {
+    "mom126_5": 0.05352800108556455,
+    "rank": 3,
+    "percentile": 94.87179487179488,
+    "top20": true,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 6046,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "7a8420ef-e81c-4bf4-af97-730f7ef3b0ee",
+    "price": 44.31999969482422,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 44.31999969482422,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 44.352130215828694,
+     "expectedChangePct": 0.07249666341542828,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      43.508900034123755,
+      45.21170273528018
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 44.31999969482422,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 44.34649425781721,
+     "expectedChangePct": 0.05978015156910777,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      42.45445623440427,
+      46.32285341497109
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 44.31999969482422,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 44.42362031498946,
+     "expectedChangePct": 0.23380103988887388,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      40.57673900376427,
+      48.635205547377
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "4300.SR",
+   "momentum": {
+    "mom126_5": 0.045197695060872345,
+    "rank": 4,
+    "percentile": 92.3076923076923,
+    "top20": true,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 5595,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "c2de3026-0040-4581-9bbc-875eef43e1e0",
+    "price": 19.059999465942383,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 19.059999465942383,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 19.0729936367083,
+     "expectedChangePct": 0.06817508462755527,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      18.58978390698994,
+      19.568763579286735
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 19.059999465942383,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 19.066158947737215,
+     "expectedChangePct": 0.03231627475036391,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      17.986577306599518,
+      20.210538715834495
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 19.059999465942383,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 19.085004331243077,
+     "expectedChangePct": 0.13119027282962162,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      16.71768815941992,
+      21.751179866298898
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "4030.SR",
+   "momentum": {
+    "mom126_5": 0.025264412080531873,
+    "rank": 5,
+    "percentile": 89.74358974358974,
+    "top20": true,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 5330,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "6cbde824-a6c6-4b8c-8466-aa20bee18aab",
+    "price": 35.41999816894531,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 35.41999816894531,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 35.44150969687649,
+     "expectedChangePct": 0.06073271892496869,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      34.607237772153645,
+      36.29589330023035
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 35.41999816894531,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 35.43200623046052,
+     "expectedChangePct": 0.033901925849726997,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      33.565764497715016,
+      37.402010182156175
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 35.41999816894531,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 35.476010022245845,
+     "expectedChangePct": 0.15813623996638423,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      31.704331337925165,
+      40.0422722386621
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "1030.SR",
+   "momentum": {
+    "mom126_5": 0.023582175159862828,
+    "rank": 6,
+    "percentile": 87.17948717948718,
+    "top20": true,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 5908,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "296bf133-ced0-4731-b297-58a017860677",
+    "price": 11.5,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 11.5,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 11.50287017256713,
+     "expectedChangePct": 0.024958022322870168,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      11.31900841134337,
+      11.680895171973905
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 11.5,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 11.50230080821573,
+     "expectedChangePct": 0.020007027962876123,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      11.123907010010866,
+      11.888007462197253
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 11.5,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 11.508652631764456,
+     "expectedChangePct": 0.0752402762126567,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      10.623429737039226,
+      12.33577628100883
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "1050.SR",
+   "momentum": {
+    "mom126_5": 0.02268044034585137,
+    "rank": 7,
+    "percentile": 84.61538461538461,
+    "top20": true,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 4363,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "24a7ef7e-b274-40b7-856d-d9a6ccecb1eb",
+    "price": 19.899999618530273,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 19.899999618530273,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 19.907465379298305,
+     "expectedChangePct": 0.03751638648816669,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      19.509248372968035,
+      20.30979805713937
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 19.899999618530273,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 19.90384369366723,
+     "expectedChangePct": 0.019316960857514658,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      19.038551958143096,
+      20.884378609780462
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 19.899999618530273,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 19.914933329137167,
+     "expectedChangePct": 0.07504377333247583,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      17.984147297665153,
+      21.86740596804966
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "2380.SR",
+   "momentum": {
+    "mom126_5": -0.005714280264718208,
+    "rank": 8,
+    "percentile": 82.05128205128206,
+    "top20": true,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 4753,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "325839d7-75c2-4308-b0b7-49ba90dc95e8",
+    "price": 14.59000015258789,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 14.59000015258789,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 14.59249812181379,
+     "expectedChangePct": 0.017121104864803133,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      14.199731147320277,
+      14.996129097509323
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 14.59000015258789,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 14.59023796746362,
+     "expectedChangePct": 0.0016299854231848147,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      13.713436163865193,
+      15.611678704064836
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 14.59000015258789,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 14.590725550019744,
+     "expectedChangePct": 0.004971880906560986,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      12.759783429256542,
+      17.21197958686585
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "4263.SR",
+   "momentum": {
+    "mom126_5": -0.020618520450757072,
+    "rank": 9,
+    "percentile": 79.48717948717949,
+    "top20": false,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 5146,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "b3826578-bf32-49c8-bb1e-e57a065072c8",
+    "price": 172.3000030517578,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 172.3000030517578,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 172.41212277433146,
+     "expectedChangePct": 0.06507238571549664,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      168.1564609638711,
+      176.7754858134048
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 172.3000030517578,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 172.36401462527238,
+     "expectedChangePct": 0.03715123179384629,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      162.8513238004757,
+      182.58058582993212
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 172.3000030517578,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 172.59979300633586,
+     "expectedChangePct": 0.17399300595948952,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      153.39897410626762,
+      196.42215601423294
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "1180.SR",
+   "momentum": {
+    "mom126_5": -0.031043191595163777,
+    "rank": 10,
+    "percentile": 76.92307692307692,
+    "top20": false,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 5177,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "c584a11c-2695-4927-9cc1-1d619cc0c2f7",
+    "price": 38.599998474121094,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 38.599998474121094,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 38.61603851836035,
+     "expectedChangePct": 0.041554520397217555,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      37.864578706093575,
+      39.38241178982167
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 38.599998474121094,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 38.60807174532374,
+     "expectedChangePct": 0.020915211196342598,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      36.89376939789925,
+      40.495538065358836
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 38.599998474121094,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 38.6286942972782,
+     "expectedChangePct": 0.07434151370846943,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      35.107793265865155,
+      43.02527275124493
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "1010.SR",
+   "momentum": {
+    "mom126_5": -0.032629572946108576,
+    "rank": 11,
+    "percentile": 74.35897435897436,
+    "top20": false,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 5264,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "50f25816-3688-4496-b086-e7ae54bad165",
+    "price": 20.40999984741211,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 20.40999984741211,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 20.416626411175077,
+     "expectedChangePct": 0.032467240629636164,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      20.01057916983669,
+      20.808297900528416
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 20.40999984741211,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 20.414429435704662,
+     "expectedChangePct": 0.02170302952311936,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      19.62135108596191,
+      21.39360516832093
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 20.40999984741211,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 20.42657365003892,
+     "expectedChangePct": 0.08120432508927125,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      18.531809271099732,
+      22.1712759492602
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "7010.SR",
+   "momentum": {
+    "mom126_5": -0.039907133802768335,
+    "rank": 12,
+    "percentile": 71.7948717948718,
+    "top20": false,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 2,
+    "ms": 17335,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "093499c7-bd3b-43ca-966d-ea1a5f758b7d",
+    "price": 41.400001525878906,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 41.400001525878906,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 41.407110842856916,
+     "expectedChangePct": 0.01717226259899019,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      40.89717948377066,
+      41.92300012794677
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 41.400001525878906,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 41.41148756350856,
+     "expectedChangePct": 0.027744051222974204,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      40.23598847693408,
+      42.6079885124005
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 41.400001525878906,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 41.453759234474006,
+     "expectedChangePct": 0.1298495328834622,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      38.83982641318954,
+      44.03590394275454
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "2222.SR",
+   "momentum": {
+    "mom126_5": -0.040441189360865715,
+    "rank": 13,
+    "percentile": 69.23076923076923,
+    "top20": false,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 10932,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "3599a2ca-da7d-4c8b-bc1c-9f8703a1399a",
+    "price": 26.3799991607666,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 26.3799991607666,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 26.39264323396808,
+     "expectedChangePct": 0.047930529202909564,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      26.09803741070775,
+      26.682898930256844
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 26.3799991607666,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 26.398252631564507,
+     "expectedChangePct": 0.0691943570076093,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      25.751760770890634,
+      27.16560326916144
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 26.3799991607666,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 26.464219134984447,
+     "expectedChangePct": 0.31925692531143235,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      25.152951334094915,
+      28.06590928130955
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "4013.SR",
+   "momentum": {
+    "mom126_5": -0.041610751909430976,
+    "rank": 14,
+    "percentile": 66.66666666666667,
+    "top20": false,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 6508,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "c9f2915d-bba1-4e1d-a7f1-9ca179838954",
+    "price": 212.10000610351562,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 212.10000610351562,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 212.18645755153292,
+     "expectedChangePct": 0.04075975743966139,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      208.39792022108088,
+      216.27087152625876
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 212.10000610351562,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 212.19346306766977,
+     "expectedChangePct": 0.04406268810220174,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      204.2176817038537,
+      223.04699331288177
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 212.10000610351562,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 212.505389071426,
+     "expectedChangePct": 0.1911282207660742,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      194.24651001146552,
+      234.85779361242894
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "4200.SR",
+   "momentum": {
+    "mom126_5": -0.041880354922041896,
+    "rank": 15,
+    "percentile": 64.1025641025641,
+    "top20": false,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 5977,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "ced81c53-034d-4273-bcfe-38c1a7b136f6",
+    "price": 112.19999694824219,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 112.19999694824219,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 112.3001068084526,
+     "expectedChangePct": 0.0892244767676687,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      110.00410216106161,
+      114.88835944815742
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 112.19999694824219,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 112.28425347381219,
+     "expectedChangePct": 0.07509494461828335,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      106.8874279072371,
+      119.14455152765046
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 112.19999694824219,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 112.55079658231001,
+     "expectedChangePct": 0.31265565384074817,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      102.10409646995241,
+      128.08100863619381
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "1060.SR",
+   "momentum": {
+    "mom126_5": -0.050907011788508205,
+    "rank": 16,
+    "percentile": 61.53846153846154,
+    "top20": false,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 5131,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "c42a672c-03c7-4d0b-9e39-6e592b2288a0",
+    "price": 33.220001220703125,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 33.220001220703125,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 33.232456237344536,
+     "expectedChangePct": 0.037492523129857375,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      32.621412780606846,
+      33.84040860107504
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 33.220001220703125,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 33.22972305326337,
+     "expectedChangePct": 0.02926499760086322,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      31.82011041816354,
+      34.72894124557651
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 33.220001220703125,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 33.25540537688621,
+     "expectedChangePct": 0.10657481903107124,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      30.787828886531877,
+      36.559717043084994
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "1020.SR",
+   "momentum": {
+    "mom126_5": -0.057142842988136544,
+    "rank": 17,
+    "percentile": 58.97435897435897,
+    "top20": false,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 5730,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "0c3b2c3e-11a2-40d5-aff6-51862f0c4105",
+    "price": 10.970000267028809,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 10.970000267028809,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 10.97295117794763,
+     "expectedChangePct": 0.02689982540557164,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      10.782518620558491,
+      11.166747008815806
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 10.970000267028809,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 10.97137190778312,
+     "expectedChangePct": 0.012503561722175208,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      10.536306761014437,
+      11.512173660308571
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 10.970000267028809,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 10.975945860346895,
+     "expectedChangePct": 0.05419866156208487,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      10.06773291605435,
+      12.172839296228343
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "4005.SR",
+   "momentum": {
+    "mom126_5": -0.06487889358994237,
+    "rank": 18,
+    "percentile": 56.41025641025641,
+    "top20": false,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 5559,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "9a3fd59a-99e0-46f3-ba21-dde32db079e1",
+    "price": 114,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 114,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 114.06818552434157,
+     "expectedChangePct": 0.05981186345751978,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      110.34575835916795,
+      117.91618583528961
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 114,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 114.02501997543423,
+     "expectedChangePct": 0.021947346872134465,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      105.74759434216433,
+      122.95036365866581
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 114,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 114.11547739617062,
+     "expectedChangePct": 0.101295961553174,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      97.5783437480201,
+      133.45524919939166
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "1120.SR",
+   "momentum": {
+    "mom126_5": -0.06531529390066548,
+    "rank": 19,
+    "percentile": 53.84615384615385,
+    "top20": false,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 8843,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "46cda490-0b90-46a0-bf70-4629b0bba669",
+    "price": 63.04999923706055,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 63.04999923706055,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 63.08487085278384,
+     "expectedChangePct": 0.05530787651904142,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      62.04675547162077,
+      64.15976616281101
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 63.04999923706055,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 63.07857427301386,
+     "expectedChangePct": 0.04532123124358958,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      60.705366513655626,
+      65.62525416182233
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 63.04999923706055,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 63.144119281841114,
+     "expectedChangePct": 0.14927842334571134,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      57.92702233310206,
+      68.45083181058578
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  },
+  {
+   "symbol": "2050.SR",
+   "momentum": {
+    "mom126_5": -0.06974855328456109,
+    "rank": 20,
+    "percentile": 51.282051282051285,
+    "top20": false,
+    "lastBarDate": "2026-11-17"
+   },
+   "analyze": {
+    "ok": true,
+    "http": 200,
+    "attempts": 1,
+    "ms": 4776,
+    "modelVersion": "mizan-scenarios-7-shock-warning-2-a3434e85",
+    "recorded": true,
+    "snapshotId": "06d88d72-67ad-498b-aa93-237073a852bd",
+    "price": 23.360000610351562,
+    "priceTime": "2026-11-17",
+    "currency": "SAR"
+   },
+   "forecasts": {
+    "1": {
+     "sessions": 1,
+     "period": "يومي",
+     "direction": "محايد",
+     "available": true,
+     "price": 23.360000610351562,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 23.36522049206513,
+     "expectedChangePct": 0.022345383463967656,
+     "neutralThresholdPct": 0.1,
+     "range": [
+      22.837418540152193,
+      23.905408655135048
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-18T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "5": {
+     "sessions": 5,
+     "period": "أسبوع",
+     "direction": "محايد",
+     "available": true,
+     "price": 23.360000610351562,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 23.36177722157385,
+     "expectedChangePct": 0.007605356061075137,
+     "neutralThresholdPct": 0.25,
+     "range": [
+      22.18023607874363,
+      24.786380963255752
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-11-24T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    },
+    "21": {
+     "sessions": 21,
+     "period": "شهر",
+     "direction": "محايد",
+     "available": true,
+     "price": 23.360000610351562,
+     "priceTime": "2026-11-17",
+     "predictedPrice": 23.36946160352594,
+     "expectedChangePct": 0.040500825886907364,
+     "neutralThresholdPct": 0.5,
+     "range": [
+      20.980978082729955,
+      26.867791342430323
+     ],
+     "confidence": "منخفض",
+     "estimatedEndAt": "2026-12-16T12:00:00.000Z",
+     "anchorDate": "2026-11-17",
+     "reasons": [],
+     "refDate": "2026-11-17"
+    }
+   }
+  }
+ ]
+}
