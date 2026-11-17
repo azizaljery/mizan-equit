@@ -2,11 +2,12 @@
 // Home-page market overview: index prices and a descriptive analysis for the Saudi and US markets (RTL).
 import {useEffect,useState} from 'react';
 import type {MarketOverview,IndexAnalysis} from '@/lib/market-overview';
+import {dualFormat} from '@/lib/date-dual';
 
 const fmt=(v:number|null|undefined,d=2)=>v===null||v===undefined?'—':v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
 const pct=(v:number|null|undefined)=>v===null||v===undefined?'—':(v>0?'+':'')+v.toFixed(2)+'%';
 const tone=(v:number|null|undefined)=>v===null||v===undefined||v===0?undefined:v>0?'#13734f':'#a33a35';
-const time=(iso:string|null)=>{if(!iso)return '—';try{return new Date(iso).toLocaleString('ar-SA-u-nu-latn',{timeZone:'Asia/Riyadh',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}catch{return iso.slice(0,16);}};
+const time=(iso:string|null)=>{if(!iso)return '—';return dualFormat(iso,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})||iso.slice(0,16);};
 
 function IndexCard({x}:{x:IndexAnalysis}){
  return <div className="metric" style={{minWidth:0}}>

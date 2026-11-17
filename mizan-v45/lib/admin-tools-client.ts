@@ -2,6 +2,7 @@
  * Admin tools: pure helpers shared by the owner-only tools page (browser) and the
  * internal automation route (server). No Worker bindings or secrets are imported here.
  */
+import {dualFormat} from './date-dual';
 /**
  * Same rule as ownerIdentity() in ./pin-lock, kept local on purpose: this module is bundled for the browser, and
  * importing ./pin-lock (server-side hashing) produced an EMPTY chunk that Safari/WebKit refuses to import
@@ -240,7 +241,7 @@ export function fmtDateTime(v: unknown): string {
   if (typeof v !== 'string' && typeof v !== 'number') return '—';
   const d = new Date(v);
   if (!Number.isFinite(d.getTime())) return String(v);
-  return new Intl.DateTimeFormat('ar-SA', {dateStyle: 'medium', timeStyle: 'short'}).format(d);
+  return dualFormat(d) ?? String(v);
 }
 export function fmtDuration(ms: unknown): string {
   if (typeof ms !== 'number' || !Number.isFinite(ms)) return '—';
