@@ -19,3 +19,5 @@ export const FRED_URL=(id:string)=>`https://fred.stlouisfed.org/graph/fredgraph.
 export const WB_URL=(id:string)=>{const [c,i]=id.replace(/^[A-Z]{3}:/,m=>m).split(':');return `https://api.worldbank.org/v2/country/${c}/indicator/${i}?format=json&per_page=30`;};
 /** Yahoo chart: series id is `YH:<symbol>`; two years of daily bars, filtered by `sinceDate` in the parser. */
 export const YAHOO_URL=(id:string)=>`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(id.replace(/^YH:/,''))}?interval=1d&range=2y`;
+/** FRED's official API (needs a free key, stored as a Worker secret and never written to the database). Used instead of the keyless graph CSV when a key exists. */
+export const FRED_API_URL=(id:string,key:string,since:string)=>`https://api.stlouisfed.org/fred/series/observations?series_id=${encodeURIComponent(id)}&api_key=${encodeURIComponent(key)}&file_type=json&observation_start=${encodeURIComponent(since)}`;

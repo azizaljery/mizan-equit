@@ -3,6 +3,8 @@ import {MAINTENANCE_SLOT_CRON,slotJob} from '../lib/jobs/cron-slots';
 import {tryAcquireLock,releaseLock} from './scheduled';
 import {collectMacro,type MacroSummary} from '../lib/macro/collect';
 import {configuredReader} from '../lib/source-status';
+import {FRED_API_URL} from '../lib/macro/series';
+import {fredApiToCsv} from '../lib/macro/parse';
 
 export const MACRO_CRON=MAINTENANCE_SLOT_CRON;
 export const MACRO_STATE_ID='job:macro:last';
@@ -23,7 +25,7 @@ const http=async(url:string)=>{
  throw new Error(last);
 };
 
-export async function runMacro(db:any,options:{now?:number;fetchText?:(u:string)=>Promise<string>}={}){
+export async function runMacro(db:any,options:{now?:number;fetchText?:(u:string)=>Promise<string>;fredApiKey?:string}={}){
  const start=Date.now(),now=options.now??start,res:{status:'completed'|'partial'|'failed'|'locked';summary:MacroSummary|null;errors:string[]}={status:'completed',summary:null,errors:[]};
  let token:string|null=null;
  try{
@@ -33,7 +35,14 @@ export async function runMacro(db:any,options:{now?:number;fetchText?:(u:string)
   if(!fetchText){
    // Yahoo goes through the site's configured reader (same source rules, pauses and headers as prices); FRED and the World Bank use plain fetch.
    const read=await configuredReader(db);
-   fetchText=async(url:string)=>url.includes('finance.yahoo.com')?JSON.stringify(await read(url,true,300000)):http(url);
+   const key=options.fredApiKey;
+   fetchText=async(url:string)=>{
+    if(url.includes('finance.yahoo.com'))return JSON.stringify(await read(url,true,300000));
+    // With a key, FRED series go through the official API; the stored source URL stays the keyless one (the key is never saved).
+    const m=key?url.match(/fredgraph\.csv\?id=([^&]+)/):null;
+    if(m&&key){const id=decodeURIComponent(m[1]);return fredApiToCsv(JSON.parse(await http(FRED_API_URL(id,key,'2024-01-01'))),id);}
+    return http(url);
+   };
   }
   res.summary=await collectMacro(db,now,fetchText);
   for(const s of res.summary.series)if(s.error){res.errors.push(`${s.id}: ${s.error}`);res.status='partial';}
@@ -44,9 +53,9 @@ export async function runMacro(db:any,options:{now?:number;fetchText?:(u:string)
  }
  return res;
 }
-export async function scheduledMacro(controller:{cron:string;scheduledTime?:number},env:{DB:any;MIZAN_BACKGROUND_CRON_ENABLED?:string}){
+export async function scheduledMacro(controller:{cron:string;scheduledTime?:number},env:{DB:any;MIZAN_BACKGROUND_CRON_ENABLED?:string;FRED_API_KEY?:string}){
  if(env.MIZAN_BACKGROUND_CRON_ENABLED!=='true'||controller.cron!==MACRO_CRON||slotJob(controller)!=='macro')return;
- const r=await runMacro(env.DB,{now:Number.isFinite(controller.scheduledTime)?Number(controller.scheduledTime):undefined});
+ const r=await runMacro(env.DB,{now:Number.isFinite(controller.scheduledTime)?Number(controller.scheduledTime):undefined,fredApiKey:env.FRED_API_KEY||undefined});
  console.log('[mizan-macro]',JSON.stringify({status:r.status,inserted:r.summary?.inserted,errors:r.errors}));
  return r;
 }
