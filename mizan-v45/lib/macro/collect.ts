@@ -1,5 +1,5 @@
-import {MACRO_SERIES,FRED_URL,WB_URL,YAHOO_URL,type MacroSeries} from './series';
-import {parseFredCsv,parseWorldBank,parseYahooChart,type MacroRow} from './parse';
+import {MACRO_SERIES,FRED_URL,WB_URL,YAHOO_URL,NYFED_URL,type MacroSeries} from './series';
+import {parseFredCsv,parseWorldBank,parseYahooChart,parseNyFedRates,type MacroRow} from './parse';
 
 export type MacroSummary={series:{id:string;fetched:number;inserted:number;error?:string}[];inserted:number};
 const INSERT=`INSERT OR IGNORE INTO macro_observations(id,series_id,obs_date,value,source,source_url,retrieved_at,availability_basis) VALUES(?,?,?,?,?,?,?,'retrieval_time_only')`;
@@ -11,8 +11,8 @@ export async function collectMacro(db:any,now:number,fetchText:(url:string)=>Pro
  for(const s of opts.series??MACRO_SERIES){
   const item={id:s.id,fetched:0,inserted:0} as MacroSummary['series'][number];sum.series.push(item);
   try{
-   const url=s.provider==='fred'?FRED_URL(s.id):s.provider==='yahoo'?YAHOO_URL(s.id):WB_URL(s.id),text=await fetchText(url);
-   const rows:MacroRow[]=s.provider==='fred'?parseFredCsv(text,s.id,since):s.provider==='yahoo'?parseYahooChart(JSON.parse(text),s.id,since,iso.slice(0,10)):parseWorldBank(JSON.parse(text),s.id).filter(r=>r.date>=since);
+   const url=s.provider==='fred'?FRED_URL(s.id):s.provider==='yahoo'?YAHOO_URL(s.id):s.provider==='nyfed'?NYFED_URL(s.id):WB_URL(s.id),text=await fetchText(url);
+   const rows:MacroRow[]=s.provider==='fred'?parseFredCsv(text,s.id,since):s.provider==='yahoo'?parseYahooChart(JSON.parse(text),s.id,since,iso.slice(0,10)):s.provider==='nyfed'?parseNyFedRates(JSON.parse(text),s.id,since):parseWorldBank(JSON.parse(text),s.id).filter(r=>r.date>=since);
    item.fetched=rows.length;
    if(!rows.length){item.error='no_rows';continue;}
    for(let i=0;i<rows.length;i+=90){

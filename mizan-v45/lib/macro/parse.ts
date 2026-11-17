@@ -34,3 +34,10 @@ export function fredApiToCsv(json:any,seriesId:string):string{
  const obs=Array.isArray(json?.observations)?json.observations:[];
  return `observation_date,${seriesId}\n`+obs.map((o:any)=>`${String(o?.date??'')},${String(o?.value??'')}`).join('\n')+'\n';
 }
+/** NY Fed reference-rate JSON: `refRates` (or a bare array) of {effectiveDate, percentRate}. Missing rates are skipped. */
+export function parseNyFedRates(json:any,seriesId:string,sinceDate='1900-01-01'):MacroRow[]{
+ const list=Array.isArray(json?.refRates)?json.refRates:Array.isArray(json)?json:[];
+ const out:MacroRow[]=[];
+ for(const r of list){const d=String(r?.effectiveDate??'');if(!DATE.test(d)||d<sinceDate||r?.percentRate===null||r?.percentRate===undefined)continue;const n=Number(r.percentRate);if(Number.isFinite(n))out.push({seriesId,date:d,value:n});}
+ return out;
+}

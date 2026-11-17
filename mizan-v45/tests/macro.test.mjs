@@ -66,7 +66,7 @@ test('03:30 UTC runs the macro job only on the maintenance cron, and the job is 
   assert.equal(m.slotJob({cron: '0 3 * * *', scheduledTime: Date.UTC(2026, 10, 15, 3, 30)}), null);
   const {db, sqlite} = fixture();
   const r = await m.runMacro(db, {now: NOW, fetchText: async url => url.includes('finance.yahoo') ? JSON.stringify(yahoo([['2026-11-10', 80], ['2026-11-13', 81]])) : url.includes('worldbank') ? JSON.stringify([{}, [{date: '2024', value: 1.2}]]) : csv(url.split('id=')[1].split('&')[0], [['2026-11-10', '1.5']])});
-  assert.ok(['completed', 'partial'].includes(r.status)); assert.ok(Number(sqlite.prepare('SELECT COUNT(*) c FROM macro_observations').get().c) >= 13);
+  assert.ok(['completed', 'partial'].includes(r.status)); assert.ok(Number(sqlite.prepare('SELECT COUNT(*) c FROM macro_observations').get().c) >= 15);
   assert.ok(sqlite.prepare("SELECT data FROM research_state WHERE id='job:macro:last'").get());
 });
 
@@ -79,10 +79,10 @@ test('Yahoo chart parser: closes by date, null skipped, today and earlier-than-s
 test('Yahoo series are collected, keyed by their YH: id, with the chart URL for the bare symbol', async () => {
   const {db, sqlite} = fixture();
   const series = S.MACRO_SERIES.filter(s => s.provider === 'yahoo');
-  assert.deepEqual(series.map(s => s.id), ['YH:BZ=F', 'YH:DX-Y.NYB', 'YH:^VIX', 'YH:^TASI.SR']);
+  assert.deepEqual(series.map(s => s.id), ['YH:BZ=F', 'YH:DX-Y.NYB', 'YH:^VIX', 'YH:^TASI.SR', 'YH:^TNX', 'YH:^IRX']);
   const urls = [];
   const r = await C.collectMacro(db, NOW, async url => { urls.push(url); return JSON.stringify(yahoo([['2026-11-10', 80], ['2026-11-13', 81], ['2026-11-15', 90]])); }, {series});
-  assert.equal(r.inserted, 8);
+  assert.equal(r.inserted, 12);
   assert.ok(urls.every(u => u.startsWith('https://query1.finance.yahoo.com/v8/finance/chart/') && u.endsWith('?interval=1d&range=2y')));
   assert.ok(urls[2].includes('%5EVIX'));
   assert.equal(Number(sqlite.prepare("SELECT COUNT(*) c FROM macro_observations WHERE obs_date='2026-11-15'").get().c), 0);
@@ -95,4 +95,17 @@ test('FRED API JSON converts to the graph CSV shape and parses the same way', ()
   assert.deepEqual(P.parseFredCsv(csvText, 'DGS10').map(r => r.value), [4.98, 5.1]);
   assert.equal(P.parseFredCsv(P.fredApiToCsv({}, 'DGS10'), 'DGS10').length, 0);
   assert.ok(S.FRED_API_URL('DGS10', 'k', '2024-01-01').includes('api_key=k'));
+});
+
+test('NY Fed rates: effective date and percent rate, in a refRates wrapper or bare, since the cutoff', () => {
+  const rows = [{effectiveDate: '2023-12-29', percentRate: 5.33}, {effectiveDate: '2026-11-13', percentRate: 3.88}, {effectiveDate: '2026-11-16', percentRate: null}, {effectiveDate: '2026-11-17', percentRate: 3.87}];
+  const want = [{seriesId: 'NYFED:EFFR', date: '2026-11-13', value: 3.88}, {seriesId: 'NYFED:EFFR', date: '2026-11-17', value: 3.87}];
+  assert.deepEqual(P.parseNyFedRates({refRates: rows}, 'NYFED:EFFR', '2024-01-01'), want);
+  assert.deepEqual(P.parseNyFedRates(rows, 'NYFED:EFFR', '2024-01-01'), want);
+  assert.deepEqual(P.parseNyFedRates({}, 'x'), []);
+});
+test('NY Fed series is collected from its keyless URL', async () => {
+  const {db} = fixture(); const series = S.MACRO_SERIES.filter(s => s.provider === 'nyfed'); let url = '';
+  const r = await C.collectMacro(db, NOW, async u => { url = u; return JSON.stringify({refRates: [{effectiveDate: '2026-11-13', percentRate: 3.88}]}); }, {series});
+  assert.equal(r.inserted, 1); assert.equal(url, 'https://markets.newyorkfed.org/api/rates/unsecured/effr/last/800.json');
 });
