@@ -3,7 +3,7 @@ import {automaticSourceId} from './supporting-sources';
 import {upstream,parseChart} from './market-data';
 import {readSettings,type SiteSettings} from './site-settings';
 import {readExternalSource} from './source-probe';
-import {validateMarketIdentity} from './market-identity';
+import {validateMarketIdentity,MACRO_PROXY_SYMBOLS} from './market-identity';
 import {parseLiveQuote} from './live-quote';
 import type {MarketReport} from './market-data';
 import {resolveFinancialSources} from './source-resolution';
@@ -76,7 +76,7 @@ export async function configuredReader(db:any,settings?:SiteSettings){const s=se
  if(!enabled)throw Error('هذا المصدر متوقف من إعدادات الإدارة.');
  return track(id,url,async()=>{const data=await upstream(url,json,ttl,purpose,id==='sec'?{beforeRequest:()=>reserveSecRequest(db),onResponse:r=>recordSecCooldown(db,r),userAgent:typeof (env as any).SEC_USER_AGENT==='string'?(env as any).SEC_USER_AGENT:undefined}:undefined);
   if(id==='yahoo'&&request.pathname.startsWith('/v8/finance/chart/')){
-   validateMarketIdentity(data?.chart?.result?.[0]?.meta,symbol,symbol.startsWith('^'));
+   validateMarketIdentity(data?.chart?.result?.[0]?.meta,symbol,symbol.startsWith('^')||MACRO_PROXY_SYMBOLS.has(symbol));
    if(purpose==='quote')parseLiveQuote(data,symbol);
    else if(request.searchParams.get('interval')==='1d'&&!parseChart(data,new Date().toISOString().slice(0,10),symbol.startsWith('^')).prices.length)throw Error('المصدر استجاب لكن لم يُرجع جلسات يومية صالحة.');
   }

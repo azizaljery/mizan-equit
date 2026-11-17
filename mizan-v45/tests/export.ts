@@ -176,3 +176,4 @@ export * as structureAudit from '../lib/structure-audit';
 export * as pulseAudit from '../lib/pulse-audit';
 export * as transmission from '../lib/transmission';
 export * as auditView from '../lib/audit-view';
+export * as marketIdentity from '../lib/market-identity';

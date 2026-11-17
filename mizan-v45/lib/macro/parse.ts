@@ -29,3 +29,8 @@ export function parseYahooChart(json:any,seriesId:string,sinceDate='1900-01-01',
  }
  return out;
 }
+/** FRED API JSON -> the same CSV shape as the graph download, so one parser serves both. Non-numeric values ('.') stay '.' and are skipped later. */
+export function fredApiToCsv(json:any,seriesId:string):string{
+ const obs=Array.isArray(json?.observations)?json.observations:[];
+ return `observation_date,${seriesId}\n`+obs.map((o:any)=>`${String(o?.date??'')},${String(o?.value??'')}`).join('\n')+'\n';
+}

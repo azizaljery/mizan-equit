@@ -1,10 +1,14 @@
 const US_EXCHANGES = new Set(['NMS','NGM','NCM','NYQ','NYS','ASE','PCX','BTS','PNK','OTC','OQB','OQX','NASDAQ','NYSE','NYSEARCA','NYSE AMERICAN','BATS']);
 const SA_EXCHANGES = new Set(['SAU','SAUDI','TADAWUL']);
 
+/** Non-equity Yahoo symbols the macro collector may read (a futures contract and a currency index); nothing else is allowed to pass as a futures/currency instrument. */
+export const MACRO_PROXY_SYMBOLS=new Set(['BZ=F','DX-Y.NYB']);
+
 /** Validate the instrument returned by the provider before using any prices. */
 export function validateMarketIdentity(meta:any, symbol:string, allowIndex=false) {
  if(!meta||meta.symbol!==symbol)throw Error('رمز المصدر لا يطابق السهم المطلوب؛ لم نستخدم الأسعار.');
- if(!(allowIndex?['EQUITY','ETF','INDEX']:['EQUITY','ETF']).includes(meta.instrumentType))throw Error('نوع الورقة لا يطابق سهمًا أو صندوقًا؛ لم نستخدم بيانات مؤشر بدل الشركة.');
+ const okType=(allowIndex?['EQUITY','ETF','INDEX']:['EQUITY','ETF']).includes(meta.instrumentType)||(MACRO_PROXY_SYMBOLS.has(symbol)&&['FUTURE','CURRENCY'].includes(meta.instrumentType));
+ if(!okType)throw Error('نوع الورقة لا يطابق سهمًا أو صندوقًا؛ لم نستخدم بيانات مؤشر بدل الشركة.');
  if(typeof meta.currency!=='string'||!meta.currency.trim())throw Error('عملة السعر غير متحققة.');
  const exchange=String(meta.exchangeName||meta.fullExchangeName||'').trim().toUpperCase();
  if(symbol.endsWith('.SR')){

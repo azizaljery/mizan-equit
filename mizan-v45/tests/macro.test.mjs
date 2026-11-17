@@ -88,3 +88,11 @@ test('Yahoo series are collected, keyed by their YH: id, with the chart URL for 
   assert.equal(Number(sqlite.prepare("SELECT COUNT(*) c FROM macro_observations WHERE obs_date='2026-11-15'").get().c), 0);
   assert.equal(sqlite.prepare("SELECT source s FROM macro_observations WHERE series_id='YH:^VIX' LIMIT 1").get().s, 'yahoo');
 });
+
+test('FRED API JSON converts to the graph CSV shape and parses the same way', () => {
+  const csvText = P.fredApiToCsv({observations: [{date: '2026-11-10', value: '4.98'}, {date: '2026-11-11', value: '.'}, {date: '2026-11-13', value: '5.10'}]}, 'DGS10');
+  assert.equal(csvText, 'observation_date,DGS10\n2026-11-10,4.98\n2026-11-11,.\n2026-11-13,5.10\n');
+  assert.deepEqual(P.parseFredCsv(csvText, 'DGS10').map(r => r.value), [4.98, 5.1]);
+  assert.equal(P.parseFredCsv(P.fredApiToCsv({}, 'DGS10'), 'DGS10').length, 0);
+  assert.ok(S.FRED_API_URL('DGS10', 'k', '2024-01-01').includes('api_key=k'));
+});
