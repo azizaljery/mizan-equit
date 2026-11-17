@@ -4,6 +4,7 @@ import {TrendingUp,Sparkles} from 'lucide-react';
 import {EngineConfidenceBadge,UnprovenEdgeNote} from './engine-notice';
 import {Notice} from './site/notice';
 import {EmptyState,ListSkeleton} from './site/empty-state';
+import {dualFormat} from '@/lib/date-dual';
 
 type Pick={id:string;symbol:string;name:string;market:'sa'|'us';currency:string;price:number|null;predictedPrice:number|null;expectedChangePct:number|null;range:[number,number]|null;
  confidence:string;dataQuality:string;coverage:number;riskLevel:string;reasons:string[];risks:string[];issuedAt:string;priceTime:string};
@@ -11,7 +12,7 @@ type Data={picks:Pick[];considered:number;eligible:number;exclusions:Record<stri
  trackRecord:{evaluated:number;directionCorrect:number;directionAccuracy:number|null;rangeCoverage:number|null}};
 const HORIZONS=[[1,'يومي'],[5,'أسبوعي'],[21,'شهري']] as const;
 const fmt=(v:number|null|undefined,d=2)=>typeof v!=='number'||!Number.isFinite(v)?'—':new Intl.NumberFormat('en-US',{maximumFractionDigits:d}).format(v);
-const when=(s:string)=>{const t=Date.parse(s);return Number.isFinite(t)?new Date(t).toLocaleString('ar-SA',{dateStyle:'medium',timeStyle:'short'}):s||'غير متاح';};
+const when=(s:string)=>dualFormat(s)||s||'غير متاح';
 const reasonNames:Record<string,string>={model_unavailable:'امتنع النموذج',not_rising:'ليس صاعدًا',low_or_unknown_confidence:'ثقة غير معروفة',invalid_range:'نطاق غير صالح',invalid_positive_target:'هدف غير صالح',target_outside_range:'الهدف خارج النطاق',inconsistent_target:'هدف غير متسق',missing_price_provenance:'وقت السعر غير متحقق'};
 
 /** «توصيات الشركات»: top rising forecasts already recorded by Mizan, filtered with the screener's own rules. */

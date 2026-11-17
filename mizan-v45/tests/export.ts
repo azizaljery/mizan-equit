@@ -177,3 +177,4 @@ export * as pulseAudit from '../lib/pulse-audit';
 export * as transmission from '../lib/transmission';
 export * as auditView from '../lib/audit-view';
 export * as marketIdentity from '../lib/market-identity';
+export * as dateDual from '../lib/date-dual';
