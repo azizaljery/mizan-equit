@@ -1,5 +1,6 @@
 'use client';
-import {useState} from 'react';
+import {useEffect,useState} from 'react';
+import {macroChange,type MacroObs} from '@/lib/integration/backtest';
 import {CAUSAL_NODES,propagate} from '@/lib/transmission';
 
 const STATE:Record<string,string>={UP:'صاعد (بحثي)',DOWN:'هابط (بحثي)',ABSTAIN:'امتناع عن الحكم',CONTRADICTION:'تعارض أدلة',VETO:'فيتو: لا حكم'};
@@ -8,10 +9,15 @@ const POS:Record<string,string>={above:'فوق السحابة',below:'تحت ا�
 const th={padding:'8px',borderBottom:'1px solid currentColor',textAlign:'right' as const};
 const td={padding:'8px',textAlign:'right' as const};
 const f=(v:any,d=2)=>typeof v==='number'&&Number.isFinite(v)?v.toFixed(d):'—';
+/** Declared thresholds for calling a macro move a shock (20 observations, known with a one-day lag). */
+const SHOCKS=[{node:'fed_funds',series:'NYFED:EFFR',kind:'diff' as const,min:0.1,label:'الفائدة الفعلية الأمريكية',unit:'نقطة مئوية'},{node:'brent',series:'YH:BZ=F',kind:'pct' as const,min:0.05,label:'برنت',unit:'%'}];
 const arrow=(s:number)=>s>0?'↑ يرتفع':s<0?'↓ ينخفض':'—';
 
 export function AuditPanel(){
  const [symbol,setSymbol]=useState('');const [busy,setBusy]=useState(false);const [error,setError]=useState('');const [data,setData]=useState<any>(null);
+ const [obs,setObs]=useState<Record<string,MacroObs[]>|null>(null);
+ useEffect(()=>{fetch('/api/integration/macro').then(r=>r.json()).then(j=>setObs(j.series||null)).catch(()=>setObs(null));},[]);
+ const seen=SHOCKS.map(h=>{const v=obs?macroChange(obs[h.series]||[],new Date().toISOString().slice(0,10),h.kind):null;return {...h,v,hit:v!==null&&Math.abs(v)>=h.min};});
  const [shock,setShock]=useState('fed_funds');const [shockSign,setShockSign]=useState<1|-1>(1);
  async function run(e?:React.FormEvent){
   e?.preventDefault();const s=symbol.trim().toUpperCase();if(!s)return;
@@ -57,6 +63,7 @@ export function AuditPanel(){
   <section><h2>سلاسل الانتقال (فرضيات معلنة، غير مقاسة)</h2>
    <p>اختر صدمة لترى ما تتوقعه الخريطة في العوامل اللاحقة. «غامض» تعني أن مسارين يعطيان إشارتين متعاكستين فلا يُفرض اتجاه.</p>
    <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
+    <div dir="rtl" style={{margin:'8px 0'}}><strong>أحدث حركة كلية مرصودة (فرضية للمراجعة، ليست توقعًا):</strong> {!obs?'غير متاحة الآن.':seen.map(h=><span key={h.node} style={{marginInlineEnd:16}}>{h.label}: {h.v===null?'بيانات غير كافية':(h.kind==='pct'?(h.v*100).toFixed(1)+'%':h.v.toFixed(2)+' '+h.unit)}{h.hit?<> <button type="button" onClick={()=>{setShock(h.node);setShockSign(h.v!>0?1:-1);}}>طبّق كصدمة</button></>:' (دون حد الصدمة)'}</span>)}</div>
     <select value={shock} onChange={e=>setShock(e.target.value)} aria-label="الصدمة">{CAUSAL_NODES.filter(n=>n.kind==='macro'||n.kind==='input').map(n=><option key={n.id} value={n.id}>{n.label}</option>)}</select>
     <select value={shockSign} onChange={e=>setShockSign(Number(e.target.value) as 1|-1)} aria-label="اتجاه الصدمة"><option value={1}>ترتفع</option><option value={-1}>تنخفض</option></select>
    </div>
