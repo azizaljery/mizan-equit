@@ -132,3 +132,7 @@ export function analyze(rows:Row[],horizon:5|21,macroNames:string[],p=BACKTEST_P
 
 /** Declared test universe: fixed before any result was seen. */
 export const UNIVERSE=['AAPL','MSFT','NVDA','AMZN','GOOGL','META','TSLA','JPM','V','MA','UNH','JNJ','PG','XOM','CVX','HD','KO','PEP','ABBV','MRK','LLY','AVGO','COST','WMT','BAC','WFC','CSCO','ORCL','ADBE','CRM','NFLX','AMD','INTC','QCOM','TXN','CAT','BA','GE','MMM','HON','IBM','DIS','NKE','MCD','SBUX','T','VZ','PFE','LIN','NEE'] as const;
+
+/** Declared Saudi test universe (large, liquid Tadawul names), fixed before any result was seen. */
+export const SA_UNIVERSE=['2222.SR','1120.SR','1180.SR','2010.SR','7010.SR','1211.SR','2082.SR','1150.SR','1140.SR','2020.SR','2280.SR','4013.SR','4002.SR','1010.SR','1050.SR','1060.SR','1080.SR','2310.SR','2350.SR','4030.SR','4200.SR','4300.SR','5110.SR','8010.SR','1810.SR','2290.SR','2380.SR','4003.SR','4190.SR','4161.SR','2330.SR','3020.SR','3030.SR','3040.SR','4001.SR','4050.SR','4240.SR','6010.SR','1020.SR','1030.SR'] as const;
+export const ALL_UNIVERSE:readonly string[]=[...UNIVERSE,...SA_UNIVERSE];

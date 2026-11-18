@@ -2,11 +2,11 @@ import {env} from 'cloudflare:workers';
 import {configuredReader} from '@/lib/source-status';
 import {dailyChartURL,parseChart} from '@/lib/market-data';
 import {validateMarketIdentity} from '@/lib/market-identity';
-import {UNIVERSE} from '@/lib/integration/backtest';
+import {ALL_UNIVERSE} from '@/lib/integration/backtest';
 /** Two years of daily bars for one symbol of the declared universe (research test input only). */
 export async function GET(request:Request){
  const symbol=(new URL(request.url).searchParams.get('symbol')||'').trim().toUpperCase();
- if(!(UNIVERSE as readonly string[]).includes(symbol))return Response.json({error:'الرمز خارج الفئة المعلنة للاختبار.'},{status:400});
+ if(!ALL_UNIVERSE.includes(symbol))return Response.json({error:'الرمز خارج الفئة المعلنة للاختبار.'},{status:400});
  try{
   const today=new Date().toISOString().slice(0,10),read=await configuredReader((env as any).DB);
   const data=await read(dailyChartURL(symbol,today,false,'2y'),true,3600000);
