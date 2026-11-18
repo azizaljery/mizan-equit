@@ -196,7 +196,7 @@ async function getFundamentals(symbol:string,asOf:string,read:typeof upstream=up
  }
  return historical?factsPublishedBefore(facts,asOf):facts;
 }
-export function parseChart(data:any,asOf:string,allowIndex=false){const r=data?.chart?.result?.[0];if(!r||!(allowIndex?['EQUITY','ETF','INDEX']:['EQUITY','ETF']).includes(r.meta?.instrumentType))throw new Error('لم تتوفر سلسلة أسعار لسهم أو صندوق مدرج بهذا الرمز.');
+export function parseChart(data:any,asOf:string,allowIndex=false){const r=data?.chart?.result?.[0];if(!r||!(allowIndex?['EQUITY','ETF','INDEX','FUTURE','CURRENCY']:['EQUITY','ETF']).includes(r.meta?.instrumentType))throw new Error('لم تتوفر سلسلة أسعار لسهم أو صندوق مدرج بهذا الرمز.');
  validateMarketIdentity(r.meta,r.meta.symbol,allowIndex);
  const q=r.indicators?.quote?.[0];if(!q)throw new Error('لم تتوفر أسعار يومية.');
  const rows=(r.timestamp||[]).flatMap((s:number,i:number)=>{if(!finite(s)||s<=0||s*1000>Date.now()+5000)throw Error('تاريخ جلسة غير صالح أو في المستقبل.');const date=new Date((s+(r.meta.gmtoffset||0))*1000).toISOString().slice(0,10);const p={date,open:q.open?.[i],high:q.high?.[i],low:q.low?.[i],close:q.close?.[i],volume:q.volume?.[i]};return date<=asOf&&[p.open,p.high,p.low,p.close,p.volume].every(finite)&&p.open>0&&p.close>0&&p.volume>=0?[p]:[]});
