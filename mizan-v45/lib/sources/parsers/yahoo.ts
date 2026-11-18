@@ -1,6 +1,6 @@
 import { parseChart, parseFundamentals, FUNDAMENTALS } from '../../market-data';
 import { parseLiveQuote } from '../../live-quote';
-import { validateMarketIdentity } from '../../market-identity';
+import { validateMarketIdentity, MACRO_PROXY_SYMBOLS } from '../../market-identity';
 import type { Parser, ParsedResult, ParserContext } from '../fallback';
 import type { SourceRef } from '../types';
 import type { ParsedFinancials, ParsedFinancialLine, ParsedPeriod } from './types';
@@ -47,7 +47,7 @@ export const parseYahooHistory:Parser<YahooHistoryValue>=(raw,_source,ctx)=>{
   if(!meta?.symbol)throw new Error('Yahoo history: بنية الرد غير صالحة.');
   const symbol=String(meta.symbol);
   if(symbol!==ctx.expectedSymbol)throw new Error(`Yahoo history: meta.symbol=${symbol} لا يطابق المتوقع ${ctx.expectedSymbol}.`);
-  const allowIndex=symbol.startsWith('^');
+  const allowIndex=symbol.startsWith('^')||MACRO_PROXY_SYMBOLS.has(symbol);
   validateMarketIdentity(meta,ctx.expectedSymbol,allowIndex);
   const parsed=parseChart(data,ctx.asOf??new Date().toISOString().slice(0,10),allowIndex);
   if(!parsed.prices?.length)throw new Error('Yahoo history: لا جلسات سعرية صالحة.');

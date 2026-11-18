@@ -178,3 +178,4 @@ export * as transmission from '../lib/transmission';
 export * as auditView from '../lib/audit-view';
 export * as marketIdentity from '../lib/market-identity';
 export * as dateDual from '../lib/date-dual';
+export * as integrationBacktest from '../lib/integration/backtest';
