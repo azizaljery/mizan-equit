@@ -78,7 +78,7 @@ export async function configuredReader(db:any,settings?:SiteSettings){const s=se
   if(id==='yahoo'&&request.pathname.startsWith('/v8/finance/chart/')){
    validateMarketIdentity(data?.chart?.result?.[0]?.meta,symbol,symbol.startsWith('^')||MACRO_PROXY_SYMBOLS.has(symbol));
    if(purpose==='quote')parseLiveQuote(data,symbol);
-   else if(request.searchParams.get('interval')==='1d'&&!parseChart(data,new Date().toISOString().slice(0,10),symbol.startsWith('^')).prices.length)throw Error('المصدر استجاب لكن لم يُرجع جلسات يومية صالحة.');
+   else if(request.searchParams.get('interval')==='1d'&&!parseChart(data,new Date().toISOString().slice(0,10),symbol.startsWith('^')||MACRO_PROXY_SYMBOLS.has(symbol)).prices.length)throw Error('المصدر استجاب لكن لم يُرجع جلسات يومية صالحة.');
   }
   return data;
  },purpose);
