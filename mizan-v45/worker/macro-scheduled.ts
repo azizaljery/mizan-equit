@@ -5,6 +5,7 @@ import {collectMacro,type MacroSummary} from '../lib/macro/collect';
 import {configuredReader} from '../lib/source-status';
 import {FRED_API_URL} from '../lib/macro/series';
 import {fredApiToCsv} from '../lib/macro/parse';
+import {runAuditShadow} from './audit-shadow-job';
 
 export const MACRO_CRON=MAINTENANCE_SLOT_CRON;
 export const MACRO_STATE_ID='job:macro:last';
@@ -45,6 +46,7 @@ export async function runMacro(db:any,options:{now?:number;fetchText?:(u:string)
    };
   }
   res.summary=await collectMacro(db,now,fetchText);
+  if(!options.fetchText){try{await runAuditShadow(db,now);}catch(e){res.errors.push('audit_shadow: '+errorText(e));}}
   for(const s of res.summary.series)if(s.error){res.errors.push(`${s.id}: ${s.error}`);res.status='partial';}
  }catch(e){res.status='failed';res.errors.push(errorText(e));}
  finally{
