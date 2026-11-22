@@ -6,7 +6,7 @@ const dir=await mkdtemp(join(tmpdir(),'mizan-operations-')),outfile=join(dir,'op
 const mocks={
  './forecast-journal':`export const performanceStats=rows=>globalThis.__ops.stats(rows);`,
  '../lib/jobs/schedule':`export const EVALUATE_DUE_CRON='0 */6 * * *';`,
- '../lib/screener-archive':`export const createScreenerArchive=async(db,input)=>globalThis.__ops.create(input),archivedScreenerBatch=async(db,id,token,index)=>globalThis.__ops.batch(id,index),finishScreenerArchive=async(db,id)=>globalThis.__ops.finish(id),createServerScreenerArchive=async(db,input)=>globalThis.__ops.createServer(input),serverScreenerBatch=async(db,id,index)=>globalThis.__ops.serverBatch(id,index),finishServerScreenerArchive=async(db,id)=>globalThis.__ops.finishServer(id),readScreenerArchiveForOwner=async(db,id)=>globalThis.__ops.archive(id);`,
+ '../lib/screener-archive':`export const advanceBackgroundScreens=async()=>({processed:0,runs:0,errors:[]});export const createScreenerArchive=async(db,input)=>globalThis.__ops.create(input),archivedScreenerBatch=async(db,id,token,index)=>globalThis.__ops.batch(id,index),finishScreenerArchive=async(db,id)=>globalThis.__ops.finish(id),createServerScreenerArchive=async(db,input)=>globalThis.__ops.createServer(input),serverScreenerBatch=async(db,id,index)=>globalThis.__ops.serverBatch(id,index),finishServerScreenerArchive=async(db,id)=>globalThis.__ops.finishServer(id),readScreenerArchiveForOwner=async(db,id)=>globalThis.__ops.archive(id);`,
  '../lib/jobs/screener-followup-schedule':`export const SCREENER_FOLLOWUP_CRON='17 * * * *';`,
  './scheduled':`export const tryAcquireLock=async()=>globalThis.__ops.lock?'lease':null;export const releaseLock=async()=>{};`,
 };
