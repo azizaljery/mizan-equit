@@ -56,3 +56,16 @@ test('touching the target intraperiod does not turn a terminal loss into a win',
 test('split, currency mismatch and source identity mismatch remain exclusions',()=>{for(const change of [r=>r.corporateActions.push({kind:'split',date:'2026-09-28'}),r=>r.currency='SAR',r=>r.company.symbol='MSFT']){const {record,report}=outcomeInput();change(report);assert.equal(api.evaluateForecast(record,report).state,'excluded');}});
 test('public page and owner API are wired to persistence rather than local-only results',async()=>{const page=await readFile(new URL('../app/screener/page.tsx',import.meta.url),'utf8');for(const v of ['archive:true','archive-batch','batchIndex:offset/p.batchSize',"action:'complete'",'سجل الترشيحات والاختبار المستقبلي'])assert.ok(page.includes(v),v);const owner=await readFile(new URL('../app/api/admin/screener-history/route.ts',import.meta.url),'utf8');assert.ok(owner.indexOf('const denied=await authorizeAdminSession(req)')<owner.indexOf('const p=new URL'));});
 test.after(async()=>{await rm(dir,{recursive:true,force:true});});
+test('scheduled continuation advances only background-flagged runs, in order, and seals at the end',async t=>{
+ const {db,sql}=setup(t,['2222.SR','AAPL','1120.SR','MSFT']);
+ const plain=await api.createScreenerArchive(db,{market:'both',horizonSessions:5,resultCount:10});
+ const bg=await api.createScreenerArchive(db,{market:'both',horizonSessions:5,resultCount:10,background:true});
+ assert.equal(JSON.parse(sql.prepare('SELECT plan_json FROM screener_runs WHERE id=?').get(bg.runId).plan_json).background,true);
+ assert.equal(JSON.parse(sql.prepare('SELECT plan_json FROM screener_runs WHERE id=?').get(plain.runId).plan_json).background,undefined);
+ const one=await api.advanceBackgroundScreens(db,1);assert.equal(one.processed,1);assert.deepEqual(one.errors,[]);
+ assert.equal(sql.prepare('SELECT COUNT(*) n FROM screener_batches WHERE run_id=?').get(bg.runId).n,1);
+ const two=await api.advanceBackgroundScreens(db,5);assert.equal(two.processed,1);   // only one batch was left
+ assert.equal(sql.prepare('SELECT status FROM screener_runs WHERE id=?').get(bg.runId).status,'complete');
+ assert.equal(sql.prepare('SELECT COUNT(*) n FROM screener_batches WHERE run_id=?').get(plain.runId).n,0);   // unflagged run never touched
+ assert.equal((await api.advanceBackgroundScreens(db,5)).processed,0);
+});

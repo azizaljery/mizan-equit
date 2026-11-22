@@ -31,7 +31,8 @@ export async function createScreenerArchive(db:any,input:ScreenerRequest){
  const plan=await planScreener(db,input),id=crypto.randomUUID();
  const token=Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
  const at=new Date().toISOString();
- await db.prepare('INSERT INTO screener_runs(id,token_hash,created_at,status,plan_json) VALUES(?,?,?,?,?)').bind(id,await archiveFingerprint(token),at,'scanning',JSON.stringify(plan)).run();
+ const stored=(input as any).background===true?{...plan,background:true}:plan; // background: a scheduled job may continue this scan after the user leaves
+ await db.prepare('INSERT INTO screener_runs(id,token_hash,created_at,status,plan_json) VALUES(?,?,?,?,?)').bind(id,await archiveFingerprint(token),at,'scanning',JSON.stringify(stored)).run();
  return {...plan,runId:id,runToken:token,archiveVersion:SCREENER_ARCHIVE_VERSION,archiveCreatedAt:at};
 }
 /** Server-owned cohort for resumable scheduled work. No bearer capability is persisted or returned. */
@@ -137,3 +138,21 @@ export async function listScreenerArchives(db:any,before?:string){
  return rows.map((r:any)=>{const p=JSON.parse(r.plan_json);return {runId:r.id,createdAt:r.created_at,nominatedAt:r.completed_at,status:r.status,fingerprint:r.fingerprint,market:p.market,horizon:p.horizonSessions,requestedPerMarket:p.resultCount,scannedPlan:p.symbols.length};});
 }
 export async function readScreenerArchiveForOwner(db:any,id:string){if(!safeId(id))throw Error('invalid-id');const row=await db.prepare('SELECT * FROM screener_runs WHERE id=?').bind(id).first();if(!row)throw Error('not-found');return runStatus(db,row);}
+
+/** Scheduled continuation of user-started scans flagged `background`. Strictly in batch order, under the same lease as the browser path, within a small batch budget.
+ * Only the batch worker is shared; no run is created, changed or sealed here except through the normal batch/seal path. */
+export async function advanceBackgroundScreens(db:any,maxBatches=2){
+ const rows=await all(db,"SELECT * FROM screener_runs WHERE status='scanning' AND plan_json LIKE '%\"background\":true%' AND created_at>? ORDER BY created_at ASC LIMIT 3",[new Date(Date.now()-SERVER_MAX_RUN_AGE).toISOString()]);
+ let processed=0;const errors:string[]=[];
+ for(const row of rows){
+  const plan:ScreenerPlan=JSON.parse(row.plan_json),expected=Math.ceil(plan.symbols.length/plan.batchSize);
+  while(processed<maxBatches){
+   try{
+    const done=(await batchRows(db,row.id)).length;if(done>=expected)break;
+    await locked(db,row.id,async()=>processScreenerBatch(db,row,done,SERVER_MAX_RUN_AGE));processed++;
+   }catch(e){errors.push(`${row.id.slice(0,8)}: ${(e instanceof Error?e.message:String(e)).slice(0,60)}`);break;}
+  }
+  if(processed>=maxBatches)break;
+ }
+ return {processed,runs:rows.length,errors};
+}

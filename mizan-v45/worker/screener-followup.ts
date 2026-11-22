@@ -1,5 +1,5 @@
 /** Resumable screener followup. Existing long-run entry remains for compatibility/tests. */
-import {createScreenerArchive,archivedScreenerBatch,finishScreenerArchive,createServerScreenerArchive,serverScreenerBatch,finishServerScreenerArchive} from '../lib/screener-archive';
+import {advanceBackgroundScreens,createScreenerArchive,archivedScreenerBatch,finishScreenerArchive,createServerScreenerArchive,serverScreenerBatch,finishServerScreenerArchive} from '../lib/screener-archive';
 import {readFollowupConfig,FOLLOWUP_LAST_ID} from '../lib/screener-operations';
 import {validateFollowupConfig,periodicSlot,type FollowupConfig} from '../lib/screener-operations-core';
 import {executeFollowup} from '../lib/screener-followup-core';
@@ -105,6 +105,8 @@ async function advanceAcceptance(db:any,scheduledTime:number){
 }
 export async function scheduledScreenerFollowup(controller:{cron:string;scheduledTime:number},env:any){
  if(env.MIZAN_BACKGROUND_CRON_ENABLED!=='true'||controller.cron!==SCREENER_FOLLOWUP_CRON)return;
+ // User-started scans flagged for the background continue here, a couple of batches per run, before any configured followup work.
+ try{const bg=await advanceBackgroundScreens(env.DB,2);if(bg.processed>0||bg.errors.length){console.log('[mizan-screener-background]',JSON.stringify(bg));if(bg.processed>0)return {status:'background',stateSaved:false} as any;}}catch(e){console.log('[mizan-screener-background] failed',e instanceof Error?e.message:String(e));}
  const configured=await readFollowupConfig(env.DB);
  const result=configured.config.enabled
   ?await runScreenerFollowupStep(env.DB,{trigger:'cron',scheduledTime:controller.scheduledTime})
