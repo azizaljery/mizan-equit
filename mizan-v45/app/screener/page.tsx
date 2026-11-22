@@ -26,12 +26,17 @@ export default function ScreenerPage(){
  const [market,setMarket]=useState<ScreenerMarket>('sa'),[horizon,setHorizon]=useState(5),[resultCount,setResultCount]=useState(5),[scanLimit,setScanLimit]=useState(40);
  const [loading,setLoading]=useState(false),[phase,setPhase]=useState(''),[plan,setPlan]=useState<ScreenerPlan|null>(null),[result,setResult]=useState<ScreenerResult|null>(null),[error,setError]=useState<string|null>(null);
  const [archive,setArchive]=useState<ArchiveView|null>(null),[archiveError,setArchiveError]=useState(''),[history,setHistory]=useState<any[]>([]),[ownerSignin,setOwnerSignin]=useState(false);
- const controller=useRef<AbortController|null>(null),activeArchive=useRef<Handle|null>(null);
- useEffect(()=>{try{const raw=sessionStorage.getItem('mizan-screener-archive');if(raw)activeArchive.current=JSON.parse(raw);}catch{}return()=>controller.current?.abort();},[]);
+ const controller=useRef<AbortController|null>(null),activeArchive=useRef<Handle|null>(null),leaving=useRef(false);
+ useEffect(()=>{
+  try{const raw=sessionStorage.getItem('mizan-screener-archive');if(raw)activeArchive.current=JSON.parse(raw);}catch{}
+  // An unfinished scan restarts by itself when the page is opened again: batches are stored server-side and replay-safe, so finished ones return at once.
+  try{const r=sessionStorage.getItem('mizan-screener-run');if(r){const {p}=JSON.parse(r);if(p?.runId&&Array.isArray(p.symbols))void run({p});}}catch{}
+  return()=>{leaving.current=true;controller.current?.abort();};
+ },[]);
  async function archivePost(action:string,extra:Record<string,unknown>={}){return loadJSON('/api/screener',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...activeArchive.current,...extra})});}
  async function refreshArchive(){setArchiveError('');try{if(!activeArchive.current)throw Error('ابدأ مسحًا محفوظًا أو افتح سجل المالك.');setArchive(await archivePost('archive-status'));}catch(e){setArchiveError(e instanceof Error?e.message:'تعذرت القراءة.');}}
  async function ownerHistory(id?:string){setArchiveError('');setOwnerSignin(false);try{const res=await fetch('/api/admin/screener-history'+(id?'?id='+encodeURIComponent(id):''),{redirect:'manual'});if(res.type==='opaqueredirect'||res.status===401||res.status===403){setOwnerSignin(true);return;}const data=await res.json().catch(()=>({error:'تعذر قراءة استجابة الخادم.'}));if(!res.ok)throw Error(data.error||'تعذر الاتصال.');if(id)setArchive(data);else setHistory(data.runs);}catch(e){setArchiveError(e instanceof TypeError?'تعذر الوصول إلى الخادم. تحقق من الاتصال ثم أعد المحاولة.':e instanceof Error?e.message:'يتطلب سجل المالك جلسة الإدارة الحالية.');}}
- async function run(){
+ async function run(resume?:{p:ScreenerPlan&Handle}){
   const control=new AbortController();controller.current=control;
   setLoading(true);setError(null);setResult(null);setPlan(null);setArchive(null);setArchiveError('');setPhase('جارٍ إنشاء خطة مسح وأرشيف دائم');
   const input={market,horizonSessions:horizon,resultCount,scanLimit};
@@ -40,9 +45,9 @@ export default function ScreenerPage(){
   const post=(body:{action?:string}&Record<string,unknown>)=>loadJSON('/api/screener',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:control.signal},body.action==='plan'?undefined:{signal:control.signal,onRetry:e=>setPhase(`تعذّر الاتصال مؤقتًا، تُعاد المحاولة (${e.attempt}/${e.maxRetries})…`)});
   let combined:ScreenerResult|null=null,total=0;
   try{
-   const p:ScreenerPlan&Handle=await post({...input,action:'plan',archive:true});setPlan(p);total=p.symbols.length;
+   const p:ScreenerPlan&Handle=resume?resume.p:await post({...input,action:'plan',archive:true});setPlan(p);total=p.symbols.length;
    activeArchive.current={runId:p.runId,runToken:p.runToken};
-   try{sessionStorage.setItem('mizan-screener-archive',JSON.stringify(activeArchive.current));}catch{}
+   try{sessionStorage.setItem('mizan-screener-archive',JSON.stringify(activeArchive.current));sessionStorage.setItem('mizan-screener-run',JSON.stringify({p}));}catch{}
    for(let offset=0;offset<p.symbols.length;offset+=p.batchSize){
     if(control.signal.aborted)break;
     setPhase(`جارٍ الفحص والحفظ: ${offset} من ${p.symbols.length}`);
@@ -50,11 +55,11 @@ export default function ScreenerPage(){
     const batch:ScreenerResult=await post({action:'archive-batch',runId:p.runId,runToken:p.runToken,batchIndex:offset/p.batchSize});
     combined=mergeScreenerResults(combined,batch);setResult(combined);
    }
-   if(control.signal.aborted){setPhase('أُوقف المسح؛ حُفظ ما نُفذ، لكنه ليس قائمة ترشيح نهائية.');toast.info('أُوقف المسح',{description:'حُفظ ما نُفذ، لكنه ليس قائمة ترشيح نهائية.'});return;}
-   const saved:ArchiveView=await post({action:'complete',runId:p.runId,runToken:p.runToken});setArchive(saved);
+   if(control.signal.aborted){if(leaving.current)return;try{sessionStorage.removeItem('mizan-screener-run');}catch{}setPhase('أُوقف المسح؛ حُفظ ما نُفذ، لكنه ليس قائمة ترشيح نهائية.');toast.info('أُوقف المسح',{description:'حُفظ ما نُفذ، لكنه ليس قائمة ترشيح نهائية.'});return;}
+   const saved:ArchiveView=await post({action:'complete',runId:p.runId,runToken:p.runToken});setArchive(saved);try{sessionStorage.removeItem('mizan-screener-run');}catch{}
    if(saved.frozen)setResult(saved.frozen.result);
    setPhase('اكتمل المسح وحُفظ الترشيح الأصلي للمقارنة المستقبلية');toast.success('اكتمل المسح',{description:`فُحص ${saved.frozen?.result.scanned??combined?.scanned??0} سهمًا وحُفظ الترشيح للمقارنة المستقبلية.`});
-  }catch(e){if(control.signal.aborted)setPhase('أُوقف المسح؛ النتائج جزئية وليست قائمة نهائية.');else{setError(e instanceof Error?e.message:'فشل الفرز أو الحفظ.');toast.error('توقف المسح',{description:e instanceof Error?e.message:'فشل الفرز أو الحفظ.'});const done=combined?.scanned??0;setPhase(done>0&&done>=total?'اكتمل فحص جميع الأسهم لكن تعذر اعتماد الأرشيف؛ النتائج المعروضة غير نهائية.':done>0?`توقف المسح بعد فحص ${done} من ${total} سهمًا؛ بقي ${Math.max(0,total-done)} دون فحص. النتائج المعروضة جزئية وليست قائمة ترشيح نهائية، ولم يُعتمد الأرشيف.`:'لم يكتمل المسح أو الأرشيف؛ لا يُعرض كاختبار مكتمل.');}}
+  }catch(e){if(leaving.current)return;try{sessionStorage.removeItem('mizan-screener-run');}catch{}if(control.signal.aborted)setPhase('أُوقف المسح؛ النتائج جزئية وليست قائمة نهائية.');else{setError(e instanceof Error?e.message:'فشل الفرز أو الحفظ.');toast.error('توقف المسح',{description:e instanceof Error?e.message:'فشل الفرز أو الحفظ.'});const done=combined?.scanned??0;setPhase(done>0&&done>=total?'اكتمل فحص جميع الأسهم لكن تعذر اعتماد الأرشيف؛ النتائج المعروضة غير نهائية.':done>0?`توقف المسح بعد فحص ${done} من ${total} سهمًا؛ بقي ${Math.max(0,total-done)} دون فحص. النتائج المعروضة جزئية وليست قائمة ترشيح نهائية، ولم يُعتمد الأرشيف.`:'لم يكتمل المسح أو الأرشيف؛ لا يُعرض كاختبار مكتمل.');}}
   finally{setLoading(false);controller.current=null;}
  }
  return <>
@@ -66,7 +71,7 @@ export default function ScreenerPage(){
      <label className="market-select"><span>عدد النتائج المطلوبة لكل سوق</span><select aria-label="عدد النتائج المطلوبة" disabled={loading} value={resultCount} onChange={e=>setResultCount(Number(e.target.value))}>{[5,6,7,8,9,10].map(n=><option key={n} value={n}>{n} شركات لكل سوق</option>)}</select></label>
      <label className="market-select"><span>عدد الأسهم المفحوصة</span><select aria-label="عدد الأسهم المفحوصة" disabled={loading} value={scanLimit} onChange={e=>setScanLimit(Number(e.target.value))}>{[20,40,100,200].map(n=><option key={n} value={n}>{n} سهمًا إجمالًا</option>)}</select></label>
      <button className="search-button" type="button" onClick={()=>void run()} disabled={loading}>{loading?<><Loader2 className="spin" size={16} aria-hidden="true"/> جارٍ الفرز…</>:'ابحث عن ترشيحات المحرك'}</button>
-     {loading&&<button className="secondary-btn" type="button" onClick={()=>controller.current?.abort()}>إيقاف المسح</button>}
+     {loading&&<button className="secondary-btn" type="button" onClick={()=>{try{sessionStorage.removeItem('mizan-screener-run');}catch{}controller.current?.abort();}}>إيقاف المسح</button>}
     </div><p className="muted">اختيار السوقين و10 نتائج يعني حتى 10 سعودية و10 أمريكية، لا نكمل نقص أحد السوقين بأسماء من الآخر. اليومي للجلسة التالية؛ لا يُخفض شرط الثقة لإكمال العدد.</p>
    </section>
    {error&&<Notice>{error}</Notice>}
