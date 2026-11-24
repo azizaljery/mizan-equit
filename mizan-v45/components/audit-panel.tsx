@@ -10,7 +10,7 @@ const th={padding:'8px',borderBottom:'1px solid currentColor',textAlign:'right' 
 const td={padding:'8px',textAlign:'right' as const};
 const f=(v:any,d=2)=>typeof v==='number'&&Number.isFinite(v)?v.toFixed(d):'—';
 /** Declared thresholds for calling a macro move a shock (20 observations, known with a one-day lag). */
-const SHOCKS=[{node:'fed_funds',series:'NYFED:EFFR',kind:'diff' as const,min:0.1,label:'الفائدة الفعلية الأمريكية',unit:'نقطة مئوية'},{node:'brent',series:'YH:BZ=F',kind:'pct' as const,min:0.05,label:'برنت',unit:'%'}];
+const SHOCKS=[{node:'fed_funds',series:'NYFED:EFFR',kind:'diff' as const,min:0.1,label:'الفائدة الفعلية الأمريكية',unit:'نقطة مئوية'},{node:'brent',series:'DCOILBRENTEU',kind:'pct' as const,min:0.05,label:'برنت',unit:'%'}];
 const arrow=(s:number)=>s>0?'↑ يرتفع':s<0?'↓ ينخفض':'—';
 
 export function AuditPanel(){
