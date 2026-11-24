@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useState} from 'react';
-import {analyze,buildRows,MACRO_FEATURES,UNIVERSE,SA_UNIVERSE,type Row,type MacroObs} from '@/lib/integration/backtest';
+import {analyze,buildRows,minObs,MACRO_FEATURES,UNIVERSE,SA_UNIVERSE,type Row,type MacroObs} from '@/lib/integration/backtest';
 
 const th={padding:'8px',borderBottom:'1px solid currentColor',textAlign:'right' as const};
 const td={padding:'8px',textAlign:'right' as const};
@@ -25,7 +25,7 @@ export function IntegrationPanel(){
    const macro:Record<string,MacroObs[]>=mj.series;
    // use only series with enough history for the lookback; the rest are reported as excluded, never filled
    const cov=MACRO_FEATURES.map(s=>({...s,n:(macro[s.id]||[]).length,from:(macro[s.id]||[])[0]?.date||'—'}));setCover(cov);
-   const specs=MACRO_FEATURES.filter(s=>(macro[s.id]||[]).length>=60);
+   const specs=MACRO_FEATURES.filter(s=>(macro[s.id]||[]).length>=minObs(s));
    if(!specs.length)throw new Error('لا توجد سلاسل كلية بتاريخ كافٍ بعد.');
    const names=specs.map(s=>s.label),out:any={specs:names};
    for(const [mk,list] of [['us',UNIVERSE],['sa',SA_UNIVERSE]] as const){
@@ -57,7 +57,7 @@ export function IntegrationPanel(){
   <button className="btn" onClick={run} disabled={busy} style={{padding:'10px 18px'}}>{busy?'جارٍ الاختبار...':'شغّل الاختبار التاريخي'}</button>
   {msg&&<p>{msg}</p>}
   {res?.at&&!busy&&<p>آخر نتيجة محفوظة في هذا المتصفح: {res.at.slice(0,16).replace('T',' ')} UTC. الأسعار المجلوبة تُحفظ، فإن غادرت الصفحة أثناء التشغيل يكمل تلقائيًا من حيث توقف عند عودتك.</p>}
-  {cover.length>0&&<table dir="rtl" style={{width:'100%',borderCollapse:'collapse',marginTop:16}}><thead><tr>{['السلسلة الكلية','عدد الملاحظات','أول تاريخ','داخل الاختبار؟'].map(h=><th key={h} style={th}>{h}</th>)}</tr></thead><tbody>{cover.map(c=><tr key={c.id}><td style={td}>{c.label}</td><td style={td}>{c.n}</td><td style={td}>{c.from}</td><td style={td}>{c.n>=60?'نعم':'لا (بيانات غير كافية)'}</td></tr>)}</tbody></table>}
+  {cover.length>0&&<table dir="rtl" style={{width:'100%',borderCollapse:'collapse',marginTop:16}}><thead><tr>{['السلسلة الكلية','عدد الملاحظات','أول تاريخ','داخل الاختبار؟'].map(h=><th key={h} style={th}>{h}</th>)}</tr></thead><tbody>{cover.map(c=><tr key={c.id}><td style={td}>{c.label}</td><td style={td}>{c.n}</td><td style={td}>{c.from}</td><td style={td}>{c.n>=minObs(c)?'نعم':'لا (بيانات غير كافية)'}</td></tr>)}</tbody></table>}
   {res&&(['us','sa'] as const).map(mk=><div key={mk}><h2 style={{marginTop:32}}>{mk==='us'?'السوق الأمريكي':'السوق السعودي'} ({res[mk].symbols} سهمًا وصلت بياناتها)</h2>{block(res[mk].h5,'أفق 5 جلسات')}{block(res[mk].h21,'أفق 21 جلسة')}</div>)}
  </div>;
 }

@@ -10,11 +10,17 @@ export const BACKTEST_PARAMS=Object.freeze({sampleEvery:5,trainFrac:0.6,ridge:1,
 const fin=(v:unknown):v is number=>typeof v==='number'&&Number.isFinite(v);
 
 export type MacroObs={date:string;value:number};
-export type MacroFeatureSpec={id:string;kind:'pct'|'diff';label:string};
+/** lag: days between an observation's date and when it could be known (publication delay, declared); lookback: observations back for the change. */
+export type MacroFeatureSpec={id:string;kind:'pct'|'diff';label:string;lag?:number;lookback?:number};
 export const MACRO_FEATURES:MacroFeatureSpec[]=[
  {id:'YH:^VIX',kind:'pct',label:'تغير VIX'},{id:'YH:^TNX',kind:'diff',label:'تغير عائد 10 سنوات'},{id:'YH:^IRX',kind:'diff',label:'تغير عائد 13 أسبوعًا'},
- {id:'NYFED:EFFR',kind:'diff',label:'تغير الفائدة الفعلية'},{id:'YH:BZ=F',kind:'pct',label:'تغير برنت'},{id:'YH:DX-Y.NYB',kind:'pct',label:'تغير الدولار'},
+ {id:'NYFED:EFFR',kind:'diff',label:'تغير الفائدة الفعلية'},{id:'YH:BZ=F',kind:'pct',label:'تغير برنت (عقد آجل)'},{id:'YH:DX-Y.NYB',kind:'pct',label:'تغير الدولار (DXY)'},
+ {id:'DCOILBRENTEU',kind:'pct',label:'تغير برنت الفوري (FRED)',lag:2},{id:'DTWEXBGS',kind:'pct',label:'تغير الدولار الموسّع (FRED)',lag:5},
+ {id:'T10Y2Y',kind:'diff',label:'تغير فرق العائد 10-2 سنوات',lag:1},
+ {id:'CPIAUCSL',kind:'pct',label:'التضخم الأمريكي السنوي (CPI)',lag:45,lookback:12},{id:'UNRATE',kind:'diff',label:'تغير البطالة الأمريكية (3 أشهر)',lag:35,lookback:3},
 ];
+/** Minimum stored observations before a series may enter the test. */
+export const minObs=(sp:MacroFeatureSpec)=>(sp.lookback??BACKTEST_PARAMS.macroLookback)+13;
 export const PRICE_FEATURES=['زخم 20 جلسة','زخم 60 جلسة','البعد عن المتوسط 50','تذبذب 20 جلسة'];
 
 /** Change of a macro series as known on `date`: the last observation dated at least `lagDays` before it, against the observation `lookback` observations earlier. No later data is read. */
@@ -45,7 +51,7 @@ export function buildRows(symbol:string,prices:Price[],macro:Record<string,Macro
   const d=prices[i].date;if(d<p.startDate||(i-60)%p.sampleEvery!==0)continue;
   const pf=priceFeatures(prices,i);if(!pf)continue;
   const mf:number[]=[];let ok=true;
-  for(const sp of specs){const v=macroChange(macro[sp.id]||[],d,sp.kind);if(v===null){ok=false;break;}mf.push(v);}
+  for(const sp of specs){const v=macroChange(macro[sp.id]||[],d,sp.kind,sp.lag??BACKTEST_PARAMS.macroLagDays,sp.lookback??BACKTEST_PARAMS.macroLookback);if(v===null){ok=false;break;}mf.push(v);}
   if(!ok)continue;
   const y=(h:number):0|1|null=>i+h<prices.length&&prices[i].close>0&&prices[i+h].close>0?(prices[i+h].close>prices[i].close?1:0):null;
   out.push({s:symbol,d,x:[...pf,...mf],y5:y(5),y21:y(21)});
