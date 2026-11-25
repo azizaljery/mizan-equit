@@ -18,6 +18,13 @@ function calendar(series:Series[]){
  const cnt=new Map<string,number>();for(const s of series)for(const p of s.prices)cnt.set(p.date,(cnt.get(p.date)||0)+1);
  return [...cnt].filter(([,c])=>c>=0.8*series.length).map(([d])=>d).sort();
 }
+/** Decision dates of one market: every `decisionEverySessions` sessions from the first date with enough history. */
+export function decisionDatesOf(series:Series[]):string[]{
+ if(!series.length)return [];
+ const cal=calendar(series),out:string[]=[];
+ for(let k=S.minHistorySessions;k<cal.length;k+=S.decisionEverySessions)out.push(cal[k]);
+ return out;
+}
 export function buildRecords(all:Series[]):Rec[]{
  const out:Rec[]=[];
  for(const market of ['sa','us'] as Market[]){

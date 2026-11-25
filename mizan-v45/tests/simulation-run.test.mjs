@@ -58,3 +58,12 @@ test('split leaves a purge gap and keeps order', () => {
   assert.ok(s.development.at(-1) < s.validation[0] && s.validation.at(-1) < s.holdout[0]);
   assert.ok(ds.indexOf(s.holdout[0]) - ds.indexOf(s.validation.at(-1)) > 1);
 });
+test('engine replay sees only bars up to the decision date and returns numbers or null', () => {
+  const Rp = m.simulationReplay, [s] = world({ n: 1, days: 400, seed: 21 });
+  const d = s.prices[300].date, d2 = s.prices[350].date;
+  const a = Rp.replayEngine('X', 'us', s.prices, 'USD', [d, d2]);
+  const changed = JSON.parse(JSON.stringify(s.prices)); for (let i = 301; i < 400; i++) changed[i].close *= 2;
+  const b = Rp.replayEngine('X', 'us', changed, 'USD', [d]);
+  assert.deepEqual(a[d], b[d]);
+  assert.ok(a[d] && (a[d]['5'] === null || Number.isFinite(a[d]['5'])));
+});

@@ -183,3 +183,4 @@ export * as auditShadow from '../lib/audit-shadow';
 export * as accuracyBoard from '../lib/accuracy-board';
 export * as simulationRun from '../lib/simulation/run';
 export * as simulationSpec from '../lib/simulation/spec';
+export * as simulationReplay from '../lib/simulation/engine-replay';
