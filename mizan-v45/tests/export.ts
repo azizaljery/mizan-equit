@@ -180,3 +180,4 @@ export * as marketIdentity from '../lib/market-identity';
 export * as dateDual from '../lib/date-dual';
 export * as integrationBacktest from '../lib/integration/backtest';
 export * as auditShadow from '../lib/audit-shadow';
+export * as accuracyBoard from '../lib/accuracy-board';
